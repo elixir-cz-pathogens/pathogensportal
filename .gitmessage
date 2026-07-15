@@ -1,10 +1,8 @@
-# <typ>(#<issue>): krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
+# PATH-<číslo>: krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
 #
-# Typ = feat | bug | no-issue
-#   feat(#42): ...   nová funkce   — issue POVINNÉ
-#   bug(#57): ...    oprava chyby  — issue POVINNÉ
-#   no-issue: ...    triviální změna (docs, formát, config) — BEZ issue
+#   PATH-42: add wastewater dashboard endpoint
+#   no-issue: triviální změna bez issue (docs, formát, config)
 #
 # Prázdný řádek, pak volitelný popis "proč" (ne "jak").
 #
-# Odkaz na issue: Closes #42
+# Kontrola commitů běží až na PR do `main` (dev je volný).

@@ -1,0 +1,28 @@
+name: "AUTOMATION: Issue Prefixer"
+
+# Při založení issue přejmenuje titulek na "<PREFIX>-<číslo>: původní titulek".
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add-prefix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prefix issue title
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prefix = "${{ vars.PROJECT_PREFIX }}";
+            const issueNumber = context.issue.number;
+            const originalTitle = context.payload.issue.title;
+            const expectedPrefix = `${prefix}-${issueNumber}`;
+            if (!originalTitle.startsWith(expectedPrefix)) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                title: `${expectedPrefix}: ${originalTitle}`
+              });
+            }
