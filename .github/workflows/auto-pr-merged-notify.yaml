@@ -1,0 +1,38 @@
+name: "AUTOMATION: PR Merged Notification"
+
+# Při mergnutí PR napíše komentář do odpovídajícího issue.
+on:
+  pull_request:
+    types: [closed]
+
+env:
+  IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
+
+jobs:
+  comment-on-issue:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    steps:
+      - name: Comment PR merged on issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const ignore_prefix = process.env.IGNORE_PREFIX;
+            if (pr.head.ref.startsWith(ignore_prefix)) {
+              console.log(`Skipping '${pr.head.ref}' (${ignore_prefix}).`);
+              return;
+            }
+            const match = pr.title.match(/(\w+-\d+)/);
+            if (match) {
+              const issueNumber = match[1].split('-')[1];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: `PR [#${pr.number}](${pr.html_url}) merged! 🎉`
+              });
+            } else {
+              console.log("No issue number in PR title — skipping.");
+            }

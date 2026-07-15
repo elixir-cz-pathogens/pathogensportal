@@ -1,0 +1,37 @@
+name: "AUTOMATION: PR Open Notification"
+
+# Při otevření PR napíše komentář do odpovídajícího issue (číslo bere z titulku PR).
+on:
+  pull_request:
+    types: [opened]
+
+env:
+  IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
+
+jobs:
+  comment-on-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Comment PR opened on issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const ignore_prefix = process.env.IGNORE_PREFIX;
+            if (pr.head.ref.startsWith(ignore_prefix)) {
+              console.log(`Skipping '${pr.head.ref}' (${ignore_prefix}).`);
+              return;
+            }
+            const match = pr.title.match(/(\w+-\d+)/);
+            if (match) {
+              const issueNumber = match[1].split('-')[1];
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: `PR [#${pr.number}](${pr.html_url}) opened from branch \`${pr.head.ref}\`.`
+              });
+            } else {
+              console.log("No issue number in PR title — skipping.");
+            }

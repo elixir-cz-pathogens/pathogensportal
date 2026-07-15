@@ -1,0 +1,25 @@
+name: "CI: Hugo Build"
+
+# Reálná kontrola — ověří, že se web vůbec postaví. JEN na PR do `main`.
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  hugo-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive    # Hugo téma je git submodule
+          fetch-depth: 0
+
+      - name: Setup Hugo (extended)
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: true
+
+      - name: Build site
+        working-directory: site
+        run: hugo --minify
