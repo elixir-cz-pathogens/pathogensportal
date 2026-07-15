@@ -1,0 +1,31 @@
+name: "CHECK: Commit Message"
+
+# Kontrola formátu commit zpráv — JEN na PR do `main` (dev je volný, bez kontrol).
+# Platný formát:  <PROJECT_PREFIX>-<číslo>: zpráva    nebo    start <IGNORE_PREFIX>
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  commit-message-check:
+    runs-on: ubuntu-latest
+    env:
+      ISSUE_PREFIX: ${{ vars.PROJECT_PREFIX }}
+      IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check commit messages (main..HEAD)
+        run: |
+          git fetch origin main:main || true
+          invalid=$(git log --no-merges --format="%s" main..HEAD \
+            | grep -vE "^(${IGNORE_PREFIX}|${ISSUE_PREFIX}-[0-9]+: .+)" || true)
+          if [ -n "$invalid" ]; then
+            echo "🚨 Neplatné commit zprávy:"
+            echo "$invalid"
+            echo "❗ Očekávám '${ISSUE_PREFIX}-<číslo>: zpráva' nebo start '${IGNORE_PREFIX}'"
+            exit 1
+          fi
+          echo "✅ Všechny commit zprávy jsou v pořádku."

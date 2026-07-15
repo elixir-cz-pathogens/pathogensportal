@@ -1,72 +1,79 @@
-# Pravidla přispívání — Pathogenportal
+# Pravidla přispívání — Pathogensportal
 
-Tato pravidla platí pro **všechna tři repa** projektu:
-`pathogensportal` · `pathogensportal-infra` · `pathogensportal-db`.
+Konvence (styl převzatý z EFSA projektu). Detailní popis workflow: `.github/workflows/WORKFLOWS_GUIDE.md`.
+
+Prefix projektu: **`PATH`** · úniková cesta: **`no-issue`** (nastaveno v repo proměnných
+`PROJECT_PREFIX` / `IGNORE_PREFIX`).
 
 ---
 
 ## Větve
 
-Model se dvěma větvemi:
+- **`dev`** — pískoviště. **Pushuje se sem rovnou, bez PR, bez kontrol.**
+- **`main`** — produkce. Chráněná, mění se **jen přes PR z `dev`** (musí projít kontrolami).
 
-- **`main`** — produkce. Chráněná větev, přímý push zakázán, mění se jen přes PR.
-- **`dev`** — integrace. Sem míří běžná práce a feature větve.
+Kontroly běží **jen na PR do `main`** — tam je brána. Do `dev` commituj volně.
 
-Doporučený tok: `feature/*` → PR do `dev` → PR z `dev` do `main`.
+### Názvy větví
+
+```
+feature/PATH-<číslo>_popis     např. feature/PATH-42_wastewater-endpoint
+bugfix/PATH-<číslo>_popis       např. bugfix/PATH-57_pcr-rounding
+docs/PATH-<číslo>_popis         např. docs/PATH-60_readme
+no-issue/popis                  úniková cesta bez issue
+```
+
+Nejrychlejší způsob: na stránce issue → *Development* → **Create a branch**.
 
 ---
 
 ## Formát commit zprávy
 
 ```
-<typ>(#<issue>): krátký souhrn v rozkazovacím způsobu
+PATH-<číslo>: krátký souhrn v rozkazovacím způsobu
 ```
 
-| Typ | Význam | Issue |
-|---|---|---|
-| `feat` | nová funkce | **povinné** `(#číslo)` |
-| `bug` | oprava chyby | **povinné** `(#číslo)` |
-| `no-issue` | triviální změna (dokumentace, formátování, konfigurace) | bez issue |
-
-Pravidla:
-
+- Commit související s issue **musí** začínat `PATH-<číslo>:`.
+- Triviální změna bez issue → začni `no-issue:`.
 - Souhrn krátký (≈ do 72 znaků), bez tečky na konci.
-- `feat` a `bug` **musí** odkazovat číslo issue — GitHub tím propojí commit ↔ issue.
-- `no-issue` se píše **bez** závorky s issue.
-- Merge commity jsou z kontroly vyňaty.
 
 ### Platné příklady
+```
+PATH-42: add wastewater dashboard endpoint
+PATH-57: fix PCR positivity rounding
+no-issue: reformat readme
+```
 
+### Odmítne CI (na PR → main)
 ```
-feat(#42): add wastewater dashboard endpoint
-bug(#57): fix PCR positivity rounding in weekly overview
-no-issue: reformat Ansible playbook, no logic change
+updated stuff        ← chybí prefix
+PATH42: add page     ← chybí pomlčka/dvojtečka
+feat(#42): ...       ← starý styl, už neplatí
 ```
 
-### Odmítnuté CI
+---
 
-```
-updated stuff            ← chybí prefix typu
-feat: add new page       ← feat bez #issue
-bug(42): fix thing       ← chybí # před číslem
-```
+## Automatizace (dělá se sama)
+
+- **Issue prefix:** po založení issue se titulek přejmenuje na `PATH-<číslo>: …`.
+- **Branch linker:** push větve `feature/**`,`bugfix/**`,`docs/**` napíše komentář do issue.
+- **PR notify:** otevření/mergnutí PR komentuje do issue.
 
 ---
 
 ## Jak si to nastavit lokálně
 
-Jednorázově zapni šablonu commit zprávy (soubor `.gitmessage` je v repu):
-
+Šablona commit zprávy:
 ```bash
 git config commit.template .gitmessage
 ```
-
-Od teď `git commit` (bez `-m`) předvyplní nápovědu s formátem.
+`git commit` (bez `-m`) pak předvyplní nápovědu s formátem.
 
 ---
 
 ## Pull requesty
 
-- PR cílí na `dev` (nebo `dev` → `main`).
-- Musí projít CI (kontrola commitů + testy dané fáze).
-- U `feat`/`bug` odkaž issue i v popisu PR (`Closes #42`).
+- PR jde z `dev` do `main` (nebo z feature větve).
+- Musí projít `CHECK: Commit Message` + `CI: Hugo Build`.
+- Titulek PR ať obsahuje `PATH-<číslo>` (aby automatizace poznala issue).
+- Merge do `main`: **squash** nebo **rebase** (na `main` je vynucená lineární historie).
