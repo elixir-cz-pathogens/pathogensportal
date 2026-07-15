@@ -1,7 +1,7 @@
 # Pravidla přispívání — Pathogenportal
 
 Tato pravidla platí pro **všechna tři repa** projektu:
-`pathogensportal` · `pathogensportal-infra` · `pathogensportal-db`.
+`pathogensportal` · `pathogensportal-priv` · `pathogensportal-db`.
 
 ---
 
