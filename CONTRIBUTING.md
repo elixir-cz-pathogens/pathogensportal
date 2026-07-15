@@ -2,7 +2,7 @@
 
 Konvence (styl převzatý z EFSA projektu). Detailní popis workflow: `.github/workflows/WORKFLOWS_GUIDE.md`.
 
-Prefix projektu: **`PATH`** · úniková cesta: **`no-issue`** (nastaveno v repo proměnných
+Prefix projektu: **`PP`** · úniková cesta: **`no-issue`** (nastaveno v repo proměnných
 `PROJECT_PREFIX` / `IGNORE_PREFIX`).
 
 ---
@@ -17,9 +17,9 @@ Kontroly běží **jen na PR do `main`** — tam je brána. Do `dev` commituj vo
 ### Názvy větví
 
 ```
-feature/PATH-<číslo>_popis     např. feature/PATH-42_wastewater-endpoint
-bugfix/PATH-<číslo>_popis       např. bugfix/PATH-57_pcr-rounding
-docs/PATH-<číslo>_popis         např. docs/PATH-60_readme
+feature/PP-<číslo>_popis     např. feature/PP-42_wastewater-endpoint
+bugfix/PP-<číslo>_popis       např. bugfix/PP-57_pcr-rounding
+docs/PP-<číslo>_popis         např. docs/PP-60_readme
 no-issue/popis                  úniková cesta bez issue
 ```
 
@@ -30,24 +30,24 @@ Nejrychlejší způsob: na stránce issue → *Development* → **Create a branc
 ## Formát commit zprávy
 
 ```
-PATH-<číslo>: krátký souhrn v rozkazovacím způsobu
+PP-<číslo>: krátký souhrn v rozkazovacím způsobu
 ```
 
-- Commit související s issue **musí** začínat `PATH-<číslo>:`.
+- Commit související s issue **musí** začínat `PP-<číslo>:`.
 - Triviální změna bez issue → začni `no-issue:`.
 - Souhrn krátký (≈ do 72 znaků), bez tečky na konci.
 
 ### Platné příklady
 ```
-PATH-42: add wastewater dashboard endpoint
-PATH-57: fix PCR positivity rounding
+PP-42: add wastewater dashboard endpoint
+PP-57: fix PCR positivity rounding
 no-issue: reformat readme
 ```
 
 ### Odmítne CI (na PR → main)
 ```
 updated stuff        ← chybí prefix
-PATH42: add page     ← chybí pomlčka/dvojtečka
+PP42: add page     ← chybí pomlčka/dvojtečka
 feat(#42): ...       ← starý styl, už neplatí
 ```
 
@@ -55,7 +55,7 @@ feat(#42): ...       ← starý styl, už neplatí
 
 ## Automatizace (dělá se sama)
 
-- **Issue prefix:** po založení issue se titulek přejmenuje na `PATH-<číslo>: …`.
+- **Issue prefix:** po založení issue se titulek přejmenuje na `PP-<číslo>: …`.
 - **Branch linker:** push větve `feature/**`,`bugfix/**`,`docs/**` napíše komentář do issue.
 - **PR notify:** otevření/mergnutí PR komentuje do issue.
 
@@ -75,5 +75,5 @@ git config commit.template .gitmessage
 
 - PR jde z `dev` do `main` (nebo z feature větve).
 - Musí projít `CHECK: Commit Message` + `CI: Hugo Build`.
-- Titulek PR ať obsahuje `PATH-<číslo>` (aby automatizace poznala issue).
+- Titulek PR ať obsahuje `PP-<číslo>` (aby automatizace poznala issue).
 - Merge do `main`: **squash** nebo **rebase** (na `main` je vynucená lineární historie).
