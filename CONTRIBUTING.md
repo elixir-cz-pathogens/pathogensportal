@@ -1,7 +1,7 @@
 # Pravidla přispívání — Pathogenportal
 
 Tato pravidla platí pro **všechna tři repa** projektu:
-`pathogensportal` · `pathogensportal-infra` · `pathogensportal-db`.
+`pathogensportal` · `pathogensportal-priv` · `pathogensportal-db`.
 
 ---
 
@@ -13,6 +13,18 @@ Model se dvěma větvemi:
 - **`dev`** — integrace. Sem míří běžná práce a feature větve.
 
 Doporučený tok: `feature/*` → PR do `dev` → PR z `dev` do `main`.
+
+### Názvy větví (kontroluje CI `branch-check`)
+
+```
+feat/<issue>-krátký-popis     např. feat/42-wastewater-endpoint
+bug/<issue>-krátký-popis      např. bug/57-pcr-rounding
+no-issue/krátký-popis         např. no-issue/update-readme
+```
+
+- Číslo issue ve větvi umožní **auto-předvyplnění** commit zprávy (viz níže).
+- Nejrychlejší způsob: na stránce issue → *Development* → **Create a branch** (GitHub větev
+  pojmenuje a propojí s issue).
 
 ---
 
@@ -62,6 +74,18 @@ git config commit.template .gitmessage
 ```
 
 Od teď `git commit` (bez `-m`) předvyplní nápovědu s formátem.
+
+### Auto-prefix z názvu větve (volitelný hook)
+
+Repo obsahuje hook `.githooks/prepare-commit-msg`, který podle větve předvyplní prefix commitu.
+Jednorázově ho zapneš:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Pak na větvi `feat/42-neco` se `git commit` (bez `-m`) otevře už s `feat(#42): ` — jen dopíšeš souhrn.
+Na větvích `bug/7-…` obdobně `bug(#7): `. Na `no-issue/…` a `dev` hook nic nedělá (zprávu píšeš ručně).
 
 ---
 
