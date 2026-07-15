@@ -25,6 +25,7 @@ konvenci commitů si CI ohlídá až u PR `dev → main` (zkontroluje všechny c
 |---|---|---|---|
 | `check-commit-message.yaml` | Validace | PR → `main` | ✅ ano |
 | `hugo-build.yml` | CI | PR → `main` | ✅ ano |
+| `backend-tests.yml` | CI | PR → `main` | ✅ ano (pytest BE služeb) |
 | `check-branch-name.yaml` | Validace | PR → `main` | ⚪ ne (informativní) |
 | `auto-issue-prefix.yaml` | Automatizace | issue opened | — |
 | `auto-branch-issue-tracking.yaml` | Automatizace | push `feature/**`,`bugfix/**`,`docs/**` | — |
@@ -53,8 +54,11 @@ Projde commity `main..HEAD` (bez merge commitů). Každý subjekt musí být `PP
 nebo začínat `no-issue`. Jinak fail.
 
 ### `hugo-build.yml`
-Naklonuje repo se submoduly (téma), nainstaluje Hugo extended a spustí `hugo --minify` v `site/`.
+Naklonuje repo se submoduly (téma), nainstaluje Hugo extended a spustí `hugo --minify` ve `frontend/`.
 Ověří, že se web postaví.
+
+### `backend-tests.yml`
+Pro každou službu v `backend/*/` nainstaluje `requirements.txt` a spustí `pytest`. Ověří BE služby.
 
 ### `check-branch-name.yaml`
 Ověří název zdrojové větve PR. `dev` a `no-issue…` se přeskočí; jinak musí sedět
