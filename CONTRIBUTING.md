@@ -75,18 +75,6 @@ git config commit.template .gitmessage
 
 Od teď `git commit` (bez `-m`) předvyplní nápovědu s formátem.
 
-### Auto-prefix z názvu větve (volitelný hook)
-
-Repo obsahuje hook `.githooks/prepare-commit-msg`, který podle větve předvyplní prefix commitu.
-Jednorázově ho zapneš:
-
-```bash
-git config core.hooksPath .githooks
-```
-
-Pak na větvi `feat/42-neco` se `git commit` (bez `-m`) otevře už s `feat(#42): ` — jen dopíšeš souhrn.
-Na větvích `bug/7-…` obdobně `bug(#7): `. Na `no-issue/…` a `dev` hook nic nedělá (zprávu píšeš ručně).
-
 ---
 
 ## Pull requesty
