@@ -10,21 +10,27 @@ Docs are written in **Czech**; code and commit messages in English.
 
 | Path | What |
 |---|---|
-| `site/` | Hugo site (`hugo.toml`, `content/`, `layouts/`, `static/`). Theme is a **git submodule** (`site/themes/…`). |
-| `scripts/` | Python data pipeline — scrapers + JSON generation for charts (`generate_json.py`, `run_all.py`). |
-| `db/init.sql` | PostgreSQL schema. |
-| `grafana/` | Grafana provisioning + dashboards. |
-| `docker-compose.yml` | Local dev stack: `hugo` (dev server), `postgres`, plus `pipeline` / `nextstrain` profiles. |
+| `frontend/` | Hugo web (`hugo.toml`, `content/`, `layouts/`, `static/`). Theme is a **git submodule** (`frontend/themes/…`). |
+| `backend/` | FastAPI služby, **jeden adresář = jeden kontejner**: `website-be`, `llm-agent-be`, `mcp`. |
+| `deploy/` | `docker-compose.yml` (produkce), `docker-compose.dev.yml` (dev override), `.env.example`. |
 | `.github/workflows/` | CI + automations — see `WORKFLOWS_GUIDE.md`. |
+
+Scraper + DB schéma jsou v repu **`pathogensportal-db`** (git submodule, přijde později), monitoring
+(Grafana) v **`pathogensportal-priv`**. Do portálu patří jen FE + BE služby.
 
 ## Common commands
 
 ```bash
-git clone --recurse-submodules <url>        # theme is a submodule — always recurse
-docker compose up hugo                       # Hugo dev server on http://localhost:1313
-docker compose up -d postgres                # local Postgres
-(cd site && hugo --minify)                   # production build -> site/public/
+git clone --recurse-submodules <url>          # téma je submodule — vždy recurse
+# dev stack (Hugo + BE + DB, porty jen na localhost):
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml up
+# produkční build FE:
+(cd frontend && hugo --minify)                 # -> frontend/public/
+# testy jedné BE služby:
+(cd backend/website-be && pip install -r requirements.txt && pytest)
 ```
+
+Každá BE služba má `GET /health`. V produkci služby neposlouchají na hostiteli — vše jde přes Apache.
 
 ## Conventions (styl z EFSA projektu — detail v `CONTRIBUTING.md`)
 

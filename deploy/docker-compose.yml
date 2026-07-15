@@ -1,0 +1,53 @@
+name: pathogensportal
+
+# Produkční stack. FE (Hugo) servíruje Apache na hostiteli — NENÍ tu kontejner.
+# Služby poslouchají jen na interní síti; ven jde vše přes Apache reverse proxy.
+# Nic se nepublikuje na hostitele (žádné ports:) — DB není zvenčí dostupná.
+
+services:
+  website-be:
+    build: ../backend/website-be
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      DB_HOST: pathogen-db
+    depends_on:
+      pathogen-db:
+        condition: service_healthy
+    networks: [internal]
+
+  llm-agent-be:
+    build: ../backend/llm-agent-be
+    restart: unless-stopped
+    env_file: [.env]
+    networks: [internal]
+
+  mcp:
+    build: ../backend/mcp
+    restart: unless-stopped
+    env_file: [.env]
+    networks: [internal]
+
+  pathogen-db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # schéma dodá submodul pathogensportal-db (až bude připojený):
+      # - ../pathogensportal-db/db/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: [internal]
+
+volumes:
+  pgdata:
+
+networks:
+  internal:

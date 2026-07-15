@@ -1,8 +1,0 @@
-apiVersion: 1
-
-providers:
-  - name: pathogen-portal
-    folder: Pathogen Portal
-    type: file
-    options:
-      path: /var/lib/grafana/dashboards

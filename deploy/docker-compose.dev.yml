@@ -1,0 +1,35 @@
+name: pathogensportal
+
+# Dev override — použij spolu se základním compose:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+# Přidá Hugo dev server a publikuje porty jen na localhost + hot-reload BE.
+
+services:
+  hugo:
+    image: hugomods/hugo:exts
+    volumes:
+      - ../frontend:/src
+    ports:
+      - "127.0.0.1:1313:1313"
+    command: server --bind 0.0.0.0 --baseURL http://localhost:1313/ --disableFastRender
+
+  website-be:
+    ports: ["127.0.0.1:8000:8000"]
+    volumes:
+      - ../backend/website-be/app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  llm-agent-be:
+    ports: ["127.0.0.1:8001:8001"]
+    volumes:
+      - ../backend/llm-agent-be/app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+
+  mcp:
+    ports: ["127.0.0.1:8002:8002"]
+    volumes:
+      - ../backend/mcp/app:/app/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+  pathogen-db:
+    ports: ["127.0.0.1:5432:5432"]
