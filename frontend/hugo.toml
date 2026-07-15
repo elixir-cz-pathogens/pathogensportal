@@ -16,7 +16,7 @@ enableRobotsTXT = true
     weight = 1
     label = "Čeština"
     locale = "cs-CZ"
-    contentDir = "content/en"
+    contentDir = "content/cs"
 
 [menus]
   [[menus.main]]
