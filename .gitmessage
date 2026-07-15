@@ -1,0 +1,10 @@
+# <typ>(#<issue>): krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
+#
+# Typ = feat | bug | no-issue
+#   feat(#42): ...   nová funkce   — issue POVINNÉ
+#   bug(#57): ...    oprava chyby  — issue POVINNÉ
+#   no-issue: ...    triviální změna (docs, formát, config) — BEZ issue
+#
+# Prázdný řádek, pak volitelný popis "proč" (ne "jak").
+#
+# Odkaz na issue: Closes #42

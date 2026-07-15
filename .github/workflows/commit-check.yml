@@ -1,0 +1,54 @@
+name: commit-check
+
+# Ověří, že každý commit v PR dodržuje konvenci:
+#   feat(#<číslo>): souhrn   | bug(#<číslo>): souhrn   | no-issue: souhrn
+# Merge commity se přeskakují. Bez externích závislostí (jen bash + git).
+
+on:
+  pull_request:
+    branches: [dev, main]
+
+jobs:
+  commit-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (plná historie PR)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          # Povolený vzor hlavičky commitu:
+          #   feat(#123): ...  |  bug(#123): ...  |  no-issue: ...
+          pattern='^((feat|bug)\(#[0-9]+\)|no-issue): .+'
+
+          fail=0
+          # projdi jen commity přidané v tomto PR
+          for sha in $(git rev-list "$BASE_SHA".."$HEAD_SHA"); do
+            subject=$(git log -1 --format=%s "$sha")
+
+            # merge commity přeskoč
+            if git rev-list --no-walk --merges "$sha" | grep -q .; then
+              echo "skip (merge): $subject"
+              continue
+            fi
+
+            if [[ "$subject" =~ $pattern ]]; then
+              echo "ok:   $subject"
+            else
+              echo "FAIL: $subject"
+              fail=1
+            fi
+          done
+
+          if [[ "$fail" -ne 0 ]]; then
+            echo ""
+            echo "::error::Neplatná commit zpráva. Použij: feat(#issue): ... | bug(#issue): ... | no-issue: ..."
+            exit 1
+          fi
