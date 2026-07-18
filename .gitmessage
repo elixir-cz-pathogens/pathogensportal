@@ -1,6 +1,6 @@
-# PATH-<číslo>: krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
+# PP-<číslo>: krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
 #
-#   PATH-42: add wastewater dashboard endpoint
+#   PP-42: add wastewater dashboard endpoint
 #   no-issue: triviální změna bez issue (docs, formát, config)
 #
 # Prázdný řádek, pak volitelný popis "proč" (ne "jak").

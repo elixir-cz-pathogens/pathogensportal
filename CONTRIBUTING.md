@@ -1,79 +1,79 @@
-# Pravidla přispívání — Pathogensportal
+# Contribution Guidelines — Pathogensportal
 
-Konvence (styl převzatý z EFSA projektu). Detailní popis workflow: `.github/workflows/WORKFLOWS_GUIDE.md`.
+Conventions. Detailed workflow description: `.github/workflows/WORKFLOWS_GUIDE.md`.
 
-Prefix projektu: **`PATH`** · úniková cesta: **`no-issue`** (nastaveno v repo proměnných
+Project prefix: **`PP`** · escape hatch: **`no-issue`** (set in repo variables
 `PROJECT_PREFIX` / `IGNORE_PREFIX`).
 
 ---
 
-## Větve
+## Branches
 
-- **`dev`** — pískoviště. **Pushuje se sem rovnou, bez PR, bez kontrol.**
-- **`main`** — produkce. Chráněná, mění se **jen přes PR z `dev`** (musí projít kontrolami).
+- **`dev`** — sandbox. **Push directly here, no PR, no checks.**
+- **`main`** — production. Protected, changed **only via PR from `dev`** (must pass checks).
 
-Kontroly běží **jen na PR do `main`** — tam je brána. Do `dev` commituj volně.
+Checks run **only on PRs into `main`** — that's the gate. Commit freely to `dev`.
 
-### Názvy větví
+### Branch names
 
 ```
-feature/PATH-<číslo>_popis     např. feature/PATH-42_wastewater-endpoint
-bugfix/PATH-<číslo>_popis       např. bugfix/PATH-57_pcr-rounding
-docs/PATH-<číslo>_popis         např. docs/PATH-60_readme
-no-issue/popis                  úniková cesta bez issue
+feature/PP-<number>_description   e.g. feature/PP-42_wastewater-endpoint
+bugfix/PP-<number>_description     e.g. bugfix/PP-57_pcr-rounding
+docs/PP-<number>_description       e.g. docs/PP-60_readme
+no-issue/description                 escape hatch without an issue
 ```
 
-Nejrychlejší způsob: na stránce issue → *Development* → **Create a branch**.
+Fastest way: on the issue page → *Development* → **Create a branch**.
 
 ---
 
-## Formát commit zprávy
+## Commit message format
 
 ```
-PATH-<číslo>: krátký souhrn v rozkazovacím způsobu
+PP-<number>: short summary in the imperative mood
 ```
 
-- Commit související s issue **musí** začínat `PATH-<číslo>:`.
-- Triviální změna bez issue → začni `no-issue:`.
-- Souhrn krátký (≈ do 72 znaků), bez tečky na konci.
+- A commit related to an issue **must** start with `PP-<number>:`.
+- Trivial change without an issue → start with `no-issue:`.
+- Keep the summary short (≈ up to 72 characters), no trailing period.
 
-### Platné příklady
+### Valid examples
 ```
-PATH-42: add wastewater dashboard endpoint
-PATH-57: fix PCR positivity rounding
+PP-42: add wastewater dashboard endpoint
+PP-57: fix PCR positivity rounding
 no-issue: reformat readme
 ```
 
-### Odmítne CI (na PR → main)
+### Rejected by CI (on PR → main)
 ```
-updated stuff        ← chybí prefix
-PATH42: add page     ← chybí pomlčka/dvojtečka
-feat(#42): ...       ← starý styl, už neplatí
+updated stuff        ← missing prefix
+PP42: add page     ← missing dash/colon
+feat(#42): ...       ← old style, no longer valid
 ```
 
 ---
 
-## Automatizace (dělá se sama)
+## Automation (happens automatically)
 
-- **Issue prefix:** po založení issue se titulek přejmenuje na `PATH-<číslo>: …`.
-- **Branch linker:** push větve `feature/**`,`bugfix/**`,`docs/**` napíše komentář do issue.
-- **PR notify:** otevření/mergnutí PR komentuje do issue.
+- **Issue prefix:** after an issue is created, its title is renamed to `PP-<number>: …`.
+- **Branch linker:** pushing a `feature/**`, `bugfix/**`, `docs/**` branch posts a comment on the issue.
+- **PR notify:** opening/merging a PR comments on the issue.
 
 ---
 
-## Jak si to nastavit lokálně
+## How to set it up locally
 
-Šablona commit zprávy:
+Commit message template:
 ```bash
 git config commit.template .gitmessage
 ```
-`git commit` (bez `-m`) pak předvyplní nápovědu s formátem.
+`git commit` (without `-m`) then pre-fills a hint with the format.
 
 ---
 
-## Pull requesty
+## Pull requests
 
-- PR jde z `dev` do `main` (nebo z feature větve).
-- Musí projít `CHECK: Commit Message` + `CI: Hugo Build`.
-- Titulek PR ať obsahuje `PATH-<číslo>` (aby automatizace poznala issue).
-- Merge do `main`: **squash** nebo **rebase** (na `main` je vynucená lineární historie).
+- A PR goes from `dev` to `main` (or from a feature branch).
+- Must pass `CHECK: Commit Message` + `CI: Hugo Build`.
+- The PR title should contain `PP-<number>` (so automation can identify the issue).
+- Merge into `main`: **squash** or **rebase** (linear history is enforced on `main`).

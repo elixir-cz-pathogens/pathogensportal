@@ -1,0 +1,39 @@
+name: "Deploy: Staging (dev)"
+
+# ⛔ ZATÍM VYPNUTO. Job běží jen když je repo proměnná DEPLOY_ENABLED == 'true'.
+# Zapnutí (až bude server + github-deploy ready):
+#   1) nastavit secrets: DEPLOY_SSH_KEY, DEPLOY_HOST, DEPLOY_USER
+#   2) nastavit vars:    STAGING_PATH (DocumentRoot -dev), DEPLOY_ENABLED=true
+# Deploy = build Huga z větve `dev` -> rsync statiky na staging vhost `pathogens-dev.vm.cesnet.cz`.
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy-staging:
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: latest
+          extended: true
+
+      - name: Build (staging baseURL)
+        working-directory: frontend
+        run: hugo --minify --baseURL "https://pathogens-dev.vm.cesnet.cz/"
+
+      - name: Deploy via rsync over SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -az --delete frontend/public/ \
+            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.STAGING_PATH }}/"

@@ -8,7 +8,7 @@ Settings → Secrets and variables → Actions → Variables
 
 | Proměnná | Účel | Hodnota |
 |---|---|---|
-| `PROJECT_PREFIX` | prefix issue/větví/commitů | `PATH` |
+| `PROJECT_PREFIX` | prefix issue/větví/commitů | `PP` |
 | `IGNORE_PREFIX` | úniková cesta bez issue | `no-issue` |
 
 ## Model větví
@@ -25,6 +25,7 @@ konvenci commitů si CI ohlídá až u PR `dev → main` (zkontroluje všechny c
 |---|---|---|---|
 | `check-commit-message.yaml` | Validace | PR → `main` | ✅ ano |
 | `hugo-build.yml` | CI | PR → `main` | ✅ ano |
+| `backend-tests.yml` | CI | PR → `main` | ✅ ano (pytest BE služeb) |
 | `check-branch-name.yaml` | Validace | PR → `main` | ⚪ ne (informativní) |
 | `auto-issue-prefix.yaml` | Automatizace | issue opened | — |
 | `auto-branch-issue-tracking.yaml` | Automatizace | push `feature/**`,`bugfix/**`,`docs/**` | — |
@@ -33,37 +34,40 @@ konvenci commitů si CI ohlídá až u PR `dev → main` (zkontroluje všechny c
 
 ## Konvence
 
-**Commit:** `PATH-<číslo>: zpráva`  •  únik: `no-issue: …`
+**Commit:** `PP-<číslo>: zpráva`  •  únik: `no-issue: …`
 ```
-PATH-42: add wastewater dashboard endpoint
+PP-42: add wastewater dashboard endpoint
 no-issue: reformat readme
 ```
 
-**Větev:** `(feature|bugfix|docs)/PATH-<číslo>_popis`  •  únik: `no-issue/...`
+**Větev:** `(feature|bugfix|docs)/PP-<číslo>_popis`  •  únik: `no-issue/...`
 ```
-feature/PATH-42_wastewater-endpoint
-bugfix/PATH-57_pcr-rounding
-docs/PATH-60_readme
+feature/PP-42_wastewater-endpoint
+bugfix/PP-57_pcr-rounding
+docs/PP-60_readme
 ```
 
 ## Validační workflow (blokují merge do `main`)
 
 ### `check-commit-message.yaml`
-Projde commity `main..HEAD` (bez merge commitů). Každý subjekt musí být `PATH-<číslo>: …`
+Projde commity `main..HEAD` (bez merge commitů). Každý subjekt musí být `PP-<číslo>: …`
 nebo začínat `no-issue`. Jinak fail.
 
 ### `hugo-build.yml`
-Naklonuje repo se submoduly (téma), nainstaluje Hugo extended a spustí `hugo --minify` v `site/`.
+Naklonuje repo se submoduly (téma), nainstaluje Hugo extended a spustí `hugo --minify` ve `frontend/`.
 Ověří, že se web postaví.
+
+### `backend-tests.yml`
+Pro každou službu v `backend/*/` nainstaluje `requirements.txt` a spustí `pytest`. Ověří BE služby.
 
 ### `check-branch-name.yaml`
 Ověří název zdrojové větve PR. `dev` a `no-issue…` se přeskočí; jinak musí sedět
-`(feature|bugfix|docs)/PATH-<číslo>_popis`. (Neblokující — u `dev → main` projde triviálně.)
+`(feature|bugfix|docs)/PP-<číslo>_popis`. (Neblokující — u `dev → main` projde triviálně.)
 
 ## Automatizace (neblokující pomocníci)
 
 ### `auto-issue-prefix.yaml`
-Po založení issue přejmenuje titulek na `PATH-<číslo>: původní titulek`.
+Po založení issue přejmenuje titulek na `PP-<číslo>: původní titulek`.
 
 ### `auto-branch-issue-tracking.yaml`
 Po pushi větve `feature/**`,`bugfix/**`,`docs/**` napíše (jednou) komentář do odpovídajícího issue.
@@ -73,7 +77,7 @@ Komentují do issue (číslo z titulku PR) při otevření / mergnutí PR.
 
 ## Typický pracovní cyklus
 
-1. Založ issue → titulek se automaticky přejmenuje na `PATH-123: …`.
-2. Vytvoř větev `feature/PATH-123_popis` (nebo přes *Create a branch* na issue) → push → linker komentuje do issue.
-3. Commituj `PATH-123: …`, měrgni do `dev` (rovnou, bez PR).
+1. Založ issue → titulek se automaticky přejmenuje na `PP-123: …`.
+2. Vytvoř větev `feature/PP-123_popis` (nebo přes *Create a branch* na issue) → push → linker komentuje do issue.
+3. Commituj `PP-123: …`, měrgni do `dev` (rovnou, bez PR).
 4. Až je `dev` stabilní → PR `dev → main` → musí projít `commit-message` + `hugo-build` → merge (squash/rebase).

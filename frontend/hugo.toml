@@ -1,0 +1,41 @@
+baseURL = "https://pathogens.vm.cesnet.cz/"
+title = "Pathogen Portal CZ"
+theme = "hugo-pathogens-portal"
+defaultContentLanguage = "cs"
+defaultContentLanguageInSubdir = false
+enableRobotsTXT = true
+
+[params]
+  mail = "vlasakj@vscht.cz"
+  homepage = "https://pathogens.vm.cesnet.cz"
+  logo = "/images/elixir_logo.png"
+
+[languages]
+  [languages.cs]
+    title = "Pathogen Portal CZ"
+    weight = 1
+    label = "Čeština"
+    locale = "cs-CZ"
+    contentDir = "content/cs"
+
+[menus]
+  [[menus.main]]
+    identifier = "dashboards"
+    name = "Data Dashboards"
+    url = "/dashboards/"
+    weight = 10
+  [[menus.main]]
+    identifier = "news"
+    name = "News"
+    url = "/news/"
+    weight = 20
+  [[menus.main]]
+    identifier = "events"
+    name = "Events"
+    url = "/events/"
+    weight = 30
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

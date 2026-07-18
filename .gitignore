@@ -1,7 +1,7 @@
 /data/
-site/public/
-site/resources/_gen/
-site/.hugo_build.lock
+frontend/public/
+frontend/resources/_gen/
+frontend/.hugo_build.lock
 .DS_Store
 __pycache__/
 *.pyc
@@ -10,3 +10,4 @@ __pycache__/
 public_test/
 .claude/
 audit/
+.vscode/

@@ -21,5 +21,5 @@ jobs:
           extended: true
 
       - name: Build site
-        working-directory: site
+        working-directory: frontend
         run: hugo --minify
