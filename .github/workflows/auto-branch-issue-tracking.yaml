@@ -8,6 +8,9 @@ on:
       - 'bugfix/**'
       - 'docs/**'
 
+permissions:
+  issues: write
+
 jobs:
   notify-issue-branch:
     runs-on: ubuntu-latest

@@ -8,6 +8,10 @@ on:
 env:
   IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
 
+permissions:
+  issues: write
+  pull-requests: read
+
 jobs:
   comment-on-issue:
     runs-on: ubuntu-latest
