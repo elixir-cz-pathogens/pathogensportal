@@ -37,8 +37,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # schéma dodá submodul pathogensportal-db (až bude připojený):
-      # - ../pathogensportal-db/db/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+      # schéma ze submodulu pathogensportal-db
+      - ../pathogensportal-db/db/init.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -46,8 +46,24 @@ services:
       retries: 5
     networks: [internal]
 
+  # Datová pipeline ze submodulu pathogensportal-db.
+  # Neběží trvale — spouští se na vyžádání / z cronu:
+  #   docker compose --profile tools run --rm datascrapper
+  datascrapper:
+    profiles: ["tools"]
+    build: ../pathogensportal-db
+    environment:
+      DATA_DIR: /data
+      OUTPUT_DIR: /output/charts
+    volumes:
+      - scraped-data:/data
+      # vygenerovaný chart JSON jde rovnou do frontendu (Model A: commituje se)
+      - ../frontend/static/data/charts:/output/charts
+    networks: [internal]
+
 volumes:
   pgdata:
+  scraped-data:
 
 networks:
   internal:

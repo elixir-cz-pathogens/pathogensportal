@@ -19,8 +19,18 @@ deploy/              docker-compose (produkce + dev override) + .env.example
 .github/workflows/   CI a automatizace (viz WORKFLOWS_GUIDE.md)
 ```
 
-Scraper + DB schéma jsou v samostatném repu **`pathogensportal-db`** (připojí se jako git submodule),
-monitoring (Grafana) v privátním **`pathogensportal-priv`**.
+Scrapery + DB schéma jsou v samostatném repu **`pathogensportal-db`**, připojeném jako **git submodule**
+(`pathogensportal-db/`, pinnutý na tag). Monitoring (Grafana) je v privátním **`pathogensportal-priv`**.
+
+### Data pro grafy
+
+Chart JSON se **commituje** do `frontend/static/data/charts/` (web je čistě statický). Regenerace:
+```bash
+git submodule update --init --recursive
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
+# nebo v kontejneru:
+docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
+```
 
 ## Lokální vývoj
 

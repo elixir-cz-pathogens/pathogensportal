@@ -15,8 +15,18 @@ Docs are written in **Czech**; code and commit messages in English.
 | `deploy/` | `docker-compose.yml` (produkce), `docker-compose.dev.yml` (dev override), `.env.example`. |
 | `.github/workflows/` | CI + automations — see `WORKFLOWS_GUIDE.md`. |
 
-Scraper + DB schéma jsou v repu **`pathogensportal-db`** (git submodule, přijde později), monitoring
-(Grafana) v **`pathogensportal-priv`**. Do portálu patří jen FE + BE služby.
+| `pathogensportal-db/` | **git submodule** — scrapery, `db/init.sql`, generátor chart JSON. Pinnuto na tag. |
+
+Monitoring (Grafana) je v **`pathogensportal-priv`**. Do portálu patří FE + BE služby + submodule s daty.
+
+**Model dat (A):** chart JSON se **commituje** do `frontend/static/data/charts/` (web zůstává statický).
+Regenerace ze submodulu:
+```bash
+git submodule update --init --recursive
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
+# nebo přes kontejner:
+docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
+```
 
 ## Common commands
 
