@@ -3,14 +3,17 @@
 Český portál pro sledování dat o patogenech (COVID-19, chřipka, …). **Frontend** je statický web
 v [Hugo](https://gohugo.io/), **backend** tvoří kontejnerizované FastAPI služby.
 
-Produkčně běží na **https://pathogens.vm.cesnet.cz/**.
+Produkčně běží na **https://pathogens.vm.cesnet.cz/** (Apache, Let's Encrypt certifikát).
 
 ## Struktura
 
 ```
 frontend/            Hugo web (téma jako git submodule ve frontend/themes/)
 frontend/content/    obsah stránek (dashboardy, news, …)
+frontend/layouts/    přepisy šablon z tématu (viz „Přepisy šablon tématu")
 frontend/static/     statika vč. frontend/static/data/charts/*.json pro grafy
+frontend/static/vendor/  lokálně hostované Bootstrap, jQuery, DataTables, Chart.js
+                         (viz „Proč jsou knihovny lokálně, ne z CDN")
 backend/             FastAPI služby — jeden adresář = jeden kontejner
   website-be/          API brána a business logika
   llm-agent-be/        AI jádro (sémantické dotazy, reasoning)
@@ -21,6 +24,20 @@ deploy/              docker-compose (produkce + dev override) + .env.example
 
 Scrapery + DB schéma jsou v samostatném repu **`pathogensportal-db`**, připojeném jako **git submodule**
 (`pathogensportal-db/`, pinnutý na tag). Monitoring (Grafana) je v privátním **`pathogensportal-priv`**.
+
+## Přepisy šablon tématu
+
+Téma `hugo-pathogens-portal` je git submodule (cizí repo), takže se v něm needitujeme
+napřímo. Hugo umí přepsat libovolnou šablonu tématu stejnojmenným souborem ve vlastním
+`frontend/layouts/`. Používáme to pro:
+
+- `frontend/layouts/partials/head.html`, `footer.html` — natažení lokálních (ne CDN)
+  knihoven, viz níže
+- `frontend/layouts/partials/navbar.html` — oprava odkazu na ELIXIR logo (vede na
+  `elixir-europe.org`, ne zpátky na hlavní stránku)
+- `frontend/layouts/dashboards/single.html` — lokální Chart.js místo CDN
+
+Při update tématu (submodulu) zkontrolovat, jestli tyhle přepisy pořád dávají smysl.
 
 ### Data pro grafy
 
@@ -52,6 +69,22 @@ Tajemství: zkopíruj `deploy/.env.example` na `deploy/.env` a vyplň (necommitu
 (cd frontend && hugo --minify)                         # -> frontend/public/
 (cd backend/website-be && pip install -r requirements.txt && pytest)
 ```
+
+## Proč jsou knihovny lokálně, ne z CDN
+
+Šablona tématu původně natahovala Bootstrap, Bootstrap Icons, DataTables, jQuery a
+Chart.js z externích CDN (`cdn.jsdelivr.net`, `cdn.datatables.net`, `code.jquery.com`).
+Na sítích, které tyhle domény blokují nebo filtrují (běžné na akademických/firemních
+sítích), se CSS/JS vůbec nenačetlo a stránka se zobrazila bez stylů. Řešení: všechny
+tyhle knihovny jsou stažené a hostované lokálně v `frontend/static/vendor/`, šablony na ně
+odkazují **relativní** cestou (`/vendor/...`), takže se vždy natáhnou ze stejné domény
+a stejného protokolu (http/https) jako zbytek stránky.
+
+**Důležité:** cokoliv v `frontend/layouts/` (přepisy šablon) musí odkazovat na vlastní
+zdroje relativní cestou nebo přes Hugo `.RelPermalink`, nikdy přes `.Permalink`
+(ten generuje absolutní URL podle `baseURL`, tedy natvrdo `https://`) — jinak se
+při návštěvě přes `http://` prohlížeč pokusí o CORS spojení jinam a při
+nedůvěryhodném certifikátu to spadne (přesně tohle se stalo s `theme.min...css`).
 
 ## Konvence a nasazení
 
