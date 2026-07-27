@@ -35,5 +35,11 @@ jobs:
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
-          rsync -az --delete frontend/public/ \
+          # POZOR na -a: zahrnuje -p/-g/-t, tedy přenos práv, skupin a časů.
+          # Cílový adresář na serveru vlastní `app`, deploy účet je jen členem
+          # skupiny `app` — chmod cizího adresáře mu jádro nedovolí a rsync skončí
+          # s kódem 23, i když se soubory přenesou. Ověřeno v labu 19. 7. 2026.
+          # Práva řeší setgid na cílovém adresáři (2775), rsync je přenášet nemá.
+          rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
+            frontend/public/ \
             "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.STAGING_PATH }}/"
