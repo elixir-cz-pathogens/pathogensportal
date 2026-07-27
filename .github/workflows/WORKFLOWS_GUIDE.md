@@ -10,6 +10,7 @@ Settings → Secrets and variables → Actions → Variables
 |---|---|---|
 | `PROJECT_PREFIX` | prefix issue/větví/commitů | `PP` |
 | `IGNORE_PREFIX` | úniková cesta bez issue | `no-issue` |
+| `UPSTREAM_URL` | upstream, jehož commity se **nevalidují** | `https://github.com/jirkavlasak/pathogensportal.git` |
 
 ## Model větví
 
@@ -52,6 +53,15 @@ docs/PP-60_readme
 ### `check-commit-message.yaml`
 Projde commity `main..HEAD` (bez merge commitů). Každý subjekt musí být `PP-<číslo>: …`
 nebo začínat `no-issue`. Jinak fail.
+
+**Výjimka pro upstream.** Commity dosažitelné z větví repa v `UPSTREAM_URL` se přeskočí — CI si
+upstream fetchne do `refs/remotes/upstream/*` a vyjme je přes `git log … --not`. Bez toho by kontrola
+padala **při každém syncu** s `jirkavlasak/pathogensportal` (jeho zprávy naši konvenci nesplňují
+a přepsat je nejde — přestal by to být merge). Když proměnná chybí nebo fetch selže, kontrola jen
+vypíše varování a validuje celý rozsah jako dřív.
+
+⚠️ **Sync dělej `merge`, ne `rebase`.** Rebase dá upstream commitům nová SHA, CI je pak nepozná
+jako upstream a kontrola na nich spadne.
 
 ### `hugo-build.yml`
 Naklonuje repo se submoduly (téma), nainstaluje Hugo extended a spustí `hugo --minify` ve `frontend/`.

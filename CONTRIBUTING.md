@@ -51,6 +51,13 @@ PP42: add page     ← missing dash/colon
 feat(#42): ...       ← old style, no longer valid
 ```
 
+### Exception: commits synced from upstream
+
+Commits that come from `jirkavlasak/pathogensportal` (repo variable `UPSTREAM_URL`) are **skipped** —
+we cannot rewrite their messages without breaking the merge. Sync upstream with a real **merge**
+(`git merge upstream/main`), never a rebase: a rebase gives the commits new SHAs, CI no longer
+recognizes them as upstream, and the check fails on them.
+
 ---
 
 ## Automation (happens automatically)
