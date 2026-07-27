@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="/vendor/bootstrap-icons/font/bootstrap-icons.css">
 
     {{ $css := resources.Get "theme.css" | minify | fingerprint }}
-    <link rel="stylesheet" href="{{ $css.Permalink }}">
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}">
 
     <link rel="stylesheet" href="/vendor/datatables/css/dataTables.bootstrap5.min.css">
 
