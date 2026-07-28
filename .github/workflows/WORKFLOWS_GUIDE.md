@@ -11,6 +11,12 @@ Settings → Secrets and variables → Actions → Variables
 | `PROJECT_PREFIX` | prefix issue/větví/commitů | `PP` |
 | `IGNORE_PREFIX` | úniková cesta bez issue | `no-issue` |
 | `UPSTREAM_URL` | upstream, jehož commity se **nevalidují** | `https://github.com/jirkavlasak/pathogensportal.git` |
+| `DEPLOY_ENABLED` | hlavní vypínač obou deploy workflow | *(nenastaveno = vypnuto)* |
+| `STAGING_HOST` | FQDN staging stroje | ⏸️ čeká na VM |
+| `STAGING_PATH` | DocumentRoot na stagingu | ⏸️ |
+| `PRODUCTION_HOST` | FQDN produkce | `pathogens.vm.cesnet.cz` |
+| `PRODUCTION_PATH` | DocumentRoot produkce | ⏸️ (mění se při cutoveru) |
+| `DEPLOY_USER` | účet pro rsync | `github-deploy` |
 
 ## Model větví
 
@@ -32,6 +38,8 @@ konvenci commitů si CI ohlídá až u PR `dev → main` (zkontroluje všechny c
 | `auto-branch-issue-tracking.yaml` | Automatizace | push `feature/**`,`bugfix/**`,`docs/**` | — |
 | `auto-pr-open-notify.yml` | Automatizace | PR opened | — |
 | `auto-pr-merged-notify.yaml` | Automatizace | PR merged | — |
+| `deploy-staging.yml` | Deploy | push `dev` | ⛔ **vypnuto** |
+| `deploy-production.yml` | Deploy | push `main` | ⛔ **vypnuto** |
 
 ## Konvence
 
@@ -84,6 +92,33 @@ Po pushi větve `feature/**`,`bugfix/**`,`docs/**` napíše (jednou) komentář 
 
 ### `auto-pr-open-notify.yml` / `auto-pr-merged-notify.yaml`
 Komentují do issue (číslo z titulku PR) při otevření / mergnutí PR.
+
+## Deploy workflow (⛔ zatím vypnuté)
+
+Obě mají bránu `if: vars.DEPLOY_ENABLED == 'true'`. Dokud ta proměnná neexistuje, job se přeskočí —
+takže soubory můžou v repu ležet hotové, aniž by cokoliv deployovaly.
+
+### `deploy-staging.yml` / `deploy-production.yml`
+Build Huga → `rsync` statiky přes SSH na cílový stroj. Staging jede z `dev`, produkce z `main`.
+
+**`baseURL` se odvozuje z `STAGING_HOST` / `PRODUCTION_HOST`**, není zadrátovaná v kódu. Jméno stroje
+je tak na jednom místě a změna DNS (jiný poskytovatel, vlastní doména) je změna repo proměnné.
+První krok jobu je pojistka, která workflow zastaví se srozumitelnou hláškou, když proměnná chybí —
+jinak by vznikla `baseURL "https:///"` a rsync na `user@`.
+
+> ### ⚠️ Staging a produkce mají oddělené hosty i klíče — neslučovat
+> Původně obě workflow četly **tentýž** `DEPLOY_HOST` a `DEPLOY_SSH_KEY`. To dávalo smysl, dokud byl
+> staging jen druhý vhost na produkční VM. S vlastním staging strojem jsou to dvě různé chyby:
+> - **sdílený host** → push do `dev` deployuje na **produkci**,
+> - **sdílený klíč** → kompromitace stagingu je rovnou přístup na produkci.
+>
+> Proto `STAGING_HOST`/`PRODUCTION_HOST` (vars) a `STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY` (secrets).
+
+**Proč je hostname `vars` a ne `secrets`:** není to tajemství (stojí i v `hugo.toml`) a jako secret by
+se maskoval v logu — rozbil by čitelnost `baseURL` i ladění `ssh-keyscan`. Tajemství je **jen privátní klíč**.
+
+**Co zbývá k zapnutí:** účet `github-deploy` na cílovém stroji (`SECRETS_RUNBOOK.md` §4), nastavit
+proměnné z tabulky výše, pak `DEPLOY_ENABLED=true`. Nejdřív staging, produkce až po ověřeném běhu.
 
 ## Typický pracovní cyklus
 

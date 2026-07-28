@@ -1,10 +1,18 @@
 name: "Deploy: Staging (dev)"
 
 # ⛔ ZATÍM VYPNUTO. Job běží jen když je repo proměnná DEPLOY_ENABLED == 'true'.
-# Zapnutí (až bude server + github-deploy ready):
-#   1) nastavit secrets: DEPLOY_SSH_KEY, DEPLOY_HOST, DEPLOY_USER
-#   2) nastavit vars:    STAGING_PATH (DocumentRoot -dev), DEPLOY_ENABLED=true
-# Deploy = build Huga z větve `dev` -> rsync statiky na staging vhost `pathogens-dev.vm.cesnet.cz`.
+# Zapnutí (až bude staging stroj + účet github-deploy):
+#   1) secret: STAGING_SSH_KEY   (privátní klíč github-deploy PRO STAGING STROJ)
+#   2) vars:   STAGING_HOST      (FQDN staging stroje, např. pathogens-dev.vm.cesnet.cz)
+#              STAGING_PATH      (DocumentRoot na staging stroji)
+#              DEPLOY_USER       (účet pro rsync, typicky github-deploy)
+#              DEPLOY_ENABLED=true
+# Deploy = build Huga z větve `dev` -> rsync statiky na staging stroj.
+#
+# ⚠️ Staging a produkce mají ZÁMĚRNĚ oddělené hosty i klíče (dřív sdílely DEPLOY_HOST
+#    a DEPLOY_SSH_KEY). Se dvěma stroji by sdílený host znamenal, že push do `dev`
+#    deployuje na produkci; sdílený klíč zas z kompromitovaného stagingu dělá přístup
+#    na produkci. Nesluč je zpátky.
 
 on:
   push:
@@ -14,7 +22,20 @@ jobs:
   deploy-staging:
     if: ${{ vars.DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      # Hostname NENÍ tajemství (je i v hugo.toml) — schválně `vars`, ne `secrets`:
+      # maskovaná hodnota by rozbila baseURL v logu i ladění ssh-keyscan.
+      STAGING_HOST: ${{ vars.STAGING_HOST }}
     steps:
+      - name: Check deploy target is configured
+        # Bez téhle pojistky by prázdná proměnná dala baseURL "https:///"
+        # a rsync by se pokusil připojit na "user@" — obojí selže až nesrozumitelně.
+        run: |
+          test -n "$STAGING_HOST" || {
+            echo "::error::Chybí repo proměnná STAGING_HOST (FQDN staging stroje)."; exit 1; }
+          test -n "${{ vars.STAGING_PATH }}" || {
+            echo "::error::Chybí repo proměnná STAGING_PATH (DocumentRoot na stagingu)."; exit 1; }
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -27,14 +48,16 @@ jobs:
 
       - name: Build (staging baseURL)
         working-directory: frontend
-        run: hugo --minify --baseURL "https://pathogens-dev.vm.cesnet.cz/"
+        # baseURL se odvozuje z STAGING_HOST — jméno stroje je na jednom místě,
+        # takže změna DNS (jiný poskytovatel, vlastní doména) je změna proměnné, ne kódu.
+        run: hugo --minify --baseURL "https://${STAGING_HOST}/"
 
       - name: Deploy via rsync over SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -H "$STAGING_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           # POZOR na -a: zahrnuje -p/-g/-t, tedy přenos práv, skupin a časů.
           # Cílový adresář na serveru vlastní `app`, deploy účet je jen členem
           # skupiny `app` — chmod cizího adresáře mu jádro nedovolí a rsync skončí
@@ -42,4 +65,4 @@ jobs:
           # Práva řeší setgid na cílovém adresáři (2775), rsync je přenášet nemá.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             frontend/public/ \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.STAGING_PATH }}/"
+            "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}/"

@@ -56,8 +56,9 @@ Každá BE služba má `GET /health`. V produkci služby neposlouchají na hosti
 - **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` a
   `branch-name-check` (běží, zatím ne required). Automations: issue prefixer, branch→issue linker, PR notify.
 - **Deploy workflows jsou VYPNUTÉ:** `deploy-staging.yml` (push `dev`) a `deploy-production.yml` (push `main`)
-  mají gate `if: vars.DEPLOY_ENABLED == 'true'`. Zapnout až bude server + `github-deploy` a secrets
-  `DEPLOY_SSH_KEY` / `DEPLOY_HOST` / `DEPLOY_USER`.
+  mají gate `if: vars.DEPLOY_ENABLED == 'true'`. Staging a produkce mají **oddělené** hosty i klíče
+  (`vars.STAGING_HOST`/`PRODUCTION_HOST`, `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — neslučovat.
+  `baseURL` se odvozuje z `*_HOST`, hostname není zadrátovaný v kódu.
 - Merge to `main` must be **squash/rebase** (main enforces linear history).
 - Full workflow reference: `.github/workflows/WORKFLOWS_GUIDE.md`.
 

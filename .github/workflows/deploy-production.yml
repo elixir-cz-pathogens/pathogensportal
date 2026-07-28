@@ -1,10 +1,21 @@
 name: "Deploy: Production (main)"
 
 # ⛔ ZATÍM VYPNUTO. Job běží jen když je repo proměnná DEPLOY_ENABLED == 'true'.
-# Zapnutí (až bude server + github-deploy ready):
-#   1) nastavit secrets: DEPLOY_SSH_KEY, DEPLOY_HOST, DEPLOY_USER
-#   2) nastavit vars:    PRODUCTION_PATH (DocumentRoot produkce), DEPLOY_ENABLED=true
-# Deploy = po merge do `main` build Huga -> rsync statiky na produkci `pathogens.vm.cesnet.cz`.
+# Zapnutí (až bude server + účet github-deploy a až staging jede ověřeně):
+#   1) secret: PRODUCTION_SSH_KEY   (privátní klíč github-deploy PRO PRODUKCI)
+#   2) vars:   PRODUCTION_HOST      (FQDN produkce, dnes pathogens.vm.cesnet.cz)
+#              PRODUCTION_PATH      (DocumentRoot produkce)
+#              DEPLOY_USER          (účet pro rsync, typicky github-deploy)
+#              DEPLOY_ENABLED=true
+# Deploy = po merge do `main` build Huga -> rsync statiky na produkci.
+#
+# ⚠️ Staging a produkce mají ZÁMĚRNĚ oddělené hosty i klíče (dřív sdílely DEPLOY_HOST
+#    a DEPLOY_SSH_KEY). Se dvěma stroji by sdílený host znamenal, že push do `dev`
+#    deployuje na produkci; sdílený klíč zas z kompromitovaného stagingu dělá přístup
+#    na produkci. Nesluč je zpátky.
+#
+# ⚠️ PRODUCTION_PATH se ve Fázi 7 (cutover) mění z /var/www/pathogensportal/site/public
+#    na .../frontend/public — musí se přepnout SOUČASNĚ s vhostem, jinak web spadne na 404.
 
 on:
   push:
@@ -14,7 +25,20 @@ jobs:
   deploy-production:
     if: ${{ vars.DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      # Hostname NENÍ tajemství (je i v hugo.toml) — schválně `vars`, ne `secrets`:
+      # maskovaná hodnota by rozbila baseURL v logu i ladění ssh-keyscan.
+      PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
     steps:
+      - name: Check deploy target is configured
+        # Bez téhle pojistky by prázdná proměnná dala baseURL "https:///"
+        # a rsync by se pokusil připojit na "user@" — obojí selže až nesrozumitelně.
+        run: |
+          test -n "$PRODUCTION_HOST" || {
+            echo "::error::Chybí repo proměnná PRODUCTION_HOST (FQDN produkce)."; exit 1; }
+          test -n "${{ vars.PRODUCTION_PATH }}" || {
+            echo "::error::Chybí repo proměnná PRODUCTION_PATH (DocumentRoot produkce)."; exit 1; }
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -27,14 +51,15 @@ jobs:
 
       - name: Build (production baseURL)
         working-directory: frontend
-        run: hugo --minify --baseURL "https://pathogens.vm.cesnet.cz/"
+        # baseURL se odvozuje z PRODUCTION_HOST — jméno stroje je na jednom místě.
+        run: hugo --minify --baseURL "https://${PRODUCTION_HOST}/"
 
       - name: Deploy via rsync over SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -H "$PRODUCTION_HOST" >> ~/.ssh/known_hosts 2>/dev/null
           # POZOR na -a: zahrnuje -p/-g/-t, tedy přenos práv, skupin a časů.
           # Cílový adresář na serveru vlastní `app`, deploy účet je jen členem
           # skupiny `app` — chmod cizího adresáře mu jádro nedovolí a rsync skončí
@@ -42,4 +67,4 @@ jobs:
           # Práva řeší setgid na cílovém adresáři (2775), rsync je přenášet nemá.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             frontend/public/ \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.PRODUCTION_PATH }}/"
+            "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}/"
