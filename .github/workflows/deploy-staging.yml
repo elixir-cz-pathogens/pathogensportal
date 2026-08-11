@@ -44,7 +44,9 @@ jobs:
 
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: latest
+          # Pinned, not `latest`: 0.164 silently changed the content security
+          # policy and broke the build. A build should not change under us.
+          hugo-version: '0.164.0'
           extended: true
 
       - name: Build (staging baseURL)

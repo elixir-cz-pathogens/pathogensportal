@@ -44,3 +44,19 @@ enableRobotsTXT = true
   [markup.goldmark]
     [markup.goldmark.renderer]
       unsafe = true
+
+# ── Security policy ──────────────────────────────────────────────────────────
+# Hugo >= 0.164 blocks `text/html` content files by default
+# (`security.allowContent` defaults to ['! ^text/html$']). We deliberately need
+# them: tools/ingest_report.py writes generated situational-report pages as .html
+# into content/cs/dashboards/, because the report comes from an external
+# generator as finished HTML.
+#
+# This is safe *because* the ingest sanitizes every delivery against an explicit
+# tag/attribute allowlist before it is written — see ALLOWED_TAGS / ALLOWED_ATTRS
+# in tools/ingest_report.py. Foreign <script>/<style>/<iframe> never reach here.
+#
+# The list is narrow on purpose: adding another content format means adding it
+# here too, which is the point — it should be a deliberate act, not a default.
+[security]
+  allowContent = ['^text/markdown$', '^text/html$']
