@@ -1,7 +1,7 @@
 name: "CHECK: Branch Naming"
 
-# Kontrola názvu zdrojové větve — JEN na PR do `main`.
-# Platné:  (feature|bugfix|docs)/<PREFIX>-<číslo>_popis  |  start <IGNORE_PREFIX>  |  dev
+# Source branch name check — ONLY on PRs into `main`.
+# Valid:  (feature|bugfix|docs)/<PREFIX>-<number>_description  |  starting with <IGNORE_PREFIX>  |  dev
 on:
   pull_request:
     branches: [main]
@@ -16,14 +16,14 @@ jobs:
       - name: Check branch name convention
         run: |
           BRANCH="${{ github.head_ref }}"
-          # běžná cesta dev -> main a no-issue větve se přeskočí
+          # the normal dev -> main path and no-issue branches are skipped
           if [[ "$BRANCH" == "dev" || "$BRANCH" =~ ^${IGNORE_PREFIX} ]]; then
-            echo "✅ '$BRANCH' – přeskočeno."
+            echo "✅ '$BRANCH' – skipped."
             exit 0
           fi
           if ! [[ "$BRANCH" =~ ^(feature|bugfix|docs)/${ISSUE_PREFIX}-[0-9]+_.+ ]]; then
-            echo "❗ Neplatný název větve: $BRANCH"
-            echo "   (feature|bugfix|docs)/${ISSUE_PREFIX}-<číslo>_popis  nebo start '${IGNORE_PREFIX}'"
+            echo "❗ Invalid branch name: $BRANCH"
+            echo "   (feature|bugfix|docs)/${ISSUE_PREFIX}-<number>_description  or starting with '${IGNORE_PREFIX}'"
             exit 1
           fi
-          echo "✅ Název větve OK: $BRANCH"
+          echo "✅ Branch name OK: $BRANCH"

@@ -1,10 +1,10 @@
 # website-be
 
-API brána a business logika portálu.
+The portal's API gateway and business logic.
 
-Kontejner (FastAPI). Poslouchá jen na interní síti — ven jde vše přes Apache.
+A container (FastAPI). It listens on the internal network only — everything goes out through Apache.
 
 - Health: `GET /health`
-- Port (interní): `8000`
-- Lokálně: `uvicorn app.main:app --reload --port 8000`
-- Testy: `pytest`
+- Port (internal): `8000`
+- Locally: `uvicorn app.main:app --reload --port 8000`
+- Tests: `pytest`

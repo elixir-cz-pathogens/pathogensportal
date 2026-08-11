@@ -1,6 +1,6 @@
 name: "CI: Backend Tests"
 
-# Unit testy BE služeb (website-be, llm-agent-be, mcp) — JEN na PR do `main`.
+# Unit tests for the BE services (website-be, llm-agent-be, mcp) — ONLY on PRs into `main`.
 on:
   pull_request:
     branches: [main]
@@ -29,5 +29,5 @@ jobs:
             echo "::endgroup::"
           done
           if [ "$found" -eq 0 ]; then
-            echo "Žádné BE služby s testy nenalezeny."
+            echo "No BE services with tests were found."
           fi

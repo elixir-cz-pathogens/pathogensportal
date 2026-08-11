@@ -1,18 +1,18 @@
 name: "Deploy: Staging (dev)"
 
-# ⛔ ZATÍM VYPNUTO. Job běží jen když je repo proměnná DEPLOY_ENABLED == 'true'.
-# Zapnutí (až bude staging stroj + účet github-deploy):
-#   1) secret: STAGING_SSH_KEY   (privátní klíč github-deploy PRO STAGING STROJ)
-#   2) vars:   STAGING_HOST      (FQDN staging stroje, např. pathogens-dev.vm.cesnet.cz)
-#              STAGING_PATH      (DocumentRoot na staging stroji)
-#              DEPLOY_USER       (účet pro rsync, typicky github-deploy)
+# ⛔ DISABLED FOR NOW. The job runs only when the repo variable DEPLOY_ENABLED == 'true'.
+# To enable (once the staging machine and the github-deploy account exist):
+#   1) secret: STAGING_SSH_KEY   (the github-deploy private key FOR THE STAGING MACHINE)
+#   2) vars:   STAGING_HOST      (FQDN of the staging machine, e.g. pathogens-dev.vm.cesnet.cz)
+#              STAGING_PATH      (DocumentRoot on the staging machine)
+#              DEPLOY_USER       (the account used for rsync, typically github-deploy)
 #              DEPLOY_ENABLED=true
-# Deploy = build Huga z větve `dev` -> rsync statiky na staging stroj.
+# Deploy = build Hugo from the `dev` branch -> rsync the static output to the staging machine.
 #
-# ⚠️ Staging a produkce mají ZÁMĚRNĚ oddělené hosty i klíče (dřív sdílely DEPLOY_HOST
-#    a DEPLOY_SSH_KEY). Se dvěma stroji by sdílený host znamenal, že push do `dev`
-#    deployuje na produkci; sdílený klíč zas z kompromitovaného stagingu dělá přístup
-#    na produkci. Nesluč je zpátky.
+# ⚠️ Staging and production DELIBERATELY have separate hosts and separate keys (they used
+#    to share DEPLOY_HOST and DEPLOY_SSH_KEY). With two machines, a shared host would mean
+#    a push to `dev` deploys to production; a shared key would turn a compromised staging
+#    into access to production. Do not merge them back.
 
 on:
   push:
@@ -23,18 +23,19 @@ jobs:
     if: ${{ vars.DEPLOY_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     env:
-      # Hostname NENÍ tajemství (je i v hugo.toml) — schválně `vars`, ne `secrets`:
-      # maskovaná hodnota by rozbila baseURL v logu i ladění ssh-keyscan.
+      # The hostname is NOT a secret (it is also in hugo.toml) — deliberately `vars`,
+      # not `secrets`: a masked value would break both baseURL in the log and any
+      # debugging of ssh-keyscan.
       STAGING_HOST: ${{ vars.STAGING_HOST }}
     steps:
       - name: Check deploy target is configured
-        # Bez téhle pojistky by prázdná proměnná dala baseURL "https:///"
-        # a rsync by se pokusil připojit na "user@" — obojí selže až nesrozumitelně.
+        # Without this guard, an empty variable would produce baseURL "https:///"
+        # and rsync would try to connect to "user@" — both fail incomprehensibly.
         run: |
           test -n "$STAGING_HOST" || {
-            echo "::error::Chybí repo proměnná STAGING_HOST (FQDN staging stroje)."; exit 1; }
+            echo "::error::Missing repo variable STAGING_HOST (FQDN of the staging machine)."; exit 1; }
           test -n "${{ vars.STAGING_PATH }}" || {
-            echo "::error::Chybí repo proměnná STAGING_PATH (DocumentRoot na stagingu)."; exit 1; }
+            echo "::error::Missing repo variable STAGING_PATH (DocumentRoot on staging)."; exit 1; }
 
       - uses: actions/checkout@v4
         with:
@@ -48,8 +49,9 @@ jobs:
 
       - name: Build (staging baseURL)
         working-directory: frontend
-        # baseURL se odvozuje z STAGING_HOST — jméno stroje je na jednom místě,
-        # takže změna DNS (jiný poskytovatel, vlastní doména) je změna proměnné, ne kódu.
+        # baseURL is derived from STAGING_HOST — the machine name lives in one place,
+        # so a DNS change (a different provider, an own domain) is a variable change,
+        # not a code change.
         run: hugo --minify --baseURL "https://${STAGING_HOST}/"
 
       - name: Deploy via rsync over SSH
@@ -58,11 +60,13 @@ jobs:
           echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "$STAGING_HOST" >> ~/.ssh/known_hosts 2>/dev/null
-          # POZOR na -a: zahrnuje -p/-g/-t, tedy přenos práv, skupin a časů.
-          # Cílový adresář na serveru vlastní `app`, deploy účet je jen členem
-          # skupiny `app` — chmod cizího adresáře mu jádro nedovolí a rsync skončí
-          # s kódem 23, i když se soubory přenesou. Ověřeno v labu 19. 7. 2026.
-          # Práva řeší setgid na cílovém adresáři (2775), rsync je přenášet nemá.
+          # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
+          # The target directory on the server is owned by `app`; the deploy account is
+          # only a member of the `app` group — the kernel will not let it chmod someone
+          # else's directory and rsync exits with code 23, even though the files transfer.
+          # Verified in the lab on 19 Jul 2026.
+          # Permissions are handled by setgid on the target directory (2775); rsync must
+          # not transfer them.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             frontend/public/ \
             "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}/"

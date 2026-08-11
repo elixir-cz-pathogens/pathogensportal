@@ -4,73 +4,84 @@ Public repo of **Pathogen Portal CZ** — a static Hugo website plus a data pipe
 Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork (`origin = draessld/pathogensportal`)
 is the working repo. Live site: `https://pathogens.vm.cesnet.cz`.
 
-Docs are written in **Czech**; code and commit messages in English.
+Docs, code and commit messages are in **English**. The only Czech is the site's own content in
+`frontend/content/cs/`, which is what the public reads.
+
+> ⚠️ **This repo is moving to a GitHub organization** (decided 6 Aug 2026). It is transferred **second**,
+> after `pathogensportal-priv`, because it is the one with consequences: the fork relationship with
+> upstream, branch protection, and the repo variables. Procedure and verification:
+> `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `frontend/` | Hugo web (`hugo.toml`, `content/`, `layouts/`, `static/`). Theme is a **git submodule** (`frontend/themes/…`). |
-| `backend/` | FastAPI služby, **jeden adresář = jeden kontejner**: `website-be`, `llm-agent-be`, `mcp`. |
-| `deploy/` | `docker-compose.yml` (produkce), `docker-compose.dev.yml` (dev override), `.env.example`. |
-| `pathogensportal-db/` | **git submodule** — scrapery, `db/init.sql`, generátor chart JSON. Pinnuto na tag. |
+| `frontend/` | Hugo site (`hugo.toml`, `content/`, `layouts/`, `static/`). The theme is a **git submodule** (`frontend/themes/…`). |
+| `backend/` | FastAPI services, **one directory = one container**: `website-be`, `llm-agent-be`, `mcp`. |
+| `deploy/` | `docker-compose.yml` (production), `docker-compose.dev.yml` (dev override), `.env.example`. |
+| `pathogensportal-db/` | a **git submodule** — scrapers, `db/init.sql`, the chart JSON generator. Pinned to a tag. |
+| `incoming/` | situational report deliveries from the generator — see `incoming/README.md`. |
 | `.github/workflows/` | CI + automations — see `WORKFLOWS_GUIDE.md`. |
 
-Monitoring (Grafana) je v **`pathogensportal-priv`**. Do portálu patří FE + BE služby + submodule s daty.
+Monitoring (Grafana) lives in **`pathogensportal-priv`**. This repo holds the FE, the BE services and the
+data submodule.
 
-### Jazyky obsahu (pozor)
+### Content languages (careful)
 
-- `frontend/content/cs/` — **česky, buduje se** (`hugo.toml` → `[languages.cs]`, běží na `/`).
-- `frontend/content/en/` — **anglický překlad, ZATÍM SE NEBUDUJE**: v `hugo.toml` chybí sekce
-  `[languages.en]`, takže Hugo tenhle adresář ignoruje. Pro spuštění anglické verze je potřeba
-  doplnit `[languages.en]` s `contentDir = "content/en"` (a rozmyslet URL `/en/` + jazykový přepínač).
+- `frontend/content/cs/` — **Czech, built** (`hugo.toml` → `[languages.cs]`, served at `/`).
+- `frontend/content/en/` — **an English translation, NOT BUILT YET**: `hugo.toml` has no `[languages.en]`
+  section, so Hugo ignores the directory. To bring the English version up, `[languages.en]` with
+  `contentDir = "content/en"` has to be added (and the `/en/` URL plus a language switcher decided).
 
-**Model dat (A):** chart JSON se **commituje** do `frontend/static/data/charts/` (web zůstává statický).
-Regenerace ze submodulu:
+**Data model (A):** chart JSON is **committed** into `frontend/static/data/charts/` (the site stays static).
+To regenerate from the submodule:
 ```bash
 git submodule update --init --recursive
 OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
-# nebo přes kontejner:
+# or through the container:
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```
 
 ## Common commands
 
 ```bash
-git clone --recurse-submodules <url>          # téma je submodule — vždy recurse
-# dev stack (Hugo + BE + DB, porty jen na localhost):
+git clone --recurse-submodules <url>          # the theme is a submodule — always recurse
+# dev stack (Hugo + BE + DB, ports on localhost only):
 docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml up
-# produkční build FE:
+# production FE build:
 (cd frontend && hugo --minify)                 # -> frontend/public/
-# testy jedné BE služby:
+# tests for one BE service:
 (cd backend/website-be && pip install -r requirements.txt && pytest)
 ```
 
-Každá BE služba má `GET /health`. V produkci služby neposlouchají na hostiteli — vše jde přes Apache.
+Every BE service has `GET /health`. In production the services do not listen on the host — everything goes
+through Apache.
 
-## Conventions (styl z EFSA projektu — detail v `CONTRIBUTING.md`)
+## Conventions (EFSA project style — detail in `CONTRIBUTING.md`)
 
 - **Commit:** `PP-<n>: message`  •  escape: `no-issue: …`  (prefix = repo variable `PROJECT_PREFIX=PP`).
 - **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
 - **`dev`** = free sandbox — push directly, no PR, no checks. **`main`** = protected production.
-- **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` a
-  `branch-name-check` (běží, zatím ne required). Automations: issue prefixer, branch→issue linker, PR notify.
-- **Deploy workflows jsou VYPNUTÉ:** `deploy-staging.yml` (push `dev`) a `deploy-production.yml` (push `main`)
-  mají gate `if: vars.DEPLOY_ENABLED == 'true'`. Staging a produkce mají **oddělené** hosty i klíče
-  (`vars.STAGING_HOST`/`PRODUCTION_HOST`, `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — neslučovat.
-  `baseURL` se odvozuje z `*_HOST`, hostname není zadrátovaný v kódu.
-- Merge to `main` must be **squash/rebase** (main enforces linear history).
+- **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` and
+  `branch-name-check` (they run, not required yet). Automations: issue prefixer, branch→issue linker, PR notify.
+- **Deploy workflows are DISABLED:** `deploy-staging.yml` (push to `dev`) and `deploy-production.yml`
+  (push to `main`) are gated on `if: vars.DEPLOY_ENABLED == 'true'`. Staging and production have
+  **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
+  `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — do not merge them. `baseURL` is derived from `*_HOST`;
+  no hostname is hardcoded.
+- Merges to `main` must be **squash/rebase** (main enforces linear history).
 - Full workflow reference: `.github/workflows/WORKFLOWS_GUIDE.md`.
 
 ## Related repos
 
-- `pathogensportal-priv` — **private** infra (Ansible, configs, Vault). Nothing infra/secret goes here.
-- `pathogensportal-db` — scrapery + schéma DB, napojené jako **submodule** (pinnuto na tag `v0.1.0-dev`).
-  ⚠️ Dočasně míří na `draessld/pathogensportal-db` (fork); kanonický repo kolegy je
-  `jirkavlasak/pathogensportal-db` — až ho naplní, přepne se URL submodulu.
+- `pathogensportal-priv` — **private** infra (Ansible, configs, Vault). Nothing infra or secret goes here.
+- `pathogensportal-db` — scrapers + DB schema, attached as a **submodule** (pinned to tag `v0.1.0-dev`).
+  ⚠️ It temporarily points at `draessld/pathogensportal-db` (a fork); the colleague's canonical repo is
+  `jirkavlasak/pathogensportal-db` — the submodule URL switches once he fills it. ⚠️ Fix the URL in
+  `.gitmodules` in the same PR if the org migration has already happened.
 
 ## Rules
 
-- **Never commit secrets or real data** (repo is public). Data stays out of git via `.gitignore`.
+- **Never commit secrets or real data** (the repo is public). Data stays out of git via `.gitignore`.
 - Keep the live site working — production deploys from `upstream` on the CESNET VM; don't break the build.
 - When editing the site, verify it still builds (`hugo`) before opening a PR to `main`.
