@@ -1,32 +1,64 @@
-{{ define "main" }}
-<script src="/vendor/chartjs/chart.umd.min.js"></script>
-<style>
-  .chart-wrapper { background: #fff; border: 1px solid #dee2e6; border-radius: 6px; padding: 1.25rem; }
-  .chart-title   { font-size: 0.95rem; font-weight: 600; color: #495057; margin-bottom: 0.75rem; }
-  .stat-source   { font-size: 0.75rem; color: #6c757d; margin-top: 0.5rem; }
-</style>
+{{/* A single dashboard page.
 
-<div class="container-xl py-4">
-  <div class="row">
-    <div class="col-lg-9">
-      <h1 class="h2 mb-1">{{ .Title }}</h1>
-      {{ with .Description }}<p class="text-muted mb-3">{{ . }}</p>{{ end }}
-      <hr>
-      {{ .Content }}
+     A theme template override (see README → "Theme template overrides"). The
+     `.pp-viz` wrapper carries the design tokens from dashboards.css — without it
+     the charts would not pick up their colours. The theme's baseof already wraps
+     the page in `.container`, so there is no further container here.
+*/}}
+{{ define "main" }}
+<link rel="stylesheet" href="/css/dashboards.css">
+{{/* Report pages come from an external generator and carry their own class
+     names — reports.css translates them into portal tokens. It is not loaded
+     anywhere else. */}}
+{{ if .Params.report }}<link rel="stylesheet" href="/css/reports.css">{{ end }}
+
+<div class="pp-viz">
+  <header class="pp-dash-header">
+    {{/* The breadcrumb is rendered by the theme above the content — do not duplicate it. */}}
+    <h1>{{ .Title }}</h1>
+    {{ with .Description }}<p class="pp-dash-lead">{{ . }}</p>{{ end }}
+
+    <div class="pp-meta">
+      {{ with .Params.data_source }}
+      <span class="pp-meta__item"><i class="bi bi-database" aria-hidden="true"></i> Zdroj: {{ . | safeHTML }}</span>
+      {{ end }}
+      {{ with .Params.update_freq }}
+      <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Aktualizace: {{ . }}</span>
+      {{ end }}
+      {{ with .Params.tags }}
+      <span class="pp-meta__item">
+        {{ range . }}<span class="pp-tag">{{ . }}</span>{{ end }}
+      </span>
+      {{ end }}
     </div>
-    <div class="col-lg-3 d-none d-lg-block">
-      <div class="card border-0 bg-light mt-5">
-        <div class="card-body small">
-          <strong>Zdroj dat</strong>
-          {{ with .Params.data_source }}<p class="mt-1 mb-0">{{ . | safeHTML }}</p>{{ end }}
-          {{ with .Params.update_freq }}<p class="mt-2 mb-0"><strong>Aktualizace:</strong> {{ . }}</p>{{ end }}
-          {{ with .Params.tags }}
-          <p class="mt-2 mb-0"><strong>Témata:</strong><br>
-          {{ range . }}<span class="badge bg-secondary me-1">{{ . }}</span>{{ end }}</p>
-          {{ end }}
-        </div>
-      </div>
-    </div>
+  </header>
+
+  {{/* The navigation between sections is rendered by the template, not the
+       content: report pages are generated and must not contain portal shortcodes,
+       because the next ingest run would overwrite them anyway. */}}
+  {{ with .Params.report }}
+  {{ $report := index site.Data.reports . }}
+  {{ with $report }}
+  <nav class="pp-section-nav" aria-label="Sekce reportu {{ .title }}">
+    {{ range .sections }}
+    {{ $active := eq (strings.TrimSuffix "/" .url) (strings.TrimSuffix "/" $.RelPermalink) }}
+    <a href="{{ .url }}"
+       class="pp-section-nav__item{{ if $active }} is-active{{ end }}"
+       {{ if $active }}aria-current="page"{{ end }}>{{ .name }}</a>
+    {{ end }}
+  </nav>
+  {{ end }}
+  {{ end }}
+
+  <div class="pp-dash-body{{ if .Params.report }} pp-report{{ end }}">
+    {{ .Content }}
   </div>
 </div>
+
+<script src="/vendor/chartjs/chart.umd.min.js"></script>
+<script>
+  // Empty = same origin (production, behind Apache). In dev, HUGO_PARAMS_APIBASE sets it.
+  window.PP_API_BASE = {{ .Site.Params.apibase | default "" }};
+</script>
+<script src="/js/pp-charts.js"></script>
 {{ end }}

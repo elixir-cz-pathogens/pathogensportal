@@ -1,0 +1,670 @@
+/* Vizuální systém dashboardů — Pathogen Portal CZ
+ *
+ * Jediné místo, kde se definují barvy grafů a povrchů. `pp-charts.js` si je
+ * čte přes getComputedStyle, takže Chart.js a HTML kolem něj kreslí ze stejných
+ * hodnot a přebarvení znamená změnu jen tady.
+ *
+ * Datová paleta je validovaná na odlišitelnost při barvosleposti (CVD ΔE ≥ 8
+ * u sousedních dvojic) — pořadí slotů 1–8 je součástí té validace, není
+ * kosmetické. Nepřehazovat a nedoplňovat další hue: devátá řada se skládá do
+ * „Ostatní" (viz PP_MAX_SERIES v pp-charts.js).
+ */
+
+.pp-viz {
+  color-scheme: light;
+
+  --pp-surface: #fcfcfb;
+  --pp-surface-raised: #ffffff;
+  --pp-border: #e2e1dc;
+  --pp-grid: #ebeae6;
+  --pp-text: #0b0b0b;
+  --pp-text-secondary: #52514e;
+  --pp-text-muted: #77766f;
+
+  --pp-series-1: #2a78d6; /* modrá */
+  --pp-series-2: #eb6834; /* oranžová */
+  --pp-series-3: #1baf7a; /* akvamarín */
+  --pp-series-4: #eda100; /* žlutá */
+  --pp-series-5: #e87ba4; /* purpurová */
+  --pp-series-6: #008300; /* zelená */
+  --pp-series-7: #4a3aa7; /* fialová */
+  --pp-series-8: #e34948; /* červená */
+  --pp-series-rest: #8b8a83; /* „Ostatní" — vždy neutrální šedá */
+
+  /* Stavové barvy jsou VYHRAZENÉ — nikdy je nepoužívat jako barvu datové řady
+     a naopak. Nesou význam „v pořádku / pozor / vážné", ne identitu série. */
+  --pp-status-ok: #237047;
+  --pp-status-warn: #b06a00;
+  --pp-status-alert: #b3322f;
+
+  /* Sekvenční rampa (mapa krajů): jeden odstín, světlá -> tmavá */
+  --pp-seq-low: #cde2fb;
+  --pp-seq-high: #104281;
+
+  --pp-radius: 10px;
+  --pp-shadow: 0 1px 2px rgba(11, 11, 11, 0.04);
+}
+
+[data-bs-theme="dark"] .pp-viz {
+  color-scheme: dark;
+
+  --pp-surface: #1a1a19;
+  --pp-surface-raised: #232322;
+  --pp-border: #3a3a37;
+  --pp-grid: #333330;
+  --pp-text: #ffffff;
+  --pp-text-secondary: #c3c2b7;
+  --pp-text-muted: #9d9c93;
+
+  /* Stejných osm odstínů, nakrokovaných pro tmavý povrch — ne převrácení. */
+  --pp-series-1: #3987e5;
+  --pp-series-2: #d95926;
+  --pp-series-3: #199e70;
+  --pp-series-4: #c98500;
+  --pp-series-5: #d55181;
+  --pp-series-6: #008300;
+  --pp-series-7: #9085e9;
+  --pp-series-8: #e66767;
+  --pp-series-rest: #77766f;
+
+  --pp-status-ok: #4bab77;
+  --pp-status-warn: #e0a340;
+  --pp-status-alert: #e87573;
+
+  --pp-seq-low: #184f95;
+  --pp-seq-high: #cde2fb;
+
+  --pp-shadow: none;
+}
+
+/* ---------- Hlavička dashboardu ---------- */
+
+.pp-dash-header {
+  border-bottom: 1px solid var(--pp-border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.pp-breadcrumb {
+  display: inline-block;
+  font-size: 0.8rem;
+  color: var(--pp-text-muted);
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+}
+
+.pp-breadcrumb:hover {
+  color: var(--pp-series-1);
+}
+
+.pp-dash-header h1 {
+  color: var(--pp-text);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-bottom: 0.35rem;
+}
+
+.pp-dash-lead {
+  color: var(--pp-text-secondary);
+  font-size: 1.05rem;
+  max-width: 62ch;
+  margin-bottom: 0.9rem;
+}
+
+.pp-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.25rem;
+  font-size: 0.82rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-meta__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pp-meta a {
+  color: var(--pp-text-secondary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.pp-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--pp-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  color: var(--pp-text-secondary);
+  background: var(--pp-surface);
+}
+
+/* ---------- Karta grafu ---------- */
+
+.pp-card {
+  background: var(--pp-surface-raised);
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  box-shadow: var(--pp-shadow);
+  padding: 1.1rem 1.25rem 0.9rem;
+  margin: 0 0 1.5rem;
+}
+
+.pp-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.15rem;
+}
+
+.pp-card__title {
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--pp-text);
+  margin: 0;
+}
+
+.pp-card__subtitle {
+  font-size: 0.8rem;
+  color: var(--pp-text-muted);
+  margin: 0.15rem 0 0.85rem;
+}
+
+.pp-card__plot {
+  position: relative;
+}
+
+.pp-card__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.65rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--pp-grid);
+  font-size: 0.75rem;
+  color: var(--pp-text-muted);
+}
+
+/* Tlačítko „Tabulka" — nenápadné, ale skutečné tlačítko (fokus, klávesnice) */
+.pp-btn {
+  background: transparent;
+  border: 1px solid var(--pp-border);
+  border-radius: 6px;
+  color: var(--pp-text-secondary);
+  font-size: 0.75rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+
+.pp-btn:hover {
+  border-color: var(--pp-text-muted);
+  color: var(--pp-text);
+}
+
+.pp-btn:focus-visible {
+  outline: 2px solid var(--pp-series-1);
+  outline-offset: 2px;
+}
+
+/* Původ dat — statický snímek vs. živé API */
+.pp-origin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pp-origin::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--pp-text-muted);
+}
+
+.pp-origin--live::before {
+  background: var(--pp-series-3);
+}
+
+/* ---------- Tabulková alternativa ke grafu ---------- */
+
+.pp-table-wrap {
+  display: none;
+  overflow: auto;
+  max-height: 420px;
+  margin-top: 0.75rem;
+}
+
+.pp-table-wrap[data-open="true"] {
+  display: block;
+}
+
+.pp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-table th,
+.pp-table td {
+  padding: 0.3rem 0.6rem;
+  border-bottom: 1px solid var(--pp-grid);
+  text-align: right;
+  white-space: nowrap;
+  color: var(--pp-text-secondary);
+}
+
+.pp-table th:first-child,
+.pp-table td:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--pp-surface-raised);
+}
+
+.pp-table thead th {
+  color: var(--pp-text);
+  font-weight: 600;
+  border-bottom: 1px solid var(--pp-border);
+}
+
+/* Identita řady i v tabulce — barevná tečka vedle textu, ne barevný text */
+.pp-swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 0.4rem;
+  vertical-align: baseline;
+}
+
+/* ---------- Statistické dlaždice ---------- */
+
+.pp-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 0.9rem;
+  margin: 0 0 1.75rem;
+}
+
+.pp-stat {
+  background: var(--pp-surface-raised);
+  border: 1px solid var(--pp-border);
+  border-left: 3px solid var(--pp-stat-accent, var(--pp-series-1));
+  border-radius: var(--pp-radius);
+  box-shadow: var(--pp-shadow);
+  padding: 0.9rem 1.1rem;
+}
+
+.pp-stats-origin {
+  margin: -1.1rem 0 1.75rem;
+  font-size: 0.75rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-stat__label {
+  font-size: 0.78rem;
+  color: var(--pp-text-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.pp-stat__value {
+  font-size: 1.9rem;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--pp-text);
+}
+
+.pp-stat__note {
+  font-size: 0.72rem;
+  color: var(--pp-text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ---------- Stavy načítání a chyby ---------- */
+
+.pp-skeleton {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    var(--pp-grid) 25%,
+    var(--pp-surface) 50%,
+    var(--pp-grid) 75%
+  );
+  background-size: 200% 100%;
+  animation: pp-shimmer 1.4s linear infinite;
+}
+
+.pp-stat--loading {
+  position: relative;
+  min-height: 92px;
+}
+
+/* Obsah dashboardu (text z markdownu) mezi kartami */
+.pp-dash-body > p,
+.pp-dash-body > ul,
+.pp-dash-body > ol {
+  color: var(--pp-text-secondary);
+  max-width: 70ch;
+}
+
+.pp-dash-body > h2,
+.pp-dash-body > h3 {
+  color: var(--pp-text);
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+
+.pp-dash-body > hr {
+  border: 0;
+  border-top: 1px solid var(--pp-border);
+  margin: 2rem 0;
+  opacity: 1;
+}
+
+@keyframes pp-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-skeleton {
+    animation: none;
+  }
+}
+
+.pp-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--pp-border);
+  border-left: 3px solid var(--pp-series-8);
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--pp-text-secondary);
+  background: var(--pp-surface);
+}
+
+/* ---------- Mapa krajů ---------- */
+
+.pp-map {
+  max-width: 680px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.pp-map svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pp-map path {
+  stroke: var(--pp-surface-raised);
+  stroke-width: 2;
+  cursor: pointer;
+  transition: opacity 0.12s ease-in-out;
+}
+
+.pp-map path:hover {
+  opacity: 0.82;
+}
+
+.pp-map text {
+  fill: var(--pp-text-secondary);
+  pointer-events: none;
+}
+
+.pp-map__legend {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 680px;
+  margin: 0 auto 0.75rem;
+  font-size: 0.75rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-map__ramp {
+  flex: 1;
+  height: 10px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--pp-seq-low), var(--pp-seq-high));
+}
+
+/* Sdílený tooltip mapy — Chart.js si kreslí vlastní */
+.pp-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 10;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: var(--pp-text);
+  color: var(--pp-surface-raised);
+  font-size: 0.8rem;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- Situační reporty ---------- */
+
+/* Sub-navigace mezi sekcemi reportu */
+.pp-section-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.pp-section-nav__item {
+  padding: 0.28rem 0.7rem;
+  border: 1px solid var(--pp-border);
+  border-radius: 999px;
+  font-size: 0.82rem;
+  color: var(--pp-text-secondary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.pp-section-nav__item:hover {
+  border-color: var(--pp-series-1);
+  color: var(--pp-series-1);
+}
+
+.pp-section-nav__item.is-active {
+  background: var(--pp-series-1);
+  border-color: var(--pp-series-1);
+  color: #fff;
+}
+
+/* Zvýrazněné sdělení */
+.pp-callout {
+  border: 1px solid var(--pp-border);
+  border-left: 3px solid var(--pp-callout-accent, var(--pp-series-1));
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  padding: 0.9rem 1.15rem;
+  margin: 0 0 1.5rem;
+  color: var(--pp-text);
+}
+
+.pp-callout p:last-child {
+  margin-bottom: 0;
+}
+
+.pp-callout--warning {
+  --pp-callout-accent: var(--pp-series-4);
+}
+
+.pp-callout--critical {
+  --pp-callout-accent: var(--pp-series-8);
+}
+
+/* Klíčové údaje: hodnota + vysvětlení */
+.pp-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.9rem;
+  margin: 0 0 1.75rem;
+}
+
+.pp-facts__row {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  box-shadow: var(--pp-shadow);
+  padding: 0.85rem 1rem;
+}
+
+.pp-facts__value {
+  font-weight: 600;
+  color: var(--pp-text);
+  margin-bottom: 0.3rem;
+}
+
+.pp-facts__note {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--pp-text-secondary);
+}
+
+.pp-facts__note p:last-child {
+  margin-bottom: 0;
+}
+
+/* Rozcestník na další sekce */
+.pp-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 0 0 1.75rem;
+}
+
+.pp-cards__item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  text-decoration: none;
+}
+
+.pp-cards__item:hover {
+  border-color: var(--pp-series-1);
+}
+
+.pp-cards__title {
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--pp-text);
+}
+
+.pp-cards__desc {
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--pp-text-muted);
+}
+
+/* FAIR / metadata */
+.pp-meta-block {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface);
+  padding: 1rem 1.15rem;
+  margin: 0 0 1.75rem;
+}
+
+.pp-meta-block__grid {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.35rem 1.25rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.pp-meta-block__grid dt {
+  color: var(--pp-text-muted);
+  font-weight: 500;
+}
+
+.pp-meta-block__grid dd {
+  margin: 0;
+  color: var(--pp-text-secondary);
+}
+
+.pp-meta-block__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.pp-meta-block__links .pp-btn {
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .pp-meta-block__grid {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+
+  .pp-meta-block__grid dd {
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Tabulky z markdownu (render hook) */
+.pp-table-scroll {
+  overflow-x: auto;
+  margin: 0 0 1.75rem;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+}
+
+.pp-table--prose {
+  font-variant-numeric: normal;
+  min-width: 640px;
+}
+
+.pp-table--prose th,
+.pp-table--prose td {
+  text-align: left;
+  white-space: normal;
+  vertical-align: top;
+  line-height: 1.5;
+  padding: 0.55rem 0.85rem;
+}
+
+.pp-table--prose th:first-child,
+.pp-table--prose td:first-child {
+  position: static;
+  font-weight: 500;
+}
+
+.pp-table--prose tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* ---------- Tisk a forced-colors ---------- */
+
+@media print {
+  .pp-btn {
+    display: none;
+  }
+  .pp-table-wrap {
+    display: block;
+  }
+}

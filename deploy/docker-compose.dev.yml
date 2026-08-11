@@ -1,8 +1,8 @@
 name: pathogensportal
 
-# Dev override — použij spolu se základním compose:
+# Dev override — use it together with the base compose file:
 #   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-# Přidá Hugo dev server a publikuje porty jen na localhost + hot-reload BE.
+# Adds the Hugo dev server, publishes ports on localhost only, and enables BE hot reload.
 
 services:
   hugo:
@@ -11,12 +11,20 @@ services:
       - ../frontend:/src
     ports:
       - "127.0.0.1:1313:1313"
+    environment:
+      # The dev server runs on :1313 and the API on :8000 — a different origin, so the
+      # frontend needs an absolute URL. In production both sit behind the same Apache and
+      # the param stays empty (see hugo.toml → params.api_base).
+      HUGO_PARAMS_APIBASE: http://localhost:8000
     command: server --bind 0.0.0.0 --baseURL http://localhost:1313/ --disableFastRender
 
   website-be:
     ports: ["127.0.0.1:8000:8000"]
     volumes:
       - ../backend/website-be/app:/app/app
+      # Input for `python -m app.loader` — the same directory the datascrapper
+      # generates into. Read-only: the loader only reads from it.
+      - ../frontend/static/data/charts:/charts:ro
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
   llm-agent-be:

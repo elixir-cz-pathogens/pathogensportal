@@ -1,0 +1,22 @@
+{{/* Rozcestník „Kam dál" — karty na ostatní sekce reportu.
+
+     Usage: {{< report-cards report="ebola" >}}
+
+     Stránku, na které shortcode běží, ze seznamu sám vynechá.
+*/}}
+{{ $key := .Get "report" }}
+{{ $report := index site.Data.reports $key }}
+{{ $here := strings.TrimSuffix "/" .Page.RelPermalink }}
+
+{{ with $report }}
+<div class="pp-cards">
+  {{ range .sections }}
+  {{ if ne (strings.TrimSuffix "/" .url) $here }}
+  <a class="pp-cards__item" href="{{ .url }}">
+    <span class="pp-cards__title">{{ .name }}</span>
+    <span class="pp-cards__desc">{{ .desc }}</span>
+  </a>
+  {{ end }}
+  {{ end }}
+</div>
+{{ end }}

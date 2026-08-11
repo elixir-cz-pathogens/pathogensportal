@@ -1,0 +1,68 @@
+# Situační reporty složené z více stránek.
+#
+# Report **negeneruje portál** — dodává ho externí generátor (AI + kontrola
+# člověka) jako hotové statické HTML. Portál si z něj `tools/ingest_report.py`
+# vyřízne <main>, sanitizuje ho a vypíše do `content/cs/dashboards/`.
+#
+# Tenhle soubor je mapa mezi tím, co dodá generátor (`source`), a tím, co má
+# portál na webu (`url`) — URL se tím drží stabilní i kdyby generátor své
+# soubory přejmenoval. Zároveň z něj shortcody `section-nav` a `report-cards`
+# staví navigaci mezi sekcemi.
+#
+# ⚠️ Obsahové soubory sekcí jsou GENEROVANÉ — needitovat ručně, ingest je přepíše.
+
+ebola:
+  title: "Ebola BDBV 2026"
+  source_dir: "incoming/ebola"
+
+  # Společné front matter hodnoty pro všechny sekce reportu; co je v HTML
+  # (titulek, popis, datum ověření), přebíjí ingest z metadat stránky.
+  defaults:
+    image: "/images/dashboard-placeholder.svg"
+    tags: ["ebola", "epidemiologie", "IMG AV ČR", "Afrika"]
+    data_source: 'Jan Pačes & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> · Licence CC BY 4.0'
+    update_freq: "Průběžně (aktivní vypuknutí)"
+
+  sections:
+    - url: /dashboards/ebola-bundibugyo-2026/
+      source: index.html
+      name: "Aktuální stav"
+      desc: "Shrnutí situace, datované údaje podle jednotlivých zdrojů a časová osa zásadních událostí."
+      # Jediná sekce v seznamu dashboardů — zbytek je podstránka reportu.
+      listed: true
+      highlight: true
+
+    - url: /dashboards/ebola-cesko/
+      source: cesko.html
+      name: "Český kontext"
+      desc: "Riziko pro veřejnost, FN Bulovka, cestovatelé, zdravotníci a české oficiální i podpůrné zdroje na jednom místě."
+
+    - url: /dashboards/ebola-virus/
+      source: virus.html
+      name: "Ebolaviry"
+      desc: "Obecně ebolaviry, rozdíl mezi virem Ebola a virem Bundibugyo, přenos, diagnostika a sekvenování."
+
+    - url: /dashboards/ebola-lecba-vakciny/
+      source: lecba-vakciny.html
+      name: "Léčba a vakcíny"
+      desc: "Co je schválené pro virus Ebola, co zatím chybí pro Bundibugyo a co se zkouší."
+
+    - url: /dashboards/ebola-predchozi-epidemie/
+      source: predchozi-epidemie.html
+      name: "Minulé epidemie"
+      desc: "Západní Afrika 2014–2016 a Severní Kivu/Ituri 2018–2020 jako hlavní poučení pro rok 2026."
+
+    - url: /dashboards/ebola-dezinformace/
+      source: dezinformace.html
+      name: "Dezinformace"
+      desc: "Opakující se narativy, český kontext a rychlé odpovědi k FN Bulovka, Těchonínu a Berlínu."
+
+    - url: /dashboards/ebola-zdroje/
+      source: zdroje.html
+      name: "Zdroje"
+      desc: "Oficiální, české, odborné, mediální a další zdroje rozdělené podle typu."
+
+    - url: /dashboards/ebola-graf-vyvoj/
+      source: graf-vyvoj.html
+      name: "Graf vývoje"
+      desc: "Denní řada DRK, kumulativní úmrtí, tabulka hodnot a data ke stažení."

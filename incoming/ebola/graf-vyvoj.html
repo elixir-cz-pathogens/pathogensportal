@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graf vývoje případů a úmrtí</title>
+  <meta name="description" content="Samostatný graf vývoje potvrzených případů a úmrtí mezi potvrzenými případy v DRK podle oficiálních SitRepů INSP/COUSP a nejnovější denní tabulky WHO/COUSP.">
+  <link rel="stylesheet" href="site.css">
+  <link rel="icon" href="data:,">
+  <link rel="canonical" href="https://titan.img.cas.cz/ebola/graf-vyvoj.html">
+  <link rel="alternate" hreflang="cs" href="https://titan.img.cas.cz/ebola/graf-vyvoj.html">
+  <link rel="alternate" hreflang="en" href="https://titan.img.cas.cz/ebola/en/graf-vyvoj.html">
+  <link rel="alternate" hreflang="x-default" href="https://titan.img.cas.cz/ebola/graf-vyvoj.html">
+  <link rel="alternate" type="application/ld+json" href="metadata/graf-vyvoj.dataset.jsonld" title="Metadata stránky a datové řady">
+  <link rel="alternate" type="text/csv" href="data/drc-bdbv-sitrep-timeseries.csv" title="Datová řada grafu v CSV">
+  <link rel="cite-as" href="CITATION.cff">
+  <meta name="dcterms.modified" content="2026-07-27">
+  <meta name="dcterms.language" content="cs">
+  <style>
+    .chart-panel {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+    .chart-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px 20px;
+      margin-bottom: 10px;
+    }
+    .chart-head h2 { margin-bottom: 4px; }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+    .legend-swatch {
+      width: 18px;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--accent);
+    }
+    .legend-swatch.deaths { background: var(--danger); }
+    .legend-swatch.bar-cases { height: 12px; background: rgba(0, 107, 120, 0.68); }
+    .legend-swatch.bar-deaths { height: 12px; background: rgba(138, 31, 31, 0.68); }
+    .chart-box {
+      position: relative;
+      min-height: 360px;
+    }
+    .chart-box svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      overflow: visible;
+    }
+    .axis text, .chart-label {
+      fill: var(--muted);
+      font-size: 13px;
+    }
+    .axis path, .axis line, .grid-line {
+      stroke: var(--line);
+      stroke-width: 1;
+      vector-effect: non-scaling-stroke;
+    }
+    .series-line {
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .series-line.cases { stroke: var(--accent); }
+    .series-line.deaths { stroke: var(--danger); }
+    .point {
+      stroke: var(--paper);
+      stroke-width: 2;
+      vector-effect: non-scaling-stroke;
+    }
+    .point.cases { fill: var(--accent); }
+    .point.deaths { fill: var(--danger); }
+    .bar.cases { fill: rgba(0, 107, 120, 0.68); }
+    .bar.deaths { fill: rgba(138, 31, 31, 0.68); }
+    .point:focus, .bar:focus { outline: 3px solid #f0b429; outline-offset: 2px; }
+    .chart-tooltip {
+      position: absolute;
+      min-width: 220px;
+      max-width: min(320px, calc(100vw - 48px));
+      padding: 10px 12px;
+      background: #20272f;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 0.86rem;
+      line-height: 1.4;
+      pointer-events: none;
+      opacity: 0;
+      transform: translate(-50%, -105%);
+      transition: opacity .12s ease;
+      z-index: 2;
+    }
+    .chart-tooltip strong { display: block; margin-bottom: 4px; }
+    .data-note { color: var(--muted); font-size: 0.94rem; }
+    .table-tight { min-width: 980px; }
+    .table-tight td:first-child, .table-tight th:first-child { white-space: nowrap; }
+    @media (max-width: 720px) {
+      .chart-panel { padding: 14px; }
+      .chart-box { min-height: 300px; overflow-x: auto; }
+      .chart-box svg { min-width: 760px; }
+      .chart-tooltip { display: none; }
+    }
+  </style>
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/">
+  <meta name="dcterms.license" content="https://creativecommons.org/licenses/by/4.0/">
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="topbar">
+        <span>Informační přehled</span>
+        <span>Aktualizováno: 27. července 2026</span>
+        <span>Primární zdroje: DRK INSP/COUSP, ECDC, Uganda MoH, WHO</span>
+        <span>Jazyk: <a href="en/graf-vyvoj.html">English</a> · <strong>Čeština</strong></span>
+      </div>
+      <div class="hero compact">
+        <p class="eyebrow">Ebola způsobená virem Bundibugyo 2026</p>
+        <h1>Graf vývoje případů a úmrtí</h1>
+        <p class="lead">Oficiální řada pro DRK podle veřejných SitRepů INSP/COUSP a nejnovější denní tabulky WHO/COUSP. Graf pracuje s potvrzenými případy a úmrtími mezi potvrzenými případy; suspektní případy a suspektní úmrtí nejsou do řady započteny.</p>
+        <p class="authors">Autoři webu: <a href="mailto:jan.paces@img.cas.cz" title="jan.paces@img.cas.cz">Jan Pačes</a> (<a href="https://orcid.org/0000-0003-3059-6127">ORCID</a>) a Michaela Liegertová (<a href="https://orcid.org/0000-0003-3858-856X">ORCID</a>). Afiliace: <a href="https://www.img.cas.cz/">Ústav molekulární genetiky AV ČR</a>; Michaela Liegertová také <a href="https://prf.ujep.cz/cs/">Přírodovědecká fakulta UJEP</a>.</p>
+        <p class="collaboration">Ve spolupráci s <a href="https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav">VZÚ</a>.</p>
+      </div>
+      <nav aria-label="Hlavní navigace"><a href="index.html">Aktuální stav</a>
+        <a class="active" aria-current="page" href="graf-vyvoj.html">Graf</a>
+        <a href="cesko.html">Česko</a>
+        <a href="virus.html">Ebolaviry</a>
+        <a href="lecba-vakciny.html">Léčba a vakcíny</a>
+        <a href="predchozi-epidemie.html">Minulé epidemie</a>
+        <a href="dezinformace.html">Dezinformace</a>
+        <a href="zdroje.html">Zdroje</a></nav>
+    </div>
+  </header>
+  <main>
+    <div class="wrap">
+
+      <section>
+        <div class="note warning">
+          <p><strong>Jak graf číst:</strong> jde o vývoj hlášených potvrzených případů a úmrtí mezi potvrzenými případy v DRK, nikoli o datum vzniku infekce. INSP opakovaně upozorňuje na čištění a harmonizaci databáze DHIS2; denní změny proto mohou zahrnovat zpětné laboratorní potvrzení nebo revidované zařazení případů.</p>
+        </div>
+        <div class="summary">
+          <div><strong>3 075 potvrzených případů</strong><span class="meta">Poslední kumulativní bod: INSP/COUSP SitRep 71, údaje k 24. 7. 2026.</span></div>
+          <div><strong>1 354 úmrtí mezi potvrzenými případy</strong><span class="meta">Suspektní úmrtí nejsou zahrnuta.</span></div>
+          <div><strong>50 bodů kumulativní řady</strong><span class="meta">Veřejně dohledané body ze SitRepů včetně SitRepů 62 a 64–71; chybějící dny nejsou dopočítané.</span></div>
+        </div>
+      </section>
+
+      <section class="chart-panel" aria-labelledby="daily-title">
+        <div class="chart-head">
+          <div>
+            <h2 id="daily-title">Denní hlášení v dostupných SitRepech</h2>
+            <p class="data-note">Sloupce případů zobrazují položku „nouveaux cas confirmés (nově potvrzené případy)“. Sloupce úmrtí uvádějí úmrtí mezi nově hlášenými potvrzenými případy, pokud je SitRep takto samostatně uvádí.</p>
+          </div>
+          <div class="legend" role="group" aria-label="Legenda">
+            <span class="legend-item"><span class="legend-swatch bar-cases"></span>Nově hlášené potvrzené případy</span>
+            <span class="legend-item"><span class="legend-swatch bar-deaths"></span>Úmrtí mezi nově hlášenými</span>
+          </div>
+        </div>
+        <div class="chart-box" tabindex="0" role="region" aria-label="Posuvný graf denních hlášení">
+          <svg id="daily-chart" role="img" aria-label="Denně nově hlášené potvrzené případy a úmrtí mezi nově hlášenými potvrzenými případy v SitRepech INSP"></svg>
+          <div class="chart-tooltip" id="daily-tooltip"></div>
+        </div>
+        <p class="data-note">SitRep N°21, N°29, N°43, N°45, N°59 a N°63 nebyly při ověření dohledány jako veřejné položky aktuální řady INSP. Chybějící dny proto nedopočítáváme. U SitRepu 46 vychází denní sloupec z hodnoty 26 nově hlášených potvrzených případů uváděné ECDC oproti předchozí veřejné aktualizaci se stavem k 28. 6.; není dopočítán jako rozdíl mezi posledními dvěma vykreslenými body. U SitRepů 47–58, 60–62 a 64–68 je denní sloupec případů převzat přímo ze SitRepů. U SitRepů 53–58 a 60 nevykreslujeme denní sloupec úmrtí, protože zprávy tuto metriku neoddělují srovnatelným způsobem.</p>
+      </section>
+
+      <section class="chart-panel" aria-labelledby="cumulative-title">
+        <div class="chart-head">
+          <div>
+            <h2 id="cumulative-title">Kumulativní úmrtí mezi potvrzenými případy</h2>
+            <p class="data-note">Osa X: stav k datu. Osa Y: kumulativní úmrtí mezi potvrzenými případy.</p>
+          </div>
+          <div class="legend" role="group" aria-label="Legenda">
+            <span class="legend-item"><span class="legend-swatch deaths"></span>Kumulativní úmrtí mezi potvrzenými případy</span>
+          </div>
+        </div>
+        <div class="chart-box" tabindex="0" role="region" aria-label="Posuvný graf kumulativních úmrtí mezi potvrzenými případy">
+          <svg id="cumulative-chart" role="img" aria-label="Kumulativní úmrtí mezi potvrzenými případy v DRK podle SitRepů INSP"></svg>
+          <div class="chart-tooltip" id="cumulative-tooltip"></div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Tabulka hodnot</h2>
+        <div class="plain-table-wrap" tabindex="0" role="region" aria-label="Tabulka hodnot grafů">
+          <table class="plain-table table-tight" id="data-table">
+            <thead>
+              <tr>
+                <th>Stav k datu</th>
+                <th>SitRep</th>
+                <th>Kumulativně potvrzené případy</th>
+                <th>Kumulativní úmrtí mezi potvrzenými případy</th>
+                <th>Nově hlášené potvrzené případy</th>
+                <th>Úmrtí mezi nově hlášenými</th>
+                <th>Zdroj</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2>Zdroje a omezení</h2>
+        <p>Řada je vytvořena z oficiálních SitRepů DRK INSP/COUSP pro aktuální 17. epidemii onemocnění ebolou v DRK (v originále MVB, maladie à virus Bundibugyo). Hodnoty pro Ugandu nejsou do denní řady zařazeny, protože veřejný ugandský denní přehled při ověření 27. července ukazuje aktuální stav k 21. červenci, ale neposkytuje stejným způsobem dohledatelnou historickou denní řadu. Ugandu proto uvádíme odděleně: 20 potvrzených případů, 2 úmrtí, 18 uzdravených, 0 aktuálních hospitalizací, 0 aktivně sledovaných kontaktů a 821 kontaktů s dokončeným 21denním sledováním.</p>
+        <p class="data-note">U SitRepu 44 pracuje sloupec úmrtí s údajem „47 nově hlášených potvrzených případů včetně 12 úmrtí“. U SitRepu 46 používáme přímo uvedenou hodnotu ECDC. U SitRepů 53–58 a 60 ponecháváme denní úmrtí nevyplněná kvůli odlišné prezentaci metriky a vnitřním rozporům. SitRep 62 uvádí v nadpisu, textu a aritmetickém součtu 32 úmrtí, ačkoli jedna poznámka chybně píše „796 + 31 = 828“. SitRep 64 uvádí v nadpisu, textu i součtu provincií 86 nových případů, ačkoli souhrnný řádek tabulky 2 chybně uvádí 56. U SitRepů 69–71 vykreslujeme ověřené kumulativní součty, ale denní hodnoty necháváme prázdné: ECDC má u dat k 22. 7. vnitřně rozporný součet a velký skok zahrnuje harmonizaci a zpětné zpracování dat.</p>
+        <p class="refs">Kontrolní zdroje: <a href="https://insp.cd/sitrep-n071-mvb_24-07-2026/">DRK INSP/COUSP SitRep 71</a>, <a href="https://insp.cd/sitrep-n070-mvb_23-07-2026/">SitRep 70</a>, <a href="https://insp.cd/sitrep-n069-mvb_22-07-2026/">SitRep 69</a>, <a href="https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda">ECDC stránka k ohnisku</a>, <a href="https://evd-daily.health.go.ug/">Uganda Ministry of Health dashboard</a>, <a href="https://www.who.int/emergencies/alert-and-response">WHO denní epidemiologická aktualizace 20260726</a> a <a href="https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON613">WHO DON613</a>. Jednotlivé SitRep odkazy jsou uvedeny v tabulce.</p>
+      </section>
+
+      <section class="fair-panel" id="fair-data" aria-labelledby="fair-data-title">
+        <div class="fair-kicker">FAIR · datová vrstva</div>
+        <div class="fair-head">
+          <div>
+            <h2 id="fair-data-title">Data ke grafu ke stažení</h2>
+            <p>Tabulka použitá v grafu je dostupná také jako samostatný soubor. Každý řádek obsahuje datum datového řezu, číslo SitRepu a odkaz na zdroj; chybějící hodnoty se nedopočítávají.</p>
+          </div>
+        </div>
+        <dl class="fair-facts">
+          <div><dt>Datový řez</dt><dd>24. 7. 2026</dd></div>
+          <div><dt>Kurace</dt><dd>50 dohledatelných bodů · revize 27. 7. 2026</dd></div>
+          <div><dt>Formát</dt><dd>CSV v UTF-8 + JSON Schema</dd></div>
+          <div><dt>Licence</dt><dd><a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC BY 4.0</a> pro původní kuraci</dd></div>
+        </dl>
+        <div class="fair-actions">
+          <a class="fair-button" href="data/drc-bdbv-sitrep-timeseries.csv" download>Stáhnout CSV</a>
+          <a class="fair-button" href="data/schema.json">Datový slovník</a>
+          <a class="fair-button" href="metadata/graf-vyvoj.dataset.jsonld">Metadata datové řady</a>
+          <a class="fair-button" href="data/README.md">Původ dat a omezení</a>
+        </div>
+        <p class="fair-machine">CSV obsahuje stejnou řadu jako graf; automatická kontrola porovnává všech 50 řádků s daty vloženými do stránky. Licence se vztahuje na původní kuraci, nikoli na odkazované zdrojové dokumenty.</p>
+      </section>
+
+    </div>
+  </main>
+  <footer>
+    <div class="wrap">
+      <p>Stránka je informační přehled k situaci k 27. červenci 2026. Neobsahuje kompletní klinický postup a nenahrazuje pokyny lékaře, hygienické služby, WHO, ECDC, SZÚ, MZd ČR, FN Bulovka ani národních zdravotnických autorit.</p>
+      <p>Přes průběžnou kontrolu se mohou objevit chyby, nepřesnosti nebo zastaralé údaje. Pokud na ně narazíte, dejte nám prosím vědět, abychom je mohli co nejdříve opravit.</p>
+      <p class="license-notice"><strong>Licence:</strong> Není-li uvedeno jinak, původní text, grafy vytvořené pro tento web, kurace dat a strojově čitelná metadata jsou zveřejněny pod licencí <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">Creative Commons Attribution 4.0 International (CC BY 4.0)</a>. Licence se nevztahuje na loga, ochranné známky ani na citované nebo odkazované materiály třetích stran.</p>
+      <p class="fair-link"><a href="index.html#fair">Zásady FAIR, citace a data</a></p>
+      <div class="footer-logos" role="group" aria-label="Spolupracující instituce a projekty">
+        <a href="https://www.img.cas.cz/"><img src="loga/img_logo.png" alt="Ústav molekulární genetiky AV ČR"></a>
+        <a href="https://prf.ujep.cz/cs/"><img src="loga/LOGO_PRF_CZ_PANTONE.png" alt="Přírodovědecká fakulta UJEP"></a>
+        <a href="https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav"><img class="logo-mark" src="loga/pouzit_znak_VZU_pruhledne.png" alt="Vojenský zdravotní ústav"></a>
+        <a href="https://www.elixir-czech.cz/"><img class="logo-mark logo-elixir" src="loga/logo-krivky.svg" alt="ELIXIR-CZ"></a>
+        <a href="https://www.avcr.cz/cs/"><img src="loga/AVCR_zakladni_znacka_CZ_rgb_.png" alt="Akademie věd České republiky"></a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const reportData = [
+      { date: "2026-05-30", sitrep: 16, cases: 282, deaths: 42, newCases: 19, dailyDeaths: null, source: "https://insp.cd/sitrep-n016-mvb_30-2026/" },
+      { date: "2026-05-31", sitrep: 17, cases: 321, deaths: 48, newCases: 12, dailyDeaths: null, source: "https://insp.cd/sitrep-n017-mvb_31-2026/" },
+      { date: "2026-06-01", sitrep: 18, cases: 344, deaths: 60, newCases: 23, dailyDeaths: null, source: "https://insp.cd/sitrep-n018-mvb_01-06-2026/" },
+      { date: "2026-06-02", sitrep: 19, cases: 363, deaths: 62, newCases: 19, dailyDeaths: 2, source: "https://insp.cd/sitrep-n019-mvb_01-06-2026/" },
+      { date: "2026-06-03", sitrep: 20, cases: 381, deaths: 64, newCases: 18, dailyDeaths: 2, source: "https://insp.cd/sitrep-n020-mvb_02-06-2026/" },
+      { date: "2026-06-05", sitrep: 22, cases: 488, deaths: 86, newCases: 36, dailyDeaths: 4, source: "https://insp.cd/sitrep-n22-mvb_05-06-2026/" },
+      { date: "2026-06-06", sitrep: 23, cases: 515, deaths: 91, newCases: 27, dailyDeaths: 4, source: "https://insp.cd/sitrep-n23-mvb_06-06-2026/" },
+      { date: "2026-06-07", sitrep: 24, cases: 550, deaths: 101, newCases: 35, dailyDeaths: 10, source: "https://insp.cd/sitrep-n24-mvb_07-06-2026/" },
+      { date: "2026-06-08", sitrep: 25, cases: 598, deaths: 115, newCases: 48, dailyDeaths: 14, source: "https://insp.cd/sitrep-n25-mvb_08-06-2026/" },
+      { date: "2026-06-09", sitrep: 26, cases: 635, deaths: 127, newCases: 37, dailyDeaths: 12, source: "https://insp.cd/sitrep-n26-mvb_09-06-2026/" },
+      { date: "2026-06-10", sitrep: 27, cases: 676, deaths: 136, newCases: 41, dailyDeaths: 9, source: "https://insp.cd/sitrep-n27-mvb_10-06-2026/" },
+      { date: "2026-06-11", sitrep: 28, cases: 689, deaths: 139, newCases: 17, dailyDeaths: 5, source: "https://insp.cd/sitrep-n28-mvb_11-06-2026/" },
+      { date: "2026-06-13", sitrep: 30, cases: 782, deaths: 181, newCases: 72, dailyDeaths: 29, source: "https://insp.cd/sitrep-n30-mvb_13-06-2026/" },
+      { date: "2026-06-14", sitrep: 31, cases: 808, deaths: 192, newCases: 26, dailyDeaths: 11, source: "https://insp.cd/sitrep-n31-mvb_14-06-2026/" },
+      { date: "2026-06-15", sitrep: 32, cases: 837, deaths: 196, newCases: 29, dailyDeaths: 4, source: "https://insp.cd/sitrep-n32-mvb_15-06-2026/" },
+      { date: "2026-06-16", sitrep: 33, cases: 875, deaths: 202, newCases: 40, dailyDeaths: 4, source: "https://insp.cd/sitrep-n33-mvb_16-06-2026/" },
+      { date: "2026-06-17", sitrep: 34, cases: 896, deaths: 232, newCases: 21, dailyDeaths: 6, source: "https://insp.cd/sitrep-n34-mvb_17-06-2026/" },
+      { date: "2026-06-18", sitrep: 35, cases: 933, deaths: 245, newCases: 36, dailyDeaths: 12, source: "https://insp.cd/sitrep-n35-mvb_18-06-2026/" },
+      { date: "2026-06-19", sitrep: 36, cases: 956, deaths: 247, newCases: 23, dailyDeaths: 2, source: "https://insp.cd/sitrep-n36-mvb_19-06-2026/" },
+      { date: "2026-06-20", sitrep: 37, cases: 1003, deaths: 254, newCases: 47, dailyDeaths: 7, source: "https://insp.cd/sitrep-n37-mvb_20-06-2026/" },
+      { date: "2026-06-21", sitrep: 38, cases: 1048, deaths: 267, newCases: 45, dailyDeaths: 13, source: "https://insp.cd/sitrep-n38-mvb_21-06-2026/" },
+      { date: "2026-06-22", sitrep: 39, cases: 1094, deaths: 277, newCases: 46, dailyDeaths: 10, source: "https://insp.cd/sitrep-n39-mvb_22-06-2026/" },
+      { date: "2026-06-23", sitrep: 40, cases: 1118, deaths: 291, newCases: 24, dailyDeaths: 14, source: "https://insp.cd/sitrep-n040-mvb_23-06-2026/" },
+      { date: "2026-06-24", sitrep: 41, cases: 1155, deaths: 304, newCases: 37, dailyDeaths: 13, source: "https://insp.cd/sitrep-n041-mvb_24-06-2026/" },
+      { date: "2026-06-25", sitrep: 42, cases: 1203, deaths: 321, newCases: 48, dailyDeaths: 17, source: "https://insp.cd/sitrep-n042-mvb_25-06-2026/" },
+      { date: "2026-06-27", sitrep: 44, cases: 1274, deaths: 360, newCases: 47, dailyDeaths: 12, source: "https://insp.cd/sitrep-n044-mvb_27-06-2026/" },
+      { date: "2026-06-29", sitrep: 46, cases: 1333, deaths: 399, newCases: 26, dailyDeaths: 8, source: "https://insp.cd/sitrep-n046-mvb_29-06-2026/" },
+      { date: "2026-06-30", sitrep: 47, cases: 1406, deaths: 438, newCases: 73, dailyDeaths: 25, source: "https://insp.cd/sitrep-n047-mvb_30-06-2026/" },
+      { date: "2026-07-01", sitrep: 48, cases: 1460, deaths: 452, newCases: 54, dailyDeaths: 9, source: "https://insp.cd/sitrep-n48-mvb_01-07-2026/" },
+      { date: "2026-07-02", sitrep: 49, cases: 1502, deaths: 473, newCases: 42, dailyDeaths: 7, source: "https://insp.cd/sitrep-n049-mvb_02-07-2026/" },
+      { date: "2026-07-03", sitrep: 50, cases: 1528, deaths: 492, newCases: 26, dailyDeaths: 9, source: "https://insp.cd/sitrep-n050-mvb_02-07-2026/" },
+      { date: "2026-07-04", sitrep: 51, cases: 1561, deaths: 506, newCases: 33, dailyDeaths: 6, source: "https://insp.cd/sitrep-n051-mvb_04-07-2026/" },
+      { date: "2026-07-05", sitrep: 52, cases: 1624, deaths: 521, newCases: 63, dailyDeaths: 8, source: "https://insp.cd/sitrep-n052-mvb_05-07-2026/" },
+      { date: "2026-07-06", sitrep: 53, cases: 1708, deaths: 580, newCases: 84, dailyDeaths: null, source: "https://insp.cd/sitrep-n053-mvb_06-07-2026/" },
+      { date: "2026-07-07", sitrep: 54, cases: 1759, deaths: 600, newCases: 51, dailyDeaths: null, source: "https://insp.cd/sitrep-n054-mvb_07-07-2026/" },
+      { date: "2026-07-08", sitrep: 55, cases: 1792, deaths: 625, newCases: 33, dailyDeaths: null, source: "https://insp.cd/sitrep-n055-mvb_08-07-2026/" },
+      { date: "2026-07-09", sitrep: 56, cases: 1830, deaths: 648, newCases: 38, dailyDeaths: null, source: "https://insp.cd/sitrep-n056-mvb_09-07-2026/" },
+      { date: "2026-07-10", sitrep: 57, cases: 1873, deaths: 672, newCases: 43, dailyDeaths: null, source: "https://insp.cd/sitrep-n057-mvb_10-07-2026/" },
+      { date: "2026-07-11", sitrep: 58, cases: 1926, deaths: 702, newCases: 53, dailyDeaths: null, source: "https://insp.cd/sitrep-n058-mvb_11-07-2026/" },
+      { date: "2026-07-13", sitrep: 60, cases: 2011, deaths: 754, newCases: 54, dailyDeaths: null, source: "https://insp.cd/sitrep-n060-mvb-13-07-2026/" },
+      { date: "2026-07-14", sitrep: 61, cases: 2073, deaths: 796, newCases: 62, dailyDeaths: 42, source: "https://insp.cd/sitrep-n061-mvb_14-07-2026/" },
+      { date: "2026-07-15", sitrep: 62, cases: 2124, deaths: 828, newCases: 51, dailyDeaths: 32, source: "https://insp.cd/sitrep-n062-mvb_15-07-2026/" },
+      { date: "2026-07-17", sitrep: 64, cases: 2267, deaths: 893, newCases: 86, dailyDeaths: 29, source: "https://insp.cd/sitrep-n064-mvb_17-07-2026/" },
+      { date: "2026-07-18", sitrep: 65, cases: 2344, deaths: 930, newCases: 83, dailyDeaths: 40, source: "https://insp.cd/sitrep-n065-mvb_18-07-2026/" },
+      { date: "2026-07-19", sitrep: 66, cases: 2423, deaths: 967, newCases: 79, dailyDeaths: 37, source: "https://insp.cd/sitrep-n066-mvb_19-07-2026/" },
+      { date: "2026-07-20", sitrep: 67, cases: 2473, deaths: 999, newCases: 50, dailyDeaths: 32, source: "https://insp.cd/sitrep-n067-mvb_20-07-2026/" },
+      { date: "2026-07-21", sitrep: 68, cases: 2536, deaths: 1033, newCases: 63, dailyDeaths: 34, source: "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_68_21-07-2026.pdf" },
+      { date: "2026-07-22", sitrep: 69, cases: 2905, deaths: 1269, newCases: null, dailyDeaths: null, source: "https://insp.cd/sitrep-n069-mvb_22-07-2026/" },
+      { date: "2026-07-23", sitrep: 70, cases: 2973, deaths: 1309, newCases: null, dailyDeaths: null, source: "https://insp.cd/sitrep-n070-mvb_23-07-2026/" },
+      { date: "2026-07-24", sitrep: 71, cases: 3075, deaths: 1354, newCases: null, dailyDeaths: null, source: "https://insp.cd/sitrep-n071-mvb_24-07-2026/" }
+    ];
+
+    const csDate = new Intl.DateTimeFormat("cs-CZ", { day: "numeric", month: "numeric" });
+    const fullDate = new Intl.DateTimeFormat("cs-CZ", { day: "numeric", month: "long", year: "numeric" });
+
+    function parseDate(value) {
+      const [year, month, day] = value.split("-").map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function formatNumber(value) {
+      return value == null ? "neuvedeno" : value.toLocaleString("cs-CZ");
+    }
+
+    function linePath(points) {
+      return points.map((point, index) => `${index ? "L" : "M"}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+    }
+
+    function createSvgElement(name, attrs = {}) {
+      const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+      Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+      return el;
+    }
+
+    function showTooltip(tooltip, event, html) {
+      const target = event.currentTarget;
+      const box = target.ownerSVGElement.getBoundingClientRect();
+      const targetBox = target.getBoundingClientRect();
+      const clientX = event.clientX || targetBox.left + targetBox.width / 2;
+      const clientY = event.clientY || targetBox.top;
+      tooltip.innerHTML = html;
+      tooltip.style.left = `${clientX - box.left}px`;
+      tooltip.style.top = `${clientY - box.top}px`;
+      tooltip.style.opacity = "1";
+    }
+
+    function hideTooltip(tooltip) {
+      tooltip.style.opacity = "0";
+    }
+
+    function renderCumulativeChart() {
+      const svg = document.getElementById("cumulative-chart");
+      const tooltip = document.getElementById("cumulative-tooltip");
+      const width = 920;
+      const height = 420;
+      const margin = { top: 18, right: 28, bottom: 68, left: 64 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.textContent = "";
+
+      const dates = reportData.map(d => parseDate(d.date).getTime());
+      const minDate = Math.min(...dates);
+      const maxDate = Math.max(...dates);
+      const maxDeaths = Math.ceil(Math.max(...reportData.map(d => d.deaths)) / 100) * 100;
+      const x = date => margin.left + ((parseDate(date).getTime() - minDate) / (maxDate - minDate)) * plotWidth;
+      const y = value => margin.top + plotHeight - (value / maxDeaths) * plotHeight;
+
+      Array.from({ length: maxDeaths / 100 + 1 }, (_, index) => index * 100).forEach(tick => {
+        const tickY = y(tick);
+        svg.appendChild(createSvgElement("line", { x1: margin.left, y1: tickY, x2: width - margin.right, y2: tickY, class: "grid-line" }));
+        svg.appendChild(createSvgElement("text", { x: margin.left - 10, y: tickY + 4, "text-anchor": "end", class: "chart-label" })).textContent = tick.toLocaleString("cs-CZ");
+      });
+      const dateTicks = ["2026-05-30", "2026-06-05", "2026-06-10", "2026-06-15", "2026-06-20", "2026-06-27", "2026-06-30", "2026-07-08", "2026-07-13"];
+      dateTicks.forEach(date => {
+        const tickX = x(date);
+        svg.appendChild(createSvgElement("line", { x1: tickX, y1: margin.top, x2: tickX, y2: margin.top + plotHeight, class: "grid-line" }));
+        svg.appendChild(createSvgElement("line", { x1: tickX, y1: margin.top + plotHeight, x2: tickX, y2: margin.top + plotHeight + 6, stroke: "var(--line)" }));
+        svg.appendChild(createSvgElement("text", { x: tickX, y: height - 36, "text-anchor": "middle", class: "chart-label" })).textContent = csDate.format(parseDate(date));
+      });
+
+      svg.appendChild(createSvgElement("text", { x: margin.left, y: 14, class: "chart-label" })).textContent = "kumulativní úmrtí mezi potvrzenými případy";
+      svg.appendChild(createSvgElement("text", { x: margin.left + plotWidth / 2, y: height - 10, "text-anchor": "middle", class: "chart-label" })).textContent = "stav k datu";
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top + plotHeight, x2: width - margin.right, y2: margin.top + plotHeight, stroke: "var(--line)" }));
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + plotHeight, stroke: "var(--line)" }));
+
+      const cumulativePoints = reportData.map(d => ({ x: x(d.date), y: y(d.deaths), d }));
+      svg.appendChild(createSvgElement("path", { d: linePath(cumulativePoints), class: "series-line deaths" }));
+
+      cumulativePoints.forEach(point => {
+        const sourceTitle = typeof point.d.sitrep === "number" ? `SitRep ${point.d.sitrep}` : point.d.sitrep;
+        const accessibleLabel = `${fullDate.format(parseDate(point.d.date))}, ${sourceTitle}, kumulativní úmrtí mezi potvrzenými případy ${formatNumber(point.d.deaths)}`;
+        const hit = createSvgElement("circle", { cx: point.x, cy: point.y, r: 5, class: "point deaths", tabindex: "0", role: "img", "aria-label": accessibleLabel });
+        const html = `<strong>${fullDate.format(parseDate(point.d.date))} | ${sourceTitle}</strong>Kumulativní úmrtí mezi potvrzenými případy: ${formatNumber(point.d.deaths)}`;
+        hit.addEventListener("mousemove", event => showTooltip(tooltip, event, html));
+        hit.addEventListener("mouseleave", () => hideTooltip(tooltip));
+        hit.addEventListener("focus", event => showTooltip(tooltip, event, html));
+        hit.addEventListener("blur", () => hideTooltip(tooltip));
+        svg.appendChild(hit);
+      });
+    }
+
+    function renderDailyChart() {
+      const svg = document.getElementById("daily-chart");
+      const tooltip = document.getElementById("daily-tooltip");
+      const width = 920;
+      const height = 380;
+      const margin = { top: 18, right: 28, bottom: 54, left: 58 };
+      const plotWidth = width - margin.left - margin.right;
+      const plotHeight = height - margin.top - margin.bottom;
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.textContent = "";
+
+      const maxValue = 100;
+      const dailyData = reportData.filter(d => d.newCases != null);
+      const step = plotWidth / dailyData.length;
+      const y = value => margin.top + plotHeight - (value / maxValue) * plotHeight;
+
+      [0, 20, 40, 60, 80, 100].forEach(tick => {
+        const tickY = y(tick);
+        svg.appendChild(createSvgElement("line", { x1: margin.left, y1: tickY, x2: width - margin.right, y2: tickY, class: "grid-line" }));
+        svg.appendChild(createSvgElement("text", { x: margin.left - 10, y: tickY + 4, "text-anchor": "end", class: "chart-label" })).textContent = tick.toLocaleString("cs-CZ");
+      });
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top + plotHeight, x2: width - margin.right, y2: margin.top + plotHeight, stroke: "var(--line)" }));
+      svg.appendChild(createSvgElement("line", { x1: margin.left, y1: margin.top, x2: margin.left, y2: margin.top + plotHeight, stroke: "var(--line)" }));
+      svg.appendChild(createSvgElement("text", { x: margin.left, y: 14, class: "chart-label" })).textContent = "počet v denním hlášení";
+
+      dailyData.forEach((d, index) => {
+        const groupX = margin.left + index * step + step * 0.16;
+        const barWidth = Math.max(5, step * 0.28);
+        const caseHeight = y(0) - y(d.newCases);
+        const sourceTitle = typeof d.sitrep === "number" ? `SitRep ${d.sitrep}` : d.sitrep;
+        const casesLabel = `${fullDate.format(parseDate(d.date))}, ${sourceTitle}, nově hlášené potvrzené případy ${formatNumber(d.newCases)}, úmrtí mezi nově hlášenými ${formatNumber(d.dailyDeaths)}`;
+        const casesBar = createSvgElement("rect", { x: groupX, y: y(d.newCases), width: barWidth, height: caseHeight, class: "bar cases", tabindex: "0", role: "img", "aria-label": casesLabel });
+        const html = `<strong>${fullDate.format(parseDate(d.date))} | ${sourceTitle}</strong>Nově hlášené potvrzené případy: ${formatNumber(d.newCases)}<br>Úmrtí mezi nově hlášenými: ${formatNumber(d.dailyDeaths)}`;
+        casesBar.addEventListener("mousemove", event => showTooltip(tooltip, event, html));
+        casesBar.addEventListener("mouseleave", () => hideTooltip(tooltip));
+        casesBar.addEventListener("focus", event => showTooltip(tooltip, event, html));
+        casesBar.addEventListener("blur", () => hideTooltip(tooltip));
+        svg.appendChild(casesBar);
+
+        if (d.dailyDeaths != null) {
+          const deathHeight = y(0) - y(d.dailyDeaths);
+          const deathsLabel = `${fullDate.format(parseDate(d.date))}, ${sourceTitle}, úmrtí mezi nově hlášenými ${formatNumber(d.dailyDeaths)}`;
+          const deathBar = createSvgElement("rect", { x: groupX + barWidth + 2, y: y(d.dailyDeaths), width: barWidth, height: deathHeight, class: "bar deaths", tabindex: "0", role: "img", "aria-label": deathsLabel });
+          deathBar.addEventListener("mousemove", event => showTooltip(tooltip, event, html));
+          deathBar.addEventListener("mouseleave", () => hideTooltip(tooltip));
+          deathBar.addEventListener("focus", event => showTooltip(tooltip, event, html));
+          deathBar.addEventListener("blur", () => hideTooltip(tooltip));
+          svg.appendChild(deathBar);
+        }
+
+        if (index % 3 === 0 || index === dailyData.length - 1) {
+          svg.appendChild(createSvgElement("text", { x: groupX + barWidth, y: height - 18, "text-anchor": "middle", class: "chart-label" })).textContent = csDate.format(parseDate(d.date));
+        }
+      });
+    }
+
+    function renderTable() {
+      const body = document.querySelector("#data-table tbody");
+      body.textContent = "";
+      reportData.forEach(d => {
+        const tr = document.createElement("tr");
+        const cells = [
+          fullDate.format(parseDate(d.date)),
+          typeof d.sitrep === "number" ? `N°${d.sitrep}` : d.sitrep,
+          formatNumber(d.cases),
+          formatNumber(d.deaths),
+          formatNumber(d.newCases),
+          formatNumber(d.dailyDeaths),
+          d.source
+        ];
+        cells.forEach((value, index) => {
+          const td = document.createElement("td");
+          if (index === 6) {
+            const a = document.createElement("a");
+            a.href = value;
+            a.textContent = d.sourceLabel || "INSP SitRep";
+            td.appendChild(a);
+          } else {
+            td.textContent = value;
+          }
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+
+    renderCumulativeChart();
+    renderDailyChart();
+    renderTable();
+  </script>
+</body>
+</html>

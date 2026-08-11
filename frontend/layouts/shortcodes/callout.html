@@ -1,0 +1,11 @@
+{{/* Zvýrazněné sdělení nad obsahem stránky (typicky hodnocení rizika).
+
+     Usage: {{< callout tone="info" >}}Text sdělení.{{< /callout >}}
+
+     `tone`: info (výchozí) | warning | critical — mění jen barvu pruhu vlevo.
+     Barvy jsou stavové tokeny, ne barvy datových řad; nepoužívat pro grafy.
+*/}}
+{{ $tone := .Get "tone" | default "info" }}
+<div class="pp-callout pp-callout--{{ $tone }}">
+  {{ .Inner | markdownify }}
+</div>

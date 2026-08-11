@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "Pokud použijete tento informační web nebo kurátorovanou datovou řadu, citujte je prosím podle níže uvedených údajů. Licence CC BY 4.0 se vztahuje na původní text, grafy vytvořené pro tento web, kuraci dat a strojově čitelná metadata; nevztahuje se na loga, ochranné známky ani citované či odkazované materiály třetích stran."
+title: "Ebola způsobená virem Bundibugyo 2026"
+authors:
+  - family-names: "Pačes"
+    given-names: "Jan"
+    orcid: "https://orcid.org/0000-0003-3059-6127"
+  - family-names: "Liegertová"
+    given-names: "Michaela"
+    orcid: "https://orcid.org/0000-0003-3858-856X"
+url: "https://titan.img.cas.cz/ebola/"
+version: "v52"
+date-released: "2026-07-27"
+license: "CC-BY-4.0"
+keywords:
+  - Ebola
+  - Bundibugyo virus
+  - BDBV
+  - public health
+  - Democratic Republic of the Congo
+  - Uganda

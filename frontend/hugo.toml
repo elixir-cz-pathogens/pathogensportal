@@ -9,6 +9,11 @@ enableRobotsTXT = true
   mail = "vlasakj@vscht.cz"
   homepage = "https://pathogens.vm.cesnet.cz"
   logo = "/images/elixir_logo.png"
+  # Base URL of the charts API. Empty = same origin (production: the Apache proxy).
+  # The dev server runs on a different port from the BE -> compose sets HUGO_PARAMS_APIBASE.
+  # No underscore, deliberately: Hugo treats `_` in an env variable name as a level
+  # separator, so HUGO_PARAMS_API_BASE would become params.api.base.
+  apibase = ""
 
 [languages]
   [languages.cs]
