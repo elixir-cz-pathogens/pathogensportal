@@ -1,16 +1,16 @@
 # CLAUDE.md — pathogensportal
 
 Public repo of **Pathogen Portal CZ** — a static Hugo website plus a data pipeline that feeds it.
-Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork (`origin = draessld/pathogensportal`)
-is the working repo. Live site: `https://pathogens.vm.cesnet.cz`.
+Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork
+(`origin = elixir-cz-pathogens/pathogensportal`) is the working repo.
+Live site: `https://pathogens.vm.cesnet.cz` · Staging: `https://pathogens-dev.vm.cesnet.cz` (`noindex`).
 
 Docs, code and commit messages are in **English**. The only Czech is the site's own content in
 `frontend/content/cs/`, which is what the public reads.
 
-> ⚠️ **This repo is moving to a GitHub organization** (decided 6 Aug 2026). It is transferred **second**,
-> after `pathogensportal-priv`, because it is the one with consequences: the fork relationship with
-> upstream, branch protection, and the repo variables. Procedure and verification:
-> `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
+> ✅ **Transferred to the `elixir-cz-pathogens` organization on 11 Aug 2026.** The fork link to upstream,
+> all issues/PRs, branch protection and the repo variables survived; old `draessld/...` URLs redirect.
+> Verification record: `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
 
 ## Layout
 
@@ -61,15 +61,21 @@ through Apache.
 
 - **Commit:** `PP-<n>: message`  •  escape: `no-issue: …`  (prefix = repo variable `PROJECT_PREFIX=PP`).
 - **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
-- **`dev`** = free sandbox — push directly, no PR, no checks. **`main`** = protected production.
+- **`dev`** = free sandbox — push directly, no PR, no checks. ⚠️ **But since 17 Aug a push to `dev`
+  DEPLOYS to staging**, which reviewers look at. Still free to break; just not unobserved.
 - **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` and
   `branch-name-check` (they run, not required yet). Automations: issue prefixer, branch→issue linker, PR notify.
-- **Deploy workflows are DISABLED:** `deploy-staging.yml` (push to `dev`) and `deploy-production.yml`
-  (push to `main`) are gated on `if: vars.DEPLOY_ENABLED == 'true'`. Staging and production have
-  **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
+- **Staging deploy is LIVE; production deploy is OFF.** `deploy-staging.yml` (push to `dev`) runs
+  tests → Hugo build → rsync. `deploy-production.yml` (push to `main`) is gated on
+  `DEPLOY_PRODUCTION_ENABLED`, which is **not set** and must not be without the administrator's approval.
+  ⛔ **One flag per environment** — it used to be a single `DEPLOY_ENABLED`, so enabling staging also armed
+  production and a merge to `main` would have hit the live site. Do not merge them back.
+- **Tests gate both deploys** via the reusable `_test-backend.yml`; it fails if it finds *no* tests.
+- Staging and production have **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
   `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — do not merge them. `baseURL` is derived from `*_HOST`;
   no hostname is hardcoded.
-- Merges to `main` must be **squash/rebase** (main enforces linear history).
+- **Merges to `main` must be squash/rebase** (linear history) — so **realign `dev` with `main` right after
+  every release**, or the two histories drift and the next release conflicts. This has bitten us twice.
 - Full workflow reference: `.github/workflows/WORKFLOWS_GUIDE.md`.
 
 ## Related repos
