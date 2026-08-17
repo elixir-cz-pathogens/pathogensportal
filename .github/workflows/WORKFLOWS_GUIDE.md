@@ -12,9 +12,10 @@ Settings → Secrets and variables → Actions → Variables
 | `PROJECT_PREFIX` | prefix for issues/branches/commits | `PP` |
 | `IGNORE_PREFIX` | the escape hatch for changes without an issue | `no-issue` |
 | `UPSTREAM_URL` | the upstream whose commits are **not validated** | `https://github.com/jirkavlasak/pathogensportal.git` |
-| `DEPLOY_ENABLED` | the master switch for both deploy workflows | *(unset = off)* |
-| `STAGING_HOST` | FQDN of the staging machine | ⏸️ to be recorded |
-| `STAGING_PATH` | DocumentRoot on staging | ⏸️ |
+| `DEPLOY_STAGING_ENABLED` | switch for the **staging** deploy only | ⏸️ set to `true` to arm staging |
+| `DEPLOY_PRODUCTION_ENABLED` | switch for the **production** deploy only | *(unset = off; rule #1 applies)* |
+| `STAGING_HOST` | FQDN of the staging machine | `pathogens-dev.vm.cesnet.cz` |
+| `STAGING_PATH` | DocumentRoot on staging | `/opt/pathogensportal/frontend/public` |
 | `PRODUCTION_HOST` | FQDN of production | `pathogens.vm.cesnet.cz` |
 | `PRODUCTION_PATH` | DocumentRoot in production | ⏸️ (changes at the cutover) |
 | `DEPLOY_USER` | the account used for rsync | `github-deploy` |
@@ -99,14 +100,26 @@ corresponding issue.
 ### `auto-pr-open-notify.yml` / `auto-pr-merged-notify.yaml`
 Comment into the issue (whose number comes from the PR title) when a PR is opened / merged.
 
-## Deploy workflows (⛔ disabled for now)
+## Deploy workflows
 
-Both are gated on `if: vars.DEPLOY_ENABLED == 'true'`. As long as that variable doesn't exist, the job is
-skipped — so the files can sit finished in the repo without deploying anything.
+Each is gated on **its own** variable — `DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED`. While a
+variable doesn't exist, that workflow's jobs are skipped, so a finished file can sit in the repo
+deploying nothing.
+
+> ### ⚠️ One flag used to arm both — split on 17 Aug 2026
+> Both workflows read the same `DEPLOY_ENABLED`. Turning staging on therefore **also armed production**,
+> and the next push to `main` would have deployed to the live site with nobody having decided that.
+> Production is governed by rule #1 — never touched without the administrator's approval — so it cannot
+> hang off a flag flipped to test staging. This was the last thing the two environments still shared;
+> hosts and keys had already been separated on 28 Jul. **Do not merge them back.**
 
 ### `deploy-staging.yml` / `deploy-production.yml`
-Build with Hugo → `rsync` the static output over SSH to the target machine. Staging runs from `dev`,
-production from `main`.
+Unit tests → build with Hugo → `rsync` the static output over SSH to the target machine. Staging runs
+from `dev`, production from `main`.
+
+**Tests gate the deploy.** Both call `_test-backend.yml` and the deploy job `needs:` it, so a red test
+never reaches a machine. Staging matters here as much as production: reviewers judge the release from
+that site, and it must not be able to show them a build whose backend tests are failing.
 
 **`baseURL` is derived from `STAGING_HOST` / `PRODUCTION_HOST`**, not hardcoded. The machine name is thus
 in one place, and a DNS change (a different provider, an own domain) is a repo-variable change. The job's
@@ -126,9 +139,14 @@ otherwise you would get `baseURL "https:///"` and rsync to `user@`.
 secret it would be masked in the log — breaking both the readability of `baseURL` and any debugging of
 `ssh-keyscan`. The secret is **the private key alone**.
 
-**What remains before enabling:** the `github-deploy` account on the target machine
-(`SECRETS_RUNBOOK.md` §4), setting the variables from the table above, then `DEPLOY_ENABLED=true`.
-Staging first; production only after a verified run.
+**Staging — done 17 Aug 2026:** the `github-deploy` account exists on `pathogens-dev.vm.cesnet.cz`
+(created by the Ansible `users` role; member of `app` only, key restricted to
+`no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc`, and a single sudoers line
+permitting nothing but a `website-be` container restart). `DEPLOY_USER`, `STAGING_HOST` and
+`STAGING_PATH` are set. Remaining: the `STAGING_SSH_KEY` secret, then `DEPLOY_STAGING_ENABLED=true`.
+
+**Production — not before the cutover.** It needs a **separately generated** key pair (never staging's),
+`PRODUCTION_PATH` switched at the same moment as the Apache vhost, and the administrator's approval.
 
 ## The typical working cycle
 

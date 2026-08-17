@@ -1,13 +1,21 @@
 name: "Deploy: Staging (dev)"
 
-# ⛔ DISABLED FOR NOW. The job runs only when the repo variable DEPLOY_ENABLED == 'true'.
-# To enable (once the staging machine and the github-deploy account exist):
+# Enabled by the repo variable DEPLOY_STAGING_ENABLED == 'true'.
+# Requires:
 #   1) secret: STAGING_SSH_KEY   (the github-deploy private key FOR THE STAGING MACHINE)
 #   2) vars:   STAGING_HOST      (FQDN of the staging machine, e.g. pathogens-dev.vm.cesnet.cz)
 #              STAGING_PATH      (DocumentRoot on the staging machine)
 #              DEPLOY_USER       (the account used for rsync, typically github-deploy)
-#              DEPLOY_ENABLED=true
-# Deploy = build Hugo from the `dev` branch -> rsync the static output to the staging machine.
+#              DEPLOY_STAGING_ENABLED=true
+# Deploy = test -> build Hugo from the `dev` branch -> rsync the static output to staging.
+#
+# ⚠️ THE ENABLE FLAG IS PER ENVIRONMENT — it used to be a single DEPLOY_ENABLED
+#    shared with deploy-production.yml. That meant switching staging on ALSO armed
+#    production: the next push to `main` would have deployed to the live site with
+#    nobody having decided that. Production is governed by rule #1 (never touched
+#    without the administrator's approval), so it cannot hang off a flag someone
+#    flips to test staging. Split on 17 Aug 2026 — do not merge them back, for the
+#    same reason the hosts and keys are already separate.
 #
 # ⚠️ Staging and production DELIBERATELY have separate hosts and separate keys (they used
 #    to share DEPLOY_HOST and DEPLOY_SSH_KEY). With two machines, a shared host would mean
@@ -19,8 +27,19 @@ on:
     branches: [dev]
 
 jobs:
+  # Unit tests gate the deploy: a red test never reaches the staging machine.
+  # Reviewers are looking at this site to judge the release, so it must not be
+  # able to show them a build whose backend tests are failing.
+  tests:
+    if: ${{ vars.DEPLOY_STAGING_ENABLED == 'true' }}
+    uses: ./.github/workflows/_test-backend.yml
+
   deploy-staging:
-    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    # `needs` is what makes it a gate rather than two things running side by side.
+    # It also means that when the flag is off, `tests` is skipped and this is
+    # skipped with it — one switch still controls the whole workflow.
+    needs: tests
+    if: ${{ vars.DEPLOY_STAGING_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     env:
       # The hostname is NOT a secret (it is also in hugo.toml) — deliberately `vars`,

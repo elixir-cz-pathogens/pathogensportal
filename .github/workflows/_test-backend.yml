@@ -1,0 +1,56 @@
+name: "CI: Backend Tests (reusable)"
+
+# The backend unit tests, in ONE place. Called by:
+#   - backend-tests.yml   → on PRs into `main`
+#   - deploy-staging.yml  → gates the deploy to the staging machine
+#   - deploy-production.yml → gates the deploy to production
+#
+# Why reusable rather than copied into each: a deploy gate and a PR check that
+# drift apart are worse than no gate at all — the PR would go green against one
+# set of rules and the deploy against another. One file, one definition.
+#
+# The leading underscore marks it as a building block, not a workflow anyone
+# triggers directly.
+
+on:
+  workflow_call:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run pytest for each backend service
+        run: |
+          set -e
+          found=0
+          for svc in backend/*/; do
+            [ -f "${svc}requirements.txt" ] || continue
+            [ -d "${svc}tests" ] || continue
+            found=1
+            echo "::group::${svc}"
+            pip install -q -r "${svc}requirements.txt"
+            ( cd "$svc" && pytest -q )
+            echo "::endgroup::"
+          done
+
+          # ⚠️ Finding NOTHING is a FAILURE, not a pass.
+          #
+          # This used to print "No BE services with tests were found." and exit 0.
+          # That is acceptable for an informational check and unacceptable for a
+          # deploy gate: rename `backend/`, move the services, break the glob, and
+          # the gate silently turns into a no-op that waves every deploy through.
+          # A gate that cannot tell "everything passed" from "I ran nothing" is
+          # not a gate. Three services have tests today; if that becomes zero,
+          # someone needs to look at it deliberately.
+          if [ "$found" -eq 0 ]; then
+            echo "::error::No backend service with requirements.txt + tests/ was found."
+            echo "If the backend layout changed on purpose, update this workflow deliberately."
+            exit 1
+          fi
+          echo "Backend services tested: ${found}"

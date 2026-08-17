@@ -1,12 +1,19 @@
 name: "Deploy: Production (main)"
 
-# ⛔ DISABLED FOR NOW. The job runs only when the repo variable DEPLOY_ENABLED == 'true'.
-# To enable (once the server and the github-deploy account exist, and staging runs verifiably):
-#   1) secret: PRODUCTION_SSH_KEY   (the github-deploy private key FOR PRODUCTION)
+# ⛔ DISABLED. Runs only when the repo variable DEPLOY_PRODUCTION_ENABLED == 'true',
+#    which is NOT set and must not be set without the administrator's approval (rule #1).
+# To enable (once the cutover has happened and staging has run verifiably for a while):
+#   1) secret: PRODUCTION_SSH_KEY   (the github-deploy private key FOR PRODUCTION —
+#              generated separately; staging's key must never be reused here)
 #   2) vars:   PRODUCTION_HOST      (FQDN of production, today pathogens.vm.cesnet.cz)
 #              PRODUCTION_PATH      (DocumentRoot in production)
 #              DEPLOY_USER          (the account used for rsync, typically github-deploy)
-#              DEPLOY_ENABLED=true
+#              DEPLOY_PRODUCTION_ENABLED=true
+#
+# ⚠️ THE FLAG IS PER ENVIRONMENT since 17 Aug 2026. It used to be a shared
+#    DEPLOY_ENABLED, so enabling staging silently armed this workflow too. Deploying
+#    to the live site is exactly the kind of action rule #1 exists to prevent from
+#    happening as a side effect of someone else's decision.
 # Deploy = after a merge into `main`, build Hugo -> rsync the static output to production.
 #
 # ⚠️ Staging and production DELIBERATELY have separate hosts and separate keys (they used
@@ -22,8 +29,15 @@ on:
     branches: [main]
 
 jobs:
+  # The same unit tests that gate staging. Production must not have a weaker gate
+  # than the rehearsal environment.
+  tests:
+    if: ${{ vars.DEPLOY_PRODUCTION_ENABLED == 'true' }}
+    uses: ./.github/workflows/_test-backend.yml
+
   deploy-production:
-    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    needs: tests
+    if: ${{ vars.DEPLOY_PRODUCTION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     env:
       # The hostname is NOT a secret (it is also in hugo.toml) — deliberately `vars`,
