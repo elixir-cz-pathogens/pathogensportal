@@ -1,33 +1,15 @@
 name: "CI: Backend Tests"
 
-# Unit testy BE služeb (website-be, llm-agent-be, mcp) — JEN na PR do `main`.
+# Unit tests for the BE services (website-be, llm-agent-be, mcp) — ONLY on PRs into `main`.
+#
+# The steps themselves live in _test-backend.yml, because the same tests also gate
+# the staging and production deploys. Keeping one definition means the PR check and
+# the deploy gate can never disagree about what "tests pass" means.
+
 on:
   pull_request:
     branches: [main]
 
 jobs:
   backend-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Run pytest for each backend service
-        run: |
-          set -e
-          found=0
-          for svc in backend/*/; do
-            [ -f "${svc}requirements.txt" ] || continue
-            [ -d "${svc}tests" ] || continue
-            found=1
-            echo "::group::${svc}"
-            pip install -q -r "${svc}requirements.txt"
-            ( cd "$svc" && pytest -q )
-            echo "::endgroup::"
-          done
-          if [ "$found" -eq 0 ]; then
-            echo "Žádné BE služby s testy nenalezeny."
-          fi
+    uses: ./.github/workflows/_test-backend.yml

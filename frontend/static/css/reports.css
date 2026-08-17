@@ -1,0 +1,337 @@
+/* Adaptér pro externě generované situační reporty.
+ *
+ * Dodaný HTML obsah si nese vlastní názvy tříd (`note ok`, `summary`, `card`,
+ * `fair-panel`, …). Tenhle soubor je překládá na tokeny portálu z dashboards.css,
+ * takže cizí obsah vypadá jako zbytek webu, aniž by se do něj muselo zasahovat.
+ *
+ * ⚠️ Kontrakt s generátorem = tyhle názvy tříd. Když v dodávce přibude nová,
+ * `tools/ingest_report.py` ji ohlásí jako neznámou — jinak by se sekce tiše
+ * vykreslila bez stylu. Nová třída se řeší tady, ne úpravou obsahu.
+ *
+ * Načítá se jen na stránkách s `report:` ve front matteru (viz dashboards/single.html).
+ */
+
+/* Report je uvnitř kontejneru portálu — vlastní šířku si neurčuje. */
+.pp-report .wrap {
+  width: auto;
+  margin: 0;
+}
+
+.pp-report section {
+  margin-bottom: 1.75rem;
+}
+
+.pp-report h2 {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--pp-text);
+  margin: 2.25rem 0 0.75rem;
+}
+
+.pp-report h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--pp-text);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.pp-report p,
+.pp-report li {
+  color: var(--pp-text-secondary);
+}
+
+.pp-report > .wrap > section > p {
+  max-width: 72ch;
+}
+
+/* ---------- Zvýrazněná sdělení (.note, .ok, .warning) ---------- */
+
+.pp-report .note {
+  border: 1px solid var(--pp-border);
+  border-left: 3px solid var(--pp-note-accent, var(--pp-series-1));
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  padding: 0.9rem 1.15rem;
+  margin: 1.25rem 0;
+}
+
+.pp-report .note p:last-child {
+  margin-bottom: 0;
+}
+
+.pp-report .note.ok {
+  --pp-note-accent: var(--pp-status-ok);
+}
+
+.pp-report .note.warning {
+  --pp-note-accent: var(--pp-status-warn);
+}
+
+/* ---------- Klíčové údaje (.summary) ---------- */
+
+.pp-report .summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.9rem;
+  margin: 1.5rem 0;
+}
+
+.pp-report .summary > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border: 1px solid var(--pp-border);
+  border-left: 3px solid var(--pp-series-1);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  box-shadow: var(--pp-shadow);
+  padding: 0.85rem 1rem;
+}
+
+/* Údaj, který si žádá pozornost — stavová barva, ne barva řady. */
+.pp-report .summary > div.alert {
+  border-left-color: var(--pp-status-alert);
+}
+
+.pp-report .summary strong {
+  color: var(--pp-text);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+/* `.meta` je vysvětlivka pod údajem — v dodávce je to <span>, tedy inline. */
+.pp-report .meta {
+  display: block;
+  color: var(--pp-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ---------- Karty a mřížky (.card, .grid, .source, .debunk) ---------- */
+
+.pp-report .grid,
+.pp-report .source-group,
+.pp-report .debunk-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.9rem;
+  margin: 1.25rem 0;
+}
+
+.pp-report .two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+@media (max-width: 700px) {
+  .pp-report .two-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pp-report .card,
+.pp-report .source,
+.pp-report .debunk {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  box-shadow: var(--pp-shadow);
+  padding: 1rem 1.15rem;
+}
+
+.pp-report .card h3,
+.pp-report .source h3,
+.pp-report .debunk h3 {
+  margin-top: 0;
+  font-size: 0.98rem;
+}
+
+.pp-report .card p:last-child,
+.pp-report .source p:last-child,
+.pp-report .debunk p:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Tabulky (.plain-table-wrap / .plain-table) ---------- */
+
+.pp-report .plain-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  margin: 1.25rem 0;
+}
+
+.pp-report .plain-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+.pp-report .plain-table th,
+.pp-report .plain-table td {
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.5;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid var(--pp-grid);
+  color: var(--pp-text-secondary);
+}
+
+.pp-report .plain-table thead th {
+  color: var(--pp-text);
+  font-weight: 600;
+  border-bottom: 1px solid var(--pp-border);
+  white-space: nowrap;
+}
+
+.pp-report .plain-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Minimální šířky si nese obsah — široké tabulky se posouvají v obalu výše. */
+.pp-report .milestone-table {
+  min-width: 900px;
+}
+
+.pp-report .species-table {
+  min-width: 520px;
+}
+
+.pp-report .table-tight th,
+.pp-report .table-tight td {
+  padding: 0.35rem 0.6rem;
+}
+
+/* ---------- Poznámky pod obsahem ---------- */
+
+.pp-report .refs,
+.pp-report .data-note {
+  font-size: 0.8rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-report .refs a,
+.pp-report .data-note a {
+  color: var(--pp-text-secondary);
+}
+
+/* ---------- FAIR panel ---------- */
+
+.pp-report .fair-panel {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface);
+  padding: 1.25rem 1.4rem;
+  margin: 2rem 0;
+}
+
+.pp-report .fair-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pp-series-1);
+  margin-bottom: 0.4rem;
+}
+
+.pp-report .fair-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.pp-report .fair-head h2 {
+  margin-top: 0;
+}
+
+.pp-report .fair-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.75rem;
+  margin: 1.25rem 0 0;
+}
+
+.pp-report .fair-facts dt {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--pp-text-muted);
+  font-weight: 500;
+}
+
+.pp-report .fair-facts dd {
+  margin: 0.15rem 0 0;
+  font-size: 0.88rem;
+  color: var(--pp-text-secondary);
+}
+
+.pp-report .fair-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.pp-report .fair-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid var(--pp-border);
+  border-radius: 6px;
+  background: var(--pp-surface-raised);
+  color: var(--pp-text-secondary);
+  font-size: 0.82rem;
+  text-decoration: none;
+}
+
+.pp-report .fair-button:hover {
+  border-color: var(--pp-series-1);
+  color: var(--pp-series-1);
+}
+
+.pp-report .fair-machine {
+  margin: 1rem 0 0;
+  font-size: 0.8rem;
+  color: var(--pp-text-muted);
+}
+
+/* ---------- Zbytky po nahrazeném grafu ---------- */
+
+/* Vlastní vykreslování grafu nahrazuje ingest naší komponentou; legenda ale
+   může zůstat mimo nahrazený panel, tak ať aspoň nevyčnívá. */
+.pp-report .legend,
+.pp-report .trajectory-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  font-size: 0.78rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-report .legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pp-report .legend-swatch,
+.pp-report .legend-line {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--pp-series-1);
+}
+
+.pp-report .legend-swatch.bar-deaths,
+.pp-report .legend-line.deaths {
+  background: var(--pp-series-2);
+}
+
+.pp-report .legend-line.bundibugyo {
+  background: var(--pp-series-1);
+}

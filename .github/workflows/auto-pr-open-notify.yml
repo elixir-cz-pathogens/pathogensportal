@@ -1,6 +1,6 @@
 name: "AUTOMATION: PR Open Notification"
 
-# Při otevření PR napíše komentář do odpovídajícího issue (číslo bere z titulku PR).
+# When a PR is opened, posts a comment into the matching issue (the number comes from the PR title).
 on:
   pull_request:
     types: [opened]

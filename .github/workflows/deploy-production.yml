@@ -1,20 +1,59 @@
 name: "Deploy: Production (main)"
 
-# ⛔ ZATÍM VYPNUTO. Job běží jen když je repo proměnná DEPLOY_ENABLED == 'true'.
-# Zapnutí (až bude server + github-deploy ready):
-#   1) nastavit secrets: DEPLOY_SSH_KEY, DEPLOY_HOST, DEPLOY_USER
-#   2) nastavit vars:    PRODUCTION_PATH (DocumentRoot produkce), DEPLOY_ENABLED=true
-# Deploy = po merge do `main` build Huga -> rsync statiky na produkci `pathogens.vm.cesnet.cz`.
+# ⛔ DISABLED. Runs only when the repo variable DEPLOY_PRODUCTION_ENABLED == 'true',
+#    which is NOT set and must not be set without the administrator's approval (rule #1).
+# To enable (once the cutover has happened and staging has run verifiably for a while):
+#   1) secret: PRODUCTION_SSH_KEY   (the github-deploy private key FOR PRODUCTION —
+#              generated separately; staging's key must never be reused here)
+#   2) vars:   PRODUCTION_HOST      (FQDN of production, today pathogens.vm.cesnet.cz)
+#              PRODUCTION_PATH      (DocumentRoot in production)
+#              DEPLOY_USER          (the account used for rsync, typically github-deploy)
+#              DEPLOY_PRODUCTION_ENABLED=true
+#
+# ⚠️ THE FLAG IS PER ENVIRONMENT since 17 Aug 2026. It used to be a shared
+#    DEPLOY_ENABLED, so enabling staging silently armed this workflow too. Deploying
+#    to the live site is exactly the kind of action rule #1 exists to prevent from
+#    happening as a side effect of someone else's decision.
+# Deploy = after a merge into `main`, build Hugo -> rsync the static output to production.
+#
+# ⚠️ Staging and production DELIBERATELY have separate hosts and separate keys (they used
+#    to share DEPLOY_HOST and DEPLOY_SSH_KEY). With two machines, a shared host would mean
+#    a push to `dev` deploys to production; a shared key would turn a compromised staging
+#    into access to production. Do not merge them back.
+#
+# ⚠️ PRODUCTION_PATH changes in Phase 7 (the cutover) from /var/www/pathogensportal/site/public
+#    to .../frontend/public — it must be switched AT THE SAME TIME as the vhost, or the site 404s.
 
 on:
   push:
     branches: [main]
 
 jobs:
+  # The same unit tests that gate staging. Production must not have a weaker gate
+  # than the rehearsal environment.
+  tests:
+    if: ${{ vars.DEPLOY_PRODUCTION_ENABLED == 'true' }}
+    uses: ./.github/workflows/_test-backend.yml
+
   deploy-production:
-    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    needs: tests
+    if: ${{ vars.DEPLOY_PRODUCTION_ENABLED == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      # The hostname is NOT a secret (it is also in hugo.toml) — deliberately `vars`,
+      # not `secrets`: a masked value would break both baseURL in the log and any
+      # debugging of ssh-keyscan.
+      PRODUCTION_HOST: ${{ vars.PRODUCTION_HOST }}
     steps:
+      - name: Check deploy target is configured
+        # Without this guard, an empty variable would produce baseURL "https:///"
+        # and rsync would try to connect to "user@" — both fail incomprehensibly.
+        run: |
+          test -n "$PRODUCTION_HOST" || {
+            echo "::error::Missing repo variable PRODUCTION_HOST (FQDN of production)."; exit 1; }
+          test -n "${{ vars.PRODUCTION_PATH }}" || {
+            echo "::error::Missing repo variable PRODUCTION_PATH (DocumentRoot in production)."; exit 1; }
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -22,24 +61,29 @@ jobs:
 
       - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: latest
+          # Pinned, not `latest`: 0.164 silently changed the content security
+          # policy and broke the build. A build should not change under us.
+          hugo-version: '0.164.0'
           extended: true
 
       - name: Build (production baseURL)
         working-directory: frontend
-        run: hugo --minify --baseURL "https://pathogens.vm.cesnet.cz/"
+        # baseURL is derived from PRODUCTION_HOST — the machine name lives in one place.
+        run: hugo --minify --baseURL "https://${PRODUCTION_HOST}/"
 
       - name: Deploy via rsync over SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_ed25519
+          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null
-          # POZOR na -a: zahrnuje -p/-g/-t, tedy přenos práv, skupin a časů.
-          # Cílový adresář na serveru vlastní `app`, deploy účet je jen členem
-          # skupiny `app` — chmod cizího adresáře mu jádro nedovolí a rsync skončí
-          # s kódem 23, i když se soubory přenesou. Ověřeno v labu 19. 7. 2026.
-          # Práva řeší setgid na cílovém adresáři (2775), rsync je přenášet nemá.
+          ssh-keyscan -H "$PRODUCTION_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
+          # The target directory on the server is owned by `app`; the deploy account is
+          # only a member of the `app` group — the kernel will not let it chmod someone
+          # else's directory and rsync exits with code 23, even though the files transfer.
+          # Verified in the lab on 19 Jul 2026.
+          # Permissions are handled by setgid on the target directory (2775); rsync must
+          # not transfer them.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             frontend/public/ \
-            "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ vars.PRODUCTION_PATH }}/"
+            "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}/"

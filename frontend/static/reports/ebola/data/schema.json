@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://titan.img.cas.cz/ebola/data/schema.json",
+  "title": "DRK Bundibugyo virus disease SitRep time series row",
+  "description": "Schema for one curated row used by the v52 trajectory chart, reviewed on 2026-07-27.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "date",
+    "sitrep_number",
+    "confirmed_cases_cumulative",
+    "confirmed_deaths_cumulative",
+    "new_confirmed_cases_reported",
+    "source_url",
+    "source_data_as_of_date",
+    "curation_date"
+  ],
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "sitrep_number": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "confirmed_cases_cumulative": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "confirmed_deaths_cumulative": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "new_confirmed_cases_reported": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "daily_deaths_reported": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "source_data_as_of_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "curation_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

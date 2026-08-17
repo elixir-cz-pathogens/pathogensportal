@@ -1,0 +1,103 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/"
+  },
+  "@graph": [
+    {
+      "@id": "https://titan.img.cas.cz/ebola/#website",
+      "@type": "WebSite",
+      "name": "Ebola způsobená virem Bundibugyo 2026",
+      "url": "https://titan.img.cas.cz/ebola/",
+      "inLanguage": ["cs", "en"],
+      "isAccessibleForFree": true,
+      "version": "v52",
+      "dateModified": "2026-07-27",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "copyrightNotice": "Unless stated otherwise, CC BY 4.0 applies to original text, website-created charts, data curation and machine-readable metadata. Logos, trademarks and third-party materials are excluded.",
+      "creator": [
+        { "@id": "https://orcid.org/0000-0003-3059-6127" },
+        { "@id": "https://orcid.org/0000-0003-3858-856X" }
+      ]
+    },
+    {
+      "@id": "https://titan.img.cas.cz/ebola/index.html#webpage",
+      "@type": ["WebPage", "Article"],
+      "url": "https://titan.img.cas.cz/ebola/index.html",
+      "name": "Ebola způsobená virem Bundibugyo v DR Kongo a Ugandě",
+      "description": "Aktuální přehled k ohnisku onemocnění ebolou způsobeného virem Bundibugyo v DR Kongo a Ugandě při ověření 27. července 2026.",
+      "inLanguage": "cs",
+      "isPartOf": { "@id": "https://titan.img.cas.cz/ebola/#website" },
+      "dateModified": "2026-07-27",
+      "version": "v52",
+      "isAccessibleForFree": true,
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "author": [
+        { "@id": "https://orcid.org/0000-0003-3059-6127" },
+        { "@id": "https://orcid.org/0000-0003-3858-856X" }
+      ],
+      "keywords": ["Ebola", "Bundibugyo virus", "BDBV", "DR Kongo", "Uganda", "veřejné zdraví"],
+      "about": [
+        { "@id": "https://identifiers.org/taxonomy:565995" },
+        { "@id": "https://identifiers.org/mesh:D019142" }
+      ],
+      "isBasedOn": [
+        "https://www.who.int/emergencies/alert-and-response",
+        "https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON613",
+        "https://www.afro.who.int/media-centre/statements-commentaries/virus-will-not-wait-neither-can-we-two-months-ebola-emergency",
+        "https://insp.cd/sitrep-n071-mvb_24-07-2026/",
+        "https://insp.cd/sitrep-n070-mvb_23-07-2026/",
+        "https://insp.cd/sitrep-n069-mvb_22-07-2026/",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_68_21-07-2026.pdf",
+        "https://insp.cd/sitrep-n067-mvb_20-07-2026/",
+        "https://insp.cd/sitrep-n066-mvb_19-07-2026/",
+        "https://insp.cd/sitrep-n065-mvb_18-07-2026/",
+        "https://insp.cd/sitrep-n064-mvb_17-07-2026/",
+        "https://insp.cd/sitrep-n062-mvb_15-07-2026/",
+        "https://insp.cd/sitrep-n061-mvb_14-07-2026/",
+        "https://insp.cd/sitrep-n060-mvb-13-07-2026/",
+        "https://evd-daily.health.go.ug/",
+        "https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda",
+        "https://www.canada.ca/en/public-health/news/2026/07/new-temporary-border-measures-in-response-to-the-ebola-disease-outbreak.html",
+        "https://alima.ngo/actualites/virus-ebola-bundibugyo-lancement-essai-ebo-pep/",
+        "https://www.who.int/publications/i/item/B09835",
+        "https://www.ox.ac.uk/news/2026-07-24-first-volunteer-vaccinated-in-the-worlds-first-bundibugyo-ebolavirus-vaccine-trial"
+      ]
+    },
+    {
+      "@id": "https://titan.img.cas.cz/ebola/en/index.html#webpage",
+      "@type": ["WebPage", "Article"],
+      "url": "https://titan.img.cas.cz/ebola/en/index.html",
+      "name": "Ebola caused by Bundibugyo virus in the DRC and Uganda",
+      "description": "Current overview of the outbreak of Ebola disease caused by Bundibugyo virus in the DRC and Uganda, verified on 27 July 2026.",
+      "inLanguage": "en",
+      "isPartOf": { "@id": "https://titan.img.cas.cz/ebola/#website" },
+      "translationOfWork": { "@id": "https://titan.img.cas.cz/ebola/index.html#webpage" },
+      "dateModified": "2026-07-27",
+      "version": "v52",
+      "isAccessibleForFree": true,
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "author": [
+        { "@id": "https://orcid.org/0000-0003-3059-6127" },
+        { "@id": "https://orcid.org/0000-0003-3858-856X" }
+      ]
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3059-6127",
+      "@type": "Person",
+      "name": "Jan Pačes",
+      "identifier": "https://orcid.org/0000-0003-3059-6127",
+      "affiliation": { "@id": "https://www.img.cas.cz/" }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3858-856X",
+      "@type": "Person",
+      "name": "Michaela Liegertová",
+      "identifier": "https://orcid.org/0000-0003-3858-856X",
+      "affiliation": [
+        { "@id": "https://www.img.cas.cz/" },
+        { "@id": "https://prf.ujep.cz/cs/" }
+      ]
+    }
+  ]
+}

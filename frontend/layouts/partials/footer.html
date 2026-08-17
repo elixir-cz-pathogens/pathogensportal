@@ -93,6 +93,23 @@
 
 <script lang="js">
   document.addEventListener("DOMContentLoaded", function() {
-    new DataTable('table')
+    // `order: []` is essential: DataTables' default behaviour is to sort by the
+    // first column ascending, which in curated tables destroys the order the
+    // author chose — the "Major events" timeline sorted as text ("10. 7." before
+    // "5. 5.") and the most important source ended up in the middle.
+    new DataTable('table', {
+      order: [],
+      pageLength: 25,
+      lengthMenu: [10, 25, 50, 100],
+      language: {
+        search: "Hledat:",
+        lengthMenu: "Zobrazit _MENU_ řádků",
+        info: "_START_–_END_ z _TOTAL_ řádků",
+        infoEmpty: "Žádné řádky",
+        infoFiltered: "(filtrováno z _MAX_ řádků)",
+        zeroRecords: "Nic nenalezeno",
+        paginate: { first: "První", last: "Poslední", next: "Další", previous: "Předchozí" }
+      }
+    })
   })
 </script>

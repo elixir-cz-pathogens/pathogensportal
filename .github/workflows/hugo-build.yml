@@ -1,6 +1,6 @@
 name: "CI: Hugo Build"
 
-# Reálná kontrola — ověří, že se web vůbec postaví. JEN na PR do `main`.
+# A real check — verifies the site builds at all. ONLY on PRs into `main`.
 on:
   pull_request:
     branches: [main]
@@ -11,13 +11,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          submodules: recursive    # Hugo téma je git submodule
+          submodules: recursive    # the Hugo theme is a git submodule
           fetch-depth: 0
 
       - name: Setup Hugo (extended)
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: latest
+          # Pinned, not `latest`: 0.164 silently changed the content security
+          # policy and broke the build. A build should not change under us.
+          hugo-version: '0.164.0'
           extended: true
 
       - name: Build site

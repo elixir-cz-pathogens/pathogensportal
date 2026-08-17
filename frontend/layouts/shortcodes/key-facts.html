@@ -1,0 +1,15 @@
+{{/* Seznam klíčových údajů: tučný údaj + vysvětlení pod ním.
+
+     Usage:
+       {{< key-facts >}}
+       {{< key-fact value="2 011 potvrzených v DRK" >}}
+       INSP/COUSP SitRep 60: údaje k 13. 7.; 754 úmrtí…
+       {{< /key-fact >}}
+       {{< /key-facts >}}
+
+     Nahrazuje zápis `**údaj**vysvětlení`, ze kterého se v HTML stane
+     `<strong>údaj</strong>vysvětlení` slepené bez oddělovače.
+*/}}
+<dl class="pp-facts">
+  {{ .Inner }}
+</dl>

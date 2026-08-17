@@ -1,6 +1,6 @@
 name: "AUTOMATION: PR Merged Notification"
 
-# Při mergnutí PR napíše komentář do odpovídajícího issue.
+# When a PR is merged, posts a comment into the matching issue.
 on:
   pull_request:
     types: [closed]

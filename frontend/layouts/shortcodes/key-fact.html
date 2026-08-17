@@ -1,0 +1,5 @@
+{{/* Jedna položka do {{< key-facts >}} — viz tamní komentář. */}}
+<div class="pp-facts__row">
+  <dt class="pp-facts__value">{{ .Get "value" }}</dt>
+  <dd class="pp-facts__note">{{ .Inner | markdownify }}</dd>
+</div>

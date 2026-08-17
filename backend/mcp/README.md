@@ -1,10 +1,10 @@
 # mcp
 
-Model Context Protocol adaptér — bezpečný přístup AI k datům.
+The Model Context Protocol adapter — safe AI access to the data.
 
-Kontejner (FastAPI). Poslouchá jen na interní síti — ven jde vše přes Apache.
+A container (FastAPI). It listens on the internal network only — everything goes out through Apache.
 
 - Health: `GET /health`
-- Port (interní): `8002`
-- Lokálně: `uvicorn app.main:app --reload --port 8002`
-- Testy: `pytest`
+- Port (internal): `8002`
+- Locally: `uvicorn app.main:app --reload --port 8002`
+- Tests: `pytest`

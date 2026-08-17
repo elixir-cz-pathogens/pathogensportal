@@ -1,25 +1,18 @@
-{{/* Usage: {{< stat-card src="/data/charts/covid_summary.json" >}} */}}
+{{/* A row of summary figures.
+
+     Usage: {{< stat-card src="/data/charts/covid_summary.json" >}}
+
+     Which keys are displayed is decided by STAT_FIELDS in /js/pp-charts.js — a
+     tile for a missing key is not rendered, so the same shortcode serves
+     covid_summary i ebola_summary.
+*/}}
 {{ $src := .Get "src" }}
-<div id="stat-cards-{{ md5 $src }}" class="row g-3 my-3">
-  <div class="col-12 text-muted small">Načítám statistiky…</div>
+
+<div class="pp-stats-block">
+  <div class="pp-stats" data-pp-stats data-src="{{ $src }}">
+    <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
+    <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
+    <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
+  </div>
+  <p class="pp-stats-origin"><span class="pp-origin" data-pp-origin>načítám data…</span></p>
 </div>
-<script>
-(function(){
-  var containerId = "stat-cards-{{ md5 $src }}";
-  function fmt(n) { return n ? n.toLocaleString('cs-CZ') : '—'; }
-  fetch({{ $src }}).then(function(r){ return r.json(); }).then(function(d){
-    var el = document.getElementById(containerId);
-    el.innerHTML = [
-      ['Celkem nakažených', d.celkem_nakazenych, '#0d6efd'],
-      ['Celkem úmrtí',      d.celkem_umrti,      '#dc3545'],
-      ['Celkem testů',      d.celkem_testu,      '#198754'],
-    ].map(function(item){
-      return '<div class="col-sm-4"><div class="card text-white h-100" style="background:' + item[2] + '">'
-        + '<div class="card-body"><div class="fs-4 fw-bold">' + fmt(item[1]) + '</div>'
-        + '<div class="card-text small">' + item[0] + '</div>'
-        + '<div class="card-text" style="font-size:0.7rem;opacity:0.8">k ' + (d.posledni_datum||'') + '</div>'
-        + '</div></div></div>';
-    }).join('');
-  });
-})();
-</script>

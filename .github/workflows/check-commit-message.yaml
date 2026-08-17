@@ -1,7 +1,11 @@
 name: "CHECK: Commit Message"
 
-# Kontrola formátu commit zpráv — JEN na PR do `main` (dev je volný, bez kontrol).
-# Platný formát:  <PROJECT_PREFIX>-<číslo>: zpráva    nebo    start <IGNORE_PREFIX>
+# Commit message format check — ONLY on PRs into `main` (dev is free, no checks).
+# Valid format:  <PROJECT_PREFIX>-<number>: message    or    starting with <IGNORE_PREFIX>
+#
+# Commits taken from upstream (the repo variable UPSTREAM_URL) are NOT validated — we
+# cannot rewrite their messages without breaking the merge, and it would fail on every sync.
+# So the convention applies only to commits we write ourselves.
 on:
   pull_request:
     branches: [main]
@@ -12,20 +16,34 @@ jobs:
     env:
       ISSUE_PREFIX: ${{ vars.PROJECT_PREFIX }}
       IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
+      UPSTREAM_URL: ${{ vars.UPSTREAM_URL }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Check commit messages (main..HEAD)
+      - name: Check commit messages (main..HEAD, bez upstreamu)
         run: |
           git fetch origin main:main || true
-          invalid=$(git log --no-merges --format="%s" main..HEAD \
+
+          # Upstream branches → refs/remotes/upstream/*; we then exclude them via `--not`.
+          # Without UPSTREAM_URL (or when the fetch fails) the whole main..HEAD range is checked.
+          upstream_refs=""
+          if [ -n "${UPSTREAM_URL:-}" ]; then
+            if git fetch --no-tags --quiet "$UPSTREAM_URL" "+refs/heads/*:refs/remotes/upstream/*"; then
+              upstream_refs=$(git for-each-ref --format="%(refname)" refs/remotes/upstream/ | grep -v HEAD)
+              echo "ℹ️  Upstream commits are not validated (${UPSTREAM_URL})."
+            else
+              echo "⚠️  Could not fetch upstream ${UPSTREAM_URL} — checking the whole range."
+            fi
+          fi
+
+          invalid=$(git log --no-merges --format="%s" main..HEAD --not $upstream_refs \
             | grep -vE "^(${IGNORE_PREFIX}|${ISSUE_PREFIX}-[0-9]+: .+)" || true)
           if [ -n "$invalid" ]; then
-            echo "🚨 Neplatné commit zprávy:"
+            echo "🚨 Invalid commit messages:"
             echo "$invalid"
-            echo "❗ Očekávám '${ISSUE_PREFIX}-<číslo>: zpráva' nebo start '${IGNORE_PREFIX}'"
+            echo "❗ Expected '${ISSUE_PREFIX}-<number>: message' or starting with '${IGNORE_PREFIX}'"
             exit 1
           fi
-          echo "✅ Všechny commit zprávy jsou v pořádku."
+          echo "✅ All commit messages are fine."

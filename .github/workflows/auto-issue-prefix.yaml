@@ -1,6 +1,6 @@
 name: "AUTOMATION: Issue Prefixer"
 
-# Při založení issue přejmenuje titulek na "<PREFIX>-<číslo>: původní titulek".
+# When an issue is opened, renames the title to "<PREFIX>-<number>: original title".
 on:
   issues:
     types: [opened]

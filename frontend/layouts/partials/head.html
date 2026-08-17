@@ -4,7 +4,9 @@
 
     <title>{{ .Title }}</title>
     <meta name="description" content='{{ .Param "description" }}'>
-    <meta http-equiv="content-language" content="{{ .Site.Language.Locale }}">
+    {{/* `.Site.Language.Locale` zmizelo v Hugo 0.154 — hodnota z hugo.toml
+         (`[languages.cs] locale`) je dnes v .Params, s Lang jako pojistkou. */}}
+    <meta http-equiv="content-language" content="{{ .Site.Language.Params.locale | default .Site.Language.Lang }}">
 
     <link rel="icon" href="/favicon.ico">
 

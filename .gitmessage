@@ -1,8 +1,8 @@
-# PP-<číslo>: krátký souhrn (≤72 znaků, rozkazovací způsob, bez tečky)
+# PP-<number>: short summary (≤72 chars, imperative, no full stop)
 #
 #   PP-42: add wastewater dashboard endpoint
-#   no-issue: triviální změna bez issue (docs, formát, config)
+#   no-issue: a trivial change without an issue (docs, formatting, config)
 #
-# Prázdný řádek, pak volitelný popis "proč" (ne "jak").
+# A blank line, then an optional description of "why" (not "how").
 #
-# Kontrola commitů běží až na PR do `main` (dev je volný).
+# The commit check only runs on PRs into `main` (dev is free).

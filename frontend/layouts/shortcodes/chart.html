@@ -1,47 +1,35 @@
-{{/* Usage: {{< chart id="myChart" src="/data/charts/file.json" type="line" title="Titulek" height="380" >}} */}}
-{{ $id    := .Get "id" }}
-{{ $src   := .Get "src" }}
-{{ $type  := .Get "type"   | default "line" }}
-{{ $title := .Get "title"  | default "" }}
-{{ $height := .Get "height" | default "380" }}
+{{/* Karta s grafem.
 
-<div class="chart-wrapper my-4">
-  {{ with $title }}<h5 class="chart-title">{{ . }}</h5>{{ end }}
-  <div style="position:relative;height:{{ $height }}px">
-    <canvas id="{{ $id }}"></canvas>
+     Usage: {{< chart id="myChart" src="/data/charts/file.json" type="line"
+                     title="Title" subtitle="Subtitle" height="380" >}}
+
+     The template only emits the structure; data and colours are handled by
+     /js/pp-charts.js, which tries the API and falls back to the static JSON in
+     `src` when it is unavailable.
+*/}}
+{{ $id       := .Get "id" }}
+{{ $src      := .Get "src" }}
+{{ $type     := .Get "type"     | default "line" }}
+{{ $title    := .Get "title"    | default "" }}
+{{ $subtitle := .Get "subtitle" | default "" }}
+{{ $height   := .Get "height"   | default "380" }}
+
+<figure class="pp-card" data-pp-chart data-src="{{ $src }}" data-type="{{ $type }}">
+  {{ with $title }}
+  <figcaption class="pp-card__head">
+    <h2 class="pp-card__title">{{ . }}</h2>
+  </figcaption>
+  {{ end }}
+  {{ with $subtitle }}<p class="pp-card__subtitle">{{ . }}</p>{{ end }}
+
+  <div class="pp-card__plot" style="height:{{ $height }}px">
+    <div class="pp-skeleton"></div>
+    <canvas id="{{ $id }}" role="img" aria-label="{{ $title | default "Graf" }}"></canvas>
   </div>
-</div>
-<script>
-(function(){
-  var src = {{ $src }};
-  var type = {{ $type }};
-  var canvasId = {{ $id }};
-  function renderChart(data) {
-    var ctx = document.getElementById(canvasId);
-    if (!ctx) return;
-    new Chart(ctx, {
-      data: data,
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        interaction: { mode: 'index', intersect: false },
-        plugins: {
-          legend: { position: 'top', labels: { boxWidth: 12 } },
-          tooltip: { mode: 'index' }
-        },
-        scales: {
-          x: { ticks: { maxTicksLimit: 18, maxRotation: 45 } },
-          y: { beginAtZero: true }
-        }
-      }
-    });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      fetch(src).then(function(r){ return r.json(); }).then(renderChart);
-    });
-  } else {
-    fetch(src).then(function(r){ return r.json(); }).then(renderChart);
-  }
-})();
-</script>
+
+  <div class="pp-card__foot">
+    <span class="pp-origin" data-pp-origin>načítám data…</span>
+    <button type="button" class="pp-btn" data-pp-table-toggle aria-expanded="false">Tabulka</button>
+  </div>
+  <div class="pp-table-wrap" data-open="false"></div>
+</figure>

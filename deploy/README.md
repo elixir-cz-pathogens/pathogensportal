@@ -1,18 +1,19 @@
 # deploy/
 
-Orchestrace kontejnerů.
+Container orchestration.
 
-- `docker-compose.yml` — **produkce**: BE služby + `pathogen-db`, jen interní síť,
-  nic nepublikováno na hostitele (DB není zvenčí dostupná). FE servíruje Apache na hostu.
-- `docker-compose.dev.yml` — **dev override**: přidá Hugo dev server, publikuje porty na
-  `127.0.0.1` a zapne hot-reload BE.
-- `.env.example` — šablona proměnných. Zkopíruj na `.env` (necommituje se).
+- `docker-compose.yml` — **production**: the BE services + `pathogen-db`, internal network only,
+  nothing published to the host (the DB is not reachable from outside). The FE is served by Apache on the host.
+- `docker-compose.dev.yml` — **dev override**: adds the Hugo dev server, publishes ports on
+  `127.0.0.1` and enables BE hot reload.
+- `.env.example` — a template of the variables. Copy it to `.env` (which is not committed).
 
 ```bash
 # dev
 docker compose -f docker-compose.yml -f docker-compose.dev.yml up
-# produkce
+# production
 docker compose up -d
 ```
 
-> Schéma DB dodá submodul `pathogensportal-db` (řádek s `init.sql` je v compose zatím zakomentovaný).
+> The DB schema comes from the `pathogensportal-db` submodule (the `init.sql` line is still commented out
+> in compose).

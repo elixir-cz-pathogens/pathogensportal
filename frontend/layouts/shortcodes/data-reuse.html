@@ -1,0 +1,53 @@
+{{/* Blok „O datech a jejich opakovaném použití" (FAIR).
+
+     Usage: {{< data-reuse >}}
+
+     Hodnoty čte z front matteru stránky, ať jsou strojově dostupné a nejsou
+     zaduplované v textu:
+
+       report_version:      "v45"
+       report_verified:     "15. 7. 2026"
+       report_authors:      [{name: "…", orcid: "https://orcid.org/…"}, …]
+       report_sources_url:  "/dashboards/ebola-zdroje/"
+       report_license:      "CC BY 4.0"
+       report_license_url:  "https://creativecommons.org/licenses/by/4.0/"
+       report_links:        [{name: "Jak citovat", url: "…"}, …]
+*/}}
+{{ $p := .Page.Params }}
+
+<div class="pp-meta-block">
+  <dl class="pp-meta-block__grid">
+    {{ with $p.report_version }}
+    <dt>Verze</dt>
+    <dd>{{ . }}{{ with $p.report_verified }} · ověřeno {{ . }}{{ end }}</dd>
+    {{ end }}
+
+    {{ with $p.report_authors }}
+    <dt>Autoři</dt>
+    <dd>
+      {{- range $i, $a := . }}{{ if $i }}, {{ end }}
+      {{- with $a.orcid }}<a href="{{ . }}" rel="noopener">{{ $a.name }}</a>{{ else }}{{ $a.name }}{{ end }}
+      {{- end }}
+    </dd>
+    {{ end }}
+
+    {{ with $p.report_sources_url }}
+    <dt>Původ informací</dt>
+    <dd><a href="{{ . }}">Datované primární a odborné zdroje</a></dd>
+    {{ end }}
+
+    {{ with $p.report_license }}
+    <dt>Licence</dt>
+    <dd>
+      {{ with $p.report_license_url }}<a href="{{ . }}" rel="noopener">{{ $p.report_license }}</a>{{ else }}{{ . }}{{ end }}
+      pro původní obsah
+    </dd>
+    {{ end }}
+  </dl>
+
+  {{ with $p.report_links }}
+  <div class="pp-meta-block__links">
+    {{ range . }}<a class="pp-btn" href="{{ .url }}" rel="noopener">{{ .name }}</a>{{ end }}
+  </div>
+  {{ end }}
+</div>

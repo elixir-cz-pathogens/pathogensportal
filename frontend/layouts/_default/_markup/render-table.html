@@ -1,0 +1,28 @@
+{{/* Render hook pro tabulky z markdownu.
+
+     Situační reporty mají tabulky o čtyřech sloupcích dlouhého textu (zdroj,
+     datum, hlavní údaj, jak jej číst). Bez obalu roztahovaly stránku do šířky
+     a na mobilu přetékaly ven; tady dostanou vlastní vodorovný posuv.
+*/}}
+<div class="pp-table-scroll">
+  <table class="pp-table pp-table--prose">
+    <thead>
+      {{ range .THead }}
+      <tr>
+        {{ range . }}
+        <th {{ with .Alignment }}style="text-align: {{ . }}"{{ end }}>{{ .Text }}</th>
+        {{ end }}
+      </tr>
+      {{ end }}
+    </thead>
+    <tbody>
+      {{ range .TBody }}
+      <tr>
+        {{ range . }}
+        <td {{ with .Alignment }}style="text-align: {{ . }}"{{ end }}>{{ .Text }}</td>
+        {{ end }}
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>

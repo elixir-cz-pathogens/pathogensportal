@@ -1,10 +1,10 @@
 # llm-agent-be
 
-AI jádro — sémantické dotazy, překladové toky a reasoning nad LLM.
+The AI core — semantic queries, translation flows and reasoning on top of an LLM.
 
-Kontejner (FastAPI). Poslouchá jen na interní síti — ven jde vše přes Apache.
+A container (FastAPI). It listens on the internal network only — everything goes out through Apache.
 
 - Health: `GET /health`
-- Port (interní): `8001`
-- Lokálně: `uvicorn app.main:app --reload --port 8001`
-- Testy: `pytest`
+- Port (internal): `8001`
+- Locally: `uvicorn app.main:app --reload --port 8001`
+- Tests: `pytest`
