@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # Keep pinned Actions SHAs (and any other action refs) current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # One entry per BE service — each is its own container with its own requirements.txt.
+  - package-ecosystem: "pip"
+    directory: "/backend/website-be"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/backend/llm-agent-be"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "pip"
+    directory: "/backend/mcp"
+    schedule:
+      interval: "weekly"

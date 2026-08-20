@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+# No checkout, no API calls — this job needs no token scopes at all.
+permissions: {}
+
 jobs:
   branch-name-check:
     runs-on: ubuntu-latest

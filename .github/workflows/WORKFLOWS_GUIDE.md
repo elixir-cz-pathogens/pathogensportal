@@ -47,6 +47,16 @@ into `dev`; CI polices the commit convention at the `dev → main` PR (it checks
 | `deploy-staging.yml` | Deploy | push to `dev` | ⛔ **disabled** |
 | `deploy-production.yml` | Deploy | push to `main` | ⛔ **disabled** |
 
+## Hardening (Aug 2026)
+
+- **Least-privilege `permissions:`** on every workflow — most need only `contents: read`; the three
+  automations need `issues: write`; `check-branch-name.yaml` checks out nothing and needs none (`{}`).
+- **Third-party actions pinned to a commit SHA**, not a mutable tag (`actions/checkout`, `actions/setup-python`,
+  `actions/github-script`, `peaceiris/actions-hugo`). A moved tag on any of these would otherwise run inside
+  the same job that holds the deploy SSH key.
+- **`.github/dependabot.yml`** keeps those pinned SHAs (and the BE services' `requirements.txt`) current —
+  it opens PRs, it does not touch `main` or `dev` on its own.
+
 ## Conventions
 
 **Commit:** `PP-<number>: message`  •  escape hatch: `no-issue: …`
@@ -137,7 +147,20 @@ otherwise you would get `baseURL "https:///"` and rsync to `user@`.
 
 **Why the hostname is a `var` and not a `secret`:** it isn't a secret (it is also in `hugo.toml`), and as a
 secret it would be masked in the log — breaking both the readability of `baseURL` and any debugging of
-`ssh-keyscan`. The secret is **the private key alone**.
+`ssh-keyscan`. The secret is **the private key alone** — plus, optionally, the host key (below).
+
+**Host key pinning (optional but recommended):** without `STAGING_HOST_KEY` / `PRODUCTION_HOST_KEY` set,
+the deploy step falls back to trusting whatever `ssh-keyscan` returns on that connection — trust-on-first-use,
+on every run, since the runner is ephemeral and never builds up a real known_hosts history. Run
+`ssh-keyscan -H <host>` once from a trusted vantage point and store its output as the secret to pin the key
+instead. The workflow prints a `::warning::` when it falls back to keyscan, so the gap stays visible in the run log.
+
+**One deploy at a time:** both workflows carry a `concurrency:` group (`deploy-staging` / `deploy-production`,
+`cancel-in-progress: false`) so two overlapping `rsync --delete` runs against the same DocumentRoot can't race.
+
+**Post-deploy smoke test:** the last step curls the deployed host and fails the run if it doesn't answer.
+It is not a rollback — `rsync --delete` has already run by that point — but it turns a broken deploy into a
+loud, visible failure instead of a silently broken site.
 
 **Staging — done 17 Aug 2026:** the `github-deploy` account exists on `pathogens-dev.vm.cesnet.cz`
 (created by the Ansible `users` role; member of `app` only, key restricted to
