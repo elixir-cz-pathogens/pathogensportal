@@ -3,6 +3,8 @@ name: "Deploy: Staging (dev)"
 # Enabled by the repo variable DEPLOY_STAGING_ENABLED == 'true'.
 # Requires:
 #   1) secret: STAGING_SSH_KEY   (the github-deploy private key FOR THE STAGING MACHINE)
+#      secret: STAGING_HOST_KEY  (optional but recommended: `ssh-keyscan -H <host>` output,
+#              pinning the host key instead of trusting ssh-keyscan on every run)
 #   2) vars:   STAGING_HOST      (FQDN of the staging machine, e.g. pathogens-dev.vm.cesnet.cz)
 #              STAGING_PATH      (DocumentRoot on the staging machine)
 #              DEPLOY_USER       (the account used for rsync, typically github-deploy)
@@ -25,6 +27,15 @@ name: "Deploy: Staging (dev)"
 on:
   push:
     branches: [dev]
+
+permissions:
+  contents: read
+
+# One deploy to staging at a time — two overlapping `rsync --delete` runs against
+# the same DocumentRoot would race each other. Never cancel a deploy in progress.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
 
 jobs:
   # Unit tests gate the deploy: a red test never reaches the staging machine.
@@ -56,12 +67,12 @@ jobs:
           test -n "${{ vars.STAGING_PATH }}" || {
             echo "::error::Missing repo variable STAGING_PATH (DocumentRoot on staging)."; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           submodules: recursive
           fetch-depth: 0
 
-      - uses: peaceiris/actions-hugo@v3
+      - uses: peaceiris/actions-hugo@2752ce1d29631191ea3f27c23495fa06139a5b78 # v3
         with:
           # Pinned, not `latest`: 0.164 silently changed the content security
           # policy and broke the build. A build should not change under us.
@@ -80,7 +91,16 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "$STAGING_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          if [ -n "${{ secrets.STAGING_HOST_KEY }}" ]; then
+            echo "${{ secrets.STAGING_HOST_KEY }}" >> ~/.ssh/known_hosts
+          else
+            # TOFU fallback: without a pinned key, this trusts whatever host key
+            # answers on this connection — every run, since runners are ephemeral.
+            # Pin it: run `ssh-keyscan -H <host>` once from a trusted vantage point
+            # and store the output as the STAGING_HOST_KEY secret.
+            echo "::warning::STAGING_HOST_KEY secret not set — trusting ssh-keyscan on first connection (TOFU) instead of a pinned host key."
+            ssh-keyscan -H "$STAGING_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          fi
           # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
           # The target directory on the server is owned by `app`; the deploy account is
           # only a member of the `app` group — the kernel will not let it chmod someone
@@ -91,3 +111,7 @@ jobs:
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             frontend/public/ \
             "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}/"
+
+      - name: Post-deploy smoke test
+        # Not a rollback — just makes a broken deploy loud instead of silent.
+        run: curl -fsS --retry 5 --retry-delay 3 --retry-connrefused "https://${STAGING_HOST}/" -o /dev/null
