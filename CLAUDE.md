@@ -63,13 +63,23 @@ through Apache.
 - **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
 - **`dev`** = free sandbox — push directly, no PR, no checks. ⚠️ **But since 17 Aug a push to `dev`
   DEPLOYS to staging**, which reviewers look at. Still free to break; just not unobserved.
-- **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` and
-  `branch-name-check` (they run, not required yet). Automations: issue prefixer, branch→issue linker, PR notify.
-- **Staging deploy is LIVE; production deploy is OFF.** `deploy-staging.yml` (push to `dev`) runs
-  tests → Hugo build → rsync. `deploy-production.yml` (push to `main`) is gated on
-  `DEPLOY_PRODUCTION_ENABLED`, which is **not set** and must not be without the administrator's approval.
-  ⛔ **One flag per environment** — it used to be a single `DEPLOY_ENABLED`, so enabling staging also armed
-  production and a merge to `main` would have hit the live site. Do not merge them back.
+- **Checks run ONLY on PR → `main`:** `commit-message-check`, `hugo-build` **and `backend-tests`** are all
+  **required** (verified against the branch-protection API, 23 Aug 2026 — this used to say `backend-tests`
+  was not required yet; it is). `branch-name-check` runs but is not required. 1 approving review, stale
+  reviews dismissed, no force-push, no deletion. `enforce_admins` is **off**, so an admin can bypass.
+  Automations: issue prefixer, branch→issue linker, PR notify.
+- **Both deploys are LIVE since 17 Aug** (this used to say production was off).
+  `deploy-staging.yml` (push to `dev`) and `deploy-production.yml` (push to `main`) both run
+  tests → Hugo build → rsync. Production has been exercised **once**, verified byte-identical to the manual
+  build. ⛔ **One flag per environment** (`DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED`) — it used
+  to be a single `DEPLOY_ENABLED`, so enabling staging also armed production. Do not merge them back.
+- **Host keys are pinned, not scanned** (23 Aug). Both workflows write the server's key from
+  `STAGING_SSH_HOST_KEY` / `PRODUCTION_SSH_HOST_KEY` and rsync with `StrictHostKeyChecking=yes`;
+  `ssh-keyscan` trusted whatever answered, on every run. The keys are also in `-priv/ansible/known_hosts`.
+- ⚠️ **`STAGING_PATH` is `/` and that is deliberate.** Staging's deploy key is pinned to a forced
+  `rrsync -wo` command on the server, and rrsync prefixes a leading-slash client path with its restricted
+  directory. `PRODUCTION_PATH` is still the absolute path because production's jail is not on yet — the
+  server switch and the variable must change in the same window, server first.
 - **Tests gate both deploys** via the reusable `_test-backend.yml`; it fails if it finds *no* tests.
 - Staging and production have **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
   `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — do not merge them. `baseURL` is derived from `*_HOST`;
