@@ -2,11 +2,27 @@
 title: "COVID-19 — Věk a vakcinace"
 description: "Analýza 12,6 milionů COVID-19 případů v ČR podle věku pacientů a vakcinačního statusu — hospitalizace, hospitalizační míra. Data MZČR."
 image: "/images/dashboard-placeholder.svg"
-highlight: false
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "epidemiologie", "MZČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">MZČR — Otevřená data COVID-19</a>'
 update_freq: "Souhrnná data (celé období pandemie)"
+build:
+  list: never
+  render: always
 ---
+
+<div class="d-flex flex-wrap gap-1 mb-4" role="navigation" aria-label="Sekce infekčních nemocí">
+  <a href="/dashboards/infectious-diseases/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Přehled</a>
+  <a href="/dashboards/infectious-diseases-childhood/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Časté dětské/vzdušné</a>
+  <a href="/dashboards/infectious-diseases-gastro/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Střevní/potravinové</a>
+  <a href="/dashboards/infectious-diseases-skin/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Kožní/kontaktní</a>
+  <a href="/dashboards/infectious-diseases-vector/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Klíšťaty/zvířaty přenášené</a>
+  <a href="/dashboards/infectious-diseases-hepatitis/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Hepatitidy</a>
+  <a href="/dashboards/infectious-diseases-sti/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Pohlavně přenosné</a>
+  <a href="/dashboards/infectious-diseases-rare/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Vzácné závažné</a>
+  <a href="/dashboards/infectious-diseases-other/" class="btn btn-sm btn-outline-secondary me-1 mb-1">Ostatní</a>
+  <a href="/dashboards/covid19-surveillance/" class="btn btn-sm btn-outline-secondary me-1 mb-1">COVID-19 — Surveillance</a>
+  <a href="/dashboards/covid-demographics/" class="btn btn-sm btn-outline-secondary me-1 mb-1 active">COVID-19 — Věk a vakcinace</a>
+</div>
 
 ### Případy a hospitalizace podle roku narození
 
