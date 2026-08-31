@@ -58,10 +58,19 @@ services:
     environment:
       DATA_DIR: /data
       OUTPUT_DIR: /output/charts
+      # Added in v0.1.0 (PPDB-24). ⚠️ NOT optional: without it process_ebola.py
+      # falls back to /output/content INSIDE the container, writes the Ebola pages
+      # to the ephemeral layer and they vanish on exit — no error, no warning.
+      CONTENT_DIR: /output/content
     volumes:
       - scraped-data:/data
       # the generated chart JSON goes straight into the frontend (Model A: it is committed)
       - ../frontend/static/data/charts:/output/charts
+      # ⚠️ WRITABLE, and it overwrites the eight hand-written ebola-*.md pages on
+      # every run. That is intended (the pipeline owns them from v0.1.0 on), but it
+      # is why Model A matters here: the overwrite lands as a reviewable git diff
+      # rather than silently on a server.
+      - ../frontend/content/cs/dashboards:/output/content
     networks: [internal]
 
 volumes:

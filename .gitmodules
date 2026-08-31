@@ -3,4 +3,4 @@
 	url = https://github.com/sib-swiss/hugo-pathogens-portal.git
 [submodule "pathogensportal-db"]
 	path = pathogensportal-db
-	url = https://github.com/draessld/pathogensportal-db.git
+	url = https://github.com/elixir-cz-pathogens/pathogensportal-db.git
