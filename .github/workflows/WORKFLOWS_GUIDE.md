@@ -12,12 +12,12 @@ Settings → Secrets and variables → Actions → Variables
 | `PROJECT_PREFIX` | prefix for issues/branches/commits | `PP` |
 | `IGNORE_PREFIX` | the escape hatch for changes without an issue | `no-issue` |
 | `UPSTREAM_URL` | the upstream whose commits are **not validated** | `https://github.com/jirkavlasak/pathogensportal.git` |
-| `DEPLOY_STAGING_ENABLED` | switch for the **staging** deploy only | ⏸️ set to `true` to arm staging |
-| `DEPLOY_PRODUCTION_ENABLED` | switch for the **production** deploy only | *(unset = off; rule #1 applies)* |
+| `DEPLOY_STAGING_ENABLED` | switch for the **staging** deploy only | `true` since 17 Aug 2026 |
+| `DEPLOY_PRODUCTION_ENABLED` | switch for the **production** deploy only | `true` since 17 Aug 2026 — production autodeploys on every push to `main`; rule #1 still applies to the machine |
 | `STAGING_HOST` | FQDN of the staging machine | `pathogens-dev.vm.cesnet.cz` |
-| `STAGING_PATH` | DocumentRoot on staging | `/opt/pathogensportal/frontend/public` |
+| `STAGING_PATH` | rsync target on staging | **`/`** — and that is correct: the deploy key is jailed to a forced `rrsync`, which prefixes a leading-slash path with its own restricted directory |
 | `PRODUCTION_HOST` | FQDN of production | `pathogens.vm.cesnet.cz` |
-| `PRODUCTION_PATH` | DocumentRoot in production | ⏸️ (changes at the cutover) |
+| `PRODUCTION_PATH` | rsync target in production | `/opt/pathogensportal/frontend/public` — ⛔ **must become `/` in the same window as the next production Ansible run**, which applies the rrsync jail (armed 31 Aug 2026) |
 | `DEPLOY_USER` | the account used for rsync | `github-deploy` |
 
 > ⚠️ **Variables and secrets do not travel with a repository transfer.** When this repo moves to the
@@ -84,6 +84,31 @@ Clones the repo with its submodules (the theme), installs Hugo extended and runs
 ### `backend-tests.yml`
 For each service under `backend/*/`, installs `requirements.txt` and runs `pytest`. Verifies the BE services.
 
+> ### ⛔ Its required-check name is `backend-tests / pytest`, NOT `backend-tests`
+>
+> This job does not run the tests itself — it calls the reusable `_test-backend.yml`:
+>
+> ```yaml
+> jobs:
+>   backend-tests:
+>     uses: ./.github/workflows/_test-backend.yml   # the job inside is called `pytest`
+> ```
+>
+> **Whenever a job uses `uses:`, GitHub names the resulting check `<calling job> / <called job>`.**
+> So the check that appears on a PR is `backend-tests / pytest`.
+>
+> Branch protection matches required checks by **exact string**. Listing `backend-tests` therefore
+> requires a check that nothing ever reports: it stays pending (yellow) forever and **every PR into
+> `main` is blocked permanently**, while the real test sits next to it, green. That is exactly what
+> happened between 23 Aug and 31 Aug 2026 and it surfaced only when PR #24 would not go green.
+>
+> ⚠️ **The 23 Aug verification did not catch it** because it checked that `backend-tests` was *listed*
+> in the protection API — not that anything *reports* it. Same circular-verification trap as the `app`
+> role's setgid fix: **check the requirement (does the PR actually unblock?), not the remedy.**
+>
+> If you ever rename a job, or wrap one in a reusable workflow, re-check
+> `/branches/main/protection/required_status_checks` against a real PR's check names.
+
 ### `check-branch-name.yaml`
 Checks the PR's source branch name. `dev` and `no-issue…` are skipped; otherwise it must match
 `(feature|bugfix|docs)/PP-<number>_description`. (Non-blocking — for `dev → main` it passes trivially.)
@@ -145,8 +170,20 @@ secret it would be masked in the log — breaking both the readability of `baseU
 permitting nothing but a `website-be` container restart). `DEPLOY_USER`, `STAGING_HOST` and
 `STAGING_PATH` are set. Remaining: the `STAGING_SSH_KEY` secret, then `DEPLOY_STAGING_ENABLED=true`.
 
-**Production — not before the cutover.** It needs a **separately generated** key pair (never staging's),
-`PRODUCTION_PATH` switched at the same moment as the Apache vhost, and the administrator's approval.
+**Production — live since 17 Aug 2026.** It uses a **separately generated** key pair (never staging's) and
+`DEPLOY_PRODUCTION_ENABLED=true`; rule #1 still governs the machine itself.
+
+⛔ **One coupling is still open.** `users_deploy_restrict_rsync` was armed to `true` in the prod inventory
+on 31 Aug 2026 but has NOT been applied — production's deploy key currently carries no forced command, so
+that key can run arbitrary commands as `github-deploy`. When the Ansible run lands, `PRODUCTION_PATH` must
+become `/` in the same window, **server first**:
+
+```bash
+gh variable set PRODUCTION_PATH --body "/" -R elixir-cz-pathogens/pathogensportal
+```
+
+Between the run and the variable change, production deploys are broken — so do not open that window with a
+release queued behind it.
 
 ## The typical working cycle
 

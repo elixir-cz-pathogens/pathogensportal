@@ -42,6 +42,17 @@ OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/gene
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```
 
+⚠️ **On `dev` this is automated since 31 Aug 2026 — do not hand-edit the generated files there.**
+A push to `pathogensportal-db`'s `dev` branch makes the dev server run the pipeline and **commit** the
+regenerated chart JSON *and* the eight `content/cs/dashboards/ebola-*.md` straight to this branch
+(author `pathogensportal datapipeline`). Anything you change in those files by hand is silently
+reverted by the next run. `main`/production is **not** affected — it only moves on a `dev` → `main`
+merge.
+
+⏳ Model A itself is transitional. `pp-charts.js` already asks `/api/charts` first and falls back to
+the committed JSON only when the backend is absent, so once website-be + Postgres run the data stops
+needing to be committed at all.
+
 ## Common commands
 
 ```bash
@@ -63,9 +74,13 @@ through Apache.
 - **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
 - **`dev`** = free sandbox — push directly, no PR, no checks. ⚠️ **But since 17 Aug a push to `dev`
   DEPLOYS to staging**, which reviewers look at. Still free to break; just not unobserved.
-- **Checks run ONLY on PR → `main`:** `commit-message-check`, `hugo-build` **and `backend-tests`** are all
-  **required** (verified against the branch-protection API, 23 Aug 2026 — this used to say `backend-tests`
-  was not required yet; it is). `branch-name-check` runs but is not required. 1 approving review, stale
+- **Checks run ONLY on PR → `main`:** `commit-message-check`, `hugo-build` and **`backend-tests / pytest`**
+  are all **required**. ⚠️ **Note the exact name — it is `backend-tests / pytest`, with the suffix.** That
+  job calls a reusable workflow, and GitHub names such checks `<calling job> / <called job>`. Protection
+  matches on the exact string, so the plain `backend-tests` that was configured on 23 Aug matched nothing:
+  it stayed pending and **blocked every PR into `main`** until 31 Aug, when PR #24 exposed it. The 23 Aug
+  "verified against the API" only confirmed the name was *listed*, not that anything *reports* it.
+  `branch-name-check` runs but is not required. 1 approving review, stale
   reviews dismissed, no force-push, no deletion. `enforce_admins` is **off**, so an admin can bypass.
   Automations: issue prefixer, branch→issue linker, PR notify.
 - **Both deploys are LIVE since 17 Aug** (this used to say production was off).
