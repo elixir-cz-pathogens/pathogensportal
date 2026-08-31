@@ -37,7 +37,7 @@ data submodule.
 To regenerate from the submodule:
 ```bash
 git submodule update --init --recursive
-OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/generate_json.py
 # or through the container:
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```

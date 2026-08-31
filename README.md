@@ -47,7 +47,7 @@ When updating the theme (the submodule), check whether these overrides still mak
 Chart JSON is **committed** into `frontend/static/data/charts/` (the site is purely static). To regenerate:
 ```bash
 git submodule update --init --recursive
-OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/generate_json.py
 # or in a container:
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```
