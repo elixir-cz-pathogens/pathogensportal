@@ -80,7 +80,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "$STAGING_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          # ⛔ NOT ssh-keyscan. A keyscan trusts whatever answers, on every run —
+          # trust-on-first-use with no first use, so a machine-in-the-middle gets
+          # the site (and, with --delete, gets to decide what the site is). The
+          # key is public data, so it is a VARIABLE, not a secret, and can be
+          # checked against ansible/known_hosts in the -priv repo.
+          test -n "${{ vars.STAGING_SSH_HOST_KEY }}" || {
+            echo "::error::Missing repo variable STAGING_SSH_HOST_KEY (value: the server's ssh-ed25519 line, see -priv ansible/known_hosts)."; exit 1; }
+          printf '%s %s\n' "$STAGING_HOST" "${{ vars.STAGING_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
           # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
           # The target directory on the server is owned by `app`; the deploy account is
           # only a member of the `app` group — the kernel will not let it chmod someone
@@ -88,6 +95,16 @@ jobs:
           # Verified in the lab on 19 Jul 2026.
           # Permissions are handled by setgid on the target directory (2775); rsync must
           # not transfer them.
+          # StrictHostKeyChecking=yes is explicit: with the key pinned above there
+          # is nothing to ask about, and a mismatch must stop the deploy, not
+          # prompt into a void.
+          #
+          # ⚠️ STAGING_PATH is `/` because the server pins this key to a forced
+          # rrsync command (users_deploy_restrict_rsync). rrsync prefixes a
+          # leading-slash path with its restricted directory, so `/` here means
+          # /opt/pathogensportal/frontend/public there. The real path lives in the
+          # -priv inventory; changing one without the other breaks the deploy.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
+            -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \
             "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}/"

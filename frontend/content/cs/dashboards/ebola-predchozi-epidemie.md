@@ -22,17 +22,17 @@ build:
 
 **11 310 úmrtí**Konečný počet úmrtí podle WHO pro západoafrickou epidemii.
 
-**3 481 případů**Severní Kivu/Ituri 2018–2020: druhá největší epidemie eboly.
+**3 481 případů**Severní Kivu/Ituri 2018–2020: do roku 2026 druhá největší epidemie eboly.
 
 **2 299 úmrtí**Epidemie 2018–2020 probíhala v konfliktní zóně a měla vysokou smrtnost.
 
-Souhrn dvou nejvýznamnějších epidemií eboly před aktuálním ohniskem viru Bundibugyo 2026: epidemie v západní Africe z let 2014–2016, dosud největší zdokumentovaná, a epidemie v provinciích Severní Kivu a Ituri v DR Kongo z let 2018–2020, dosud druhá největší. Důraz je kladen na **průběh**, **zvládnutí epidemie** a **výsledný stav** – tedy na poučení pro pochopení aktuální situace.
+Souhrn dvou nejvýznamnějších epidemií eboly před aktuálním ohniskem viru Bundibugyo 2026: epidemie v západní Africe z let 2014–2016, dosud největší zdokumentovaná, a epidemie v provinciích Severní Kivu a Ituri v DR Kongo z let 2018–2020, která byla do roku 2026 druhá největší. Důraz je kladen na **průběh**, **zvládnutí epidemie** a **výsledný stav** – tedy na poučení pro pochopení aktuální situace.
 
 ## Nejdůležitější sdělení
 
 - **Tyto dvě epidemie byly způsobeny virem Ebola (EBOV; druh *Orthoebolavirus zairense*)**, nikoli virem Bundibugyo, který stojí za aktuálním ohniskem 2026. Pro EBOV jsou dnes k dispozici registrované vakcíny i monoklonální protilátky; pro Bundibugyo nikoli.
 - **Západní Afrika 2014–2016** byla největší epidemií eboly v historii. Trvala přes dva roky, postihla tři chudé poválečné země s extrémně slabou zdravotnickou infrastrukturou, dostala se do hlavních měst (Conakry, Monrovia, Freetown) a vedla k vůbec první misi OSN reagující na zdravotní krizi (UNMEER, září 2014). Klíčem k jejímu zvládnutí byla **kombinace masivních mezinárodních zdrojů, vybudování léčebných center, dohledávání a trasování kontaktů a změny pohřebních praktik**, ne jedno samotné opatření.
-- **Epidemie v Severním Kivu a Ituri v letech 2018–2020** byla druhou největší. Probíhala v aktivní válečné zóně, s útoky na zdravotnická centra a desítkami zabitých členů zásahových týmů. Přesto byla **zvládnuta díky kombinaci okruhové vakcinace (Ervebo), monoklonálních protilátek (studie PALM), léčebných center pro ebolu a komunitního zapojení**. Smrtnost byla vyšší (přibližně 66 %) než v západní Africe, protože velká část nemocných umírala v komunitě dřív, než se dostali do léčebných center.
+- **Epidemie v Severním Kivu a Ituri v letech 2018–2020** byla do roku 2026 druhou největší; současné ohnisko ji překonalo v počtu případů i úmrtí. Probíhala v aktivní válečné zóně, s útoky na zdravotnická centra a desítkami zabitých členů zásahových týmů. Přesto byla **zvládnuta díky kombinaci okruhové vakcinace (Ervebo), monoklonálních protilátek (studie PALM), léčebných center pro ebolu a komunitního zapojení**. Smrtnost byla vyšší (přibližně 66 %) než v západní Africe, protože velká část nemocných umírala v komunitě dřív, než se dostali do léčebných center.
 - **Poučení platné i pro Bundibugyo 2026**: hlavními nástroji kontroly jsou klasické nástroje veřejného zdraví – rychlá detekce, izolace, dohledávání a trasování kontaktů, bezpečné pohřby a prevence infekcí ve zdravotnictví. Vakcíny a terapeutika tyto nástroje doplňují, ale nenahrazují, což je obzvlášť důležité u ohniska, pro které specifická vakcína dosud chybí.
 
 ## Srovnání raných trajektorií ebolových ohnisek

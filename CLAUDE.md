@@ -1,16 +1,16 @@
 # CLAUDE.md — pathogensportal
 
 Public repo of **Pathogen Portal CZ** — a static Hugo website plus a data pipeline that feeds it.
-Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork (`origin = draessld/pathogensportal`)
-is the working repo. Live site: `https://pathogens.vm.cesnet.cz`.
+Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork
+(`origin = elixir-cz-pathogens/pathogensportal`) is the working repo.
+Live site: `https://pathogens.vm.cesnet.cz` · Staging: `https://pathogens-dev.vm.cesnet.cz` (`noindex`).
 
 Docs, code and commit messages are in **English**. The only Czech is the site's own content in
 `frontend/content/cs/`, which is what the public reads.
 
-> ⚠️ **This repo is moving to a GitHub organization** (decided 6 Aug 2026). It is transferred **second**,
-> after `pathogensportal-priv`, because it is the one with consequences: the fork relationship with
-> upstream, branch protection, and the repo variables. Procedure and verification:
-> `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
+> ✅ **Transferred to the `elixir-cz-pathogens` organization on 11 Aug 2026.** The fork link to upstream,
+> all issues/PRs, branch protection and the repo variables survived; old `draessld/...` URLs redirect.
+> Verification record: `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
 
 ## Layout
 
@@ -37,10 +37,21 @@ data submodule.
 To regenerate from the submodule:
 ```bash
 git submodule update --init --recursive
-OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/generate_json.py
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/generate_json.py
 # or through the container:
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```
+
+⚠️ **On `dev` this is automated since 31 Aug 2026 — do not hand-edit the generated files there.**
+A push to `pathogensportal-db`'s `dev` branch makes the dev server run the pipeline and **commit** the
+regenerated chart JSON *and* the eight `content/cs/dashboards/ebola-*.md` straight to this branch
+(author `pathogensportal datapipeline`). Anything you change in those files by hand is silently
+reverted by the next run. `main`/production is **not** affected — it only moves on a `dev` → `main`
+merge.
+
+⏳ Model A itself is transitional. `pp-charts.js` already asks `/api/charts` first and falls back to
+the committed JSON only when the backend is absent, so once website-be + Postgres run the data stops
+needing to be committed at all.
 
 ## Common commands
 
@@ -61,15 +72,35 @@ through Apache.
 
 - **Commit:** `PP-<n>: message`  •  escape: `no-issue: …`  (prefix = repo variable `PROJECT_PREFIX=PP`).
 - **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
-- **`dev`** = free sandbox — push directly, no PR, no checks. **`main`** = protected production.
-- **Checks run ONLY on PR → `main`:** `commit-message-check` + `hugo-build` (required), `backend-tests` and
-  `branch-name-check` (they run, not required yet). Automations: issue prefixer, branch→issue linker, PR notify.
-- **Deploy workflows are DISABLED:** `deploy-staging.yml` (push to `dev`) and `deploy-production.yml`
-  (push to `main`) are gated on `if: vars.DEPLOY_ENABLED == 'true'`. Staging and production have
-  **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
+- **`dev`** = free sandbox — push directly, no PR, no checks. ⚠️ **But since 17 Aug a push to `dev`
+  DEPLOYS to staging**, which reviewers look at. Still free to break; just not unobserved.
+- **Checks run ONLY on PR → `main`:** `commit-message-check`, `hugo-build` and **`backend-tests / pytest`**
+  are all **required**. ⚠️ **Note the exact name — it is `backend-tests / pytest`, with the suffix.** That
+  job calls a reusable workflow, and GitHub names such checks `<calling job> / <called job>`. Protection
+  matches on the exact string, so the plain `backend-tests` that was configured on 23 Aug matched nothing:
+  it stayed pending and **blocked every PR into `main`** until 31 Aug, when PR #24 exposed it. The 23 Aug
+  "verified against the API" only confirmed the name was *listed*, not that anything *reports* it.
+  `branch-name-check` runs but is not required. 1 approving review, stale
+  reviews dismissed, no force-push, no deletion. `enforce_admins` is **off**, so an admin can bypass.
+  Automations: issue prefixer, branch→issue linker, PR notify.
+- **Both deploys are LIVE since 17 Aug** (this used to say production was off).
+  `deploy-staging.yml` (push to `dev`) and `deploy-production.yml` (push to `main`) both run
+  tests → Hugo build → rsync. Production has been exercised **once**, verified byte-identical to the manual
+  build. ⛔ **One flag per environment** (`DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED`) — it used
+  to be a single `DEPLOY_ENABLED`, so enabling staging also armed production. Do not merge them back.
+- **Host keys are pinned, not scanned** (23 Aug). Both workflows write the server's key from
+  `STAGING_SSH_HOST_KEY` / `PRODUCTION_SSH_HOST_KEY` and rsync with `StrictHostKeyChecking=yes`;
+  `ssh-keyscan` trusted whatever answered, on every run. The keys are also in `-priv/ansible/known_hosts`.
+- ⚠️ **`STAGING_PATH` is `/` and that is deliberate.** Staging's deploy key is pinned to a forced
+  `rrsync -wo` command on the server, and rrsync prefixes a leading-slash client path with its restricted
+  directory. `PRODUCTION_PATH` is still the absolute path because production's jail is not on yet — the
+  server switch and the variable must change in the same window, server first.
+- **Tests gate both deploys** via the reusable `_test-backend.yml`; it fails if it finds *no* tests.
+- Staging and production have **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
   `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — do not merge them. `baseURL` is derived from `*_HOST`;
   no hostname is hardcoded.
-- Merges to `main` must be **squash/rebase** (main enforces linear history).
+- **Merges to `main` must be squash/rebase** (linear history) — so **realign `dev` with `main` right after
+  every release**, or the two histories drift and the next release conflicts. This has bitten us twice.
 - Full workflow reference: `.github/workflows/WORKFLOWS_GUIDE.md`.
 
 ## Related repos

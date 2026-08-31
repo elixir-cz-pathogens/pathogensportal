@@ -76,7 +76,15 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "$PRODUCTION_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          # ⛔ NOT ssh-keyscan. A keyscan trusts whatever answers, on every run —
+          # trust-on-first-use with no first use. Here the rsync target IS the
+          # live DocumentRoot and the transfer uses --delete, so an impostor does
+          # not just receive the site, it decides what the site becomes. The key
+          # is public data, so it is a VARIABLE, not a secret, and can be checked
+          # against ansible/known_hosts in the -priv repo.
+          test -n "${{ vars.PRODUCTION_SSH_HOST_KEY }}" || {
+            echo "::error::Missing repo variable PRODUCTION_SSH_HOST_KEY (value: the server's ssh-ed25519 line, see -priv ansible/known_hosts)."; exit 1; }
+          printf '%s %s\n' "$PRODUCTION_HOST" "${{ vars.PRODUCTION_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
           # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
           # The target directory on the server is owned by `app`; the deploy account is
           # only a member of the `app` group — the kernel will not let it chmod someone
@@ -84,6 +92,16 @@ jobs:
           # Verified in the lab on 19 Jul 2026.
           # Permissions are handled by setgid on the target directory (2775); rsync must
           # not transfer them.
+          # StrictHostKeyChecking=yes is explicit: with the key pinned above there
+          # is nothing to ask about, and a mismatch must stop the deploy.
+          #
+          # ⚠️ PRODUCTION_PATH is still the absolute path, because the forced
+          # rrsync command is NOT yet applied on production
+          # (users_deploy_restrict_rsync: false in the prod inventory). When it is
+          # turned on, this variable must become `/` in the same window — rrsync
+          # prefixes a leading-slash path with its restricted directory, so the
+          # absolute path would resolve to <dir><dir> and the deploy would fail.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
+            -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \
             "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}/"
