@@ -64,7 +64,8 @@ services:
       CONTENT_DIR: /output/content
     volumes:
       - scraped-data:/data
-      # the generated chart JSON goes straight into the frontend (Model A: it is committed)
+      # the generated chart JSON and Ebola content pages go straight into the
+      # frontend (Model A: both are committed). Content is Czech (process_ebola.py).
       - ../frontend/static/data/charts:/output/charts
       # ⚠️ WRITABLE, and it overwrites the eight hand-written ebola-*.md pages on
       # every run. That is intended (the pipeline owns them from v0.1.0 on), but it
