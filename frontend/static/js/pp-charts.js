@@ -483,6 +483,9 @@
         var data = result.payload;
         var regions = data.regions || {};
         var labels = data.labels || {};
+        // Co se vlastně počítá. Mapy incidence nesou "unit" v JSONu; bez něj
+        // zůstává původní znění, aby se starší datové soubory chovaly stejně.
+        var unit = data.unit || "případů";
         var values = Object.keys(regions).map(function (code) { return regions[code]; })
           .filter(function (v) { return v > 0; });
         var min = Math.min.apply(null, values);
@@ -502,12 +505,12 @@
           if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
           path.setAttribute("tabindex", "0");
           path.setAttribute("role", "img");
-          path.setAttribute("aria-label", (labels[code] || code) + ": " + fmt(value) + " případů");
+          path.setAttribute("aria-label", (labels[code] || code) + ": " + fmt(value) + " " + unit);
 
           function show(event) {
             tooltip.style.display = "block";
             tooltip.textContent = (labels[code] || code) + ": " + fmt(value) +
-              " případů (" + data.year + ")";
+              " " + unit + " (" + data.year + ")";
             var rect = root.getBoundingClientRect();
             var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
             var y = event.clientY !== undefined ? event.clientY : rect.top;
