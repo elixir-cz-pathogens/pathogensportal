@@ -37,6 +37,26 @@ Nově hlášená úmrtí mezi potvrzenými případy
 
 SitRep N°21, N°29, N°43, N°45 a N°63 nebyly při ověření dohledány jako veřejné položky aktuální řady INSP. Chybějící dny proto nedopočítáváme. U SitRepu 46 vychází denní sloupec z hodnoty 26 nově hlášených potvrzených případů uváděné ECDC oproti předchozí veřejné aktualizaci se stavem k 28. 6.; není dopočítán jako rozdíl mezi posledními dvěma vykreslenými body. U SitRepů 47–59, 60–62, 64–68 a 72–108 jsou denní hodnoty převzaty přímo ze SitRepů. U SitRepů 53–58 a 60 nevykreslujeme denní sloupec úmrtí, protože zprávy tuto metriku neoddělují srovnatelným způsobem.
 
+
+---
+
+## Denně hlášené případy
+
+{{< chart id="ebolaDaily" src="/data/charts/ebola_daily.json" type="bar" title="Ebola BDBV 2026 — nově hlášené případy za den (DRC)" height="320" >}}
+
+## Kumulativní úmrtí
+
+{{< chart id="ebolaDeaths" src="/data/charts/ebola_deaths_cumulative.json" type="line" title="Ebola BDBV 2026 — kumulativní úmrtí mezi potvrzenými případy (DRC)" height="320" >}}
+
+## Srovnání s předchozími epidemiemi
+
+Kumulativní počty případů podle počtu dnů od začátku epidemie. Srovnání je orientační — jednotlivá ohniska se liší dostupností testování i rozsahem sledovaného území.
+
+{{< chart id="ebolaTrajectories" src="/data/charts/ebola_trajectories.json" type="line" title="Trajektorie vybraných ebolavirových epidemií" height="360" >}}
+
+---
+
+
 ## Kumulativní úmrtí mezi potvrzenými případy
 
 Osa X: stav k datu; značky po týdnech, ukotvené k pondělí. Osa Y: kumulativní úmrtí mezi potvrzenými případy v kroku 500. Rozsah os se rozšíří až po přechodu do dalšího kalendářního týdne nebo po překročení dalšího násobku 500.
