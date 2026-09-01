@@ -30,7 +30,19 @@ Tento dashboard zobrazuje hlášené infekční nemoci v České republice na z�
 
 Choroplethová mapa ukazuje celkový počet hlášených infekčních nemocí v jednotlivých krajích ČR za poslední dostupný rok. Najeďte myší na kraj pro zobrazení přesného počtu.
 
-{{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Hlášené infekční nemoci podle krajů ČR" >}}
+{{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Hlášené infekční nemoci podle krajů ČR — absolutní počty" >}}
+
+---
+
+### Regionální mapa — incidence na 100 000 obyvatel
+
+Stejná data přepočtená na velikost populace kraje (zdroj jmenovatelů: ČSÚ). **Obě mapy vypadají úplně jinak — a ta druhá je ta správná pro srovnávání krajů.**
+
+Absolutní počty totiž hlavně kopírují, kde bydlí víc lidí. Praha má v absolutních číslech průměrný počet případů, ale po přepočtu na obyvatele má **nejnižší incidenci ze všech krajů** (720,6 na 100 tis.). Naopak Kraj Vysočina, který v absolutních počtech nijak nevyčnívá, je po přepočtu **nejvyšší** (1 639,9). Moravskoslezský kraj má nejvíc případů v absolutních číslech, ale v incidenci je až čtvrtý.
+
+{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="případů na 100 tis." title="Incidence infekčních nemocí podle krajů ČR — na 100 000 obyvatel" >}}
+
+Rozdíly mezi kraji můžou odrážet i pokrytí a kapacitu hlásící sítě, ne jen skutečný výskyt — vyšší incidence nemusí znamenat víc nemocí, ale i důslednější hlášení.
 
 ---
 
