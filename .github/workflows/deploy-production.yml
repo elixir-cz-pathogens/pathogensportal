@@ -54,7 +54,7 @@ jobs:
           test -n "${{ vars.PRODUCTION_PATH }}" || {
             echo "::error::Missing repo variable PRODUCTION_PATH (DocumentRoot in production)."; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
           fetch-depth: 0

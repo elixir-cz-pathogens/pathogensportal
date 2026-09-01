@@ -56,7 +56,7 @@ jobs:
           test -n "${{ vars.STAGING_PATH }}" || {
             echo "::error::Missing repo variable STAGING_PATH (DocumentRoot on staging)."; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
           fetch-depth: 0
