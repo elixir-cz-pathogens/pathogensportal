@@ -1,0 +1,1 @@
+{"labels": ["2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025"], "datasets": [{"label": "Ostatní diagnózy (souhrn)", "data": [10753, 13741, 6463, 4898, 8933, 9516, 57645, 14878], "backgroundColor": "rgba(13,110,253,0.6)", "borderColor": "rgb(13,110,253)", "borderWidth": 2, "fill": false, "tension": 0.3, "pointRadius": 1, "type": "bar"}]}

@@ -26,6 +26,30 @@ on:
   push:
     branches: [dev]
 
+# ⛔ WITHOUT THIS, TWO DEPLOYS RACE.
+# ⚠️ Updated 1 Sep 2026 (A2). It used to be worse: the transfer went `rsync
+# --delete` straight into the directory Apache serves, so two runs interleaved one
+# run's deletes with the other's writes and BOTH reported success. Release
+# directories fixed that half — concurrent runs now write to SEPARATE directories
+# and no visitor ever sees a half-state.
+#
+# The race that remains is the flip: two runs both point `current` at their own
+# release, and the LAST one to finish wins — which is not necessarily the newest
+# commit. Staging would then serve an older build while reporting the newer one
+# deployed, and there is still no step that would notice.
+#
+# It stopped being hypothetical on 31 Aug 2026, when the data pipeline became a
+# SECOND pusher to `dev` alongside the people: its machine commit can land seconds
+# after a human push, and its own rebase-retry loop can push twice by itself.
+#
+# `cancel-in-progress: false` is the deliberate half. A deploy that is already
+# rsyncing must be allowed to FINISH — cancelling it mid-transfer is precisely the
+# half-written docroot this guard exists to prevent. GitHub still cancels older
+# *queued* runs, so the newest commit is the one that lands, which is what we want.
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: false
+
 jobs:
   # Unit tests gate the deploy: a red test never reaches the staging machine.
   # Reviewers are looking at this site to judge the release, so it must not be
@@ -56,7 +80,7 @@ jobs:
           test -n "${{ vars.STAGING_PATH }}" || {
             echo "::error::Missing repo variable STAGING_PATH (DocumentRoot on staging)."; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           submodules: recursive
           fetch-depth: 0
@@ -104,7 +128,37 @@ jobs:
           # leading-slash path with its restricted directory, so `/` here means
           # /opt/pathogensportal/frontend/public there. The real path lives in the
           # -priv inventory; changing one without the other breaks the deploy.
+          # ── Release directories + a symlink flip (A2) ─────────────────────
+          #
+          # Deploys used to rsync --delete straight INTO the live DocumentRoot:
+          # for the length of every deploy the site was a half-state, and a build
+          # that emitted a truncated tree DELETED real pages.
+          #
+          # Now each deploy lands in its own directory and a symlink is moved, so
+          # visitors only ever see a complete tree, and a rollback is `ln -sfn` on
+          # the server — seconds, no CI, no reviewer.
+          #
+          # ⛔ COUPLED TO THE SERVER. The rrsync jail is the deploy area, so these
+          #    paths are relative to it (*_PATH stays "/"). Changing one without
+          #    the other breaks the deploy — the jail moved in -priv's `users` role.
+          REL="releases/${GITHUB_SHA}"
+
+          # 1. the built site into its OWN directory. --delete is scoped to that
+          #    directory, so it can never touch other releases or the symlink.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \
-            "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}/"
+            "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}${REL}/"
+
+          # 2. the flip. rsync sends a SYMLINK (-l), which is why no second
+          #    credential is needed: rrsync passes symlinks through untouched
+          #    (--munge-links is off), so the same write-only key that uploaded the
+          #    release can point `current` at it.
+          # ⛔ NO --delete here: at the jail root it would delete every release.
+          mkdir -p .flip && ln -sfn "$REL" .flip/current
+          rsync -rlvz --no-perms --no-owner --no-group --omit-dir-times \
+            -e "ssh -o StrictHostKeyChecking=yes" \
+            .flip/current \
+            "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}"
+
+          echo "deployed $REL and pointed current at it"

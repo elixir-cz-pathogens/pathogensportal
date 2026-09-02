@@ -26,15 +26,15 @@ Nejnovější dohledaný týdenní souhrn WHO AFRO s údaji DRK k 23. 8.: 5 584 
 
 ### [WHO AFRO: 100 dnů od vyhlášení ohniska](https://www.afro.who.int/countries/democratic-republic-of-congo/news/over-5200-cases-recorded-democratic-republic-congocrosses100-days-ebola-outbreak-declaration)
 
-Zpráva z 24. 8. označuje událost za nejrychleji rostoucí ebolové ohnisko v historii DRK, uvádí přibližně 90 potvrzených případů denně za první tři měsíce a varuje, že přenos předbíhá kontrolní úsilí. Jde o trendové a operační hodnocení; číselný stav přebíráme z novějšího SitRepu 106.
+Zpráva z 24. 8. označuje událost za nejrychleji rostoucí ebolové ohnisko v historii DRK, uvádí přibližně 90 potvrzených případů denně za první tři měsíce a varuje, že přenos předbíhá kontrolní úsilí. Jde o trendové a operační hodnocení; číselný stav přebíráme z novějšího SitRepu 108.
 
-### [DRK INSP / COUSP SitRep 106](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf)
+### [DRK INSP / COUSP SitRep 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf)
 
-Nejnovější primární celostátní údaje: stav k 28. 8., zveřejněno 29. 8. SitRep hlásí 5 945 potvrzených případů, 2 862 potvrzených úmrtí, 1 327 uzdravených, 896 pacientů v izolaci nebo léčebných centrech, 84,4 % kontaktů ve sledování a 60 zasažených zdravotních zón v šesti provinciích. Za 28. 8. přímo hlásí 82 případů a 38 úmrtí (24 komunitních + 14 v CTE).
+Nejnovější primární celostátní údaje: stav k 30. 8., zveřejněno 31. 8. SitRep hlásí 6 100 potvrzených případů, 2 950 potvrzených úmrtí, 1 383 uzdravených, 814 pacientů v izolaci nebo léčebných centrech, 86,3 % kontaktů ve sledování a 60 zasažených zdravotních zón v šesti provinciích. Za 30. 8. přímo hlásí 59 případů a 39 úmrtí (19 komunitních + 20 v CTE).
 
-### DRK INSP / COUSP SitRepy 104–105
+### DRK INSP / COUSP SitRepy 104–107
 
-Primární denní podklady před SitRepem 106: [104](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_104_26_08_2026.pdf) s údaji k 26. 8. a [105](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_105_27_08_2026.pdf) s údaji k 27. 8. Přímo hlásí denní dvojice 81/42 a 69/38 případů/úmrtí; SitRep 104 poprvé uvádí zóny Biena a Manguredjipa. Hodnoty nejsou dopočítány rozdílem kumulativních součtů.
+Primární denní podklady před SitRepem 108: [104](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_104_26_08_2026.pdf), [105](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_105_27_08_2026.pdf), [106](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf) a [107](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf). Přímo hlásí denní dvojice 81/42, 69/38, 82/38 a 96/49 případů/úmrtí; SitRep 104 poprvé uvádí zóny Biena a Manguredjipa. Hodnoty nejsou dopočítány rozdílem kumulativních součtů.
 
 ### DRK INSP / COUSP SitRepy 86–92
 
@@ -44,9 +44,9 @@ Primární denní podklady pro sedm starších bodů řady; SitRep 93 je uveden 
 
 Primární potvrzení šesté zasažené provincie s údaji k 12. 8.: v zóně Buta uvádí jeden potvrzený případ a jedno potvrzené úmrtí. Tento stav zachoval ještě SitRep 93; SitRep 96 následně potvrdil druhý případ v nově zasažené zóně Viadana.
 
-### [WHO Alert and response: denní aktualizace 20260830](https://www.who.int/emergencies/alert-and-response)
+### [WHO Alert and response: denní aktualizace 20260831](https://www.who.int/emergencies/alert-and-response)
 
-Při ověření 31. 8. uvádějí řádky zemí DRK 5 945 potvrzených případů, 2 862 úmrtí a 1 327 uzdravených k 28. 8., Ugandu 20/2/18 k 21. 7. a Francii 1/0/1 k 6. 7. Řádek Total se součtem zemí souhlasí: 5 966 potvrzených případů, 2 864 potvrzených úmrtí a 1 346 uzdravených. Země však mají rozdílná data platnosti.
+Při ověření 1. 9. uvádějí řádky zemí DRK 6 041 potvrzených případů, 2 911 úmrtí a 1 366 uzdravených k 29. 8., Ugandu 20/2/18 k 21. 7. a Francii 1/0/1 k 6. 7. Řádek Total se součtem zemí souhlasí: 6 062 potvrzených případů, 2 913 potvrzených úmrtí a 1 385 uzdravených. Země však mají rozdílná data platnosti.
 
 ### [WHO AFRO: konec ohniska v Ugandě](https://www.afro.who.int/countries/uganda/news/uganda-ends-ebola-outbreak-following-completion-42-day-countdown)
 
@@ -72,9 +72,9 @@ Zpráva z 27. 8. cituje ministra zdravotnictví DRK Rogera Kambu při zahájení
 
 Po jednání 18. 8. výbor doporučil zachovat PHEIC a vyzval k naléhavé, zesílené a trvalé reakci. WHO nedoporučuje pozastavení letů ani odepření vstupu cestujícím; nejde o pandemickou mimořádnou událost.
 
-### [ECDC stránka k ohnisku, aktualizována 28. srpna](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda)
+### [ECDC stránka k ohnisku, aktualizována 31. srpna](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda)
 
-ECDC uvádí pro DRK k 26. 8. celkem 5 794 potvrzených případů, 2 786 potvrzených úmrtí, 843 pacientů v izolaci nebo léčebných centrech, 82,3 % evidovaných kontaktů ve sledování a 60 ze 151 zasažených zdravotních zón v šesti provinciích. Pravděpodobnost infekce pro osoby žijící v EU/EHP dál hodnotí jako velmi nízkou.
+ECDC uvádí pro DRK k 28. 8. celkem 5 945 potvrzených případů, 2 862 potvrzených úmrtí, 1 327 uzdravených, 896 pacientů v izolaci nebo léčebných centrech, 84,4 % evidovaných kontaktů ve sledování a 60 ze 151 zasažených zdravotních zón v šesti provinciích. Pravděpodobnost infekce pro osoby žijící v EU/EHP dál hodnotí jako velmi nízkou.
 
 ### [Pletschette a Biedenkopf, npj Vaccines](https://www.nature.com/articles/s41541-026-01569-8)
 
@@ -86,7 +86,7 @@ Operační doporučení ze 17. 8. k ochraně zdravotnických služeb a kontinuit
 
 ### [Li et al., medRxiv, 18. srpna 2026](https://www.medrxiv.org/content/10.64898/2026.08.17.26360567v1)
 
-Nerecenzovaný modelovací preprint pracující s veřejnými agregovanými daty do 11. 8. Je veden jako odborný kontext; kvůli staršímu řezu a absenci recenzního řízení nenahrazuje primární počty ani aktuální doporučení.
+Nerecenzovaný modelovací preprint pracující s veřejnými agregovanými daty do 11. 8. Je veden jako odborný kontext; kvůli údajům pouze do 11. 8. a absenci recenzního řízení nenahrazuje primární počty ani aktuální doporučení.
 
 ### [WHO AFRO: přeshraniční konzultace v Bangui](https://www.afro.who.int/countries/central-african-republic/news/central-african-republic-hosts-cross-border-consultation-risk-bundibugyo-virus-disease)
 
@@ -170,7 +170,7 @@ Předchozí veřejné údaje DRK: stav k 1. 7., stránka INSP publikovaná 3. 7.
 
 ### [DRK INSP / COUSP SitRep 46](https://insp.cd/sitrep-n046-mvb_29-06-2026/)
 
-Předchozí veřejné údaje DRK: stav k 29. 6., publikace na webu INSP 1. 7. Uvádí 1 333 potvrzených případů, 399 úmrtí mezi potvrzenými případy, 189 uzdravených, 609 osob hospitalizovaných v izolaci a sledování kontaktů na 82,7 %. Oproti aktuálnímu SitRepu 106 jde o starší průběžný stav.
+Předchozí veřejné údaje DRK: stav k 29. 6., publikace na webu INSP 1. 7. Uvádí 1 333 potvrzených případů, 399 úmrtí mezi potvrzenými případy, 189 uzdravených, 609 osob hospitalizovaných v izolaci a sledování kontaktů na 82,7 %. Oproti aktuálnímu SitRepu 108 jde o starší průběžný stav.
 
 ### [DRK INSP / COUSP SitRep 42](https://insp.cd/sitrep-n042-mvb_25-06-2026/)
 
@@ -198,7 +198,7 @@ Ugandská aktualizace publikovaná 4. 7. vysvětluje, že 42denní odpočet pře
 
 ### [ECDC stránka k ohnisku: předchozí snapshot ze 7. srpna](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda)
 
-Tento předchozí zaznamenaný stav živé stránky byl aktualizován 7. 8. v 15:40 a používá data DRK k 5. 8. Uváděl 4 053 případů, 1 850 úmrtí, 694 pacientů v izolaci a 53 zasažených zdravotních zón. Aktuální stav s údaji k 26. srpnu je uveden výše.
+Tento předchozí zaznamenaný stav živé stránky byl aktualizován 7. 8. v 15:40 a používá data DRK k 5. 8. Uváděl 4 053 případů, 1 850 úmrtí, 694 pacientů v izolaci a 53 zasažených zdravotních zón. Aktuální stav s údaji k 28. srpnu je uveden výše.
 
 ### [UKHSA: preventivní zdravotnická evakuace po možné expozici](https://www.gov.uk/government/news/precautionary-medical-evacuation-following-a-potential-healthcare-related-exposure-to-ebola)
 
@@ -368,11 +368,11 @@ Preventivní přijetí amerického lékaře po rizikovém kontaktu.
 
 ### [MZV ČR: Uganda](https://mzv.gov.cz/jnp/cz/cestujeme/aktualni_doporuceni_a_varovani/uganda_vyskyt_eboly.html)
 
-Cestovní upozornění k výskytu eboly v Ugandě bylo při ověření 31. 8. označeno „Stále v platnosti: 31. 8. 2026“; jeho doporučení zůstalo obsahově nezměněné.
+Cestovní upozornění k výskytu eboly v Ugandě bylo při ověření 1. 9. označeno „Stále v platnosti: 1. 9. 2026“; jeho doporučení zůstalo obsahově nezměněné.
 
 ### [MZV ČR: DRK](https://mzv.gov.cz/jnp/cz/cestujeme/aktualni_doporuceni_a_varovani/konzska_demokraticka_republika.html)
 
-Cestovní varování pro Kongo (Kinshasa), včetně výskytu eboly a rizika v provinciích Ituri, Severní Kivu a Jižní Kivu, bylo při ověření 31. 8. označeno „Stále v platnosti: 31. 8. 2026“ a jeho doporučení zůstalo obsahově nezměněné.
+Cestovní varování pro Kongo (Kinshasa), včetně výskytu eboly a rizika v provinciích Ituri, Severní Kivu a Jižní Kivu, bylo při ověření 1. 9. označeno „Stále v platnosti: 1. 9. 2026“ a jeho doporučení zůstalo obsahově nezměněné.
 
 ### [FN Bulovka](https://bulovka.cz/kliniky-a-oddeleni/klinika-infekcnich-nemoci/narodni-centrum-pro-izolaci-a-lecbu-vysoce-nebezpecnych-nakaz)
 
@@ -402,7 +402,7 @@ Výchozí soubor analýzy INRB a partnerů zahrnuje 139 genomů z DRK odebranýc
 
 ### [Pathoplexus Ebola-BDBV](https://pathoplexus.org/ebola-bdbv/search)
 
-Veřejná databáze sekvencí pro BDBV, včetně historických záznamů. Při ověření 31. 8. ukazovala agregace LAPIS 686 verzovaných databázových položek pro označení ohniska Bdbv-2026: 664 z DRK, 20 z Ugandy a 2 z Německa, o jednu položku z DRK více než v předchozí publikované verzi. Databázový počet není počet klinických případů, počet genomů v jedné analýze ani důkaz mutace měnící biologické vlastnosti viru.
+Veřejná databáze sekvencí pro BDBV, včetně historických záznamů. Při ověření 1. 9. ukazovala agregace LAPIS 753 verzovaných databázových položek pro označení ohniska Bdbv-2026: 731 z DRK, 20 z Ugandy a 2 z Německa, o 67 položek z DRK více než v předchozí publikované verzi. Databázový počet není počet klinických případů, počet genomů v jedné analýze ani důkaz mutace měnící biologické vlastnosti viru.
 
 ### [Moderna: první účastníci ve studii mRNA-1469](https://feeds.issuerdirect.com/news-release.html?newsid=5531328107885644&symbol=MRNA)
 
@@ -418,7 +418,7 @@ Strojově čitelný kontrolní zdroj pro databázové počty: Bdbv-2007, Bdbv-20
 
 ### [Pathoplexus LAPIS: agregace podle ohniska a země](https://lapis.pathoplexus.org/ebola-bdbv/sample/aggregated?fields=outbreak,geoLocCountry)
 
-Strojově čitelný kontrolní zdroj pro rozdělení verzovaných databázových položek Bdbv-2026 podle země. Při ověření 31. 8. uváděl 664 položek z DRK, 20 z Ugandy a 2 z Německa.
+Strojově čitelný kontrolní zdroj pro rozdělení verzovaných databázových položek Bdbv-2026 podle země. Při ověření 1. 9. uváděl 731 položek z DRK, 20 z Ugandy a 2 z Německa.
 
 ### [ICTV Filoviridae profile](https://ictv.global/report/chapter/filoviridae/filoviridae/orthoebolavirus)
 
@@ -442,7 +442,7 @@ Vývoj protilátkové reaktivity se v longitudinální kohortové studii ze dvou
 
 ### [WHO Weekly Epidemiological Record, svazek 101, číslo 33](https://www.who.int/publications/journals/weekly-epidemiological-record/wer101-33)
 
-Odborný kontext zveřejněný 21. 8. pracuje s daty do 16. 8. a popisuje zpožděné rozpoznání prvních případů a potřebu širší diagnostiky po negativním testu zaměřeném na EBOV. Kvůli staršímu datovému řezu jej nepoužíváme pro aktuální součty.
+Odborný kontext zveřejněný 21. 8. pracuje s daty do 16. 8. a popisuje zpožděné rozpoznání prvních případů a potřebu širší diagnostiky po negativním testu zaměřeném na EBOV. Protože obsahuje údaje pouze do 16. 8., nepoužíváme jej pro aktuální součty.
 
 ### [The Lancet Infectious Diseases: rekalibrovaný stochastický model](https://www.thelancet.com/journals/laninf/article/PIIS1473-3099%2826%2900320-8/fulltext)
 
@@ -534,9 +534,9 @@ U rychle se měnících počtů uvádíme datum zveřejnění zdroje a den, ke k
 
 AP zveřejnila 30. července údaje připisované nejnovější vládní aktualizaci DRK: 3 442 případů a 1 521 úmrtí. Odpovídající veřejný primární SitRep 75/76 nebyl při ověření 11. srpna nalezen na webu INSP. Čísla proto zůstávají výslovně atribuována médiu a vládnímu podkladu; z článku neodvozujeme denní hodnoty ani další epidemiologické kategorie.
 
-### [DRK INSP / COUSP SitRep MVB RDC 106](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf)
+### [DRK INSP / COUSP SitRep MVB RDC 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf)
 
-Poslední dohledaný veřejný detailní SitRep DRK při ověření 31. srpna je SitRep 106 s údaji k 28. srpnu: 5 945 potvrzených případů, 2 862 potvrzených úmrtí, 1 327 uzdravených, 896 pacientů v izolaci nebo léčebných centrech a 60 zasažených zdravotních zón. SitRepy 104–106 jsou tři nejnovější body časové řady; jejich denní hodnoty přebíráme přímo, nikoli rozdílem kumulativních součtů.
+Poslední dohledaný veřejný detailní SitRep DRK při ověření 1. září je SitRep 108 s údaji k 30. srpnu: 6 100 potvrzených případů, 2 950 potvrzených úmrtí, 1 383 uzdravených, 814 pacientů v izolaci nebo léčebných centrech a 60 zasažených zdravotních zón. SitRepy 106–108 jsou tři nejnovější body časové řady; jejich denní hodnoty přebíráme přímo, nikoli rozdílem kumulativních součtů.
 
 ### [DRK INSP / COUSP SitRep MVB RDC 080](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_080_02-08-2026.pdf)
 
@@ -560,23 +560,23 @@ Předchozí veřejné údaje DRK: údaje k 1. červenci, publikace na webu INSP 
 
 ### [DRK INSP / COUSP SitRep MVB RDC 046](https://insp.cd/sitrep-n046-mvb_29-06-2026/)
 
-Předchozí veřejné údaje DRK: údaje k 29. červnu, publikace na webu INSP 1. července. Uvádí 1 333 potvrzených případů, 399 úmrtí mezi potvrzenými případy, 189 uzdravených, 609 osob hospitalizovaných v izolaci a sledování kontaktů 82,7 %. Oproti aktuálnímu SitRepu 106 jde o starší průběžný stav.
+Předchozí veřejné údaje DRK: údaje k 29. červnu, publikace na webu INSP 1. července. Uvádí 1 333 potvrzených případů, 399 úmrtí mezi potvrzenými případy, 189 uzdravených, 609 osob hospitalizovaných v izolaci a sledování kontaktů 82,7 %. Oproti aktuálnímu SitRepu 108 jde o starší průběžný stav.
 
 ### [DRK INSP / COUSP SitRep MVB RDC 044](https://insp.cd/sitrep-n044-mvb_27-06-2026/)
 
 Starší veřejné údaje DRK: údaje k 27. červnu, publikace 28. června. Uvádí 1 274 potvrzených případů, 360 úmrtí mezi potvrzenými případy, průběžnou smrtnost 28,3 %, 178 uzdravených, 502 osob v izolaci nebo hospitalizaci, 35 zasažených zdravotních zón, 239 suspektních případů za den včetně 70 suspektních úmrtí a sledování kontaktů 87,1 %. Dne 27. června bylo nově hlášeno 47 potvrzených případů včetně 12 úmrtí; samostatná položka 10 úmrtí v léčebných centrech v Ituri se nesmí přičítat jako další denní úmrtí v grafu. Nově byla v Ituri zasažena zdravotní zóna Mandima.
 
-### [WHO Alert and response: denní epidemiologická aktualizace 20260830](https://www.who.int/emergencies/alert-and-response)
+### [WHO Alert and response: denní epidemiologická aktualizace 20260831](https://www.who.int/emergencies/alert-and-response)
 
-Při ověření 31. srpna uvádějí řádky zemí DRK 5 945/2 862/1 327 k 28. srpnu, Ugandu 20/2/18 k 21. červenci a Francii 1/0/1 k 6. červenci. Řádek Total se součtem zemí souhlasí: 5 966 potvrzených případů, 2 864 potvrzených úmrtí a 1 346 uzdravených. Země mají rozdílná data platnosti.
+Při ověření 1. září uvádějí řádky zemí DRK 6 041/2 911/1 366 k 29. srpnu, Ugandu 20/2/18 k 21. červenci a Francii 1/0/1 k 6. červenci. Řádek Total se součtem zemí souhlasí: 6 062 potvrzených případů, 2 913 potvrzených úmrtí a 1 385 uzdravených. Země mají rozdílná data platnosti.
 
 ### [WHO Disease Outbreak News 616, 28. srpna 2026](https://www.who.int/emergencies/disease-outbreak-news/item/2026-DON616)
 
-Oficiální interpretační aktualizace s daty DRK k 26. srpnu. WHO popisuje pokračující přenos a podstatnou územní expanzi, potvrzuje zahájení očkování Ervebem 27. srpna a uvádí přes 250 účastníků studie PARTNERS ve třech zařízeních. Číselně je novější SitRep 106.
+Oficiální interpretační aktualizace s daty DRK k 26. srpnu. WHO popisuje pokračující přenos a podstatnou územní expanzi, potvrzuje zahájení očkování Ervebem 27. srpna a uvádí přes 250 účastníků studie PARTNERS ve třech zařízeních. Číselně je novější SitRep 108.
 
 ### [WHO AFRO Weekly External Situation Report 15, údaje k 23. srpnu 2026](https://www.afro.who.int/countries/democratic-republic-of-congo/publication/ebola-bundibugyo-virus-disease-outbreak-6)
 
-Týdenní stav uvádí 5 584 potvrzených případů a 2 680 potvrzených úmrtí v DRK, o 563 případů a 302 úmrtí více než report 14. WHO popisuje trvající přenos, vysokou úmrtnost a pokračující geografickou expanzi. Novější SitRep 106 dodává aktuálnější celostátní údaje; týdenní report používáme pro trendové hodnocení.
+Týdenní stav uvádí 5 584 potvrzených případů a 2 680 potvrzených úmrtí v DRK, o 563 případů a 302 úmrtí více než report 14. WHO popisuje trvající přenos, vysokou úmrtnost a pokračující geografickou expanzi. Novější SitRep 108 dodává aktuálnější celostátní údaje; týdenní report používáme pro trendové hodnocení.
 
 ### [WHO: úplná zpráva z druhého jednání nouzového výboru IHR, 28. srpna 2026](https://www.who.int/news/item/28-08-2026-second-meeting-of-the-ihr-emergency-committee-on-the-epidemic-of-ebola-bundibugyo-virus-disease-in-the-democratic-republic-of-the-congo---meeting-report)
 
@@ -624,7 +624,7 @@ Mediální přepis vládního situačního reportu publikovaný 23. června v 00
 
 ### [ECDC stránka k ohnisku: předchozí snapshot ze 7. srpna 2026](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda)
 
-Tento předchozí zaznamenaný stav živé stránky používal data DRK k 5. srpnu a uváděl 4 053 případů, 1 850 úmrtí a 694 pacientů v izolaci. Aktuální stav s údaji k 26. srpnu je uveden na začátku inventáře.
+Tento předchozí zaznamenaný stav živé stránky používal data DRK k 5. srpnu a uváděl 4 053 případů, 1 850 úmrtí a 694 pacientů v izolaci. Aktuální stav s údaji k 28. srpnu je uveden na začátku inventáře.
 
 ### [Uganda Ministry of Health dashboard, stav k 28. červenci 2026](https://evd-daily.health.go.ug/)
 
@@ -820,7 +820,7 @@ Týdenní situační zpráva s daty k 24. květnu: 390 dalších suspektních p�
 
 ### [Uganda Ministry of Health: Ebola update, 2. června 2026](https://health.go.ug/download/ebola-update-2nd-june-2026/)
 
-Oficiální ugandská aktualizace zveřejněná 2. června v 15:40 místního času. Používáme ji jako potvrzení staršího ugandského stavu 15 potvrzených případů a 1 potvrzeného úmrtí; pro novější ugandský stav používáme dashboard Uganda MoH k 28. červenci. Denní epidemiologická aktualizace WHO 20260830 používá pro Ugandu samostatný datový stav k 21. červenci.
+Oficiální ugandská aktualizace zveřejněná 2. června v 15:40 místního času. Používáme ji jako potvrzení staršího ugandského stavu 15 potvrzených případů a 1 potvrzeného úmrtí; pro novější ugandský stav používáme dashboard Uganda MoH k 28. červenci. Denní epidemiologická aktualizace WHO 20260831 uvádí pro Ugandu stav k 21. červenci.
 
 ### [Uganda Ministry of Health: Ebola dashboard](https://evd-daily.health.go.ug/)
 
@@ -832,7 +832,7 @@ Oficiální potvrzení dvou nových případů eboly u ugandských zdravotníků
 
 ### [ECDC: předchozí snapshot živé stránky ze 7. srpna 2026](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda)
 
-Tento předchozí zaznamenaný stav živé stránky používal data DRK k 5. srpnu a uváděl 4 053 případů, 1 850 úmrtí a 694 pacientů v izolaci. Aktuální stav s údaji k 26. srpnu je uveden na začátku inventáře.
+Tento předchozí zaznamenaný stav živé stránky používal data DRK k 5. srpnu a uváděl 4 053 případů, 1 850 úmrtí a 694 pacientů v izolaci. Aktuální stav s údaji k 28. srpnu je uveden na začátku inventáře.
 
 ### [ECDC RAGIDA Ebola, 30. května 2026](https://www.ecdc.europa.eu/en/publications-data/risk-assessment-guidelines-infectious-diseases-transmitted-aircraft-ragida-ebola)
 
@@ -948,11 +948,11 @@ Oficiální popis české civilní kapacity pro izolaci a léčbu vysoce nebezpe
 
 ### [MZV ČR: Uganda - výskyt eboly](https://mzv.gov.cz/jnp/cz/cestujeme/aktualni_doporuceni_a_varovani/uganda_vyskyt_eboly.html)
 
-Praktické cestovní upozornění k výskytu eboly v Ugandě. Při ověření 31. srpna stránka uváděla „Stále v platnosti: 31. 8. 2026“; doporučení zůstalo obsahově nezměněné. Doporučuje cesty do příhraničních oblastí Ugandy s DRK jen ve zcela nezbytných případech a upozorňuje na uzavření ugandsko-konžské hranice pro běžný pohyb osob.
+Praktické cestovní upozornění k výskytu eboly v Ugandě. Při ověření 1. září stránka uváděla „Stále v platnosti: 1. 9. 2026“; doporučení zůstalo obsahově nezměněné. Doporučuje cesty do příhraničních oblastí Ugandy s DRK jen ve zcela nezbytných případech a upozorňuje na uzavření ugandsko-konžské hranice pro běžný pohyb osob.
 
 ### [MZV ČR: Kongo (Kinshasa) - varování pro cesty](https://mzv.gov.cz/jnp/cz/cestujeme/aktualni_doporuceni_a_varovani/konzska_demokraticka_republika.html)
 
-České cestovní varování pro DRK při ověření 31. srpna uvádělo „Stále v platnosti: 31. 8. 2026“ a zůstalo obsahově nezměněné. V souvislosti s ebolou upozorňuje na výskyt v DRK a na rizikové oblasti včetně provincií Ituri, Severní Kivu a Jižní Kivu; je vhodné jej uvádět vedle ugandského upozornění.
+České cestovní varování pro DRK při ověření 1. září uvádělo „Stále v platnosti: 1. 9. 2026“ a zůstalo obsahově nezměněné. V souvislosti s ebolou upozorňuje na výskyt v DRK a na rizikové oblasti včetně provincií Ituri, Severní Kivu a Jižní Kivu; je vhodné jej uvádět vedle ugandského upozornění.
 
 ### [SZÚ: Epidemie eboly v DRK a Ugandě, aktualizace 3. června 2026](https://szu.gov.cz/temata-zdravi-a-bezpecnosti/a-z-infekce/e/ebola/ebola-kongo-uganda-2026/ebola-2026-3-6-2026/)
 
@@ -1016,7 +1016,7 @@ Krátká odborná zpráva upozorňující na práci z PNAS. Jde o sekundární k
 
 ### [Pathoplexus: Ebola-BDBV](https://pathoplexus.org/ebola-bdbv/search)
 
-Veřejná databáze sekvencí pro virus Bundibugyo. Při ověření 31. srpna ukazovala agregace LAPIS 686 verzovaných databázových položek pro označení ohniska Bdbv-2026: 664 z DRK, 20 z Ugandy a 2 z Německa; proti předchozí publikované verzi přibyla jedna položka z DRK. Databázové položky nejsou klinické případy; jejich počet není počtem genomů v jedné analýze ani důkazem mutace měnící biologické vlastnosti viru.
+Veřejná databáze sekvencí pro virus Bundibugyo. Při ověření 1. září ukazovala agregace LAPIS 753 verzovaných databázových položek pro označení ohniska Bdbv-2026: 731 z DRK, 20 z Ugandy a 2 z Německa; proti předchozí publikované verzi přibylo 67 položek z DRK. Databázové položky nejsou klinické případy; jejich počet není počtem genomů v jedné analýze ani důkazem mutace měnící biologické vlastnosti viru.
 
 ### [virological.org: phylodynamics and evolution, 25.–27. srpna 2026](https://virological.org/t/phylodynamics-and-evolution-of-the-2026-bundibugyo-virus-circulating-in-the-democratic-republic-of-the-congo-insights-from-a-100-day-window-of-genomic-sequencing/1046)
 
