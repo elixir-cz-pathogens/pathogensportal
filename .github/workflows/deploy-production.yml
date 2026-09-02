@@ -101,7 +101,34 @@ jobs:
           # turned on, this variable must become `/` in the same window — rrsync
           # prefixes a leading-slash path with its restricted directory, so the
           # absolute path would resolve to <dir><dir> and the deploy would fail.
+          # ── Release directories + a symlink flip (A2) ─────────────────────
+          #
+          # This used to rsync --delete straight INTO the live DocumentRoot: for the
+          # length of every deploy the live site was a half-state, and a build that
+          # emitted a truncated tree DELETED real pages. Rolling back meant
+          # revert → PR → review → CI — a rollback gated on a reviewer being awake,
+          # on the project whose first rule is "never take the live site down".
+          #
+          # ⛔ COUPLED TO THE SERVER. The rrsync jail is the deploy area, so these
+          #    paths are relative to it (PRODUCTION_PATH stays "/"). Proven on
+          #    staging first; the server half is in -priv's `app` and `users` roles.
+          REL="releases/${GITHUB_SHA}"
+
+          # 1. the built site into its OWN directory. --delete is scoped there, so
+          #    it can never touch another release or the live symlink.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \
-            "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}/"
+            "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}${REL}/"
+
+          # 2. the flip — one rename, so visitors only ever see a complete tree.
+          #    rsync sends a SYMLINK (-l), which is why no second credential is
+          #    needed: rrsync passes symlinks through untouched (--munge-links off).
+          # ⛔ NO --delete here: at the jail root it would delete every release.
+          mkdir -p .flip && ln -sfn "$REL" .flip/current
+          rsync -rlvz --no-perms --no-owner --no-group --omit-dir-times \
+            -e "ssh -o StrictHostKeyChecking=yes" \
+            .flip/current \
+            "${{ vars.DEPLOY_USER }}@${PRODUCTION_HOST}:${{ vars.PRODUCTION_PATH }}"
+
+          echo "deployed $REL and pointed current at it"
