@@ -117,9 +117,21 @@
 
   /* ---------------- Úprava dat pro vykreslení ---------------- */
 
+  /**
+   * Hodnota bodu bez ohledu na tvar dat. Řady na kategorické ose jsou pole čísel
+   * (a `null` tam, kde hodnota chybí), řady na číselné ose jsou {x, y} objekty.
+   * Zbytek kódu ten rozdíl nemá řešit.
+   */
+  function yOf(value) {
+    if (typeof value === "number") return value;
+    if (value && typeof value.y === "number") return value.y;
+    return null;
+  }
+
   function magnitude(dataset) {
     return (dataset.data || []).reduce(function (sum, value) {
-      return sum + Math.abs(typeof value === "number" ? value : 0);
+      var y = yOf(value);
+      return sum + Math.abs(y === null ? 0 : y);
     }, 0);
   }
 
@@ -185,7 +197,21 @@
       } else {
         styled.borderWidth = 2;
         styled.tension = 0.3;
-        styled.pointRadius = 0;
+        // Řídké řady: Chart.js kreslí úsečku jen mezi *sousedními* nenulovými
+        // body, takže série jako [28, null, null, 64] nenakreslila nic a s
+        // nulovým poloměrem bodu zmizela z grafu úplně — data byla dohledatelná
+        // jen v tooltipu. spanGaps mezeru přemostí; u kumulativních řad je to
+        // i věcně správně, mezi dvěma hlášeními křivka opravdu spojitě roste.
+        styled.spanGaps = true;
+        // Osamocený bod (bez souseda, se kterým by šla vést čára) se musí
+        // vykreslit sám za sebe, jinak by taková řada nebyla vidět vůbec.
+        styled.pointRadius = function (ctx) {
+          var data = (ctx.dataset && ctx.dataset.data) || [];
+          if (yOf(data[ctx.dataIndex]) === null) return 0;
+          var before = ctx.dataIndex > 0 ? yOf(data[ctx.dataIndex - 1]) : null;
+          var after = ctx.dataIndex < data.length - 1 ? yOf(data[ctx.dataIndex + 1]) : null;
+          return before === null && after === null ? 2.5 : 0;
+        };
         styled.pointHoverRadius = 4;
         styled.pointHoverBorderWidth = 2;
         styled.pointHoverBorderColor = t.surface; // prstenec v barvě povrchu
@@ -233,8 +259,9 @@
         if ((dataset.type || chart.config.type) === "bar" || !chart.isDatasetVisible(i)) return;
         var meta = chart.getDatasetMeta(i);
         for (var p = meta.data.length - 1; p >= 0; p--) {
-          if (typeof dataset.data[p] === "number") {
-            placed.push({ x: meta.data[p].x, y: meta.data[p].y, value: dataset.data[p] });
+          var value = yOf(dataset.data[p]);
+          if (value !== null) {
+            placed.push({ x: meta.data[p].x, y: meta.data[p].y, value: value });
             break;
           }
         }
@@ -259,8 +286,14 @@
 
   /* ---------------- Graf ---------------- */
 
-  function baseOptions(t, datasets, chartType) {
+  function baseOptions(t, datasets, chartType, payload) {
     var multi = datasets.length > 1;
+    // Číselná osa X: vzdálenost na ose odpovídá hodnotě, ne pořadí popisku.
+    // Bez ní se u srovnání trajektorií kreslí den 0→4 stejně široce jako 59→85
+    // a sklony křivek — tedy to jediné, co má graf ukázat — nic neznamenají.
+    var linearX = payload && payload.x_scale === "linear";
+    var xUnit = (payload && payload.x_unit) || "";
+    var logY = payload && payload.y_scale === "logarithmic";
     var lineCount = datasets.filter(function (d) {
       return (d.type || chartType) !== "bar";
     }).length;
@@ -268,7 +301,13 @@
       responsive: true,
       maintainAspectRatio: false,
       layout: { padding: { right: lineCount ? 52 : 4, top: 4 } },
-      interaction: { mode: "index", intersect: false },
+      // "index" páruje body podle pořadí v poli, což na kategorické ose sedí —
+      // všechny řady tam sdílejí popisky. Na číselné ose má ale každá řada své
+      // vlastní body, takže by se do jednoho tooltipu dostal den 5 jedné epidemie
+      // a den 88 druhé. Tam se proto hledá nejbližší bod podle osy X.
+      interaction: linearX
+        ? { mode: "nearest", axis: "x", intersect: false }
+        : { mode: "index", intersect: false },
       plugins: {
         // Jedna řada legendu nepotřebuje — titulek karty ji pojmenovává.
         legend: multi
@@ -294,6 +333,11 @@
           usePointStyle: true,
           displayColors: multi,
           callbacks: {
+            title: linearX
+              ? function (items) {
+                  return (xUnit ? xUnit + " " : "") + fmt(items[0].parsed.x);
+                }
+              : undefined,
             label: function (item) {
               return " " + item.dataset.label + ": " + fmt(item.parsed.y);
             }
@@ -308,12 +352,21 @@
       },
       scales: {
         x: {
+          type: linearX ? "linear" : undefined,
+          bounds: linearX ? "data" : undefined,
+          title: payload && payload.x_title
+            ? { display: true, text: payload.x_title, color: t.textMuted, padding: { top: 6 } }
+            : undefined,
           grid: { display: false },
           border: { color: t.grid },
           ticks: { color: t.textMuted, maxTicksLimit: 12, maxRotation: 0, autoSkip: true }
         },
         y: {
-          beginAtZero: true,
+          // Logaritmická osa se hodí tam, kde řady spolu srovnávané leží o řády
+          // od sebe — na lineární ose by se ty menší slisovaly na nulu. Sklon
+          // křivky pak navíc odpovídá *rychlosti* růstu, ne absolutnímu počtu.
+          type: logY ? "logarithmic" : undefined,
+          beginAtZero: !logY, // log(0) neexistuje; osa začíná na nejmenší hodnotě
           grid: { color: t.grid, drawTicks: false },
           border: { display: false },
           ticks: { color: t.textMuted, padding: 8, callback: function (v) { return fmt(v); } }
@@ -328,7 +381,7 @@
    */
   function buildTable(payload, colorByLabel, t) {
     var datasets = payload.datasets || [];
-    var head = ["<tr><th scope=\"col\">Období</th>"];
+    var head = ['<tr><th scope="col">' + escapeHtml(payload.x_title || "Období") + "</th>"];
     datasets.forEach(function (d, i) {
       var label = d.label || "Řada " + (i + 1);
       head.push(
@@ -338,13 +391,36 @@
     });
     head.push("</tr>");
 
-    var rows = (payload.labels || []).map(function (label, row) {
-      var cells = ['<tr><th scope="row">' + escapeHtml(String(label)) + "</th>"];
+    var rows;
+    if (payload.x_scale === "linear") {
+      // Bez společných popisků se řádky staví ze sjednocení x hodnot všech řad
+      // a hodnota se dohledává podle x — řady tu nejsou zarovnané na společnou
+      // osu, každá nese jen své vlastní body.
+      var xs = [];
       datasets.forEach(function (d) {
-        cells.push("<td>" + fmt((d.data || [])[row]) + "</td>");
+        (d.data || []).forEach(function (point) {
+          if (point && xs.indexOf(point.x) === -1) xs.push(point.x);
+        });
       });
-      return cells.join("") + "</tr>";
-    });
+      xs.sort(function (a, b) { return a - b; });
+      var unit = payload.x_unit ? payload.x_unit + " " : "";
+      rows = xs.map(function (x) {
+        var cells = ['<tr><th scope="row">' + escapeHtml(unit + fmt(x)) + "</th>"];
+        datasets.forEach(function (d) {
+          var hit = (d.data || []).filter(function (p) { return p && p.x === x; })[0];
+          cells.push("<td>" + fmt(hit ? hit.y : null) + "</td>");
+        });
+        return cells.join("") + "</tr>";
+      });
+    } else {
+      rows = (payload.labels || []).map(function (label, row) {
+        var cells = ['<tr><th scope="row">' + escapeHtml(String(label)) + "</th>"];
+        datasets.forEach(function (d) {
+          cells.push("<td>" + fmt((d.data || [])[row]) + "</td>");
+        });
+        return cells.join("") + "</tr>";
+      });
+    }
 
     return (
       '<table class="pp-table"><caption class="visually-hidden">Data grafu v tabulce</caption>' +
@@ -388,7 +464,7 @@
       instance = new Chart(canvas, {
         type: chartType,
         data: { labels: payload.labels, datasets: datasets },
-        options: baseOptions(t, datasets, chartType),
+        options: baseOptions(t, datasets, chartType, payload),
         plugins: [crosshair, endLabels]
       });
 
