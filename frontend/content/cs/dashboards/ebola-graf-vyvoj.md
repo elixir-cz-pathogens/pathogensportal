@@ -160,7 +160,7 @@ Kumulativní úmrtí mezi potvrzenými případy
 
 SitRepy 86–108 přímo uvádějí denní hodnoty. SitRep 89 hlásí 118 případů, zatímco kumulativní součet roste o 117 kvůli průběžné harmonizaci; SitRep 93 hlásí 101 případů, ale kumulativní součet roste o 102 kvůli dříve opomenutému případu. SitRepy 107–108 přímo hlásí 96/49 a 59/39 případů/úmrtí; u úmrtí jde o součet komunitních úmrtí a potvrzených úmrtí v léčebných centrech. Počet zasažených zón zůstává 60. Denní sloupce přebírají přímo hlášené hodnoty, nikoli rozdíly kumulativních součtů. Starší zdrojová omezení a rozpory jsou podrobně popsány v přiloženém souboru README.
 
-Kontrolní zdroje: [DRK INSP/COUSP SitRep 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf), [SitRep 107](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf), [SitRep 106](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf), [ECDC stránka k ohnisku](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda), [Uganda Ministry of Health dashboard](https://evd-daily.health.go.ug/) a [WHO denní epidemiologická aktualizace 20260831](https://www.who.int/emergencies/alert-and-response). Jednotlivé SitRep odkazy jsou uvedeny v tabulce.
+Kontrolní zdroje: [DRK INSP/COUSP SitRep 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf), [SitRep 107](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf), [SitRep 106](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf), [ECDC stránka k ohnisku](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda), [Uganda Ministry of Health dashboard](https://evd-daily.health.go.ug/) a [WHO denní epidemiologická aktualizace 20260901](https://www.who.int/emergencies/alert-and-response). Jednotlivé SitRep odkazy jsou uvedeny v tabulce.
 
 FAIR · datová vrstva
 
@@ -172,7 +172,7 @@ Stav k datu
 :   30. 8. 2026
 
 Kurace
-:   86 dohledatelných bodů · revize 1. 9. 2026
+:   86 dohledatelných bodů · revize 2. 9. 2026
 
 Formát
 :   CSV v UTF-8 + JSON Schema
