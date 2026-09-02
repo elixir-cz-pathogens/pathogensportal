@@ -29,6 +29,10 @@ build:
 Distribuce COVID-19 případů a hospitalizací podle roku narození pacienta (5letá kohorta).
 Pandemie zasáhla nerovnoměrně: starší věkové skupiny tvoří disproporčně velký podíl hospitalizací.
 
+{{< callout >}}
+**U 1 630 992 případů (12,9 %) není ročník narození vyplněn** — v grafu proto nejsou. Nejde o věkovou skupinu, ale o chybějící údaj ve zdrojové evidenci; jakékoli srovnání mezi kohortami je tedy potřeba brát jako popis vyplněné části dat, ne celé populace nakažených. Dalších 10 případů má ročník před rokem 1900 (zjevné překlepy v zadání) a v grafu také nejsou.
+{{< /callout >}}
+
 {{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 případy a hospitalizace — rok narození (celé období)" height="400" >}}
 
 ---
