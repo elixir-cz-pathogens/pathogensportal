@@ -1,12 +1,23 @@
 name: "Deploy: Production (main)"
 
-# ⛔ DISABLED. Runs only when the repo variable DEPLOY_PRODUCTION_ENABLED == 'true',
-#    which is NOT set and must not be set without the administrator's approval (rule #1).
-# To enable (once the cutover has happened and staging has run verifiably for a while):
+# 🔴 LIVE SINCE 17 AUG 2026. A merge into `main` DEPLOYS TO THE PUBLIC SITE.
+#    `DEPLOY_PRODUCTION_ENABLED` is 'true'; exercised for real on 17 Aug and again
+#    on 31 Aug (the rrsync jail change), both verified by the transfer list.
+#    ⚠️ This header said "⛔ DISABLED" until 1 Sep 2026 — three weeks after it went
+#    live. Read the repo variable, not this comment, and correct the comment when
+#    you do: a file that lies about whether it touches production is worse than one
+#    with no comment at all.
+#
+# Turning it OFF is `DEPLOY_PRODUCTION_ENABLED=false` — the whole workflow (tests
+# included) is gated on it. Rule #1 still governs: production is not touched
+# without the administrator's approval.
+#
+# Configuration, for a rebuild or a new machine:
 #   1) secret: PRODUCTION_SSH_KEY   (the github-deploy private key FOR PRODUCTION —
 #              generated separately; staging's key must never be reused here)
 #   2) vars:   PRODUCTION_HOST      (FQDN of production, today pathogens.vm.cesnet.cz)
-#              PRODUCTION_PATH      (DocumentRoot in production)
+#              PRODUCTION_PATH      (see the rrsync note below — it is `/`, not a path)
+#              PRODUCTION_SSH_HOST_KEY (the server's ssh-ed25519 line — public data)
 #              DEPLOY_USER          (the account used for rsync, typically github-deploy)
 #              DEPLOY_PRODUCTION_ENABLED=true
 #
@@ -21,12 +32,22 @@ name: "Deploy: Production (main)"
 #    a push to `dev` deploys to production; a shared key would turn a compromised staging
 #    into access to production. Do not merge them back.
 #
-# ⚠️ PRODUCTION_PATH changes in Phase 7 (the cutover) from /var/www/pathogensportal/site/public
-#    to .../frontend/public — it must be switched AT THE SAME TIME as the vhost, or the site 404s.
+# ✅ The cutover HAPPENED on 17 Aug 2026. Production serves `main` from
+#    /opt/pathogensportal/frontend/public. The old /var/www/pathogensportal tree is
+#    not involved in any deploy.
 
 on:
   push:
     branches: [main]
+
+# ⛔ See the long note in deploy-staging.yml. Same reasoning, higher stakes: the
+# rsync target here IS the live site's DocumentRoot, and two interleaved
+# `--delete` transfers would take it apart while visitors are reading it.
+#
+# `cancel-in-progress: false`: never abort a transfer that has already started.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
 
 jobs:
   # The same unit tests that gate staging. Production must not have a weaker gate
@@ -95,12 +116,17 @@ jobs:
           # StrictHostKeyChecking=yes is explicit: with the key pinned above there
           # is nothing to ask about, and a mismatch must stop the deploy.
           #
-          # ⚠️ PRODUCTION_PATH is still the absolute path, because the forced
-          # rrsync command is NOT yet applied on production
-          # (users_deploy_restrict_rsync: false in the prod inventory). When it is
-          # turned on, this variable must become `/` in the same window — rrsync
-          # prefixes a leading-slash path with its restricted directory, so the
-          # absolute path would resolve to <dir><dir> and the deploy would fail.
+          # ✅ PRODUCTION_PATH is `/` since 31 Aug 2026, and that is CORRECT.
+          # The forced rrsync command is applied on production
+          # (users_deploy_restrict_rsync: true), and rrsync prefixes a
+          # leading-slash client path with its restricted directory — so `/` here
+          # resolves to /opt/pathogensportal/frontend/public there. The absolute
+          # path would resolve to <dir><dir> and fail.
+          # ⛔ The pair is COUPLED: the server switch and this variable change in
+          # the same window, server first. Between the two steps the production
+          # deploy is broken, and autodeploy is live — not a change to start and
+          # walk away from. And verify with a deploy that actually TRANSFERS files:
+          # a mis-prefixed jail still goes green while the site stays stale.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \

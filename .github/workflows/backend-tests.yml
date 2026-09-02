@@ -10,6 +10,13 @@ on:
   pull_request:
     branches: [main]
 
+# Superseded runs on the same PR are pointless — cancel them. Safe to cancel here
+# in a way it is NOT safe in the deploy workflows: this job only builds, it never
+# writes to a machine, so an aborted run leaves nothing half-finished.
+concurrency:
+  group: backend-tests-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   backend-tests:
     uses: ./.github/workflows/_test-backend.yml
