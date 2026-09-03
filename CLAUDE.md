@@ -29,9 +29,12 @@ data submodule.
 ### Content languages (careful)
 
 - `frontend/content/cs/` — **Czech, built** (`hugo.toml` → `[languages.cs]`, served at `/`).
-- `frontend/content/en/` — **an English translation, NOT BUILT YET**: `hugo.toml` has no `[languages.en]`
-  section, so Hugo ignores the directory. To bring the English version up, `[languages.en]` with
-  `contentDir = "content/en"` has to be added (and the `/en/` URL plus a language switcher decided).
+- `frontend/content/en/` — **English, built since Sep 2026** (`[languages.en]` in hugo.toml, served
+  at `/en/` with the theme's language switcher). Menus are defined **per language** — a root `[menus]`
+  block would leak Czech names into the English UI. Chart *data* labels stay Czech (they live inside
+  the generated JSONs); a finite dictionary in `pp-charts.js` translates the common ones, the 114 ISIN
+  diagnosis names remain Czech with a note on the pages (permanent fix tracked as pathogensportal-db#47).
+  New content pages must be added in both languages or the EN site silently loses them.
 
 **Data model (A):** chart JSON is **committed** into `frontend/static/data/charts/` (the site stays static).
 To regenerate from the submodule:
@@ -106,10 +109,10 @@ through Apache.
 ## Related repos
 
 - `pathogensportal-priv` — **private** infra (Ansible, configs, Vault). Nothing infra or secret goes here.
-- `pathogensportal-db` — scrapers + DB schema, attached as a **submodule** (pinned to tag `v0.1.0-dev`).
-  ⚠️ It temporarily points at `draessld/pathogensportal-db` (a fork); the colleague's canonical repo is
-  `jirkavlasak/pathogensportal-db` — the submodule URL switches once he fills it. ⚠️ Fix the URL in
-  `.gitmodules` in the same PR if the org migration has already happened.
+- `pathogensportal-db` — scrapers + DB schema, attached as a **submodule pinned to a release tag**
+  (currently `v0.2.0`; URL in `.gitmodules` points at the `elixir-cz-pathogens` org). After every
+  pipeline release the pin must be bumped in a PR here, or production keeps building the old
+  `datascrapper` image — this was missed once and cost a debugging session.
 
 ## Rules
 

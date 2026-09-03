@@ -15,5 +15,6 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 docker compose up -d
 ```
 
-> The DB schema comes from the `pathogensportal-db` submodule (the `init.sql` line is still commented out
-> in compose).
+> The DB schema comes from the `pathogensportal-db` submodule — compose mounts its `db/init.sql`
+> into `docker-entrypoint-initdb.d` (runs only on the FIRST init of an empty volume; on a live DB
+> the loader applies the schema itself, see `load_to_db.py`).
