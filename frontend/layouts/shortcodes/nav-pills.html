@@ -1,0 +1,21 @@
+{{/* Navigační pilulky dashboardové skupiny.
+
+     Usage: {{< nav-pills group="infekcni-nemoci" active="gastro" >}}
+
+     Seznam odkazů žije v data/navpills.yaml — jednou pro celou skupinu,
+     v obou jazycích. `active` je id položky, která se má zvýraznit.
+     relLangURL zajistí, že na anglické stránce vedou odkazy do /en/…
+*/}}
+{{ $group := index hugo.Data.navpills (.Get "group") }}
+{{ if not $group }}{{ errorf "nav-pills: neznámá skupina %q (viz data/navpills.yaml)" (.Get "group") }}{{ end }}
+{{ $active := .Get "active" }}
+{{ $lang := .Site.Language.Lang }}
+<div class="d-flex flex-wrap gap-1 mb-4" role="navigation"
+     aria-label="{{ index $group.aria $lang | default $group.aria.cs }}">
+  {{ range $group.items }}
+  <a href="{{ relLangURL .url }}"
+     class="btn btn-sm btn-outline-secondary me-1 mb-1{{ if eq .id $active }} active{{ end }}">
+    {{- index .label $lang | default .label.cs -}}
+  </a>
+  {{ end }}
+</div>
