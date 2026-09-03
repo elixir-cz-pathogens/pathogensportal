@@ -40,6 +40,11 @@
     "PCR pozitivita (%)": "PCR positivity (%)",
     "7denní incidence / 100 000": "7-day incidence / 100,000",
     "Hospitalizační míra (%)": "Hospitalisation rate (%)",
+    "Smrtnost (CFR %)": "Case fatality (CFR %)",
+    "Bez očkování": "Unvaccinated",
+    "Nedokončené očkování": "Incomplete vaccination",
+    "Dokončené očkování": "Complete vaccination",
+    "Posilující dávka": "Booster dose",
     "Influenza A (celkem)": "Influenza A (total)",
     "Coronavirus (sezónní)": "Coronavirus (seasonal)",
     "Potvrzené případy (kumulativní)": "Confirmed cases (cumulative)",
@@ -76,7 +81,13 @@
     " z nich čekáme čistou náhodou": " of them expected by chance alone",
     "Žádná řada aktuálně nepřekračuje očekávanou hladinu.": "No series currently exceeds the expected level.",
     "Zobrazit všech ": "Show all ",
-    "Zobrazit jen prvních ": "Show only the first "
+    "Zobrazit jen prvních ": "Show only the first ",
+    "k ": "as of ",
+    "Data grafu se nepodařilo načíst": "Chart data could not be loaded",
+    "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
+    "Souhrnná data se nepodařilo načíst.": "Summary data could not be loaded.",
+    "Data mapy se nepodařilo načíst.": "Map data could not be loaded.",
+    "Signály se nepodařilo načíst": "Signals could not be loaded"
   };
   function tr(text) {
     if (!EN || text === null || text === undefined) return text;
@@ -559,7 +570,7 @@
       .catch(function (err) {
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
-        showError(root, "Data grafu se nepodařilo načíst (" + err.message + ").");
+        showError(root, tr("Data grafu se nepodařilo načíst") + " (" + err.message + ").");
       });
 
     var toggle = root.querySelector("[data-pp-table-toggle]");
@@ -595,16 +606,16 @@
             '<div class="pp-stat" style="--pp-stat-accent:' + t.series[field.slot - 1] + '">' +
             '<div class="pp-stat__label">' + tr(field.label) + "</div>" +
             '<div class="pp-stat__value">' + fmt(data[field.key]) + (field.suffix || "") + "</div>" +
-            '<div class="pp-stat__note">k ' + escapeHtml(String(data.posledni_datum || "—")) + "</div>" +
+            '<div class="pp-stat__note">' + tr("k ") + escapeHtml(String(data.posledni_datum || "—")) + "</div>" +
             "</div>"
           );
         });
         root.innerHTML = tiles.join("") ||
-          '<div class="pp-error">Souhrnná data nejsou k dispozici.</div>';
+          '<div class="pp-error">' + tr("Souhrnná data nejsou k dispozici.") + '</div>';
         setOrigin(root.parentNode, result.origin);
       })
       .catch(function () {
-        root.innerHTML = '<div class="pp-error">Souhrnná data se nepodařilo načíst.</div>';
+        root.innerHTML = '<div class="pp-error">' + tr("Souhrnná data se nepodařilo načíst.") + '</div>';
       });
   }
 
@@ -681,7 +692,7 @@
       })
       .catch(function () {
         root.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
-          "<span>Data mapy se nepodařilo načíst.</span></div>";
+          "<span>" + tr("Data mapy se nepodařilo načíst.") + "</span></div>";
       });
   }
 
@@ -767,7 +778,7 @@
       })
       .catch(function (err) {
         body.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span><span>' +
-          "Signály se nepodařilo načíst (" + escapeHtml(err.message) + ").</span></div>";
+          tr("Signály se nepodařilo načíst") + " (" + escapeHtml(err.message) + ").</span></div>";
       });
   }
 
