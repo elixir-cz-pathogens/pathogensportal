@@ -1,5 +1,5 @@
 ---
-title: "Wastewater Monitoring"
+title: "Monitoring odpadních vod"
 description: "Surveillance SARS-CoV-2 a poliovirů v komunálních odpadních vodách — časný varovný signál pro cirkulaci patogenů na populační úrovni."
 image: "/images/dashboard-placeholder.svg"
 highlight: true

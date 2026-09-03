@@ -1,8 +1,8 @@
 ---
-title: Affiliations
+title: Partneři
 menu:
   footer_about:
-    name: Affiliations
+    name: Partneři
     weight: 3
 layout: about_navbar
 ---
@@ -14,7 +14,7 @@ layout: about_navbar
 {{< /organization >}}
 
 {{< organization name="ELIXIR-CZ" img="/images/elixir_logo.png" >}}
-Česká národní uzel evropské infrastruktury [ELIXIR](https://elixir-europe.org), zaštiťující projekt ELIXIR IMPACT2.
+Český národní uzel evropské infrastruktury [ELIXIR](https://elixir-europe.org), zaštiťující projekt ELIXIR IMPACT2.
 {{< /organization >}}
 
 {{< organization name="SIB — Swiss Institute of Bioinformatics" img="/images/SIB.png" >}}

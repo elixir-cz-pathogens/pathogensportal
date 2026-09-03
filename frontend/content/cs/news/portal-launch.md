@@ -7,7 +7,7 @@ image: "/images/elixir_logo.png"
 tags: ["novinky", "ELIXIR"]
 ---
 
-**Pathogen Portal CZ** je otevřená platforma pro data z surveillance infekčních nemocí v České republice.
+**Pathogen Portal CZ** je otevřená platforma pro data ze surveillance infekčních nemocí v České republice.
 Portál sdružuje data z klinické, genomické a environmentální surveillance na jednom místě.
 
-Aktuálně jsou k dispozici dashboardy pro SARS-CoV-2, chřipku, infekční nemoci dle ISIN a monitorig odpadních vod.
+Aktuálně jsou k dispozici dashboardy pro SARS-CoV-2, chřipku, infekční nemoci dle ISIN a monitoring odpadních vod.

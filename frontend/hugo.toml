@@ -26,17 +26,17 @@ enableRobotsTXT = true
 [menus]
   [[menus.main]]
     identifier = "dashboards"
-    name = "Data Dashboards"
+    name = "Dashboardy"
     url = "/dashboards/"
     weight = 10
   [[menus.main]]
     identifier = "news"
-    name = "News"
+    name = "Novinky"
     url = "/news/"
     weight = 20
   [[menus.main]]
     identifier = "events"
-    name = "Events"
+    name = "Akce"
     url = "/events/"
     weight = 30
 

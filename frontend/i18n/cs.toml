@@ -1,0 +1,52 @@
+# Přepisy českých řetězců theme (Hugo slučuje site-level i18n přes theme).
+# Theme překlad je strojový („Řídicí panely“ = palubní desky) a jeden klíč má
+# špatnou velikost písmene: index.html volá `i18n "dashboards"`, slovník theme
+# zná jen [Dashboards] — nadpis sekce na homepage se proto renderoval prázdný.
+
+[dashboards]
+other = "Dashboardy"
+
+[Dashboards]
+other = "Dashboardy"
+
+[seeDashboards]
+other = "Zobrazit všechny dashboardy"
+
+[allDashboards]
+other = "Všechny dashboardy"
+
+[dataDashboards]
+other = "Dashboardy"
+
+[newsAndHighlights]
+other = "Novinky"
+
+[seeNewsAndHighlights]
+other = "Zobrazit všechny novinky"
+
+[eventsAndTrainings]
+other = "Akce a školení"
+
+[eventsAndTrainingsList]
+other = "Přehled nadcházejících akcí a školení."
+
+[upcomingEvents]
+other = "Nadcházející akce"
+
+[pastEvents]
+other = "Proběhlé akce"
+
+[noUpcomingEvents]
+other = "Žádné nadcházející akce."
+
+[seeAllEvents]
+other = "Zobrazit všechny akce"
+
+[about]
+other = "O portálu"
+
+[connect]
+other = "Kontakt"
+
+[tags]
+other = "Štítky"

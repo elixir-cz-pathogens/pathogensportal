@@ -1,8 +1,8 @@
 ---
-title: People
+title: Lidé
 menu:
   footer_about:
-    name: People
+    name: Lidé
     weight: 2
 layout: about_navbar
 ---

@@ -1,11 +1,11 @@
 ---
-title: About
+title: O portálu
 menu:
   navbar_top:
-    name: About
+    name: O portálu
     weight: 1
   footer_about:
-    name: Overview
+    name: Přehled
     weight: 1
 layout: about_navbar
 ---

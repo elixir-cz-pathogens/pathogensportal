@@ -1,5 +1,5 @@
 ---
-title: "SARS-CoV-2 Phylogeny (Nextstrain)"
+title: "Fylogeneze SARS-CoV-2 (Nextstrain)"
 description: "Fylogenetický vývoj SARS-CoV-2 v Evropě včetně českých sekvencí — interaktivní strom variant a geografické šíření."
 image: "/images/dashboard-placeholder.svg"
 highlight: false
