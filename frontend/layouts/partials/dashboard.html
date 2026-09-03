@@ -8,7 +8,9 @@
             </a>
         </div>
         <div class="p-2 bg-dashboard-title">
-            <h6><a href="{{ if .Page.Params.redirect_url }}{{ .Page.Params.redirect_url }}{{ else }}{{ .Page.RelPermalink }}{{ end }}">{{ .Name }}</a></h6>
+            <h6><a href="{{ if .Page.Params.redirect_url }}{{ .Page.Params.redirect_url }}{{ else }}{{ .Page.RelPermalink }}{{ end }}">{{ .Name }}</a>
+            {{/* Ať je na první pohled poznat, co je naše stránka a co odkaz ven. */}}
+            {{ if .Page.Params.redirect_url }}<span class="badge text-bg-light border ms-1 fw-normal">{{ if eq .Page.Site.Language.Lang "en" }}external{{ else }}externí{{ end }} <i class="bi bi-box-arrow-up-right small"></i></span>{{ end }}</h6>
         </div>
         <div class="p-2">
             {{ .Page.Description }}
