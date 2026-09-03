@@ -8,6 +8,7 @@
 {{ $id    := .Get "id" }}
 {{ $src   := .Get "src" }}
 {{ $title := .Get "title" | default "" }}
+{{ $note := .Get "note" | default "" }}
 {{/* What the legend counts. Default keeps the original wording; incidence maps
      pass e.g. unit="případů na 100 tis." so the legend does not claim raw counts. */}}
 {{ $unit  := .Get "unit" | default "případů" }}
@@ -65,6 +66,7 @@
     <div class="pp-tooltip" role="status"></div>
   </div>
 
+  {{ with $note }}<p class="pp-note">{{ . }}</p>{{ end }}
   <div class="pp-card__foot">
     <span class="pp-origin" data-pp-origin>načítám data…</span>
   </div>

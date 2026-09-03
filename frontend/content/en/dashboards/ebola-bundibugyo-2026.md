@@ -1,7 +1,7 @@
 ---
 title: "Ebola — Bundibugyo virus (DRC/Uganda 2026)"
 description: "Situation report on the 2026 Bundibugyo virus outbreak in the DRC and Uganda — case overview, genomics, treatment and vaccines, risk to the Czech Republic. Source: IMG CAS / UJEP."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/ebola.svg"
 highlight: true
 tags: ["ebola", "epidemiology", "IMG CAS", "Africa"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG CAS</a> / UJEP / Military Health Institute'

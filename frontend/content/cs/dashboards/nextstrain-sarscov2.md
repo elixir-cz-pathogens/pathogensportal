@@ -1,7 +1,7 @@
 ---
-title: "SARS-CoV-2 Phylogeny (Nextstrain)"
+title: "Fylogeneze SARS-CoV-2 (Nextstrain)"
 description: "Fylogenetický vývoj SARS-CoV-2 v Evropě včetně českých sekvencí — interaktivní strom variant a geografické šíření."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/phylo.svg"
 highlight: false
 tags: ["SARS-CoV-2", "genomika", "fylogeneze", "Nextstrain"]
 data_source: '<a href="https://nextstrain.org" target="_blank">Nextstrain</a> · sekvence z <a href="https://gisaid.org" target="_blank">GISAID</a>'

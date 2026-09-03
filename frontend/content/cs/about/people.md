@@ -1,24 +1,36 @@
 ---
-title: People
+title: Lidé
 menu:
   footer_about:
-    name: People
+    name: Lidé
     weight: 2
 layout: about_navbar
 ---
 
 ## Lidé za portálem
 
-{{< organization name="Mgr. Jan Pačes, Ph.D." img="/images/placeholder.svg" >}}
+### Mgr. Jan Pačes, Ph.D.
+
 Technický správce portálu a kontaktní osoba projektu ELIXIR IMPACT2 za IMG AV ČR.
 Kontakt: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)
-{{< /organization >}}
 
-{{< organization name="Michaela Liegertová" img="/images/placeholder.svg" >}}
+---
+
+### Michaela Liegertová
+
 Spoluautorka situačních reportů a analýz (hantavirus, ebola) — IMG AV ČR / UJEP.
-{{< /organization >}}
+Kontakt: [michaela.liegertova@ujep.cz](mailto:michaela.liegertova@ujep.cz)
 
-{{< organization name="Tomáš Stibor" img="/images/placeholder.svg" >}}
-Infrastrukturní kontakt, CESNET — provoz virtuálního serveru portálu.
-Kontakt: [www.cesnet.cz](https://www.cesnet.cz)
-{{< /organization >}}
+---
+
+### Jiří Vlasák
+
+Spoluautor portálu — VŠCHT Praha.
+Kontakt: [vlasakj@vscht.cz](mailto:vlasakj@vscht.cz)
+
+---
+
+### Dominika Bohuslavová
+
+Spoluautorka portálu — FIT ČVUT v Praze.
+Kontakt: [draesdom@fit.cvut.cz](mailto:draesdom@fit.cvut.cz)

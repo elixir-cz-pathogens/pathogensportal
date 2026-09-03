@@ -18,7 +18,94 @@
   var API_BASE = (window.PP_API_BASE || "").replace(/\/$/, "");
   var STATIC_DIR = "/data/charts/";
   var MAX_SERIES = 8; // počet slotů palety; devátá řada se skládá do „Ostatní"
-  var LOCALE = "cs-CZ";
+  var LOCALE = (document.documentElement.lang || "").indexOf("en") === 0 ? "en-GB" : "cs-CZ";
+
+  /* ---------------- Lokalizace ----------------
+   * Datové JSONy nesou české popisky (generuje je pipeline). Anglická verze
+   * webu je překládá tímhle slovníkem — je záměrně konečný: popisky, které
+   * v něm nejsou (např. 114 názvů ISIN diagnóz), zůstávají česky a stránky
+   * to přiznávají poznámkou. Trvalé řešení řeší pathogensportal-db#47.
+   */
+  var EN = (document.documentElement.lang || "").indexOf("en") === 0;
+  var CS_EN = {
+    "Nové případy (týden)": "New cases (week)",
+    "Úmrtí (týden)": "Deaths (week)",
+    "Úmrtí": "Deaths",
+    "Případy": "Cases",
+    "Hospitalizace": "Hospitalisations",
+    "Hospitalizovaní celkem": "Hospitalised, total",
+    "JIP": "ICU",
+    "UPV (plicní ventilace)": "Mechanical ventilation",
+    "ECMO": "ECMO",
+    "PCR pozitivita (%)": "PCR positivity (%)",
+    "7denní incidence / 100 000": "7-day incidence / 100,000",
+    "Hospitalizační míra (%)": "Hospitalisation rate (%)",
+    "Smrtnost (CFR %)": "Case fatality (CFR %)",
+    "Bez očkování": "Unvaccinated",
+    "Nedokončené očkování": "Incomplete vaccination",
+    "Dokončené očkování": "Complete vaccination",
+    "Posilující dávka": "Booster dose",
+    "Influenza A (celkem)": "Influenza A (total)",
+    "Coronavirus (sezónní)": "Coronavirus (seasonal)",
+    "Potvrzené případy (kumulativní)": "Confirmed cases (cumulative)",
+    "Potvrzená úmrtí (kumulativní)": "Confirmed deaths (cumulative)",
+    "Úmrtí mezi potvrzenými případy (kumulativní)": "Deaths among confirmed cases (cumulative)",
+    "Nově hlášené případy (den)": "Newly reported cases (day)",
+    "Západní Afrika 2014–2016": "West Africa 2014–2016",
+    "DRK 2012": "DRC 2012", "DRK 2018–2020": "DRC 2018–2020", "DRK 2020": "DRC 2020",
+    "DRK 2025": "DRC 2025", "DRK 2026": "DRC 2026",
+    "Praha + Stř. Čechy": "Prague + Central Bohemia",
+    "Den od prvního hlášeného případu": "Day since first reported case",
+    "den": "day",
+    "Období": "Period",
+    "Ostatní": "Other",
+    "Tabulka": "Table",
+    "Skrýt tabulku": "Hide table",
+    "Data grafu v tabulce": "Chart data as a table",
+    "živá data z databáze": "live data from the database",
+    "statický snímek dat": "static data snapshot",
+    "případů": "cases",
+    "Celkem nakažených": "Total cases",
+    "Celkem úmrtí": "Total deaths",
+    "Celkem testů": "Total tests",
+    "Smrtnost (CFR)": "Case fatality (CFR)",
+    "Diagnóza": "Diagnosis", "Kraj": "Region",
+    "Očekáváno": "Expected", "Práh": "Threshold", "Síla": "Strength",
+    "vzácná nemoc": "rare disease",
+    "mimo dosavadní výskyt": "outside prior occurrence",
+    "Řady nad očekávanou hladinou": "Series above the expected level",
+    "Období ": "Period ",
+    " · hodnoceno ": " · scored ",
+    " řad (diagnóza × kraj) · ": " series (diagnosis × region) · ",
+    " překročení": " exceedances",
+    " z nich čekáme čistou náhodou": " of them expected by chance alone",
+    "Žádná řada aktuálně nepřekračuje očekávanou hladinu.": "No series currently exceeds the expected level.",
+    "Zobrazit všech ": "Show all ",
+    "Zobrazit jen prvních ": "Show only the first ",
+    "Kolik případů bylo za daný měsíc skutečně nahlášeno": "How many cases were actually notified in the given month",
+    "Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu": "The model's endemic level — the usual count for this disease, region and time of year",
+    "Horní mez běžného kolísání (99. percentil); signál začíná nad ní": "Upper limit of ordinary fluctuation (99th percentile); a signal starts above it",
+    "Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu": "How many times the observation exceeded the expectation-to-threshold distance; 1× = exactly at the threshold",
+    "k ": "as of ",
+    "Data grafu se nepodařilo načíst": "Chart data could not be loaded",
+    "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
+    "Souhrnná data se nepodařilo načíst.": "Summary data could not be loaded.",
+    "Data mapy se nepodařilo načíst.": "Map data could not be loaded.",
+    "Signály se nepodařilo načíst": "Signals could not be loaded"
+  };
+  function tr(text) {
+    if (!EN || text === null || text === undefined) return text;
+    return CS_EN[text] !== undefined ? CS_EN[text] : text;
+  }
+  /** Přeloží popisky v payloadu (na místě) — volá se hned po načtení dat. */
+  function localizePayload(payload) {
+    if (!EN || !payload) return payload;
+    (payload.datasets || []).forEach(function (d) { d.label = tr(d.label); });
+    if (payload.x_title) payload.x_title = tr(payload.x_title);
+    if (payload.x_unit) payload.x_unit = tr(payload.x_unit);
+    if (payload.unit) payload.unit = tr(payload.unit);
+    return payload;
+  }
 
   var nf = new Intl.NumberFormat(LOCALE);
   var nf1 = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 1 });
@@ -101,7 +188,7 @@
           if (!r.ok) throw new Error("HTTP " + r.status);
           return r.json();
         })
-        .then(function (payload) { return { payload: payload, origin: "api" }; })
+        .then(function (payload) { return { payload: localizePayload(payload), origin: "api" }; })
         .catch(function () { return fetchStatic(src); });
     });
   }
@@ -112,7 +199,7 @@
         if (!r.ok) throw new Error("HTTP " + r.status);
         return r.json();
       })
-      .then(function (payload) { return { payload: payload, origin: "static" }; });
+      .then(function (payload) { return { payload: localizePayload(payload), origin: "static" }; });
   }
 
   /* ---------------- Úprava dat pro vykreslení ---------------- */
@@ -168,7 +255,7 @@
     }
 
     kept.push({
-      label: "Ostatní (" + folded.length + ")",
+      label: tr("Ostatní") + " (" + folded.length + ")",
       data: summed,
       type: folded[0] && folded[0].type,
       ppRest: true
@@ -381,7 +468,7 @@
    */
   function buildTable(payload, colorByLabel, t) {
     var datasets = payload.datasets || [];
-    var head = ['<tr><th scope="col">' + escapeHtml(payload.x_title || "Období") + "</th>"];
+    var head = ['<tr><th scope="col">' + escapeHtml(payload.x_title || tr("Období")) + "</th>"];
     datasets.forEach(function (d, i) {
       var label = d.label || "Řada " + (i + 1);
       head.push(
@@ -423,7 +510,7 @@
     }
 
     return (
-      '<table class="pp-table"><caption class="visually-hidden">Data grafu v tabulce</caption>' +
+      '<table class="pp-table"><caption class="visually-hidden">' + tr("Data grafu v tabulce") + '</caption>' +
       "<thead>" + head.join("") + "</thead><tbody>" + rows.join("") + "</tbody></table>"
     );
   }
@@ -439,7 +526,7 @@
     if (!el) return;
     var live = origin === "api";
     el.classList.toggle("pp-origin--live", live);
-    el.textContent = live ? "živá data z databáze" : "statický snímek dat";
+    el.textContent = live ? tr("živá data z databáze") : tr("statický snímek dat");
   }
 
   function showError(root, message) {
@@ -487,7 +574,7 @@
       .catch(function (err) {
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
-        showError(root, "Data grafu se nepodařilo načíst (" + err.message + ").");
+        showError(root, tr("Data grafu se nepodařilo načíst") + " (" + err.message + ").");
       });
 
     var toggle = root.querySelector("[data-pp-table-toggle]");
@@ -497,7 +584,7 @@
         var open = wrap.getAttribute("data-open") === "true";
         wrap.setAttribute("data-open", open ? "false" : "true");
         toggle.setAttribute("aria-expanded", open ? "false" : "true");
-        toggle.textContent = open ? "Tabulka" : "Skrýt tabulku";
+        toggle.textContent = open ? tr("Tabulka") : tr("Skrýt tabulku");
       });
     }
   }
@@ -521,18 +608,18 @@
         }).map(function (field) {
           return (
             '<div class="pp-stat" style="--pp-stat-accent:' + t.series[field.slot - 1] + '">' +
-            '<div class="pp-stat__label">' + field.label + "</div>" +
+            '<div class="pp-stat__label">' + tr(field.label) + "</div>" +
             '<div class="pp-stat__value">' + fmt(data[field.key]) + (field.suffix || "") + "</div>" +
-            '<div class="pp-stat__note">k ' + escapeHtml(String(data.posledni_datum || "—")) + "</div>" +
+            '<div class="pp-stat__note">' + tr("k ") + escapeHtml(String(data.posledni_datum || "—")) + "</div>" +
             "</div>"
           );
         });
         root.innerHTML = tiles.join("") ||
-          '<div class="pp-error">Souhrnná data nejsou k dispozici.</div>';
+          '<div class="pp-error">' + tr("Souhrnná data nejsou k dispozici.") + '</div>';
         setOrigin(root.parentNode, result.origin);
       })
       .catch(function () {
-        root.innerHTML = '<div class="pp-error">Souhrnná data se nepodařilo načíst.</div>';
+        root.innerHTML = '<div class="pp-error">' + tr("Souhrnná data se nepodařilo načíst.") + '</div>';
       });
   }
 
@@ -561,7 +648,7 @@
         var labels = data.labels || {};
         // Co se vlastně počítá. Mapy incidence nesou "unit" v JSONu; bez něj
         // zůstává původní znění, aby se starší datové soubory chovaly stejně.
-        var unit = data.unit || "případů";
+        var unit = data.unit || tr("případů");
         var values = Object.keys(regions).map(function (code) { return regions[code]; })
           .filter(function (v) { return v > 0; });
         var min = Math.min.apply(null, values);
@@ -609,7 +696,7 @@
       })
       .catch(function () {
         root.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
-          "<span>Data mapy se nepodařilo načíst.</span></div>";
+          "<span>" + tr("Data mapy se nepodařilo načíst.") + "</span></div>";
       });
   }
 
@@ -627,8 +714,8 @@
     var body = root.querySelector("[data-pp-signals-body]");
 
     function typeBadge(s) {
-      if (s.type === "rare") return '<span class="badge text-bg-warning">vzácná nemoc</span>';
-      if (s.type === "sporadic") return '<span class="badge text-bg-warning">mimo dosavadní výskyt</span>';
+      if (s.type === "rare") return '<span class="badge text-bg-warning">' + tr("vzácná nemoc") + '</span>';
+      if (s.type === "sporadic") return '<span class="badge text-bg-warning">' + tr("mimo dosavadní výskyt") + '</span>';
       return s.score !== null && s.score !== undefined ? fmt(s.score) + "×" : "—";
     }
 
@@ -636,15 +723,15 @@
       var signals = data.signals || [];
       var expectedByChance = Math.round((data.n_series_scored || 0) * NOMINAL_ALPHA);
       var html =
-        '<p class="pp-card__subtitle">Období <strong>' + escapeHtml(String(data.target_period || "—")) +
-        "</strong> · hodnoceno " + fmt(data.n_series_scored) + " řad (diagnóza × kraj) · " +
-        "<strong>" + fmt(signals.length) + " překročení</strong>" +
-        (expectedByChance ? " · ~" + fmt(expectedByChance) + " z nich čekáme čistou náhodou" : "") +
+        '<p class="pp-card__subtitle">' + tr("Období ") + '<strong>' + escapeHtml(String(data.target_period || "—")) +
+        "</strong>" + tr(" · hodnoceno ") + fmt(data.n_series_scored) + tr(" řad (diagnóza × kraj) · ") +
+        "<strong>" + fmt(signals.length) + tr(" překročení") + "</strong>" +
+        (expectedByChance ? " · ~" + fmt(expectedByChance) + tr(" z nich čekáme čistou náhodou") : "") +
         "</p>";
 
       if (!signals.length) {
         body.innerHTML = html +
-          '<p class="pp-error" style="color:inherit">Žádná řada aktuálně nepřekračuje očekávanou hladinu.</p>';
+          '<p class="pp-error" style="color:inherit">' + tr("Žádná řada aktuálně nepřekračuje očekávanou hladinu.") + '</p>';
         return;
       }
 
@@ -661,15 +748,17 @@
       });
 
       html += '<div style="overflow-x:auto"><table class="pp-table">' +
-        '<caption class="visually-hidden">Řady nad očekávanou hladinou</caption>' +
-        '<thead><tr><th scope="col">#</th><th scope="col">Diagnóza</th><th scope="col">Kraj</th>' +
-        '<th scope="col" class="text-end">Případy</th><th scope="col" class="text-end">Očekáváno</th>' +
-        '<th scope="col" class="text-end">Práh</th><th scope="col" class="text-end">Síla</th></tr></thead>' +
+        '<caption class="visually-hidden">' + tr("Řady nad očekávanou hladinou") + '</caption>' +
+        '<thead><tr><th scope="col">#</th><th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Kraj") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Případy") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu") + '">' + tr("Očekáváno") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Horní mez běžného kolísání (99. percentil); signál začíná nad ní") + '">' + tr("Práh") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu") + '">' + tr("Síla") + '</th></tr></thead>' +
         "<tbody>" + rows.join("") + "</tbody></table></div>";
 
       if (signals.length > SIGNALS_PREVIEW) {
         html += '<button type="button" class="pp-btn mt-2" data-pp-signals-more aria-expanded="false">' +
-          "Zobrazit všech " + fmt(signals.length) + "</button>";
+          tr("Zobrazit všech ") + fmt(signals.length) + "</button>";
       }
       body.innerHTML = html;
 
@@ -682,8 +771,8 @@
           });
           more.setAttribute("aria-expanded", open ? "false" : "true");
           more.textContent = open
-            ? "Zobrazit všech " + fmt(signals.length)
-            : "Zobrazit jen prvních " + SIGNALS_PREVIEW;
+            ? tr("Zobrazit všech ") + fmt(signals.length)
+            : tr("Zobrazit jen prvních ") + SIGNALS_PREVIEW;
         });
       }
     }
@@ -695,7 +784,7 @@
       })
       .catch(function (err) {
         body.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span><span>' +
-          "Signály se nepodařilo načíst (" + escapeHtml(err.message) + ").</span></div>";
+          tr("Signály se nepodařilo načíst") + " (" + escapeHtml(err.message) + ").</span></div>";
       });
   }
 

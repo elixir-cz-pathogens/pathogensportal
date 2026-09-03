@@ -1,8 +1,8 @@
 ---
-title: Affiliations
+title: Partneři
 menu:
   footer_about:
-    name: Affiliations
+    name: Partneři
     weight: 3
 layout: about_navbar
 ---
@@ -14,7 +14,7 @@ layout: about_navbar
 {{< /organization >}}
 
 {{< organization name="ELIXIR-CZ" img="/images/elixir_logo.png" >}}
-Česká národní uzel evropské infrastruktury [ELIXIR](https://elixir-europe.org), zaštiťující projekt ELIXIR IMPACT2.
+Český národní uzel evropské infrastruktury [ELIXIR](https://elixir-europe.org), zaštiťující projekt ELIXIR IMPACT2.
 {{< /organization >}}
 
 {{< organization name="SIB — Swiss Institute of Bioinformatics" img="/images/SIB.png" >}}
@@ -23,5 +23,22 @@ layout: about_navbar
 
 {{< organization name="VŠCHT Praha" img="/images/VSCHT.png" >}}
 [www.vscht.cz](https://www.vscht.cz) — partner projektu, spolupráce na datové analýze.
+{{< /organization >}}
+
+{{< organization name="FIT ČVUT v Praze" img="/images/FIT_CVUT.svg" >}}
+[fit.cvut.cz](https://fit.cvut.cz) — Fakulta informačních technologií ČVUT, spoluautorské pracoviště portálu.
+{{< /organization >}}
+
+{{< organization name="UJEP — Univerzita J. E. Purkyně v Ústí nad Labem" img="/images/UJEP.png" >}}
+[www.ujep.cz](https://www.ujep.cz) — spoluautorské pracoviště situačních reportů.
+{{< /organization >}}
+
+{{< organization name="CESNET" img="/images/CESNET.svg" >}}
+[www.cesnet.cz](https://www.cesnet.cz) — provoz infrastruktury portálu (virtuální server e-INFRA CZ).
+{{< /organization >}}
+
+{{< organization name="Program švýcarsko-české spolupráce" img="/images/swiss-contribution-cz.png" >}}
+Portál vzniká v rámci projektu **ELIXIR IMPACT2** podpořeného z
+[Programu švýcarsko-české spolupráce](https://www.swiss-contribution.cz/) (druhý švýcarský příspěvek vybraným členským státům EU).
 {{< /organization >}}
 

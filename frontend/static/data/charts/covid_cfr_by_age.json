@@ -1,0 +1,1 @@
+{"labels": ["0–9", "10–19", "20–29", "30–39", "40–49", "50–59", "60–69", "70–79", "80+"], "datasets": [{"label": "Smrtnost (CFR %)", "data": [0.0, 0.0, 0.01, 0.02, 0.06, 0.24, 1.33, 4.63, 11.26], "backgroundColor": "rgba(220,53,69,0.6)", "borderColor": "rgb(220,53,69)", "borderWidth": 2, "fill": false, "tension": 0.3, "pointRadius": 1, "type": "line"}]}

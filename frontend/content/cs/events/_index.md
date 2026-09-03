@@ -1,3 +1,3 @@
 ---
-title: "Events & Trainings"
+title: "Akce a školení"
 ---

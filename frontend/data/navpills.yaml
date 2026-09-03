@@ -1,0 +1,46 @@
+# Navigační „pilulky“ dashboardových skupin — JEDINÝ zdroj pravdy.
+# Dřív byl tenhle seznam vkopírovaný v každé stránce skupiny zvlášť (11 kopií),
+# takže přidání stránky znamenalo editovat všechny — a kopie se rozcházely
+# (stránka Signály se do žádné nepropsala). Renderuje shortcode nav-pills:
+#   {{< nav-pills group="infekcni-nemoci" active="gastro" >}}
+# URL jsou bez jazykového prefixu — shortcode je žene přes relLangURL, takže
+# tatáž definice slouží české i anglické verzi.
+
+infekcni-nemoci:
+  aria:
+    cs: Sekce infekčních nemocí
+    en: Infectious disease sections
+  items:
+    - id: prehled
+      url: /dashboards/infectious-diseases/
+      label: { cs: Přehled, en: Overview }
+    - id: detske
+      url: /dashboards/infectious-diseases-childhood/
+      label: { cs: Časté dětské/vzdušné, en: Childhood/airborne }
+    - id: strevni
+      url: /dashboards/infectious-diseases-gastro/
+      label: { cs: Střevní/potravinové, en: Gastrointestinal/foodborne }
+    - id: kozni
+      url: /dashboards/infectious-diseases-skin/
+      label: { cs: Kožní/kontaktní, en: Skin/contact }
+    - id: klistata
+      url: /dashboards/infectious-diseases-vector/
+      label: { cs: Klíšťaty/zvířaty přenášené, en: Tick- and animal-borne }
+    - id: hepatitidy
+      url: /dashboards/infectious-diseases-hepatitis/
+      label: { cs: Hepatitidy, en: Hepatitis }
+    - id: sti
+      url: /dashboards/infectious-diseases-sti/
+      label: { cs: Pohlavně přenosné, en: Sexually transmitted }
+    - id: vzacne
+      url: /dashboards/infectious-diseases-rare/
+      label: { cs: Vzácné závažné, en: Rare severe }
+    - id: ostatni
+      url: /dashboards/infectious-diseases-other/
+      label: { cs: Ostatní, en: Other }
+    - id: covid
+      url: /dashboards/covid19-surveillance/
+      label: { cs: COVID-19 — Surveillance, en: COVID-19 — Surveillance }
+    - id: covid-demografie
+      url: /dashboards/covid-demographics/
+      label: { cs: COVID-19 — Věk a vakcinace, en: COVID-19 — Age & vaccination }

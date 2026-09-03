@@ -1,59 +1,76 @@
 ---
 title: "COVID-19 — Age and vaccination"
-description: "Analysis of 12.6 million COVID-19 cases in the Czech Republic by patient age and vaccination status — hospitalisations and hospitalisation rate. Data from the Czech Ministry of Health."
-image: "/images/dashboard-placeholder.svg"
-highlight: false
-tags: ["SARS-CoV-2", "hospitalisation", "vaccination", "epidemiology", "Czech MoH"]
-data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">Czech Ministry of Health — COVID-19 Open Data</a>'
-update_freq: "Aggregate data (entire pandemic period)"
+description: "4.9 million confirmed COVID-19 cases in the Czech Republic by age and vaccination status — deaths, case fatality, hospitalisations. Czech MoH open data, updated continuously."
+image: "/images/cards/covid-demographics.svg"
+tags: ["SARS-CoV-2", "deaths", "vaccination", "epidemiology", "Czech MoH"]
+data_source: '<a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH — COVID-19 Open Data</a>'
+update_freq: "With every data pipeline run (sources updated daily)"
+build:
+  list: never
+  render: always
 ---
 
-### Cases and hospitalisations by year of birth
+{{< nav-pills group="infekcni-nemoci" active="covid-demografie" >}}
 
-Distribution of COVID-19 cases and hospitalisations by the patient's year of birth (5-year cohorts).
-The pandemic hit unevenly: older age groups account for a disproportionately large share of hospitalisations.
+### Cases and deaths by age group
 
-{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 cases and hospitalisations — year of birth (entire period)" height="400" >}}
+Distribution of confirmed cases and deaths by patient age over the whole pandemic
+period (since March 2020). Cases concentrate in working-age groups; deaths
+overwhelmingly in the oldest.
+
+{{< callout >}}
+**22,780 cases (0.5%) have no age recorded in the source data** — they are not in
+the chart but are included in the overall totals.
+{{< /callout >}}
+
+{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 cases and deaths by age group (whole period)" height="400" note="Absolute counts over the whole pandemic period, whole country. Not adjusted for the size of each age group in the population." >}}
 
 ---
 
-### Hospitalisation rate by age
+### Case fatality by age
 
-The percentage of hospitalised patients out of all confirmed cases in a given age cohort.
-The hospitalisation rate rises sharply with age — for the oldest cohorts it exceeds 15%.
+The share of deaths among confirmed cases (case fatality ratio) in each age group.
+Fatality rises by orders of magnitude with age: hundredths of a percent below 40,
+over 11% above 80.
 
-{{< chart id="covidHospAge" src="/data/charts/covid_hosp_rate_by_age.json" type="bar" title="Hospitalisation rate (%) — year of birth" height="360" >}}
+{{< chart id="covidCfrAge" src="/data/charts/covid_cfr_by_age.json" type="bar" title="Case fatality (CFR %) by age group" height="360" note="Percentage share: deaths / confirmed cases in the given age group. CFR also depends on testing intensity — it is overestimated in periods of weak testing." >}}
 
 ---
 
 ### Cases and hospitalisations by vaccination status
 
-The total number of confirmed cases and hospitalisations by the number of vaccine doses received.
-The data reflects the **entire pandemic period** — unvaccinated people form the largest group, partly because it is also the most numerous cohort.
+Daily Czech MoH reports by vaccination status, summed over the period **from
+January 2021** (the categories did not exist before vaccination started).
 
-{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 cases and hospitalisations — vaccination status" height="360" >}}
+{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 cases and hospitalisations — vaccination status (since 1/2021)" height="360" note="Absolute counts since January 2021. The groups differ substantially in size and age structure — comparing bars directly is not vaccine effectiveness." >}}
 
 ---
 
 ### Hospitalisation rate by vaccination status
 
-Hospitalisation rate (%) relative to the number of confirmed cases in each vaccination group.
-Repeated booster doses are associated with a lower hospitalisation rate.
+The share of hospitalised among those testing positive in each group. **Interpret
+with care:** the booster group is much older than average (vaccination was
+prioritised by age), so its higher hospitalisation rate mainly reflects age
+structure, not vaccine failure. These aggregate data do not allow age adjustment.
 
-{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalisation rate (%) — vaccination status" height="300" >}}
+{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalisation rate (%) — vaccination status" height="300" note="Percentage share: hospitalised / positive in the given group, since January 2021. Not age-adjusted — the groups have different age structures." >}}
 
 ---
 
 ### Methodological note
 
-- Source database: the **`pacienti` table** from the Czech Ministry of Health COVID-19 open data (12.6 million records)
-- Vaccination status is derived from the dates of doses 1–4 in the database; patients with no record = unvaccinated or not linkable
-- Hospitalisation rate = number hospitalised / number of confirmed cases × 100
-- Year of birth stands in for age (exact age is not in the database) — cohorts aggregated in 5-year bands
-- Mortality cannot be quantified precisely from this data (the `Umrti` column is a hospitalisation diagnosis, not overall mortality)
+- Sources: Czech MoH open datasets
+  [`osoby`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19) (4.9 million cases
+  with age and region), [`umrti`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19)
+  (44 thousand deaths with age) and `ockovani-pozitivni` / `ockovani-hospitalizace`
+  (daily counts by vaccination status).
+- All charts are generated automatically by the data pipeline and update with it —
+  no manual step in between.
+- Case fatality (CFR) = deaths / confirmed cases; the true infection fatality rate
+  (IFR) is lower, because not every infection was captured by a test.
+- The open data do not include hospitalisations by age; they do by vaccination status.
 
 <p class="stat-source">
-  Source: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech Ministry of Health open data</a> ·
-  12.6 million patient records · entire pandemic period ·
-  Aggregation: SQL GROUP BY via the sqlite3 CLI in a subprocess
+  Source: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH open data</a> ·
+  period 3/2020–present (vaccination since 1/2021)
 </p>

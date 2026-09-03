@@ -1,7 +1,7 @@
 ---
 title: "Hantavirus — Výletní loď MV Hondius"
 description: "Situační report vypuknutí viru Andes (hantavirus) spojeného s výletní lodí MV Hondius — přehled, časová osa, riziko pro ČR. Zdroj: IMG AV ČR / UJEP."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/hantavirus.svg"
 highlight: true
 tags: ["hantavirus", "epidemiologie", "IMG AV ČR"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'
@@ -17,7 +17,7 @@ update_freq: "Průběžně aktualizováno (aktivní vypuknutí)"
 ### Co je hantavirus a proč je toto vypuknutí výjimečné
 
 **Hantaviry** jsou RNA viry přenášené hlodavci (vzdušnou cestou, kontaktem s exkrementy). Způsobují dvě závažné klinické jednotky:
-- **HFRS** — hemoragická horečka s renálním syndromem (Europa, Asie)
+- **HFRS** — hemoragická horečka s renálním syndromem (Evropa, Asie)
 - **HPS/HCPS** — hantavirový kardiopulmonální syndrom (Amerika), smrtnost 30–40 %
 
 **Virus Andes** (*Orthohantavirus andesense*) je jediný hantavirus s prokázaným přenosem **z člověka na člověka** — to je epidemiologicky výjimečné. Všechny ostatní hantaviry se přenáší pouze od hlodavců.
