@@ -33,6 +33,10 @@ The Czech national node of the European [ELIXIR](https://elixir-europe.org) infr
 [www.ujep.cz](https://www.ujep.cz) — co-authoring institution for the situation reports.
 {{< /organization >}}
 
+{{< organization name="Military Health Institute (VZÚ)" img="/images/VZU.png" >}}
+[zdravotnictvi.mo.gov.cz](https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav) — collaboration on situation reports (Ebola).
+{{< /organization >}}
+
 {{< organization name="CESNET" img="/images/CESNET.svg" >}}
 [www.cesnet.cz](https://www.cesnet.cz) — operates the portal infrastructure (e-INFRA CZ virtual server).
 {{< /organization >}}

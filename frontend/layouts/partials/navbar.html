@@ -18,6 +18,10 @@
             <a href="https://www.img.cas.cz" target="_blank" rel="noopener" class="d-none d-lg-block">
                 <img class="px-2 py-lg-1 custom-logo" src="/images/IMG.png" alt="Ústav molekulární genetiky AV ČR">
             </a>
+
+            <a href="https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav" target="_blank" rel="noopener" class="d-none d-lg-block">
+                <img class="px-2 py-lg-1 custom-logo" src="/images/VZU.png" alt="Vojenský zdravotní ústav">
+            </a>
         </div>
 
         <!-- Hamburger button, shows up only on smaller screen-->
@@ -122,8 +126,17 @@
                         {{ i18n "topics" }} <i class="bi bi-caret-down-fill small"></i>
                     </a>
                     <div class="collapse main_menu_item_sub ps-4" id="topics">
-                        {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+                        {{/* Jen tagy s obsahem — tagy skrytých podstránek (build:
+                             list: never) by vedly na prázdné stránky. */}}
+                        {{- /* Jen tagy přiřazené viditelné stránce: site.RegularPages respektuje
+     build: list: never, mapa .Site.Taxonomies nikoli — tagy skrytých
+     podstránek by vedly na prázdné stránky tagů. */ -}}
+{{- $visible := slice -}}
+{{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
+{{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+                        {{ if in $visible ($name | urlize) }}
                         <a class="d-block" href="/tags/{{ urlize $name }}">{{ $name }}</a>
+                        {{ end }}
                         {{ end }}
                     </div>
                 </div>
