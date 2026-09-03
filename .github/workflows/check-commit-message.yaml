@@ -1,7 +1,15 @@
 name: "CHECK: Commit Message"
 
 # Commit message format check — ONLY on PRs into `main` (dev is free, no checks).
-# Valid format:  <PROJECT_PREFIX>-<number>: message    or    starting with <IGNORE_PREFIX>
+# Valid format:  <PROJECT_PREFIX>-<number>: message
+#            or:  starting with <IGNORE_PREFIX>
+#            or:  content: message
+#
+# ⚠️ `content:` was added 3 Sep 2026 for AI-authored dashboard updates. Without it
+# every generated PR failed a REQUIRED check and could not merge — found by running
+# one end to end rather than by reading the workflow. It mirrors the `content/`
+# branch prefix the preview job keys on, so the branch and the commit say the same
+# thing about where a change came from.
 #
 # Commits taken from upstream (the repo variable UPSTREAM_URL) are NOT validated — we
 # cannot rewrite their messages without breaking the merge, and it would fail on every sync.
@@ -39,7 +47,7 @@ jobs:
           fi
 
           invalid=$(git log --no-merges --format="%s" main..HEAD --not $upstream_refs \
-            | grep -vE "^(${IGNORE_PREFIX}|${ISSUE_PREFIX}-[0-9]+: .+)" || true)
+            | grep -vE "^(${IGNORE_PREFIX}|${ISSUE_PREFIX}-[0-9]+: .+|content: .+)" || true)
           if [ -n "$invalid" ]; then
             echo "🚨 Invalid commit messages:"
             echo "$invalid"
