@@ -19,6 +19,15 @@ během zimy roste.
 
 ---
 
+### Týdenní průběh běžící sezóny
+
+Laboratorní záchyty po kalendářních týdnech, z týdenních PDF hlášení NRL —
+aktualizuje se každý týden včetně letního období.
+
+{{< chart id="fluWeekly" src="/data/charts/flu_weekly.json" type="line" title="Týdenní detekce — sezóna 2025/26" height="340" note="Absolutní počty laboratorních záchytů za kalendářní týden, celá ČR. Influenza A zahrnuje i subtypy H1N1pdm a H3N2." >}}
+
+---
+
 ### Respirační virologická krajina
 
 Přehled všech sledovaných respiračních virů (chřipka, RSV, rhinoviry, koronaviry,

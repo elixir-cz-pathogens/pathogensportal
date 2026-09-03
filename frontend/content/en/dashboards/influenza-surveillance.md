@@ -19,6 +19,15 @@ continuously, so its column keeps growing during the winter.
 
 ---
 
+### Weekly course of the running season
+
+Laboratory detections by calendar week, from the NRL's weekly PDF reports —
+updated every week, including over the summer.
+
+{{< chart id="fluWeekly" src="/data/charts/flu_weekly.json" type="line" title="Weekly detections — season 2025/26" height="340" note="Absolute counts of laboratory detections per calendar week, whole country. Influenza A includes the H1N1pdm and H3N2 subtypes." >}}
+
+---
+
 ### The respiratory virological landscape
 
 All monitored respiratory viruses (influenza, RSV, rhinoviruses, coronaviruses,
