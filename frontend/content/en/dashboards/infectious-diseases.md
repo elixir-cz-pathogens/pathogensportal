@@ -18,7 +18,7 @@ This dashboard shows notified infectious diseases in the Czech Republic based on
 
 The choropleth map shows the total number of notified infectious diseases in each Czech region for the most recent year available. Hover over a region to see the exact count.
 
-{{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Notified infectious diseases by Czech region" >}}
+{{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Notified infectious diseases by Czech region"  note="Absolute counts of notified cases for the most recent year. Not population-adjusted — the map largely mirrors regional population size." >}}
 
 ---
 
@@ -28,7 +28,7 @@ The same data adjusted for regional population size (denominators: Czech Statist
 
 Absolute counts mostly mirror where more people live. Prague has an average absolute case count, but after adjusting for population it has the **lowest incidence of all regions** (720.6 per 100k). The Vysočina region, unremarkable in absolute counts, is the **highest** (1,639.9).
 
-{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="cases per 100k" title="Infectious disease incidence by Czech region — per 100,000 population" >}}
+{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="cases per 100k" title="Infectious disease incidence by Czech region — per 100,000 population"  note="Population-adjusted: notified cases per year per 100,000 regional population (denominators: Czech Statistical Office). This is the right map for comparing regions." >}}
 
 Regional differences may also reflect the coverage and capacity of the notifying network, not just true occurrence.
 
@@ -39,7 +39,7 @@ Regional differences may also reflect the coverage and capacity of the notifying
 An overview of the ten most frequently notified infectious diseases by case count in each year.
 Varicella (chickenpox) has long dominated thanks to mandatory notification and its high transmissibility in the child population.
 
-{{< chart id="isinTopDiseases" src="/data/charts/isin_top_diseases.json" type="bar" title="Top 10 infectious diseases — case counts (2018–2025)" height="420" >}}
+{{< chart id="isinTopDiseases" src="/data/charts/isin_top_diseases.json" type="bar" title="Top 10 infectious diseases — case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
 
 ---
 
@@ -47,7 +47,7 @@ Varicella (chickenpox) has long dominated thanks to mandatory notification and i
 
 The monthly course of selected infectious diseases illustrates seasonality: varicella peaks in spring, salmonellosis and campylobacteriosis in summer, and Lyme borreliosis from June to September.
 
-{{< chart id="isinMonthly" src="/data/charts/isin_monthly_trend.json" type="line" title="Seasonal course — monthly case counts" height="380" >}}
+{{< chart id="isinMonthly" src="/data/charts/isin_monthly_trend.json" type="line" title="Seasonal course — monthly case counts" height="380"  note="Absolute monthly counts of notified cases, whole country." >}}
 
 ---
 
@@ -55,7 +55,7 @@ The monthly course of selected infectious diseases illustrates seasonality: vari
 
 The distribution of notified cases by age group over the whole observation period. The highest-risk groups are children under 14 (varicella, GI infections) and seniors aged 65+ (complicated courses).
 
-{{< chart id="isinAge" src="/data/charts/isin_age_groups.json" type="bar" title="Number of notified cases by age group (2018–2025)" height="360" >}}
+{{< chart id="isinAge" src="/data/charts/isin_age_groups.json" type="bar" title="Number of notified cases by age group (2018–2025)" height="360"  note="Absolute case counts 2018–2025 by age group. Not adjusted for the size of each age group in the population." >}}
 
 ---
 

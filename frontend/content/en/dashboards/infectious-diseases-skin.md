@@ -13,7 +13,7 @@ build:
 
 Infections spreading by direct skin contact: scabies, erysipelas and pediculosis (lice infestation).
 
-{{< chart id="isinSkin" src="/data/charts/isin_group_skin_contact.json" type="bar" title="Skin/contact diseases — annual case counts (2018–2025)" height="420" >}}
+{{< chart id="isinSkin" src="/data/charts/isin_group_skin_contact.json" type="bar" title="Skin/contact diseases — annual case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
 
 <p class="stat-source">
   Source: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·

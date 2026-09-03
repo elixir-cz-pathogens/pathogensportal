@@ -20,13 +20,13 @@ update_freq: "Daily"
 
 {{< stat-card src="/data/charts/covid_summary.json" >}}
 
-{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" title="New cases and deaths — weekly overview" height="380" >}}
+{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" title="New cases and deaths — weekly overview" height="380"  note="Absolute counts: newly confirmed cases and deaths summed per calendar week, whole country. Not population-adjusted." >}}
 
-{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalisations — patient status (weekly maximum)" height="380" >}}
+{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalisations — patient status (weekly maximum)" height="380"  note="Absolute counts of patients hospitalised at the same time (weekly maximum of the daily census), whole country." >}}
 
-{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="PCR test positivity (%)" height="280" >}}
+{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="PCR test positivity (%)" height="280"  note="Percentage share: positive detections / all PCR tests performed in the given week." >}}
 
-{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7-day incidence per 100,000 inhabitants" height="280" >}}
+{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7-day incidence per 100,000 inhabitants" height="280"  note="Population-adjusted: new cases over the last 7 days per 100,000 population." >}}
 
 ---
 

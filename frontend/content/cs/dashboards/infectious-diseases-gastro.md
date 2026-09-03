@@ -13,7 +13,7 @@ build:
 
 Nákazy přenášené potravou nebo fekálně-orální cestou: salmonelózy, virové střevní infekce, shigelóza a bakteriální otravy jídlem.
 
-{{< chart id="isinGastro" src="/data/charts/isin_group_gastrointestinal.json" type="bar" title="Střevní/potravinové nemoci — roční počty případů (2018–2025)" height="420" >}}
+{{< chart id="isinGastro" src="/data/charts/isin_group_gastrointestinal.json" type="bar" title="Střevní/potravinové nemoci — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·

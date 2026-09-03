@@ -15,7 +15,7 @@ The drop in the 2020/21 and 2021/22 seasons reflects the effect of COVID-19
 countermeasures (masks, contact restrictions). The running season is updated
 continuously, so its column keeps growing during the winter.
 
-{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Influenza A vs. B — totals per season" height="360" >}}
+{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Influenza A vs. B — totals per season" height="360"  note="Absolute counts of laboratory-confirmed detections per season, whole country. These are tested samples, not an estimate of total illness in the population." >}}
 
 ---
 
@@ -25,7 +25,7 @@ All monitored respiratory viruses (influenza, RSV, rhinoviruses, coronaviruses,
 adenoviruses…) across the seasons. The weekly course of the current season by region
 is on the [Influenza — regional surveillance](/en/dashboards/influenza-regional/) page.
 
-{{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respiratory viruses — detections per season" height="420" >}}
+{{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respiratory viruses — detections per season" height="420"  note="Absolute counts of laboratory detections of each virus per season, whole country." >}}
 
 *Note: series labels in the charts come from the Czech source data.*
 

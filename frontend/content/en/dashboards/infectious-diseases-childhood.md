@@ -13,7 +13,7 @@ build:
 
 Common diseases spreading by air or close contact, mostly in children: varicella (chickenpox), herpes zoster (reactivation in adults), scarlet fever, mumps and measles.
 
-{{< chart id="isinChildhood" src="/data/charts/isin_group_childhood_airborne.json" type="bar" title="Childhood/airborne diseases — annual case counts (2018–2025)" height="420" >}}
+{{< chart id="isinChildhood" src="/data/charts/isin_group_childhood_airborne.json" type="bar" title="Childhood/airborne diseases — annual case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
 
 <p class="stat-source">
   Source: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·

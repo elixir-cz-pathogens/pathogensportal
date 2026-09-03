@@ -668,3 +668,10 @@
     display: block;
   }
 }
+
+/* Poznámka pod grafem: co přesně čísla znamenají (absolutní vs. přepočet…) */
+.pp-note {
+  margin: 6px 14px 0;
+  font-size: 0.8rem;
+  color: var(--pp-text-muted, #77766f);
+}

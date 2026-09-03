@@ -15,7 +15,7 @@ Propad v sezónách 2020/21 a 2021/22 odpovídá efektu protiepidemických opat�
 (roušky, omezení kontaktů). Běžící sezóna se doplňuje průběžně, její sloupec proto
 během zimy roste.
 
-{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Chřipka A vs. B — celkem za sezónu" height="360" >}}
+{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Chřipka A vs. B — celkem za sezónu" height="360"  note="Absolutní počty laboratorně potvrzených záchytů za celou sezónu, celá ČR. Jde o vyšetřené vzorky, ne odhad celkové nemocnosti v populaci." >}}
 
 ---
 
@@ -25,7 +25,7 @@ Přehled všech sledovaných respiračních virů (chřipka, RSV, rhinoviry, kor
 adenoviry…) napříč sezónami. Týdenní průběh aktuální sezóny po krajích najdeš na
 stránce [Chřipka — regionální surveillance](/dashboards/influenza-regional/).
 
-{{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respirační viry — detekce za sezónu" height="420" >}}
+{{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respirační viry — detekce za sezónu" height="420"  note="Absolutní počty laboratorních záchytů jednotlivých virů za sezónu, celá ČR." >}}
 
 ---
 

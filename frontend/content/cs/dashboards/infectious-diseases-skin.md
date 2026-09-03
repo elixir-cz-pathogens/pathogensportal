@@ -13,7 +13,7 @@ build:
 
 Nákazy šířící se přímým kontaktem s kůží: svrab, erysipel (růže) a zavšivení.
 
-{{< chart id="isinSkin" src="/data/charts/isin_group_skin_contact.json" type="bar" title="Kožní/kontaktní nemoci — roční počty případů (2018–2025)" height="420" >}}
+{{< chart id="isinSkin" src="/data/charts/isin_group_skin_contact.json" type="bar" title="Kožní/kontaktní nemoci — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·

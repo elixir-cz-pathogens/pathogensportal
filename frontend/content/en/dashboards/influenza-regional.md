@@ -13,7 +13,7 @@ update_freq: "Seasonal updates (2022–2025)"
 The number of positive laboratory tests for respiratory viruses in each Czech region between 2022 and 2025.
 The marked rise in 2025 in Prague and the South Moravian Region matches the strong 2024/25 season.
 
-{{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Positive detections of respiratory viruses — Czech regions (2022–2025)" height="420" >}}
+{{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Positive detections of respiratory viruses — Czech regions (2022–2025)" height="420"  note="Absolute counts of positive laboratory tests by region and year. Not population-adjusted — larger regions naturally record more detections." >}}
 
 ---
 
@@ -22,7 +22,7 @@ The marked rise in 2025 in Prague and the South Moravian Region matches the stro
 The course of respiratory virus detections by epidemiological week in the 2024/25 season (week 40/2024 – week 36/2025).
 The six regions with the highest overall detection counts are shown. The season peaked in weeks 5–8 of 2025.
 
-{{< chart id="fluRegionalWeekly" src="/data/charts/flu_regional_weekly.json" type="line" title="Positive detections per week — 2024/25 season" height="380" >}}
+{{< chart id="fluRegionalWeekly" src="/data/charts/flu_regional_weekly.json" type="line" title="Positive detections per week — 2024/25 season" height="380"  note="Absolute counts of positive detections per calendar week in the six regions with the highest totals." >}}
 
 ---
 

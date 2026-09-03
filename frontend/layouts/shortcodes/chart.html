@@ -13,6 +13,7 @@
 {{ $title    := .Get "title"    | default "" }}
 {{ $subtitle := .Get "subtitle" | default "" }}
 {{ $height   := .Get "height"   | default "380" }}
+{{ $note     := .Get "note"     | default "" }}
 
 <figure class="pp-card" data-pp-chart data-src="{{ $src }}" data-type="{{ $type }}">
   {{ with $title }}
@@ -27,9 +28,10 @@
     <canvas id="{{ $id }}" role="img" aria-label="{{ $title | default "Graf" }}"></canvas>
   </div>
 
+  {{ with $note }}<p class="pp-note">{{ . }}</p>{{ end }}
   <div class="pp-card__foot">
     <span class="pp-origin" data-pp-origin>načítám data…</span>
-    <button type="button" class="pp-btn" data-pp-table-toggle aria-expanded="false">Tabulka</button>
+    <button type="button" class="pp-btn" data-pp-table-toggle aria-expanded="false">{{ if eq .Site.Language.Lang "en" }}Table{{ else }}Tabulka{{ end }}</button>
   </div>
   <div class="pp-table-wrap" data-open="false"></div>
 </figure>

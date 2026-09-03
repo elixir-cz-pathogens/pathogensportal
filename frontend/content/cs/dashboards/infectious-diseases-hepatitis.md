@@ -13,7 +13,7 @@ build:
 
 Virové hepatitidy hlášené v ČR: chronická virová hepatitida, akutní hepatitida A a B, a další akutní/neurčené formy.
 
-{{< chart id="isinHepatitis" src="/data/charts/isin_group_hepatitis.json" type="bar" title="Hepatitidy — roční počty případů (2018–2025)" height="420" >}}
+{{< chart id="isinHepatitis" src="/data/charts/isin_group_hepatitis.json" type="bar" title="Hepatitidy — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·

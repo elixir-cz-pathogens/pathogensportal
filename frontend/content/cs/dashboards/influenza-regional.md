@@ -13,7 +13,7 @@ update_freq: "Sezónní aktualizace (2022–2025)"
 Počet pozitivních laboratorních vyšetření respiračních virů v jednotlivých krajích ČR v letech 2022–2025.
 Výrazný nárůst v roce 2025 v Praze a Jihomoravském kraji odpovídá silné sezóně 2024/25.
 
-{{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Pozitivní záchyty respiračních virů — kraje ČR (2022–2025)" height="420" >}}
+{{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Pozitivní záchyty respiračních virů — kraje ČR (2022–2025)" height="420"  note="Absolutní počty pozitivních laboratorních vyšetření po krajích a letech. Nepřepočteno na obyvatele — větší kraje mají přirozeně víc záchytů." >}}
 
 ---
 
@@ -22,7 +22,7 @@ Výrazný nárůst v roce 2025 v Praze a Jihomoravském kraji odpovídá silné 
 Průběh detekce respiračních virů podle epidemiologických týdnů v sezóně 2024/25 (KT40/2024–KT36/2025).
 Zobrazeno 6 krajů s nejvyšším celkovým záchytem. Vrchol sezóny byl zaznamenán v KT5–8/2025.
 
-{{< chart id="fluRegionalWeekly" src="/data/charts/flu_regional_weekly.json" type="line" title="Pozitivní záchyty per KT — sezóna 2024/25" height="380" >}}
+{{< chart id="fluRegionalWeekly" src="/data/charts/flu_regional_weekly.json" type="line" title="Pozitivní záchyty per KT — sezóna 2024/25" height="380"  note="Absolutní počty pozitivních záchytů za kalendářní týden v šesti krajích s nejvyšším celkovým záchytem." >}}
 
 ---
 

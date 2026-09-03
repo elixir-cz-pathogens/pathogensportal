@@ -21,7 +21,7 @@ Pandemie zasáhla nerovnoměrně: starší věkové skupiny tvoří disproporčn
 **U 1 630 992 případů (12,9 %) není ročník narození vyplněn** — v grafu proto nejsou. Nejde o věkovou skupinu, ale o chybějící údaj ve zdrojové evidenci; jakékoli srovnání mezi kohortami je tedy potřeba brát jako popis vyplněné části dat, ne celé populace nakažených. Dalších 10 případů má ročník před rokem 1900 (zjevné překlepy v zadání) a v grafu také nejsou.
 {{< /callout >}}
 
-{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 případy a hospitalizace — rok narození (celé období)" height="400" >}}
+{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 případy a hospitalizace — rok narození (celé období)" height="400"  note="Absolutní počty případů a hospitalizací podle roku narození pacienta za celé pandemické období. Nepřepočteno na velikost kohorty." >}}
 
 ---
 
@@ -30,7 +30,7 @@ Pandemie zasáhla nerovnoměrně: starší věkové skupiny tvoří disproporčn
 Procento hospitalizovaných z celkového počtu potvrzených případů v dané věkové kohortě.
 Hospitalizační míra prudce roste s věkem — u nejstarších kohort přesahuje 15 %.
 
-{{< chart id="covidHospAge" src="/data/charts/covid_hosp_rate_by_age.json" type="bar" title="Hospitalizační míra (%) — rok narození" height="360" >}}
+{{< chart id="covidHospAge" src="/data/charts/covid_hosp_rate_by_age.json" type="bar" title="Hospitalizační míra (%) — rok narození" height="360"  note="Podíl v procentech: hospitalizovaní / potvrzené případy v dané kohortě ročníků." >}}
 
 ---
 
@@ -39,7 +39,7 @@ Hospitalizační míra prudce roste s věkem — u nejstarších kohort přesahu
 Celkový počet potvrzených případů a hospitalizací v závislosti na počtu dávek vakcíny.
 Data reflektují **celé pandemické období** — nevakcinovaní tvoří největší skupinu, ale i proto, že je to nejpočetnější kohorta.
 
-{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 případy a hospitalizace — vakcinační status" height="360" >}}
+{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 případy a hospitalizace — vakcinační status" height="360"  note="Absolutní počty za celé pandemické období podle počtu obdržených dávek. Skupiny se liší velikostí i věkovým složením — přímé srovnání sloupců není účinnost vakcíny." >}}
 
 ---
 
@@ -48,7 +48,7 @@ Data reflektují **celé pandemické období** — nevakcinovaní tvoří nejvě
 Hospitalizační míra (%) vztažená na počet potvrzených případů v dané vakcinační skupině.
 Opakované posilující dávky jsou spojeny s nižší hospitalizační mírou.
 
-{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalizační míra (%) — vakcinační status" height="300" >}}
+{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalizační míra (%) — vakcinační status" height="300"  note="Podíl v procentech: hospitalizovaní / potvrzené případy v dané vakcinační skupině." >}}
 
 ---
 

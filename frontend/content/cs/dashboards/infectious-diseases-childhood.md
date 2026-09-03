@@ -13,7 +13,7 @@ build:
 
 Časté nemoci šířící se vzdušnou cestou nebo blízkým kontaktem, převážně v dětské populaci: plané neštovice, pásový opar (reaktivace u dospělých), spála, příušnice a spalničky.
 
-{{< chart id="isinChildhood" src="/data/charts/isin_group_childhood_airborne.json" type="bar" title="Časté dětské/vzdušné nemoci — roční počty případů (2018–2025)" height="420" >}}
+{{< chart id="isinChildhood" src="/data/charts/isin_group_childhood_airborne.json" type="bar" title="Časté dětské/vzdušné nemoci — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·

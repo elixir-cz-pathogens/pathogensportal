@@ -18,7 +18,7 @@ The pandemic hit unevenly: older age groups account for a disproportionately lar
 **1,630,992 cases (12.9%) have no year of birth recorded** and are therefore not in the chart. This is not an age group but a missing value in the source records; any comparison between cohorts describes the recorded part of the data, not the entire infected population. A further 10 cases have a birth year before 1900 (obvious data-entry errors) and are excluded as well.
 {{< /callout >}}
 
-{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 cases and hospitalisations — year of birth (entire period)" height="400" >}}
+{{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 cases and hospitalisations — year of birth (entire period)" height="400"  note="Absolute counts of cases and hospitalisations by patient year of birth over the whole pandemic period. Not adjusted for cohort size." >}}
 
 ---
 
@@ -27,7 +27,7 @@ The pandemic hit unevenly: older age groups account for a disproportionately lar
 The percentage of hospitalised patients out of all confirmed cases in a given age cohort.
 The hospitalisation rate rises sharply with age — for the oldest cohorts it exceeds 15%.
 
-{{< chart id="covidHospAge" src="/data/charts/covid_hosp_rate_by_age.json" type="bar" title="Hospitalisation rate (%) — year of birth" height="360" >}}
+{{< chart id="covidHospAge" src="/data/charts/covid_hosp_rate_by_age.json" type="bar" title="Hospitalisation rate (%) — year of birth" height="360"  note="Percentage share: hospitalised / confirmed cases within the given birth-year cohort." >}}
 
 ---
 
@@ -36,7 +36,7 @@ The hospitalisation rate rises sharply with age — for the oldest cohorts it ex
 The total number of confirmed cases and hospitalisations by the number of vaccine doses received.
 The data reflects the **entire pandemic period** — unvaccinated people form the largest group, partly because it is also the most numerous cohort.
 
-{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 cases and hospitalisations — vaccination status" height="360" >}}
+{{< chart id="covidByVax" src="/data/charts/covid_by_vaccination.json" type="bar" title="COVID-19 cases and hospitalisations — vaccination status" height="360"  note="Absolute counts over the whole pandemic period by number of doses received. Groups differ in size and age structure — comparing bars directly is not vaccine effectiveness." >}}
 
 ---
 
@@ -45,7 +45,7 @@ The data reflects the **entire pandemic period** — unvaccinated people form th
 Hospitalisation rate (%) relative to the number of confirmed cases in each vaccination group.
 Repeated booster doses are associated with a lower hospitalisation rate.
 
-{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalisation rate (%) — vaccination status" height="300" >}}
+{{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalisation rate (%) — vaccination status" height="300"  note="Percentage share: hospitalised / confirmed cases within the given vaccination group." >}}
 
 ---
 

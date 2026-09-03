@@ -23,13 +23,13 @@ build:
 
 {{< stat-card src="/data/charts/covid_summary.json" >}}
 
-{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" title="Nové případy a úmrtí — týdenní přehled" height="380" >}}
+{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" title="Nové případy a úmrtí — týdenní přehled" height="380"  note="Absolutní počty: nově potvrzené případy a úmrtí sečtené za kalendářní týden, celá ČR. Nepřepočteno na obyvatele." >}}
 
-{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalizace — stav pacientů (týdenní maximum)" height="380" >}}
+{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalizace — stav pacientů (týdenní maximum)" height="380"  note="Absolutní počty současně hospitalizovaných pacientů (týdenní maximum denního stavu), celá ČR." >}}
 
-{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="Pozitivita PCR testů (%)" height="280" >}}
+{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="Pozitivita PCR testů (%)" height="280"  note="Podíl v procentech: pozitivní záchyty / všechny provedené PCR testy v daném týdnu." >}}
 
-{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7denní incidence na 100 000 obyvatel" height="280" >}}
+{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7denní incidence na 100 000 obyvatel" height="280"  note="Přepočet na populaci: nové případy za posledních 7 dní na 100 000 obyvatel." >}}
 
 ---
 
