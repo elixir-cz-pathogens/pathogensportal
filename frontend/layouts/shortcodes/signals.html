@@ -1,0 +1,26 @@
+{{/* Karta se signály detekce anomálií.
+
+     Usage: {{< signals src="/data/charts/anomaly_signals.json" title="…" >}}
+
+     The template only emits the structure; the table itself is rendered by
+     /js/pp-charts.js (renderSignals), which tries the API and falls back to
+     the static JSON in `src` — the same contract as the chart card.
+*/}}
+{{ $src   := .Get "src" }}
+{{ $title := .Get "title" | default "" }}
+
+<section class="pp-card" data-pp-signals data-src="{{ $src }}">
+  {{ with $title }}
+  <div class="pp-card__head">
+    <h2 class="pp-card__title">{{ . }}</h2>
+  </div>
+  {{ end }}
+
+  <div data-pp-signals-body>
+    <div class="pp-skeleton" style="height:160px"></div>
+  </div>
+
+  <div class="pp-card__foot">
+    <span class="pp-origin" data-pp-origin>načítám data…</span>
+  </div>
+</section>

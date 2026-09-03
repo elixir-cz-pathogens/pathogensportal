@@ -613,6 +613,92 @@
       });
   }
 
+  /* ---------------- Signály detekce anomálií ---------------- */
+
+  var SIGNALS_PREVIEW = 20;   // řádků viditelných bez rozbalení
+  var NOMINAL_ALPHA = 0.01;   // 99. percentil — tolik překročení čekáme náhodou
+
+  /**
+   * Tabulka aktuálních překročení očekávané hladiny. Poctivost je tu součást
+   * návrhu: hlavička vždy říká, kolik překročení bychom při daném prahu čekali
+   * čistou náhodou — bez té věty by seznam vypadal jako seznam epidemií.
+   */
+  function renderSignals(root) {
+    var body = root.querySelector("[data-pp-signals-body]");
+
+    function typeBadge(s) {
+      if (s.type === "rare") return '<span class="badge text-bg-warning">vzácná nemoc</span>';
+      if (s.type === "sporadic") return '<span class="badge text-bg-warning">mimo dosavadní výskyt</span>';
+      return s.score !== null && s.score !== undefined ? fmt(s.score) + "×" : "—";
+    }
+
+    function draw(data) {
+      var signals = data.signals || [];
+      var expectedByChance = Math.round((data.n_series_scored || 0) * NOMINAL_ALPHA);
+      var html =
+        '<p class="pp-card__subtitle">Období <strong>' + escapeHtml(String(data.target_period || "—")) +
+        "</strong> · hodnoceno " + fmt(data.n_series_scored) + " řad (diagnóza × kraj) · " +
+        "<strong>" + fmt(signals.length) + " překročení</strong>" +
+        (expectedByChance ? " · ~" + fmt(expectedByChance) + " z nich čekáme čistou náhodou" : "") +
+        "</p>";
+
+      if (!signals.length) {
+        body.innerHTML = html +
+          '<p class="pp-error" style="color:inherit">Žádná řada aktuálně nepřekračuje očekávanou hladinu.</p>';
+        return;
+      }
+
+      var rows = signals.map(function (s, i) {
+        return "<tr" + (i >= SIGNALS_PREVIEW ? ' hidden data-pp-signals-extra' : "") + ">" +
+          '<td class="text-end">' + (i + 1) + "</td>" +
+          "<td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza || "?") + "</td>" +
+          "<td>" + escapeHtml(s.kraj_nazev || s.kraj_kod || "?") + "</td>" +
+          '<td class="text-end"><strong>' + fmt(s.observed) + "</strong></td>" +
+          '<td class="text-end">' + fmt(s.expected) + "</td>" +
+          '<td class="text-end">' + fmt(s.threshold) + "</td>" +
+          '<td class="text-end">' + typeBadge(s) + "</td>" +
+          "</tr>";
+      });
+
+      html += '<div style="overflow-x:auto"><table class="pp-table">' +
+        '<caption class="visually-hidden">Řady nad očekávanou hladinou</caption>' +
+        '<thead><tr><th scope="col">#</th><th scope="col">Diagnóza</th><th scope="col">Kraj</th>' +
+        '<th scope="col" class="text-end">Případy</th><th scope="col" class="text-end">Očekáváno</th>' +
+        '<th scope="col" class="text-end">Práh</th><th scope="col" class="text-end">Síla</th></tr></thead>' +
+        "<tbody>" + rows.join("") + "</tbody></table></div>";
+
+      if (signals.length > SIGNALS_PREVIEW) {
+        html += '<button type="button" class="pp-btn mt-2" data-pp-signals-more aria-expanded="false">' +
+          "Zobrazit všech " + fmt(signals.length) + "</button>";
+      }
+      body.innerHTML = html;
+
+      var more = body.querySelector("[data-pp-signals-more]");
+      if (more) {
+        more.addEventListener("click", function () {
+          var open = more.getAttribute("aria-expanded") === "true";
+          body.querySelectorAll("[data-pp-signals-extra]").forEach(function (tr) {
+            tr.hidden = open;
+          });
+          more.setAttribute("aria-expanded", open ? "false" : "true");
+          more.textContent = open
+            ? "Zobrazit všech " + fmt(signals.length)
+            : "Zobrazit jen prvních " + SIGNALS_PREVIEW;
+        });
+      }
+    }
+
+    loadChartData(root.dataset.src)
+      .then(function (result) {
+        setOrigin(root, result.origin);
+        draw(result.payload);
+      })
+      .catch(function (err) {
+        body.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span><span>' +
+          "Signály se nepodařilo načíst (" + escapeHtml(err.message) + ").</span></div>";
+      });
+  }
+
   /* ---------------- Přebarvení při přepnutí motivu ---------------- */
 
   var themeListeners = [];
@@ -636,6 +722,7 @@
     }
     document.querySelectorAll("[data-pp-stats]").forEach(renderStats);
     document.querySelectorAll("[data-pp-map]").forEach(renderMap);
+    document.querySelectorAll("[data-pp-signals]").forEach(renderSignals);
   }
 
   if (document.readyState === "loading") {
