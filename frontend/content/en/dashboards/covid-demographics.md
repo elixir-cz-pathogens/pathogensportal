@@ -1,17 +1,22 @@
 ---
 title: "COVID-19 — Age and vaccination"
 description: "Analysis of 12.6 million COVID-19 cases in the Czech Republic by patient age and vaccination status — hospitalisations and hospitalisation rate. Data from the Czech Ministry of Health."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/covid-demographics.svg"
 highlight: false
 tags: ["SARS-CoV-2", "hospitalisation", "vaccination", "epidemiology", "Czech MoH"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">Czech Ministry of Health — COVID-19 Open Data</a>'
 update_freq: "Aggregate data (entire pandemic period)"
 ---
 
+{{< nav-pills group="infekcni-nemoci" active="covid-demografie" >}}
 ### Cases and hospitalisations by year of birth
 
 Distribution of COVID-19 cases and hospitalisations by the patient's year of birth (5-year cohorts).
 The pandemic hit unevenly: older age groups account for a disproportionately large share of hospitalisations.
+
+{{< callout >}}
+**1,630,992 cases (12.9%) have no year of birth recorded** and are therefore not in the chart. This is not an age group but a missing value in the source records; any comparison between cohorts describes the recorded part of the data, not the entire infected population. A further 10 cases have a birth year before 1900 (obvious data-entry errors) and are excluded as well.
+{{< /callout >}}
 
 {{< chart id="covidByAge" src="/data/charts/covid_by_age.json" type="bar" title="COVID-19 cases and hospitalisations — year of birth (entire period)" height="400" >}}
 

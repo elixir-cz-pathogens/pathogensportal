@@ -1,13 +1,14 @@
 ---
 title: "COVID-19 Surveillance"
 description: "The SARS-CoV-2 epidemiological situation in the Czech Republic — daily cases, hospitalisations, testing and vaccination."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/covid.svg"
 highlight: true
 tags: ["SARS-CoV-2", "hospitalisation", "vaccination", "surveillance", "Czech MoH", "Czech Republic"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">Czech Ministry of Health — Disease Update</a>'
 update_freq: "Daily"
 ---
 
+{{< nav-pills group="infekcni-nemoci" active="covid" >}}
 <a href="https://onemocneni-aktualne.mzcr.cz/covid-19" target="_blank" class="btn btn-primary mb-3 me-2">
   Official COVID-19 portal of the Czech Ministry of Health →
 </a>

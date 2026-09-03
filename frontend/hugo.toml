@@ -24,25 +24,42 @@ enableRobotsTXT = true
     label = "Čeština"
     locale = "cs-CZ"
     contentDir = "content/cs"
+    # Menu jsou per-jazyk — globální [menus] by anglické verzi podstrčilo
+    # české názvy položek.
+    [[languages.cs.menus.main]]
+      identifier = "dashboards"
+      name = "Dashboardy"
+      url = "/dashboards/"
+      weight = 10
+    [[languages.cs.menus.main]]
+      identifier = "news"
+      name = "Novinky"
+      url = "/news/"
+      weight = 20
+    # Akce jsou z menu schované, dokud sekce nemá obsah — /events/ zůstává
+    # dostupné přes URL. Až bude první akce, stačí blok odkomentovat.
+    # [[languages.cs.menus.main]]
+    #   identifier = "events"
+    #   name = "Akce"
+    #   url = "/events/"
+    #   weight = 30
 
-[menus]
-  [[menus.main]]
-    identifier = "dashboards"
-    name = "Dashboardy"
-    url = "/dashboards/"
-    weight = 10
-  [[menus.main]]
-    identifier = "news"
-    name = "Novinky"
-    url = "/news/"
-    weight = 20
-  # Akce jsou z menu schované, dokud sekce nemá obsah — /events/ zůstává
-  # dostupné přes URL. Až bude první akce, stačí blok odkomentovat.
-  # [[menus.main]]
-  #   identifier = "events"
-  #   name = "Akce"
-  #   url = "/events/"
-  #   weight = 30
+  [languages.en]
+    title = "Pathogen Portal CZ"
+    weight = 2
+    label = "English"
+    locale = "en-GB"
+    contentDir = "content/en"
+    [[languages.en.menus.main]]
+      identifier = "dashboards"
+      name = "Dashboards"
+      url = "/dashboards/"
+      weight = 10
+    [[languages.en.menus.main]]
+      identifier = "news"
+      name = "News"
+      url = "/news/"
+      weight = 20
 
 [markup]
   [markup.goldmark]

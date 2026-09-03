@@ -1,7 +1,7 @@
 ---
 title: "Hantavirus — MV Hondius cruise ship"
 description: "Situation report on the Andes virus (hantavirus) outbreak linked to the MV Hondius cruise ship — overview, timeline, risk to the Czech Republic. Source: IMG CAS / UJEP."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/hantavirus.svg"
 highlight: true
 tags: ["hantavirus", "epidemiology", "IMG CAS"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG CAS</a> / UJEP / Military Health Institute'

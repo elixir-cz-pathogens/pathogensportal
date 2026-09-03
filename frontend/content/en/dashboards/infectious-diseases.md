@@ -1,12 +1,14 @@
 ---
 title: "Infectious Diseases — ISIN dashboard"
 description: "Overview of notified infectious diseases in the Czech Republic 2018–2025 from ÚZIS — regional map, top diagnoses, age structure and seasonal trends."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infectious diseases", "surveillance", "ÚZIS", "regions", "Czech Republic"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
 update_freq: "Continuous updates (data 2018–2025)"
 ---
+
+{{< nav-pills group="infekcni-nemoci" active="prehled" >}}
 
 This dashboard shows notified infectious diseases in the Czech Republic based on data from the **Infectious Diseases Information System (ISIN)**, maintained by the Institute of Health Information and Statistics (ÚZIS CZ) and the Ministry of Health. The data covers 272,000+ records since 2018 across all 14 regions.
 
@@ -17,6 +19,18 @@ This dashboard shows notified infectious diseases in the Czech Republic based on
 The choropleth map shows the total number of notified infectious diseases in each Czech region for the most recent year available. Hover over a region to see the exact count.
 
 {{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Notified infectious diseases by Czech region" >}}
+
+---
+
+### Regional map — incidence per 100,000 population
+
+The same data adjusted for regional population size (denominators: Czech Statistical Office). **The two maps look completely different — and the second one is the right one for comparing regions.**
+
+Absolute counts mostly mirror where more people live. Prague has an average absolute case count, but after adjusting for population it has the **lowest incidence of all regions** (720.6 per 100k). The Vysočina region, unremarkable in absolute counts, is the **highest** (1,639.9).
+
+{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="cases per 100k" title="Infectious disease incidence by Czech region — per 100,000 population" >}}
+
+Regional differences may also reflect the coverage and capacity of the notifying network, not just true occurrence.
 
 ---
 

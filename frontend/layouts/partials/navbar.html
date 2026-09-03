@@ -40,14 +40,14 @@
                     {{ if hugo.IsMultilingual }}
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-uppercase" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-globe2"></i> {{ $.Site.Language.LanguageCode }}
+                            <i class="bi bi-globe2"></i> {{ $.Site.Language.Lang }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end nav-languages">
                             {{ range $.Site.Home.AllTranslations }}
                             <li>
                                 <a class="dropdown-item" href="{{ .RelPermalink }}">
-                                    <i class="bi bi-{{ if eq .Language.Lang $.Site.Language.LanguageCode }}check-{{ end }}circle"></i>
-                                    <span lang="{{ .Language.LanguageName }}"> {{ .Language.LanguageName }}</span>
+                                    <i class="bi bi-{{ if eq .Language.Lang $.Site.Language.Lang }}check-{{ end }}circle"></i>
+                                    <span lang="{{ .Language.Label }}"> {{ .Language.Label }}</span>
                                 </a>
                             </li>
                             {{ end }}

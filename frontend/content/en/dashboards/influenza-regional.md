@@ -1,7 +1,7 @@
 ---
 title: "Influenza — Regional surveillance"
 description: "Regional distribution of laboratory findings for influenza and respiratory viruses in the Czech Republic 2022–2025 — NIPH/NRL data by region."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/flu-regional.svg"
 highlight: false
 tags: ["influenza", "surveillance", "regions", "NIPH", "Czech Republic"]
 data_source: '<a href="https://szu.gov.cz" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'

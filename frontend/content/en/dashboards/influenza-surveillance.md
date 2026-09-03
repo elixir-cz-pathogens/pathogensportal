@@ -1,52 +1,59 @@
 ---
-title: "Influenza & Respiratory Viruses"
-description: "Virological surveillance of influenza and respiratory viruses in the Czech Republic — seasonal overview 2012–2022, NIPH/NRL data."
-image: "/images/dashboard-placeholder.svg"
+title: "Influenza and respiratory viruses"
+description: "Virological surveillance of influenza and respiratory viruses in the Czech Republic — seasonal overviews 2012–2026, NIPH/NRL data."
+image: "/images/cards/flu.svg"
 highlight: true
 tags: ["influenza", "RSV", "surveillance", "NIPH", "Czech Republic"]
-data_source: '<a href="https://szu.gov.cz" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'
-update_freq: "Historical data (2012/13–2021/22)"
+data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'
+update_freq: "Weekly during the season (current season 2025/26)"
 ---
 
 ### Seasonal influenza overview
 
-The number of laboratory-confirmed Influenza A and B cases across seasons.
-The visible drop in the 2020/21 season reflects the effect of COVID-19 measures (masks, lockdowns).
+Laboratory-confirmed influenza A and B cases across the seasons 2012/13–2025/26.
+The drop in the 2020/21 and 2021/22 seasons reflects the effect of COVID-19
+countermeasures (masks, contact restrictions). The running season is updated
+continuously, so its column keeps growing during the winter.
 
-{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Influenza A vs B — total per season" height="360" >}}
-
----
-
-### Weekly trend — 2021/22 season
-
-The distribution of influenza detections by calendar week in the most recent season available.
-
-{{< chart id="fluWeekly" src="/data/charts/flu_weekly.json" type="line" title="Influenza A and B — weekly detections (2021/22)" height="320" >}}
+{{< chart id="fluSeason" src="/data/charts/flu_season_overview.json" type="bar" title="Influenza A vs. B — totals per season" height="360" >}}
 
 ---
 
-### The respiratory virology landscape
+### The respiratory virological landscape
 
-A stacked overview of all monitored respiratory viruses (influenza, RSV, rhinoviruses, coronaviruses, adenoviruses…) across seasons.
+All monitored respiratory viruses (influenza, RSV, rhinoviruses, coronaviruses,
+adenoviruses…) across the seasons. The weekly course of the current season by region
+is on the [Influenza — regional surveillance](/en/dashboards/influenza-regional/) page.
 
 {{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respiratory viruses — detections per season" height="420" >}}
+
+*Note: series labels in the charts come from the Czech source data.*
 
 ---
 
 ### Surveillance background
 
-The data comes from the **National Reference Laboratory for Influenza and Non-influenza Respiratory Viruses** at NIPH Prague.
-Every epidemiological week the NRL publishes a report with the virological test results for samples from patients with ARI/ILI.
+The data come from the **NRL for influenza and non-influenza respiratory viruses**
+at the National Institute of Public Health (SZÚ) in Prague. Every epidemiological
+week the NRL publishes a report with virological test results from ARI/ILI patients;
+historical seasons are extracted from archived reports, the current season is
+downloaded automatically.
 
 Monitored viruses:
-- **Influenza A** (H1N1pdm, H3N2) and **Influenza B**
+- **influenza A** (H1N1pdm, H3N2) and **influenza B**
 - **RSV** (respiratory syncytial virus)
 - **HRV** (rhinoviruses), **HAdV** (adenoviruses), **HPIV** (parainfluenza viruses)
 - **HMPV** (metapneumoviruses), **CoV** (seasonal coronaviruses), **hBoV** (bocaviruses)
 - *Mycoplasma pneumoniae* (atypical pneumonia)
 
+### Further influenza resources
+
+- [SZÚ — current influenza/ARI reports](https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/)
+- [WHO FluNet — Europe](https://www.who.int/europe/emergencies/surveillance/flunet)
+- [ECDC — seasonal influenza surveillance](https://www.ecdc.europa.eu/en/seasonal-influenza/surveillance-and-disease-data)
+- [Influenza phylogeny (Nextstrain)](/en/dashboards/nextstrain-influenza/) — strain evolution and vaccine strain selection
+
 <p class="stat-source">
-  Source: <a href="https://szu.gov.cz" target="_blank">NIPH Prague</a> · NRL for Influenza ·
-  Data extracted from PDF archives 2012–2022 ·
-  Category: laboratory detection (PCR/IF)
+  Source: <a href="https://szu.gov.cz" target="_blank">SZÚ Prague</a> · NRL influenza ·
+  seasons 2012/13–2025/26 · category: laboratory detections (PCR/IF)
 </p>
