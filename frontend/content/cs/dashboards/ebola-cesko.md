@@ -48,7 +48,7 @@ Centrum biologické ochrany Těchonín je vojenské specializované zařízení 
 
 ### Pro veřejnost
 
-Riziko pro veřejnost v České republice zůstává velmi nízké. ČR není v sousedství postižených států a ebola se nešíří vzduchem jako chřipka nebo covid-19. ECDC na stránce aktualizované 2. září a ověřené 3. září dál hodnotí pravděpodobnost infekce pro osoby žijící v EU/EHP jako velmi nízkou; toto hodnocení nemění ani české laboratorně vyloučené podezření, ani řízená zdravotnická evakuace pacienta nakaženého v DRK do Frankfurtu.
+Riziko pro veřejnost v České republice zůstává velmi nízké. <!-- PREVIEW TEST 3.9.2026 --> ČR není v sousedství postižených států a ebola se nešíří vzduchem jako chřipka nebo covid-19. ECDC na stránce aktualizované 2. září a ověřené 3. září dál hodnotí pravděpodobnost infekce pro osoby žijící v EU/EHP jako velmi nízkou; toto hodnocení nemění ani české laboratorně vyloučené podezření, ani řízená zdravotnická evakuace pacienta nakaženého v DRK do Frankfurtu.
 
 ### Pro cestovatele
 
