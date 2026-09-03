@@ -98,7 +98,7 @@ Detailní datované zdroje jsou na stránce [Zdroje](/dashboards/ebola-zdroje/).
 
 Data z kurátorované časové řady (CC BY 4.0, IMG AV ČR).
 
-{{< chart id="ebolaTimeseries" src="/data/charts/ebola_timeseries.json" type="line" title="Ebola BDBV 2026 — kumulativní případy a úmrtí (DRC)" height="360" >}}
+{{< chart id="ebolaTimeseries" src="/data/charts/ebola_timeseries.json" type="line" title="Ebola BDBV 2026 — kumulativní případy a úmrtí (DRC)" height="360" note="Kumulativní absolutní počty potvrzených případů a úmrtí od začátku epidemie, celá postižená oblast (DRK)." >}}
 
 ---
 
