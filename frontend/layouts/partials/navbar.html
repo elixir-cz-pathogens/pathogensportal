@@ -93,7 +93,8 @@
                     <div class="collapse main_menu_item_sub ps-4" id="dashboards">
                         <a class="d-block" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
                         {{ range $events.RegularPages }}
-                        <a class="d-block" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}</a>
+                        {{- /* Položky vedoucí ven z portálu nesou ikonu externího odkazu. */ -}}
+                        <a class="d-block" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
                         {{ end }}
                     </div>
                 </div>
@@ -162,7 +163,7 @@
             <div class="dropdown-menu main_menu_item_sub" aria-labelledby="navbarDropdownMenuLink">
                 <a class="dropdown-item m-0" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
                 {{ range $events.RegularPages }}
-                <a class="dropdown-item m-0" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}</a>
+                <a class="dropdown-item m-0" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
                 {{ end }}
             </div>
         </div>
