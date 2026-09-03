@@ -1,7 +1,7 @@
 name: "CHECK: Branch Naming"
 
 # Source branch name check — ONLY on PRs into `main`.
-# Valid:  (feature|bugfix|docs)/<PREFIX>-<number>_description  |  starting with <IGNORE_PREFIX>  |  dev
+# Valid:  (feature|bugfix|docs|content)/<PREFIX>-<number>_description  |  starting with <IGNORE_PREFIX>  |  dev
 on:
   pull_request:
     branches: [main]
@@ -21,7 +21,7 @@ jobs:
             echo "✅ '$BRANCH' – skipped."
             exit 0
           fi
-          if ! [[ "$BRANCH" =~ ^(feature|bugfix|docs)/${ISSUE_PREFIX}-[0-9]+_.+ ]]; then
+          if ! [[ "$BRANCH" =~ ^((feature|bugfix|docs)/${ISSUE_PREFIX}-[0-9]+_.+|content/.+) ]]; then
             echo "❗ Invalid branch name: $BRANCH"
             echo "   (feature|bugfix|docs)/${ISSUE_PREFIX}-<number>_description  or starting with '${IGNORE_PREFIX}'"
             exit 1
