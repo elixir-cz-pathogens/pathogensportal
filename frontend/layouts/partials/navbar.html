@@ -190,8 +190,13 @@
                data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-haspopup="true"
                aria-expanded="false">{{ i18n "topics" }}</a>
             <div class="dropdown-menu main_menu_item_sub" aria-labelledby="navbarDropdownMenuLink">
+                {{- /* Stejný filtr jako v mobilním menu — jen tagy s obsahem. */ -}}
+                {{- $visible2 := slice -}}
+                {{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible2 = $visible2 | append (. | urlize) -}}{{- end -}}{{- end -}}
                 {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+                {{ if in $visible2 ($name | urlize) }}
                 <a class="dropdown-item m-0" href="/tags/{{ urlize $name }}">{{ $name }}</a>
+                {{ end }}
                 {{ end }}
             </div>
         </div>
