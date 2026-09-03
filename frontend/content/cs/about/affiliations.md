@@ -25,3 +25,15 @@ layout: about_navbar
 [www.vscht.cz](https://www.vscht.cz) — partner projektu, spolupráce na datové analýze.
 {{< /organization >}}
 
+{{< organization name="FIT ČVUT v Praze" img="/images/FIT_CVUT.svg" >}}
+[fit.cvut.cz](https://fit.cvut.cz) — Fakulta informačních technologií ČVUT, spoluautorské pracoviště portálu.
+{{< /organization >}}
+
+{{< organization name="UJEP — Univerzita J. E. Purkyně v Ústí nad Labem" img="/images/UJEP.png" >}}
+[www.ujep.cz](https://www.ujep.cz) — spoluautorské pracoviště situačních reportů.
+{{< /organization >}}
+
+{{< organization name="CESNET" img="/images/CESNET.svg" >}}
+[www.cesnet.cz](https://www.cesnet.cz) — provoz infrastruktury portálu (virtuální server e-INFRA CZ).
+{{< /organization >}}
+

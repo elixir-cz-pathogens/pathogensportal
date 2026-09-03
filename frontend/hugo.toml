@@ -6,7 +6,9 @@ defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 
 [params]
-  mail = "vlasakj@vscht.cz"
+  mail = "hpaces@img.cas.cz"
+  # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)
+  images = ["/images/og-image.png"]
   homepage = "https://pathogens.vm.cesnet.cz"
   logo = "/images/elixir_logo.png"
   # Base URL of the charts API. Empty = same origin (production: the Apache proxy).
@@ -34,11 +36,13 @@ enableRobotsTXT = true
     name = "Novinky"
     url = "/news/"
     weight = 20
-  [[menus.main]]
-    identifier = "events"
-    name = "Akce"
-    url = "/events/"
-    weight = 30
+  # Akce jsou z menu schované, dokud sekce nemá obsah — /events/ zůstává
+  # dostupné přes URL. Až bude první akce, stačí blok odkomentovat.
+  # [[menus.main]]
+  #   identifier = "events"
+  #   name = "Akce"
+  #   url = "/events/"
+  #   weight = 30
 
 [markup]
   [markup.goldmark]
