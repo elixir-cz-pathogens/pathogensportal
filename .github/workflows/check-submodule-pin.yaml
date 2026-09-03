@@ -1,0 +1,144 @@
+name: "CHECK: Submodule Pin"
+
+# Fails a PR into `main` that moves the `pathogensportal-db` pin to something that
+# is not a clean release, or moves it BACKWARDS.
+#
+# WHY THIS EXISTS — two incidents, two different mechanisms
+# --------------------------------------------------------
+# 1. `main` has been pinned to `v0.1.0-dev` since 18 Jul 2026 — the retired
+#    temporary-fork tag — and every release since has left it there. The pin is
+#    bumped on `dev` when a -db release is cut, but nothing carries that to `main`
+#    and nothing checks that it arrived.
+#
+# 2. On 3 Sep 2026 PP-46 bumped the pin to v0.3.0 at 19:41. At 21:36 a commit
+#    titled "preview workflow for AI-authored content PRs" moved it back to v0.1.0
+#    — two releases backwards, as a side effect, surviving 1h55m.
+#
+# The second is not carelessness, it is git: the gitlink is recorded from the
+# submodule WORKING TREE's HEAD. A checkout left on an old commit plus a
+# `git add -A` at the repo root silently rewrites the pin to match the stale
+# directory. No warning, and in the diff it is one line reading
+# `-Subproject commit …` inside a change about something else entirely.
+#
+# So the pinning scheme is fine. What was missing is anything that notices.
+#
+# ⚠️ `-db`'s tags are ANNOTATED. `git rev-parse v0.2.0` returns the TAG OBJECT
+# (f209f94), not the commit (b0afc8a) — comparing that against a gitlink shows a
+# mismatch that does not exist, and a correct line in IMPLEMENTATION_TODO.md was
+# once "corrected" into a wrong one exactly that way. This check therefore goes
+# commit → tag with `git describe --tags --exact-match`, never tag → commit.
+#
+# WHAT IT DOES NOT DO: it does not fail a PR that leaves the pin alone. Blocking
+# unrelated work on `main`'s pre-existing bad pin would be a check that is red on
+# arrival, which teaches people to ignore it. An untouched bad pin is reported as
+# a warning; only a *change* can fail the job.
+#
+# ⚠️ Flat job name, no reusable workflow, so branch protection sees exactly
+# `submodule-pin` — `backend-tests` vs `backend-tests / pytest` blocked every PR
+# into `main` for 8 days in Aug 2026.
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: submodule-pin-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  submodule-pin:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0          # both sides of the PR, to read the two gitlinks
+          submodules: false       # the submodule is cloned separately, with tags
+
+      - name: Check the pathogensportal-db pin
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -uo pipefail
+          SUB="pathogensportal-db"
+
+          read_pin() {  # $1 = commit; prints the gitlink sha, empty if absent
+            git ls-tree "$1" "$SUB" 2>/dev/null | awk '$2 == "commit" { print $3 }'
+          }
+
+          base_pin=$(read_pin "$BASE_SHA")
+          head_pin=$(read_pin "$HEAD_SHA")
+
+          if [ -z "$head_pin" ]; then
+            echo "🚨 No gitlink for '$SUB' at the PR head — the submodule is gone or renamed."
+            echo "   That is not something to wave through: deploy/docker-compose.yml and all"
+            echo "   three workflows (submodules: recursive) expect it."
+            exit 1
+          fi
+
+          if [ "$base_pin" = "$head_pin" ]; then
+            echo "ℹ️  Pin unchanged ($head_pin)."
+            # Still say something if what it is sitting on is wrong — as a warning,
+            # because this PR did not cause it and must not be blocked by it.
+            git clone --quiet --filter=blob:none \
+              https://github.com/elixir-cz-pathogens/pathogensportal-db.git db 2>/dev/null || {
+                echo "⚠️  Could not clone -db to inspect the pin; skipping the advisory check."
+                exit 0
+              }
+            tag=$(git -C db describe --tags --exact-match "$head_pin" 2>/dev/null || true)
+            if [ -z "$tag" ]; then
+              echo "⚠️  NOTE: the current pin is not a tagged release. Worth fixing, separately."
+            elif ! printf '%s' "$tag" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+              echo "⚠️  NOTE: the current pin is '$tag', not a clean release tag. Worth fixing, separately."
+            else
+              echo "✅ Sitting on $tag."
+            fi
+            exit 0
+          fi
+
+          echo "ℹ️  Pin changes in this PR: $base_pin -> $head_pin"
+
+          git clone --quiet --filter=blob:none \
+            https://github.com/elixir-cz-pathogens/pathogensportal-db.git db \
+            || { echo "🚨 Could not clone -db; refusing to approve a pin change unverified."; exit 1; }
+
+          # commit -> tag. Never tag -> commit: these tags are annotated.
+          tag=$(git -C db describe --tags --exact-match "$head_pin" 2>/dev/null || true)
+
+          if [ -z "$tag" ]; then
+            echo ""
+            echo "🚨 The new pin $head_pin is not a tagged release."
+            echo "❗ The pin must name a -db RELEASE. An arbitrary commit means production"
+            echo "   would build from something nobody cut, and it is the signature of an"
+            echo "   accidental pin: a stale submodule checkout captured by 'git add -A'."
+            echo ""
+            echo "   Intended a release?   git -C $SUB checkout <tag> && git add $SUB"
+            echo "   Did not mean to?      git checkout \$(git merge-base HEAD origin/main) -- $SUB"
+            exit 1
+          fi
+
+          if ! printf '%s' "$tag" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo ""
+            echo "🚨 The new pin is '$tag', which is not a clean release tag."
+            echo "❗ Suffixed tags are not releases. '$tag' in particular is how the retired"
+            echo "   temporary-fork tag v0.1.0-dev keeps resurfacing — a naive version sort"
+            echo "   ranks it ABOVE v0.1.0."
+            exit 1
+          fi
+
+          # Backwards? The new pin being an ancestor of the old one is a revert, and
+          # every instance so far has been accidental.
+          if git -C db merge-base --is-ancestor "$head_pin" "$base_pin" 2>/dev/null; then
+            echo ""
+            echo "🚨 The pin moves BACKWARDS: $head_pin ($tag) is an ancestor of $base_pin."
+            echo "❗ This is what happened on 3 Sep 2026 — v0.3.0 reverted to v0.1.0 by a commit"
+            echo "   about a preview workflow. git records the gitlink from the submodule"
+            echo "   WORKING TREE, so a stale checkout plus 'git add -A' rewrites the pin"
+            echo "   silently."
+            echo ""
+            echo "   Fix:                 git -C $SUB fetch --tags && git -C $SUB checkout <tag>"
+            echo "                        git add $SUB"
+            echo "   A deliberate rollback belongs in its own PR that says so in the title."
+            exit 1
+          fi
+
+          echo "✅ Pin moves forward to $tag."
