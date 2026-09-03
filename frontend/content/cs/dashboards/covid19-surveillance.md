@@ -1,7 +1,7 @@
 ---
 title: "COVID-19 Surveillance"
 description: "Epidemiologická situace SARS-CoV-2 v České republice — denní případy, hospitalizace, testování a vakcinace."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/covid.svg"
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "surveillance", "MZČR", "ČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">MZČR — onemocnění aktuálně</a>'
 update_freq: "Denně"

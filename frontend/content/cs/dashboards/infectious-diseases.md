@@ -1,7 +1,7 @@
 ---
 title: "Infekční nemoci — přehled"
 description: "Přehled hlášených infekčních nemocí v ČR 2018–2025 dle ÚZIS — regionální mapa, top diagnózy, věková struktura a tematické skupiny nemocí."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infekční nemoci", "surveillance", "ÚZIS", "kraje", "ČR"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'

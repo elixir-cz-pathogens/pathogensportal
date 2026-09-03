@@ -1,7 +1,8 @@
 ---
 title: "Signály — detekce anomálií"
 description: "Automatické vyhledávání překročení očekávané hladiny v 1 200+ řadách hlášených infekčních nemocí (diagnóza × kraj, ÚZIS ISIN) metodou Farrington/Noufaily."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/signals.svg"
+highlight: true
 tags: ["detekce anomálií", "surveillance", "včasné varování", "ÚZIS", "statistika"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 update_freq: "S každým během datové pipeline"

@@ -1,7 +1,7 @@
 ---
 title: "Influenza — Regionální surveillance"
 description: "Regionální distribuce laboratorních nálezů chřipky a respiračních virů v ČR 2022–2025 — data SZÚ/NRL podle krajů."
-image: "/images/dashboard-placeholder.svg"
+image: "/images/cards/flu-regional.svg"
 highlight: false
 tags: ["chřipka", "surveillance", "kraje", "SZÚ", "ČR"]
 data_source: '<a href="https://szu.gov.cz" target="_blank">SZÚ — Národní referenční laboratoř pro chřipku</a>'

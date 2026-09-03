@@ -1,6 +1,7 @@
 ---
 title: "Infekční nemoci — Hepatitidy"
 description: "Virové hepatitidy A, B a další, v ČR 2018–2025 (ÚZIS ISIN)."
+image: "/images/cards/id-hepatitis.svg"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "hepatitida"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:
