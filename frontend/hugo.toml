@@ -8,7 +8,9 @@ enableRobotsTXT = true
 [params]
   mail = "hpaces@img.cas.cz"
   # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)
-  images = ["/images/og-image.png"]
+  # Jmeno souboru nese datum verze schválně: Discord a spol. cachují náhledy
+  # podle URL obrázku a neumí je obnovit — při změně obrázku soubor přejmenuj.
+  images = ["/images/og-card-2026-09.png"]
   homepage = "https://pathogens.vm.cesnet.cz"
   logo = "/images/elixir_logo.png"
   # Base URL of the charts API. Empty = same origin (production: the Apache proxy).
