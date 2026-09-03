@@ -1,4 +1,4 @@
 ---
-title: "Data Dashboards"
-description: "Interactive dashboards for pathogen surveillance data"
+title: "Dashboardy"
+description: "Interaktivní přehledy dat ze surveillance patogenů v České republice"
 ---

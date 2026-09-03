@@ -55,6 +55,16 @@ Varicella (plané neštovice) dlouhodobě dominuje díky povinnosti hlášení a
 
 ---
 
+### Sezónní průběh — měsíční počty případů
+
+Měsíční časové řady nejčastějších diagnóz ukazují sezónnost (plané neštovice vrcholí
+na jaře, salmonelózy v létě) i mimořádné události — pertusová epidemie 2024 je vidět
+jako výrazný vrchol vymykající se všem předchozím rokům.
+
+{{< chart id="isinMonthly" src="/data/charts/isin_monthly_trend.json" type="line" title="Sezónní průběh — měsíční počty případů" height="380" >}}
+
+---
+
 ### Věková struktura případů (kumulativně 2018–2025)
 
 Rozložení hlášených případů dle věkových skupin za celé sledované období. Nejrizikovější skupiny jsou děti do 14 let (varicella, GI infekce) a senioři 65+ (komplikované průběhy).
