@@ -37,3 +37,8 @@ layout: about_navbar
 [www.cesnet.cz](https://www.cesnet.cz) — provoz infrastruktury portálu (virtuální server e-INFRA CZ).
 {{< /organization >}}
 
+{{< organization name="Program švýcarsko-české spolupráce" img="/images/swiss-contribution-cz.png" >}}
+Portál vzniká v rámci projektu **ELIXIR IMPACT2** podpořeného z
+[Programu švýcarsko-české spolupráce](https://www.swiss-contribution.cz/) (druhý švýcarský příspěvek vybraným členským státům EU).
+{{< /organization >}}
+

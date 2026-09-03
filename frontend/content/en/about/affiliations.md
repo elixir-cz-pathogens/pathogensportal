@@ -36,3 +36,8 @@ The Czech national node of the European [ELIXIR](https://elixir-europe.org) infr
 {{< organization name="CESNET" img="/images/CESNET.svg" >}}
 [www.cesnet.cz](https://www.cesnet.cz) — operates the portal infrastructure (e-INFRA CZ virtual server).
 {{< /organization >}}
+
+{{< organization name="Swiss-Czech Cooperation Programme" img="/images/swiss-contribution-en.png" >}}
+The portal is developed within the **ELIXIR IMPACT2** project supported by the
+[Swiss-Czech Cooperation Programme](https://www.swiss-contribution.cz/) (Second Swiss Contribution to selected EU member states).
+{{< /organization >}}
