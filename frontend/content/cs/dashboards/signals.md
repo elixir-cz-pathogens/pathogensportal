@@ -16,6 +16,33 @@ prahovou mez.
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Řady nad očekávanou hladinou" >}}
 
+### Jak číst tabulku
+
+| Sloupec | Význam |
+|---|---|
+| **Případy** | Kolik případů bylo za daný měsíc skutečně nahlášeno. |
+| **Očekáváno** | Endemická hladina z modelu: kolik případů by tahle nemoc v tomhle kraji a v tomhle ročním období měla mít v běžném roce. Počítá se z historie 2018–dosud se sníženou vahou minulých epidemií. |
+| **Práh** | Horní mez toho, co se ještě dá vysvětlit běžným kolísáním (99. percentil predikčního intervalu). Hodnota mezi *Očekáváno* a *Práh* je normální provoz; nad prahem začíná signál. |
+| **Síla** | Kolikrát pozorování překročilo vzdálenost od očekávání k prahu. **1×** = přesně na prahu, **2×** = dvakrát tak daleko za ním. Čím vyšší, tím méně pravděpodobné, že jde o náhodu. |
+
+Příklad z tabulky: hepatitida A v Jihomoravském kraji — očekáváno **0,9** případu,
+práh **5**, nahlášeno **80**. Pozorování je tedy ~19× dál za prahem, než kam sahá
+běžné kolísání (síla 19×) — to už náhoda prakticky nevysvětlí.
+
+Dva štítky nahrazují sílu tam, kde statistický model nedává smysl:
+
+- **vzácná nemoc** — nemoc s nejvýše ~5 případy v celé historii (záškrt, žlutá
+  zimnice…). Práh tu je „víc než ojedinělý případ": hlásí se každý shluk od 2 případů.
+- **mimo dosavadní výskyt** — případy v období, ve kterém se nemoc dřív vůbec
+  nevyskytovala (v historii pro tuhle část roku nejsou žádné). Může jít o skutečnou
+  novinku i o změnu vykazování.
+
+Na co se dívat nejdřív: **vysoká síla spolu s vysokým počtem případů** (rozjetá
+epidemie). Řádek s malými počty a nízkou silou těsně nad 1× může být náhoda —
+při 1 200 hodnocených řadách jich pár takových čekáme každý měsíc.
+
+---
+
 ### Co signál znamená — a co ne
 
 Signál říká jediné: *počet hlášených případů je statisticky výrazně nad tím, co by

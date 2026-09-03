@@ -82,6 +82,10 @@
     "Žádná řada aktuálně nepřekračuje očekávanou hladinu.": "No series currently exceeds the expected level.",
     "Zobrazit všech ": "Show all ",
     "Zobrazit jen prvních ": "Show only the first ",
+    "Kolik případů bylo za daný měsíc skutečně nahlášeno": "How many cases were actually notified in the given month",
+    "Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu": "The model's endemic level — the usual count for this disease, region and time of year",
+    "Horní mez běžného kolísání (99. percentil); signál začíná nad ní": "Upper limit of ordinary fluctuation (99th percentile); a signal starts above it",
+    "Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu": "How many times the observation exceeded the expectation-to-threshold distance; 1× = exactly at the threshold",
     "k ": "as of ",
     "Data grafu se nepodařilo načíst": "Chart data could not be loaded",
     "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
@@ -746,8 +750,10 @@
       html += '<div style="overflow-x:auto"><table class="pp-table">' +
         '<caption class="visually-hidden">' + tr("Řady nad očekávanou hladinou") + '</caption>' +
         '<thead><tr><th scope="col">#</th><th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Kraj") + '</th>' +
-        '<th scope="col" class="text-end">' + tr("Případy") + '</th><th scope="col" class="text-end">' + tr("Očekáváno") + '</th>' +
-        '<th scope="col" class="text-end">' + tr("Práh") + '</th><th scope="col" class="text-end">' + tr("Síla") + '</th></tr></thead>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Případy") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu") + '">' + tr("Očekáváno") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Horní mez běžného kolísání (99. percentil); signál začíná nad ní") + '">' + tr("Práh") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu") + '">' + tr("Síla") + '</th></tr></thead>' +
         "<tbody>" + rows.join("") + "</tbody></table></div>";
 
       if (signals.length > SIGNALS_PREVIEW) {
