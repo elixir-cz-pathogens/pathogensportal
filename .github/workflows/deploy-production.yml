@@ -21,8 +21,11 @@ name: "Deploy: Production (main)"
 #    a push to `dev` deploys to production; a shared key would turn a compromised staging
 #    into access to production. Do not merge them back.
 #
-# ⚠️ PRODUCTION_PATH changes in Phase 7 (the cutover) from /var/www/pathogensportal/site/public
-#    to .../frontend/public — it must be switched AT THE SAME TIME as the vhost, or the site 404s.
+# ⚠️ PRODUCTION_PATH is `/`, and that is correct. The cutover happened 17 Aug 2026 and the
+#    rrsync jail was applied 31 Aug; rrsync prefixes a leading-slash client path with its own
+#    restricted directory, so `/` here means the jail root on the server, not the filesystem
+#    root. Changing it and the server-side forced command are ONE change, server first —
+#    between the two steps the production deploy is broken, and this workflow is live.
 
 on:
   push:
