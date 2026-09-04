@@ -34,6 +34,11 @@ enableRobotsTXT = true
     # here would be blocked by ad blockers and would defeat the point.
     script_url = "/stats/script.js"
 
+# ⛔ Menu entries use `pageRef`, never `url`. A menu entry's `url` is emitted
+# verbatim and Hugo does NOT prefix it with the language, even inside
+# [languages.en] — so the English navbar linked to the Czech /news/. Measured on a
+# real build; `main` already carries this fix and dev did not, so this also removes
+# a guaranteed conflict at the next release merge.
 [languages]
   [languages.cs]
     title = "Pathogen Portal CZ"
@@ -43,22 +48,30 @@ enableRobotsTXT = true
     contentDir = "content/cs"
     # Menu jsou per-jazyk — globální [menus] by anglické verzi podstrčilo
     # české názvy položek.
+    # PP-52 — after following a link off the landing page there was no way back
+    # to it: the portal logo links home, but nothing in the tab row did. weight 0
+    # puts it first.
+    [[languages.cs.menus.main]]
+      identifier = "home"
+      name = "Domů"
+      pageRef = "/"
+      weight = 0
     [[languages.cs.menus.main]]
       identifier = "dashboards"
       name = "Dashboardy"
-      url = "/dashboards/"
+      pageRef = "/dashboards"
       weight = 10
     [[languages.cs.menus.main]]
       identifier = "news"
       name = "Novinky"
-      url = "/news/"
+      pageRef = "/news"
       weight = 20
     # Akce jsou z menu schované, dokud sekce nemá obsah — /events/ zůstává
     # dostupné přes URL. Až bude první akce, stačí blok odkomentovat.
     # [[languages.cs.menus.main]]
     #   identifier = "events"
     #   name = "Akce"
-    #   url = "/events/"
+    #   pageRef = "/events"
     #   weight = 30
 
   [languages.en]
@@ -67,15 +80,23 @@ enableRobotsTXT = true
     label = "English"
     locale = "en-GB"
     contentDir = "content/en"
+    # PP-52 — after following a link off the landing page there was no way back
+    # to it: the portal logo links home, but nothing in the tab row did. weight 0
+    # puts it first.
+    [[languages.en.menus.main]]
+      identifier = "home"
+      name = "Home"
+      pageRef = "/"
+      weight = 0
     [[languages.en.menus.main]]
       identifier = "dashboards"
       name = "Dashboards"
-      url = "/dashboards/"
+      pageRef = "/dashboards"
       weight = 10
     [[languages.en.menus.main]]
       identifier = "news"
       name = "News"
-      url = "/news/"
+      pageRef = "/news"
       weight = 20
 
 [markup]
