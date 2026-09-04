@@ -1,0 +1,132 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Preview for AI-authored content PRs
+#
+#  WHY THIS EXISTS. A reviewer checking generated public-health prose for
+#  hallucinations has to read the RENDERED PAGE. Show them a Markdown diff across
+#  eight files and they will check syntax instead of claims — which is how a review
+#  gate turns into a rubber stamp.
+#
+#  ⛔ HOW THIS PR IS TOLD APART FROM THE OTHERS, and why it is not `paths:`.
+#  The obvious filter — "did it touch content/ or charts/?" — does NOT work here:
+#  the `dev` → `main` RELEASE PR touches exactly those paths too, because the data
+#  pipeline's commits ride inside it. A path filter would fire on every data
+#  refresh and page the reviewer for changes nobody wrote.
+#
+#  So the discriminator is the HEAD BRANCH, which is set at creation and already a
+#  governed convention here:
+#      content/…              the AI          → preview + content review  (this file)
+#      no-issue/release-data  the release run → ordinary release PR
+#      feature|bugfix|docs/…  people          → ordinary PR
+#
+#  ➕ Belt and braces: the author is checked too when CONTENT_AUTHOR is set. A
+#  branch name is a convention anyone can match by accident; an identity is not.
+# ─────────────────────────────────────────────────────────────────────────────
+name: "Preview: content PR"
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+# ⚠️ cancel-in-progress is TRUE here and deliberately FALSE in the deploy
+# workflows. The difference is what is being written: a deploy is mid-rsync into a
+# live docroot and must finish, whereas a superseded preview is simply replaced by
+# the newer one. Nothing a visitor sees is half-written by cancelling this.
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    if: >-
+      startsWith(github.head_ref, 'content/') &&
+      (vars.CONTENT_AUTHOR == '' || github.event.pull_request.user.login == vars.CONTENT_AUTHOR)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the deploy target is configured
+        run: |
+          test -n "${{ vars.STAGING_HOST }}" || { echo "::error::Missing STAGING_HOST."; exit 1; }
+          test -n "${{ vars.STAGING_SSH_HOST_KEY }}" || { echo "::error::Missing STAGING_SSH_HOST_KEY."; exit 1; }
+
+      - uses: actions/checkout@v5
+        with:
+          submodules: recursive   # the Hugo THEME is a submodule; without it the site builds bare
+
+      - name: Install Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          # ⛔ Pinned, and kept in step with the servers (Ansible role `hugo`) and
+          # the other workflows. `latest` moved to 0.164 under this project once
+          # and broke the build.
+          hugo-version: '0.164.0'
+          extended: true
+
+      # ⚠️ --baseURL is not optional. hugo.toml hardcodes the production URL, so a
+      # preview built without it emits absolute links back to the LIVE SITE — the
+      # reviewer would click through and unknowingly approve after reading
+      # production's copy of the page.
+      - name: Build the preview
+        working-directory: frontend
+        run: |
+          hugo --minify --baseURL "https://${{ vars.STAGING_HOST }}/preview/pr-${{ github.event.pull_request.number }}/"
+
+      - name: Publish it
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s %s\n' "${{ vars.STAGING_HOST }}" "${{ vars.STAGING_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
+          # ✅ No new credential: the previews directory sits inside the rrsync jail
+          #    the staging deploy key can already write to.
+          # ⛔ --delete is scoped to this PR's own directory, so it can never touch
+          #    a release or the live symlink.
+          rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
+            -e "ssh -o StrictHostKeyChecking=yes" \
+            frontend/public/ \
+            "${{ vars.DEPLOY_USER }}@${{ vars.STAGING_HOST }}:${{ vars.STAGING_PATH }}previews/pr-${{ github.event.pull_request.number }}/"
+
+      - name: Tell the reviewer where to look
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: "https://${{ vars.STAGING_HOST }}/preview/pr-${{ github.event.pull_request.number }}/"
+        run: |
+          BODY="🔍 **Náhled k revizi:** $URL
+
+          Otevři odkaz a **přečti si stránky tak, jak budou publikované** — ne diff.
+          Kontroluje se věcná správnost textu (čísla, data, tvrzení), ne formátování.
+
+          Když je to v pořádku: **Files changed → Review changes → Approve**, pak **Merge**.
+          Po mergi se to nasadí na produkci samo, zhruba do dvou minut.
+
+          ⚠️ Náhled se přepíše při každé další změně v tomto PR."
+          # One comment, updated in place — a new comment per push buries the link.
+          # ⚠️ The id MUST come from the REST endpoint. `gh pr view --json comments`
+          # returns the GraphQL node id (IC_kwDO…), and PATCHing
+          # /issues/comments/<node-id> is a 404. Cost one red run to find.
+          ID=$(gh api "repos/$GITHUB_REPOSITORY/issues/${{ github.event.pull_request.number }}/comments" \
+                 --jq '.[] | select(.body|startswith("🔍 **Náhled")) | .id' | head -1)
+          if [ -n "$ID" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$ID" -f body="$BODY" >/dev/null
+          else
+            gh pr comment ${{ github.event.pull_request.number }} --repo "$GITHUB_REPOSITORY" --body "$BODY"
+          fi
+
+      # ⚠️ Skipped, not failed, when CONTENT_REVIEWER is unset — the reviewer did
+      # not have a GitHub account when this was written, and a workflow that dies
+      # on a missing person is worse than one that says so.
+      - name: Request the content reviewer
+        if: vars.CONTENT_REVIEWER != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit ${{ github.event.pull_request.number }} --repo "$GITHUB_REPOSITORY" \
+            --add-reviewer "${{ vars.CONTENT_REVIEWER }}" \
+          || echo "::warning::Could not request ${{ vars.CONTENT_REVIEWER }} — is the account in the org with write access?"
+
+      - name: Say so when there is no reviewer configured
+        if: vars.CONTENT_REVIEWER == ''
+        run: echo "::warning::CONTENT_REVIEWER is not set, so nobody was asked to review. Set the repo variable once the reviewer has a GitHub account."
