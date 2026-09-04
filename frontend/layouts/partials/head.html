@@ -33,4 +33,29 @@
     {{ if .Params.redirect_url }}
     <meta http-equiv="refresh" content="0;url={{ .Params.redirect_url }}">
     {{ end }}
+
+    {{/* ── Visitor statistics (Umami, self-hosted) ─────────────────────────────
+         Emitted ONLY when params.analytics.website_id is set, so a site without
+         it — a local build, a PR preview, production before this is decided —
+         ships no tracker at all rather than a broken one.
+
+         Cookieless and first-party by design:
+           · no cookie, nothing stored on the reader's device, so no consent
+             banner is required for it;
+           · served from OUR domain via the Apache /stats/ proxy, because a
+             third-party analytics host is blocked by every ad blocker;
+           · the Umami dashboard itself is NOT public — it stays on 127.0.0.1 and
+             is reached by SSH tunnel.
+
+         ⛔ The `defer` and the exact attribute names are Umami's contract; the
+         script reads data-website-id off its own tag. Renaming them silently
+         collects nothing. */}}
+    {{ with .Site.Params.analytics }}
+    {{ if .website_id }}
+    <script defer
+            src="{{ .script_url | default "/stats/script.js" }}"
+            data-website-id="{{ .website_id }}"
+            {{ with .host_url }}data-host-url="{{ . }}"{{ end }}></script>
+    {{ end }}
+    {{ end }}
 </head>

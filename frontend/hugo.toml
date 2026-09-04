@@ -19,6 +19,21 @@ enableRobotsTXT = true
   # separator, so HUGO_PARAMS_API_BASE would become params.api.base.
   apibase = ""
 
+  # ── Visitor statistics ─────────────────────────────────────────────────────
+  # Self-hosted Umami. The tracker is emitted only when website_id is non-empty
+  # (see layouts/partials/head.html), so leaving it blank ships no tracker —
+  # which is the correct state for a local build and for any environment where
+  # this has not been decided.
+  #
+  # ⛔ The id is created in the Umami UI (SSH tunnel, it is not public) and is not
+  # a secret — it appears in the page source of every visitor. What IS sensitive
+  # is the Umami login, which is not here and never should be.
+  [params.analytics]
+    website_id = ""
+    # Same-origin path served by the Apache /stats/ proxy. A third-party host
+    # here would be blocked by ad blockers and would defeat the point.
+    script_url = "/stats/script.js"
+
 [languages]
   [languages.cs]
     title = "Pathogen Portal CZ"
