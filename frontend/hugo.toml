@@ -22,23 +22,57 @@ enableRobotsTXT = true
     label = "Čeština"
     locale = "cs-CZ"
     contentDir = "content/cs"
+    # ⛔ Menus are per-language AND use `pageRef`, not `url`. Both halves are
+    # needed and each was measured on a real build, because the failure is silent
+    # — the link works, it just lands on the wrong language:
+    #
+    #   global [menus] + url        → EN nav points at /news/       (Czech page)
+    #   per-language menus + url    → EN nav points at /news/       (still Czech!)
+    #   per-language menus + pageRef → EN nav points at /en/news/   ✅
+    #
+    # A menu entry's `url` is emitted verbatim; Hugo does not prefix it with the
+    # language even when the entry is declared inside [languages.en]. `pageRef`
+    # resolves against the language's own content tree, which is what we want.
+    # ⚠️ The labels below are the ones production already shows. They are English
+    # words on a Czech site, which is odd, but renaming them is a content decision
+    # (PP-39) — done here it would ship silently inside an infrastructure PR.
+    [[languages.cs.menus.main]]
+      identifier = "dashboards"
+      name = "Data Dashboards"
+      pageRef = "/dashboards"
+      weight = 10
+    [[languages.cs.menus.main]]
+      identifier = "news"
+      name = "News"
+      pageRef = "/news"
+      weight = 20
+    [[languages.cs.menus.main]]
+      identifier = "events"
+      name = "Events"
+      pageRef = "/events"
+      weight = 30
 
-[menus]
-  [[menus.main]]
-    identifier = "dashboards"
-    name = "Data Dashboards"
-    url = "/dashboards/"
-    weight = 10
-  [[menus.main]]
-    identifier = "news"
-    name = "News"
-    url = "/news/"
-    weight = 20
-  [[menus.main]]
-    identifier = "events"
-    name = "Events"
-    url = "/events/"
-    weight = 30
+  [languages.en]
+    title = "Pathogen Portal CZ"
+    weight = 2
+    label = "English"
+    locale = "en-GB"
+    contentDir = "content/en"
+    [[languages.en.menus.main]]
+      identifier = "dashboards"
+      name = "Data Dashboards"
+      pageRef = "/dashboards"
+      weight = 10
+    [[languages.en.menus.main]]
+      identifier = "news"
+      name = "News"
+      pageRef = "/news"
+      weight = 20
+    [[languages.en.menus.main]]
+      identifier = "events"
+      name = "Events"
+      pageRef = "/events"
+      weight = 30
 
 [markup]
   [markup.goldmark]
