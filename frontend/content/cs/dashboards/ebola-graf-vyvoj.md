@@ -20,13 +20,13 @@ build:
 </div>
 **Jak graf číst:** jde o vývoj hlášených potvrzených případů a úmrtí mezi potvrzenými případy v DRK, nikoli o datum vzniku infekce. INSP opakovaně upozorňuje na čištění a harmonizaci databáze DHIS2; denní změny proto mohou zahrnovat zpětné laboratorní potvrzení nebo revidované zařazení případů.
 
-**Stav k datu:** řada končí nejnovějším veřejným detailním SitRepem 109 s údaji k 31. 8. SitRep 109 byl přidán bez dopočítávání chybějících dnů. Aktuální souhrn je na stránce [Aktuální stav](/dashboards/ebola-bundibugyo-2026/).
+**Stav k datu:** řada končí nejnovějším veřejným detailním SitRepem 110 s údaji k 1. 9. SitRep 110 byl přidán bez dopočítávání chybějících dnů. Aktuální souhrn je na stránce [Aktuální stav](/dashboards/ebola-bundibugyo-2026/).
 
-**6 186 potvrzených případů**Poslední kumulativní bod: INSP/COUSP SitRep 109, údaje k 31. 8. 2026.
+**6 250 potvrzených případů**Poslední kumulativní bod: INSP/COUSP SitRep 110, údaje k 1. 9. 2026.
 
-**3 007 úmrtí mezi potvrzenými případy**Suspektní úmrtí nejsou zahrnuta.
+**3 039 úmrtí mezi potvrzenými případy**Suspektní úmrtí nejsou zahrnuta.
 
-**87 bodů kumulativní řady**Veřejně dohledané body ze SitRepů včetně SitRepů 59, 62, 64–74 a 77–109; chybějící dny nejsou dopočítané.
+**88 bodů kumulativní řady**Veřejně dohledané body ze SitRepů včetně SitRepů 59, 62, 64–74 a 77–110; chybějící dny nejsou dopočítané.
 
 ## Denní hlášení v dostupných SitRepech
 
@@ -35,7 +35,7 @@ Osa X používá kalendářní týdny ukotvené k pondělí. Sloupce případů 
 Nově hlášené potvrzené případy
 Nově hlášená úmrtí mezi potvrzenými případy
 
-SitRep N°21, N°29, N°43, N°45 a N°63 nebyly při ověření dohledány jako veřejné položky aktuální řady INSP. Chybějící dny proto nedopočítáváme. U SitRepu 46 vychází denní sloupec z hodnoty 26 nově hlášených potvrzených případů uváděné ECDC oproti předchozí veřejné aktualizaci se stavem k 28. 6.; není dopočítán jako rozdíl mezi posledními dvěma vykreslenými body. U SitRepů 47–59, 60–62, 64–68 a 72–109 jsou denní hodnoty převzaty přímo ze SitRepů. U SitRepů 53–58 a 60 nevykreslujeme denní sloupec úmrtí, protože zprávy tuto metriku neoddělují srovnatelným způsobem.
+SitRep N°21, N°29, N°43, N°45 a N°63 nebyly při ověření dohledány jako veřejné položky aktuální řady INSP. Chybějící dny proto nedopočítáváme. U SitRepu 46 vychází denní sloupec z hodnoty 26 nově hlášených potvrzených případů uváděné ECDC oproti předchozí veřejné aktualizaci se stavem k 28. 6.; není dopočítán jako rozdíl mezi posledními dvěma vykreslenými body. U SitRepů 47–59, 60–62, 64–68 a 72–110 jsou denní hodnoty převzaty přímo ze SitRepů. U SitRepů 53–58 a 60 nevykreslujeme denní sloupec úmrtí, protože zprávy tuto metriku neoddělují srovnatelným způsobem.
 
 
 ---
@@ -154,14 +154,15 @@ Kumulativní úmrtí mezi potvrzenými případy
 | 2026-08-29 | 107 | 6041 | 2911 | 96 | 49 | [insp.cd](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf) |
 | 2026-08-30 | 108 | 6100 | 2950 | 59 | 39 | [insp.cd](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf) |
 | 2026-08-31 | 109 | 6186 | 3007 | 86 | 57 | [insp.cd](https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_109_31_08_2026.pdf) |
+| 2026-09-01 | 110 | 6250 | 3039 | 64 | 32 | [insp.cd](https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_110_01_09_2026.pdf) |
 
 ## Zdroje a omezení
 
 Řada je vytvořena z oficiálních SitRepů DRK INSP/COUSP pro aktuální 17. epidemii onemocnění ebolou v DRK (v originále MVB, maladie à virus Bundibugyo). Hodnoty pro Ugandu nejsou do denní řady zařazeny, protože veřejný ugandský přehled neposkytuje stejným způsobem dohledatelnou historickou denní řadu. Dashboard se stavem k 28. červenci uvádí pro Ugandu odděleně 20 potvrzených případů, 2 úmrtí, 18 uzdravených, 0 aktuálních hospitalizací, 0 aktivně sledovaných kontaktů a 821 kontaktů s dokončeným 21denním sledováním.
 
-SitRepy 86–109 přímo uvádějí denní hodnoty. SitRep 89 hlásí 118 případů, zatímco kumulativní součet roste o 117 kvůli průběžné harmonizaci; SitRep 93 hlásí 101 případů, ale kumulativní součet roste o 102 kvůli dříve opomenutému případu. SitRepy 107–109 přímo hlásí 96/49, 59/39 a 86/57 případů/úmrtí; u úmrtí jde o součet komunitních úmrtí a potvrzených úmrtí v léčebných centrech. Počet zasažených zón zůstává 60. Denní sloupce přebírají přímo hlášené hodnoty, nikoli rozdíly kumulativních součtů. Starší zdrojová omezení a rozpory jsou podrobně popsány v přiloženém souboru README.
+SitRepy 86–110 přímo uvádějí denní hodnoty. SitRep 89 hlásí 118 případů, zatímco kumulativní součet roste o 117 kvůli průběžné harmonizaci; SitRep 93 hlásí 101 případů, ale kumulativní součet roste o 102 kvůli dříve opomenutému případu. SitRepy 107–110 přímo hlásí 96/49, 59/39, 86/57 a 64/32 případů/úmrtí; u úmrtí jde o součet komunitních úmrtí a potvrzených úmrtí v léčebných centrech. Počet zasažených zón zůstává 60. Denní sloupce přebírají přímo hlášené hodnoty, nikoli rozdíly kumulativních součtů. Starší zdrojová omezení a rozpory jsou podrobně popsány v přiloženém souboru README.
 
-Kontrolní zdroje: [DRK INSP/COUSP SitRep 109](https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_109_31_08_2026.pdf), [SitRep 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf), [SitRep 107](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf), [ECDC stránka k ohnisku](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda), [Uganda Ministry of Health dashboard](https://evd-daily.health.go.ug/) a [WHO denní epidemiologická aktualizace 20260902](https://www.who.int/emergencies/alert-and-response). Jednotlivé SitRep odkazy jsou uvedeny v tabulce.
+Kontrolní zdroje: [DRK INSP/COUSP SitRep 110](https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_110_01_09_2026.pdf), [SitRep 109](https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_109_31_08_2026.pdf), [SitRep 108](https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf), [ECDC stránka k ohnisku](https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda), [Uganda Ministry of Health dashboard](https://evd-daily.health.go.ug/) a [WHO denní epidemiologická aktualizace 20260903](https://www.who.int/emergencies/alert-and-response). Jednotlivé SitRep odkazy jsou uvedeny v tabulce.
 
 FAIR · datová vrstva
 
@@ -170,10 +171,10 @@ FAIR · datová vrstva
 Tabulka použitá v grafu je dostupná také jako samostatný soubor. Každý řádek obsahuje stav k datu, číslo SitRepu a odkaz na zdroj; chybějící hodnoty se nedopočítávají.
 
 Stav k datu
-:   31. 8. 2026
+:   1. 9. 2026
 
 Kurace
-:   87 dohledatelných bodů · revize 3. 9. 2026
+:   88 dohledatelných bodů · revize 4. 9. 2026
 
 Formát
 :   CSV v UTF-8 + JSON Schema
@@ -186,4 +187,4 @@ Licence
 [Metadata datové řady](https://titan.img.cas.cz/ebola/metadata/graf-vyvoj.dataset.jsonld)
 [Původ dat a omezení](https://titan.img.cas.cz/ebola/data/README.md)
 
-CSV obsahuje stejnou řadu jako graf; automatická kontrola porovnává všech 87 řádků s daty vloženými do stránky. Licence se vztahuje na původní kuraci, nikoli na odkazované zdrojové dokumenty.
+CSV obsahuje stejnou řadu jako graf; automatická kontrola porovnává všech 88 řádků s daty vloženými do stránky. Licence se vztahuje na původní kuraci, nikoli na odkazované zdrojové dokumenty.
