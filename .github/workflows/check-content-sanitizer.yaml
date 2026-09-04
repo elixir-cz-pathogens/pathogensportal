@@ -1,0 +1,141 @@
+name: "CHECK: Content Sanitizer"
+
+# Fails a PR that puts executable or navigational markup into `frontend/content/`.
+#
+# WHY THIS EXISTS
+# ---------------
+# `hugo.toml` sets `allowContent = ['^text/markdown$', '^text/html$']`, so HTML in
+# `content/` is rendered verbatim. That permission was granted on the explicit
+# reasoning that `tools/ingest_report.py` sanitizes every delivery against an
+# allowlist before it is written. Since 3 Sep 2026 the AI content flow writes
+# `content/` DIRECTLY and the ingest is not in the path — so the permission stayed
+# and its justification went away. This check is that justification, moved into CI.
+#
+# It matters because the pages are machine-authored FROM EXTERNAL SOURCES (WHO,
+# ECDC, national health agencies, news). That is a prompt-injection surface: an
+# instruction embedded in a scraped page can make a well-behaved generator emit a
+# <script> without intending to. An allowlist does not care what the generator
+# intended.
+#
+# It is also not something review covers. `ingest_report.py`'s own docstring says
+# the human review targets subject-matter accuracy and "would easily miss a
+# <script> appearing somewhere" — across 8 files and ~50 KB of diff, it would.
+#
+# SCOPE — the whole content tree, not just the PR's changed files. A full scan is
+# cheap (60 files / ~730 KB today) and cannot be walked past with an odd diff.
+#
+# GREEN ON DAY ONE. Both stages were measured against the content tree as merged
+# by PR #49 — the first real AI delivery — before this workflow was added, and the
+# greps were positive-controlled against planted samples so they are known to be
+# able to fail. A check that is red on arrival teaches its audience to ignore it,
+# and a check that can only pass is not a check.
+#
+# ⚠️ The job name is flat and calls no reusable workflow, so the status reported to
+# branch protection is exactly `content-sanitizer`. A required check whose name did
+# not match what was reported blocked every PR into `main` for 8 days in Aug 2026
+# (`backend-tests` vs `backend-tests / pytest`) — do not turn this into a caller job.
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: content-sanitizer-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  content-sanitizer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        # No submodules: this reads `frontend/content/` only. The theme is not scanned
+        # — it is ours, it is reviewed, and it legitimately contains <script>.
+
+      - name: Scan frontend/content for foreign markup
+        run: |
+          set -uo pipefail
+          TARGET="frontend/content"
+
+          if [ ! -d "$TARGET" ]; then
+            echo "🚨 $TARGET does not exist — the scan would silently pass over nothing."
+            exit 1
+          fi
+
+          # Guard against the "check that can only pass" failure mode: if the file
+          # list is empty, something moved and this job must not report success.
+          count=$(find "$TARGET" -type f \( -name '*.md' -o -name '*.html' \) | wc -l)
+          if [ "$count" -eq 0 ]; then
+            echo "🚨 No .md/.html files found under $TARGET — refusing to pass vacuously."
+            exit 1
+          fi
+          echo "ℹ️  Scanning $count content files under $TARGET"
+
+          # ── Stage 1: <link>, which has exactly one legitimate form ──────────
+          #
+          # The AI-authored report pages open with the report stylesheet:
+          #
+          #     <link rel="stylesheet" href="../../css/reports.css">     (cs/…)
+          #     <link rel="stylesheet" href="../../../css/reports.css">  (en/…)
+          #
+          # A stylesheet in the body is a hack — it is there because the theme
+          # does not load reports.css itself. Allowing it is therefore a bounded
+          # exception, not an endorsement: the shape is pinned to a RELATIVE path
+          # ending in css/reports.css, so it can only ever reach our own
+          # frontend/static/css/. An absolute or off-site href, a different file,
+          # or any other rel= is a different thing and fails here.
+          #
+          # ⛔ Do not relax this into a bare `<link`. `rel="import"`,
+          # `rel="prefetch"` and a remote stylesheet are all real attacks, and a
+          # remote stylesheet leaks every reader's IP to whoever serves it.
+          # ⏳ The exception disappears the day the theme loads reports.css.
+          LINK_OK='^[^:]+:[0-9]+:[[:space:]]*<link rel="stylesheet" href="(\.\./)+css/reports\.css">[[:space:]]*$'
+
+          bad_links=$(grep -rEn --include='*.md' --include='*.html' '<link' "$TARGET" \
+                      | grep -Ev "$LINK_OK" || true)
+
+          if [ -n "$bad_links" ]; then
+            echo ""
+            echo "🚨 A <link> tag that is not the report stylesheet:"
+            echo ""
+            echo "$bad_links"
+            echo ""
+            echo "   The only <link> permitted in content is exactly:"
+            echo '     <link rel="stylesheet" href="../../css/reports.css">'
+            echo "   (with as many ../ as the page is deep). Page metadata belongs"
+            echo "   in YAML front matter, never in a tag in the body."
+            exit 1
+          fi
+
+          # ── Stage 2: everything that has no legitimate form at all ──────────
+          #
+          # Mirrors DROP_WITH_CONTENT, ALLOWED_ATTRS and SAFE_URL in
+          # tools/ingest_report.py. Keep the two in step — if a tag is added there,
+          # add it here.
+          #
+          #   executable      script / style / noscript / iframe / object / embed / form
+          #   event handlers  onclick=, onerror=, onload=, …
+          #   active URLs     javascript:, data:text/html, data:application/
+          #   navigational    meta (http-equiv refresh), base
+          #   svg             not in the ingest allowlist; can carry <script>
+          PATTERN='<(script|style|noscript|iframe|object|embed|form|meta|base|svg)\b|[[:space:]]on[a-z]+[[:space:]]*=|javascript:|data:text/html|data:application/'
+
+          hits=$(grep -rEnoi --include='*.md' --include='*.html' "$PATTERN" "$TARGET" || true)
+
+          if [ -n "$hits" ]; then
+            echo ""
+            echo "🚨 Foreign markup found in content — this must never reach the site:"
+            echo ""
+            echo "$hits"
+            echo ""
+            echo "❗ frontend/content/ is rendered verbatim (hugo.toml: allowContent"
+            echo "   permits text/html). Executable markup here runs on the public site."
+            echo ""
+            echo "   Charts belong in a shortcode reading /data/charts/*.json — never"
+            echo "   inline JS. Page metadata belongs in YAML front matter — never in"
+            echo "   a <meta> tag in the body."
+            echo ""
+            echo "   If a tag genuinely needs allowing, change it HERE and in"
+            echo "   tools/ingest_report.py together, in the same PR, with a reason."
+            exit 1
+          fi
+
+          echo "✅ No foreign markup in $count content files."

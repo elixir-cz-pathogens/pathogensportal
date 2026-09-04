@@ -48,13 +48,20 @@ enableRobotsTXT = true
 # ── Security policy ──────────────────────────────────────────────────────────
 # Hugo >= 0.164 blocks `text/html` content files by default
 # (`security.allowContent` defaults to ['! ^text/html$']). We deliberately need
-# them: tools/ingest_report.py writes generated situational-report pages as .html
-# into content/cs/dashboards/, because the report comes from an external
-# generator as finished HTML.
+# them: the Ebola situational-report pages arrive from an external generator as
+# finished HTML and are committed straight into content/{cs,en}/dashboards/.
 #
-# This is safe *because* the ingest sanitizes every delivery against an explicit
-# tag/attribute allowlist before it is written — see ALLOWED_TAGS / ALLOWED_ATTRS
-# in tools/ingest_report.py. Foreign <script>/<style>/<iframe> never reach here.
+# ⚠️ WHERE THE SAFETY COMES FROM CHANGED ON 4 SEP 2026. This block used to say
+# the permission was safe because tools/ingest_report.py sanitized every delivery
+# against an allowlist before writing it. That was true while the ingest was in
+# the path; since the AI content flow opens a PR directly (first one merged as
+# #49, 4 Sep) the ingest is NOT in the path, and the permission was left standing
+# on a justification that no longer applied.
+#
+# The allowlist now runs in CI instead — .github/workflows/check-content-sanitizer.yaml
+# scans the whole content tree on every PR into main and is a required check.
+# It is deliberately a mirror of ALLOWED_TAGS / ALLOWED_ATTRS in ingest_report.py:
+# if a tag is added to one, add it to the other in the same PR.
 #
 # The list is narrow on purpose: adding another content format means adding it
 # here too, which is the point — it should be a deliberate act, not a default.
