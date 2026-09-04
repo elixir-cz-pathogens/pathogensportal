@@ -7,6 +7,7 @@ on:
 
 env:
   IGNORE_PREFIX: ${{ vars.IGNORE_PREFIX }}
+  PROJECT_PREFIX: ${{ vars.PROJECT_PREFIX }}
 
 permissions:
   issues: write
@@ -28,9 +29,17 @@ jobs:
               console.log(`Skipping '${pr.head.ref}' (${ignore_prefix}).`);
               return;
             }
-            const match = pr.title.match(/(\w+-\d+)/);
+            // ⚠️ The issue number is matched against PROJECT_PREFIX, not `\w+`. It used to be
+            // `/(\w+-\d+)/`, which has no anchor and no prefix constraint — so ANY word-digit
+            // pair in a PR title looked like an issue reference. PR #49
+            // ("content: Ebola dashboard update for 2026-09-04") matched `2026-09` and the
+            // automation posted onto issue #9, a live and unrelated backend ticket.
+            // Content PRs are titled "... for YYYY-MM-DD" BY CONVENTION, so this fired on every
+            // one of them, twice (on open and again on merge).
+            const project_prefix = process.env.PROJECT_PREFIX;
+            const match = pr.title.match(new RegExp(`\\b${project_prefix}-(\\d+)\\b`));
             if (match) {
-              const issueNumber = match[1].split('-')[1];
+              const issueNumber = match[1];
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
