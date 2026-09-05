@@ -87,7 +87,10 @@
     {{ range first 10 $list }}
       {{/* Diagnóza jen s celostátním signálem má v krajích nulu. Vypsat u ní
            „0,0×" by tvrdilo, že signál je nulový; ona ho má, jen ne v kraji. */}}
-      {{ $strength := cond (gt .regions 0) (printf "%s×" (lang.FormatNumber 1 .max)) "—" }}
+      {{/* „—" i tehdy, když kraje signál mají, ale žádný z nich nemá spočtenou
+           sílu (typ "rare" nese score=null). Jinak by se vypsalo „0,0×", což
+           tvrdí nulovou sílu místo „sílu tu model nepočítá". */}}
+      {{ $strength := cond (gt .max 0.0) (printf "%s×" (lang.FormatNumber 1 .max)) "—" }}
       {{/* ⛔ Bez odznaku „ČR". Měl znamenat „má i celostátní signál", ale četl se
            jako „česká data" — což jsou všechna, takže to nic nerozlišovalo. Když
            se štítek dá číst špatně, je špatný bez ohledu na to, jak byl myšlený.

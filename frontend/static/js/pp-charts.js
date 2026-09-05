@@ -70,7 +70,12 @@
     "Celkem testů": "Total tests",
     "Smrtnost (CFR)": "Case fatality (CFR)",
     "Diagnóza": "Diagnosis", "Kraj": "Region",
-    "Očekáváno": "Expected", "Práh": "Threshold", "Síla": "Strength",
+    /* ⛔ Názvy sloupců jsou schválně lidské, ne statistické. „Očekáváno" a „Práh"
+       jsou správné termíny, ale čtenář z nich nepozná, co znamenají — a stránku
+       čte epidemiolog i novinář. Definice zůstávají v title a na stránce Signály. */
+    "Nahlášeno": "Reported", "Obvykle bývá": "Usually", "Ještě v normě do": "Still normal up to",
+    "Překročeno": "Exceeded by", "překročeno": "exceeded by",
+    "nahlášeno": "reported", "obvykle bývá": "usually", "ještě v normě do": "still normal up to",
     "vzácná nemoc": "rare disease",
     "mimo dosavadní výskyt": "outside prior occurrence",
     "Řady nad očekávanou hladinou": "Series above the expected level",
@@ -114,6 +119,18 @@
     if (value === null || value === undefined || value === "") return "—";
     if (typeof value !== "number") return String(value);
     return Number.isInteger(value) ? nf.format(value) : nf1.format(value);
+  }
+
+  /* Očekávaná hladina a práh se uvádějí v CELÝCH číslech — jsou to počty případů,
+     a desetinné místo u nich předstírá přesnost, kterou model nemá.
+     ⚠️ 20 ze 71 signálů má očekáváno pod 1 a část přesně 0. „Očekáváno 0" je
+     u nich SPRÁVNĚ: model nečeká prakticky nic a pozorovalo se sedm. Práh pod 1
+     neklesá nikdy, takže se nezaokrouhlí na nulu.
+     ⛔ Neplatí pro sílu (score) — tam je 18,9× vs 19× rozdíl, který nese význam. */
+  function fmtInt(value) {
+    if (value === null || value === undefined || value === "") return "—";
+    if (typeof value !== "number") return String(value);
+    return nf.format(Math.round(value));
   }
 
   /* ---------------- Design tokeny ---------------- */
@@ -741,8 +758,8 @@
           "<td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza || "?") + "</td>" +
           "<td>" + escapeHtml(s.kraj_nazev || s.kraj_kod || "?") + "</td>" +
           '<td class="text-end"><strong>' + fmt(s.observed) + "</strong></td>" +
-          '<td class="text-end">' + fmt(s.expected) + "</td>" +
-          '<td class="text-end">' + fmt(s.threshold) + "</td>" +
+          '<td class="text-end">' + fmtInt(s.expected) + "</td>" +
+          '<td class="text-end">' + fmtInt(s.threshold) + "</td>" +
           '<td class="text-end">' + typeBadge(s) + "</td>" +
           "</tr>";
       });
@@ -750,10 +767,10 @@
       html += '<div style="overflow-x:auto"><table class="pp-table">' +
         '<caption class="visually-hidden">' + tr("Řady nad očekávanou hladinou") + '</caption>' +
         '<thead><tr><th scope="col">#</th><th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Kraj") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Případy") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu") + '">' + tr("Očekáváno") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Horní mez běžného kolísání (99. percentil); signál začíná nad ní") + '">' + tr("Práh") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu") + '">' + tr("Síla") + '</th></tr></thead>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Nahlášeno") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce") + '">' + tr("Obvykle bývá") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál") + '">' + tr("Ještě v normě do") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolikrát dál za hranicí normy, než jak daleko je hranice od běžného stavu; 1× = přesně na hranici") + '">' + tr("Překročeno") + '</th></tr></thead>' +
         "<tbody>" + rows.join("") + "</tbody></table></div>";
 
       if (signals.length > SIGNALS_PREVIEW) {
@@ -892,7 +909,12 @@
           clearMap();
 
           var codes = Object.keys(g.regions);
-          var scores = codes.map(function (c) { return g.regions[c].score; });
+          /* ⚠️ `score` je null u signálů typu "rare" — u vzácných nemocí model sílu
+             nepočítá a stránka Signály to popisuje jako samostatný štítek. Bez
+             filtru by Math.min/max vrátily NaN a mixHex by dostal NaN poměr, takže
+             by se diagnóza složená jen z takových signálů vykreslila bez barev. */
+          var scores = codes.map(function (c) { return g.regions[c].score; })
+            .filter(function (v) { return typeof v === "number"; });
           var min = scores.length ? Math.min.apply(null, scores) : 0;
           var max = scores.length ? Math.max.apply(null, scores) : 0;
 
@@ -913,25 +935,26 @@
             var path = regionPaths[rc];
             if (!path) return;
             var sig = g.regions[rc];
-            var ratio = max === min ? 1 : (sig.score - min) / (max - min);
+            var sc = typeof sig.score === "number" ? sig.score : min;
+            var ratio = max === min ? 1 : (sc - min) / (max - min);
             path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
             var label = svg.querySelector('[data-region-label="' + rc + '"]');
             if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
             path.classList.add("is-clickable");
             path.setAttribute("tabindex", "0");
             path.setAttribute("aria-label",
-              sig.kraj_nazev + ": " + fmt(sig.observed) + " " + tr("případů") +
-              ", " + tr("očekáváno") + " " + fmt(sig.expected) +
-              ", " + tr("práh") + " " + fmt(sig.threshold));
+              sig.kraj_nazev + ": " + tr("nahlášeno") + " " + fmt(sig.observed) +
+              ", " + tr("obvykle bývá") + " " + fmtInt(sig.expected) +
+              ", " + tr("ještě v normě do") + " " + fmtInt(sig.threshold));
 
             function show(event) {
               tooltip.style.display = "block";
               tooltip.innerHTML =
                 "<strong>" + escapeHtml(sig.kraj_nazev) + "</strong><br>" +
-                tr("případů") + ": " + fmt(sig.observed) + "<br>" +
-                tr("očekáváno") + ": " + fmt(sig.expected) + "<br>" +
-                tr("práh") + ": " + fmt(sig.threshold) + "<br>" +
-                tr("síla") + ": " + fmt(sig.score) + "×";
+                tr("nahlášeno") + ": " + fmt(sig.observed) + "<br>" +
+                tr("obvykle bývá") + ": " + fmtInt(sig.expected) + "<br>" +
+                tr("ještě v normě do") + ": " + fmtInt(sig.threshold) + "<br>" +
+                tr("překročeno") + " " + fmt(sig.score) + "×";
               /* ⛔ Vůči .pp-map, ne vůči <figure>. Tooltip je uvnitř .pp-map, což je
                  jeho position:relative rodič — počítat souřadnice vůči kartě a
                  aplikovat je vůči mapě posune tooltip o šířku levého sloupce, tedy
@@ -955,10 +978,10 @@
           if (g.national) {
             natEl.hidden = false;
             natEl.innerHTML = "<strong>" + tr("Celostátně") + ":</strong> " +
-              fmt(g.national.observed) + " " + tr("případů") + ", " +
-              tr("očekáváno") + " " + fmt(g.national.expected) + ", " +
-              tr("práh") + " " + fmt(g.national.threshold) +
-              " (" + fmt(g.national.score) + "×)";
+              tr("nahlášeno") + " " + fmt(g.national.observed) + ", " +
+              tr("obvykle bývá") + " " + fmtInt(g.national.expected) + ", " +
+              tr("ještě v normě do") + " " + fmtInt(g.national.threshold) +
+              " — " + tr("překročeno") + " " + fmt(g.national.score) + "×";
           } else {
             natEl.hidden = true;
           }
