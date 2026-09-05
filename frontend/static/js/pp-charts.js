@@ -820,7 +820,8 @@
     var legend  = root.querySelector("[data-pp-signalmap-legend]");
     var natEl   = root.querySelector("[data-pp-signalmap-national]");
     var tooltip = root.querySelector(".pp-tooltip");
-    if (!svg || !tbody) return;
+    var mapBox  = root.querySelector(".pp-map");
+    if (!svg || !tbody || !mapBox) return;
 
     loadChartData(root.dataset.src)
       .then(function (result) {
@@ -865,15 +866,27 @@
           });
         }
 
-        function select(code) {
+        function select(code, animate) {
           var g = groups[code];
           if (!g) return;
 
-          tbody.querySelectorAll("[data-dg]").forEach(function (tr) {
-            var on = tr.getAttribute("data-dg") === code;
-            tr.classList.toggle("is-selected", on);
-            tr.setAttribute("aria-selected", on ? "true" : "false");
+          tbody.querySelectorAll("[data-dg]").forEach(function (row) {
+            var on = row.getAttribute("data-dg") === code;
+            row.classList.toggle("is-selected", on);
+            row.setAttribute("aria-selected", on ? "true" : "false");
+            if (on && animate) {
+              /* Restart animace: bez odebrání a vynuceného reflow se při druhém
+                 kliknutí na týž řádek nespustí znovu. */
+              row.classList.remove("is-flash");
+              void row.offsetWidth;
+              row.classList.add("is-flash");
+            }
           });
+          if (animate) {
+            svg.classList.remove("is-switching");
+            void svg.offsetWidth;
+            svg.classList.add("is-switching");
+          }
 
           titleEl.textContent = g.name;
           clearMap();
@@ -919,11 +932,18 @@
                 tr("očekáváno") + ": " + fmt(sig.expected) + "<br>" +
                 tr("práh") + ": " + fmt(sig.threshold) + "<br>" +
                 tr("síla") + ": " + fmt(sig.score) + "×";
-              var rect = root.getBoundingClientRect();
+              /* ⛔ Vůči .pp-map, ne vůči <figure>. Tooltip je uvnitř .pp-map, což je
+                 jeho position:relative rodič — počítat souřadnice vůči kartě a
+                 aplikovat je vůči mapě posune tooltip o šířku levého sloupce, tedy
+                 mimo viditelnou část. Proto se při najetí nic neobjevovalo. */
+              var rect = mapBox.getBoundingClientRect();
               var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
               var y = event.clientY !== undefined ? event.clientY : rect.top;
-              tooltip.style.left = (x - rect.left + 12) + "px";
-              tooltip.style.top = (y - rect.top - 70) + "px";
+              var left = x - rect.left + 14;
+              /* Ať nevyleze z mapy vpravo. */
+              if (left + 170 > rect.width) left = Math.max(4, x - rect.left - 180);
+              tooltip.style.left = left + "px";
+              tooltip.style.top = Math.max(4, y - rect.top - 78) + "px";
             }
             path.addEventListener("mouseenter", show);
             path.addEventListener("mousemove", show);
@@ -947,14 +967,13 @@
         tbody.querySelectorAll("[data-dg]").forEach(function (row) {
           row.setAttribute("tabindex", "0");
           row.setAttribute("role", "button");
-          row.addEventListener("click", function () { select(row.getAttribute("data-dg")); });
+          row.addEventListener("click", function () { select(row.getAttribute("data-dg"), true); });
           row.addEventListener("keydown", function (e) {
-            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(row.getAttribute("data-dg")); }
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(row.getAttribute("data-dg"), true); }
           });
         });
 
         select(order[0]);
-        setOrigin(root, result.origin);
       })
       .catch(function () {
         var host = root.querySelector("[data-pp-signalmap-title]");

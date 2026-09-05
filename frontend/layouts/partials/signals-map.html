@@ -40,10 +40,6 @@
           <tbody data-pp-signalmap-rows>{{ $rows | safeHTML }}</tbody>
         </table>
       </div>
-      <p class="pp-note pp-signalmap__hint">
-        {{ if $en }}Pick a diagnosis to map it. The strongest signal is selected by default.
-        {{ else }}Vyberte diagnózu a zobrazí se na mapě. Ve výchozím stavu je vybraný nejsilnější signál.{{ end }}
-      </p>
     </div>
 
     {{/* ── Mapa vybrané diagnózy ──────────────────────────────────────── */}}
@@ -63,7 +59,4 @@
     </div>
   </div>
 
-  <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>{{ cond $en "loading data…" "načítám data…" }}</span>
-  </div>
 </figure>

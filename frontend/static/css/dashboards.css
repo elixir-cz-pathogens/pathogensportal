@@ -720,13 +720,47 @@
 
 /* Přepínací varianta: tabulka vlevo, mapa jedné diagnózy vpravo. */
 .pp-signalmap__listcol .pp-signalmap__tablewrap { max-height: 22rem; overflow-y: auto; }
-.pp-signalmap__table tbody tr[data-dg] { cursor: pointer; }
-.pp-signalmap__table tbody tr[data-dg]:hover { background: var(--pp-surface); }
+/* Výběr diagnózy: řádek je ovládací prvek, tak se tak musí chovat. */
+.pp-signalmap__table tbody tr[data-dg] {
+  cursor: pointer;
+  transition: background-color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+.pp-signalmap__table tbody tr[data-dg] td { transition: padding-left .15s ease; }
+.pp-signalmap__table tbody tr[data-dg]:hover {
+  background: var(--pp-surface);
+  box-shadow: inset 3px 0 0 var(--pp-border);
+}
+.pp-signalmap__table tbody tr[data-dg]:hover td:first-child { padding-left: .85rem; }
+.pp-signalmap__table tbody tr[data-dg]:active { transform: scale(.995); }
+
+/* Vybraný řádek — musí být poznat na první pohled, ne po hledání. */
 .pp-signalmap__table tbody tr[data-dg].is-selected {
   background: var(--pp-seq-low);
-  box-shadow: inset 3px 0 0 var(--pp-seq-high);
+  box-shadow: inset 4px 0 0 var(--pp-seq-high);
+  font-weight: 600;
 }
-.pp-signalmap__table tbody tr[data-dg]:focus-visible { outline: 2px solid var(--pp-seq-high); outline-offset: -2px; }
+.pp-signalmap__table tbody tr[data-dg].is-selected td:first-child { padding-left: .85rem; }
+.pp-signalmap__table tbody tr[data-dg]:focus-visible {
+  outline: 2px solid var(--pp-seq-high); outline-offset: -2px;
+}
+
+/* Krátké bliknutí po přepnutí — potvrdí, že klik něco udělal, i když se změní
+   část stránky, na kterou se uživatel zrovna nedívá (mapa vpravo). */
+@keyframes pp-signal-flash {
+  from { background-color: var(--pp-seq-high); }
+  to   { background-color: var(--pp-seq-low); }
+}
+.pp-signalmap__table tbody tr[data-dg].is-flash { animation: pp-signal-flash .45s ease-out; }
+
+@keyframes pp-map-in { from { opacity: .35; } to { opacity: 1; } }
+.pp-signalmap .pp-map svg.is-switching { animation: pp-map-in .3s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pp-signalmap__table tbody tr[data-dg],
+  .pp-signalmap__table tbody tr[data-dg] td { transition: none; }
+  .pp-signalmap__table tbody tr[data-dg].is-flash,
+  .pp-signalmap .pp-map svg.is-switching { animation: none; }
+}
 .pp-signalmap__selected { font-weight: 600; margin: 0 0 .4rem; min-height: 1.4em; }
 .pp-signalmap__empty {
   margin: .5rem 0 0; padding: .5rem .75rem; font-size: .85rem;
