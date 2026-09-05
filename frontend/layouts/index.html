@@ -88,11 +88,15 @@
       {{/* Diagnóza jen s celostátním signálem má v krajích nulu. Vypsat u ní
            „0,0×" by tvrdilo, že signál je nulový; ona ho má, jen ne v kraji. */}}
       {{ $strength := cond (gt .regions 0) (printf "%s×" (lang.FormatNumber 1 .max)) "—" }}
-      {{ $badge := cond .nat (printf ` <span class="pp-signalmap__natflag" title="%s">%s</span>`
-            (cond $en "also a nationwide signal" "má i celostátní signál")
-            (cond $en "ČR" "ČR")) "" }}
-      {{ $rows = printf `%s<tr data-dg="%s"><td>%s%s</td><td class="num">%d</td><td class="num"><strong>%s</strong></td></tr>`
-          $rows .code .name $badge .regions $strength }}
+      {{/* ⛔ Bez odznaku „ČR". Měl znamenat „má i celostátní signál", ale četl se
+           jako „česká data" — což jsou všechna, takže to nic nerozlišovalo. Když
+           se štítek dá číst špatně, je špatný bez ohledu na to, jak byl myšlený.
+           Nic se tím neztratí: diagnózu bez krajského signálu prozradí nula ve
+           sloupci krajů, a celostátní čísla se ukážou pod mapou po výběru. */}}
+      {{ $rows = printf `%s<tr data-dg="%s"><td>%s</td><td class="num" title="%s">%d</td><td class="num" title="%s"><strong>%s</strong></td></tr>`
+          $rows .code .name
+          (cond $en "regions with a signal" "krajů se signálem") .regions
+          (cond $en "highest strength across regions" "nejvyšší síla napříč kraji") $strength }}
     {{ end }}
 
     {{ partial "signals-map.html" (dict "ctx" $ "rows" $rows) }}

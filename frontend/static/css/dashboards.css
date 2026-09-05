@@ -772,11 +772,6 @@
   border-top: 1px solid var(--pp-border); padding-top: .5rem;
 }
 .pp-map .pp-tooltip { line-height: 1.35; }
-.pp-signalmap__natflag {
-  display: inline-block; margin-left: .35rem; padding: 0 .35em;
-  border: 1px solid var(--pp-border); border-radius: 4px;
-  font-size: .68rem; color: var(--pp-text-muted); vertical-align: middle;
-}
 
 /* ⛔ Obrysy krajů na mapě signálů.
    Obecné `.pp-map path` má `stroke: var(--pp-surface-raised)`, tedy BÍLOU — na

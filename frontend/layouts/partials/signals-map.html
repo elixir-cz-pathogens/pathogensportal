@@ -30,11 +30,14 @@
     <div class="pp-signalmap__listcol">
       <div class="pp-signalmap__tablewrap">
         <table class="pp-table pp-signalmap__table" data-no-datatable>
-          <thead>
+          {{/* ⚠️ Vizuálně schovaná, ne odstraněná. Je to prostý výčet, hlavička
+               nad deseti řádky jen zabírá místo — ale čtečka obrazovky bez ní
+               čte holá čísla bez významu. `visually-hidden` je Bootstrap 5. */}}
+          <thead class="visually-hidden">
             <tr>
               <th scope="col">{{ cond $en "Diagnosis" "Diagnóza" }}</th>
-              <th scope="col" class="num">{{ cond $en "Regions" "Krajů" }}</th>
-              <th scope="col" class="num">{{ cond $en "Max strength" "Nejvyšší síla" }}</th>
+              <th scope="col">{{ cond $en "Regions with a signal" "Krajů se signálem" }}</th>
+              <th scope="col">{{ cond $en "Highest strength" "Nejvyšší síla" }}</th>
             </tr>
           </thead>
           <tbody data-pp-signalmap-rows>{{ $rows | safeHTML }}</tbody>
