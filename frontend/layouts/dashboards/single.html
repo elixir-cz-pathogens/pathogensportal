@@ -14,8 +14,12 @@
 
 <div class="pp-viz">
   <header class="pp-dash-header">
-    {{/* The breadcrumb is rendered by the theme above the content — do not duplicate it. */}}
-    <h1>{{ .Title }}</h1>
+    {{/* The breadcrumb is rendered by the theme above the content — do not duplicate it.
+
+         ⚠️ No <h1> here either: the banner in partials/header.html already renders
+         .Title as the page's h1, so this one printed every dashboard's name twice —
+         once in the green header band, once immediately below it. Same bug the
+         home page had. */}}
     {{ with .Description }}<p class="pp-dash-lead">{{ . }}</p>{{ end }}
 
     <div class="pp-meta">

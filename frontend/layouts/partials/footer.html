@@ -66,18 +66,10 @@
       </div>
     </div>
 
-    <!-- Partneři (PP-43) -->
-    <div class="col-md px-5 px-md-2 d-flex align-items-center justify-content-center justify-content-md-end gap-3">
-      <a href="https://elixir-europe.org" target="_blank" rel="noopener" aria-label="ELIXIR Europe">
-        <img src="/images/elixir_logo.png" alt="ELIXIR" style="height:56px; width:auto;">
-      </a>
-      <a href="https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav" target="_blank" rel="noopener"
-         aria-label="Vojenský zdravotní ústav">
-        <img src="/images/VZU.png" alt="Vojenský zdravotní ústav" style="height:56px; width:auto;">
-      </a>
-    </div>
-
   </div>
+
+  {{/* Všichni partneři a sponzoři, na každé stránce webu. */}}
+  {{ partial "partners.html" . }}
 
   <div class="d-flex justify-content-center small mt-2">
     <small>Web běží na generátoru <a href="https://gohugo.io" target="_blank">Hugo</a> s motivem <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> od <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. Referenční implementace národního Pathogens Portal uzlu je <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">zde</a>.</small>

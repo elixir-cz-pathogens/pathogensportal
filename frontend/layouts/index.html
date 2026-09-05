@@ -16,8 +16,9 @@
 <div class="pp-viz">
 
   {{/* ── 1. Co portál je ───────────────────────────────────────────────── */}}
+  {{/* ⚠️ Bez nadpisu se jménem portálu — ten je hned nad tímhle v banneru
+       (partials/header.html) a objevoval se tak na titulce dvakrát. */}}
   <section class="pp-home-intro mb-4">
-    <h1 class="mt-0">{{ .Site.Title }}</h1>
     {{ with .Content }}<div class="pp-home-lead">{{ . }}</div>{{ end }}
   </section>
 

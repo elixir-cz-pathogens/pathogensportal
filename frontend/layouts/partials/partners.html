@@ -1,0 +1,37 @@
+{{/* Loga spolupracovníků a sponzorů — na KAŽDÉ stránce webu.
+
+     Vykresluje se z patičky, takže platí pro celý web včetně dashboardů, tagů
+     a chybové stránky. Hlavička nese jen čtyři nejbližší, aby se nerozsypala;
+     úplný výčet je tady.
+
+     ⛔ Jediný zdroj pravdy o tom, kdo jsou partneři, je stránka
+     content/<jazyk>/about/affiliations.md. Jména, odkazy i loga níž jsou převzaté
+     odtamtud — když se změní tam, musí se změnit i tady. Rozejít se ty dva
+     seznamy nesmí: partner uvedený jen na jednom místě vypadá jako chyba
+     v tom druhém.
+
+     Program švýcarsko-české spolupráce má oficiálně CZ a EN variantu loga.
+*/}}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $partners := slice
+  (dict "img" "/images/IMG.png"          "url" "https://www.img.cas.cz"   "name" "Ústav molekulární genetiky AV ČR")
+  (dict "img" "/images/elixir_logo.png"  "url" "https://elixir-europe.org" "name" "ELIXIR-CZ")
+  (dict "img" "/images/SIB.png"          "url" "https://www.sib.swiss"    "name" "Swiss Institute of Bioinformatics")
+  (dict "img" "/images/VSCHT.png"        "url" "https://www.vscht.cz"     "name" "VŠCHT Praha")
+  (dict "img" "/images/FIT_CVUT.svg"     "url" "https://fit.cvut.cz"      "name" "FIT ČVUT v Praze")
+  (dict "img" "/images/UJEP.png"         "url" "https://www.ujep.cz"      "name" "Univerzita J. E. Purkyně v Ústí nad Labem")
+  (dict "img" "/images/VZU.png"          "url" "https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav" "name" "Vojenský zdravotní ústav")
+  (dict "img" "/images/CESNET.svg"       "url" "https://www.cesnet.cz"    "name" "CESNET")
+  (dict "img" (printf "/images/swiss-contribution-%s.png" (cond $en "en" "cz")) "url" "https://www.swiss-contribution.cz/" "name" (cond $en "Swiss-Czech Cooperation Programme" "Program švýcarsko-české spolupráce"))
+}}
+
+<div class="pp-partners">
+  <p class="pp-partners__label">{{ cond $en "Partners and support" "Partneři a podpora" }}</p>
+  <div class="pp-partners__grid">
+    {{ range $partners }}
+    <a href="{{ .url }}" target="_blank" rel="noopener" title="{{ .name }}" aria-label="{{ .name }}">
+      <img src="{{ .img }}" alt="{{ .name }}" loading="lazy">
+    </a>
+    {{ end }}
+  </div>
+</div>

@@ -29,6 +29,33 @@
             </a>
         </div>
 
+        {{/* ⛔ Přepínač jazyků MIMO všechny `collapse`, takže je vidět na každé
+             šířce obrazovky.
+
+             Předtím byl jako ikona zeměkoule uvnitř horního
+             `<div class="collapse navbar-collapse">`, který NEMÁ id a hamburger
+             cílí na `#navbarCollapseBottom` — na mobilu ho tedy nešlo otevřít
+             vůbec. Na desktopu byl schovaný v dropdownu, který se musí rozkliknout.
+
+             Odkazuje na PŘEKLAD AKTUÁLNÍ STRÁNKY, když existuje; jinak na domovskou
+             stránku druhého jazyka. Motiv odkazoval vždycky na domovskou. */}}
+        {{ if hugo.IsMultilingual }}
+        <div class="pp-langswitch ms-auto me-2" role="group" aria-label="{{ if eq .Site.Language.Lang "en" }}Language{{ else }}Jazyk{{ end }}">
+          {{ $cur := . }}
+          {{ range .Site.Languages }}
+          {{ $lang := .Lang }}
+          {{ $target := "" }}
+          {{ range $cur.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}
+          {{ if not $target }}{{ range $cur.Site.Home.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}{{ end }}
+          {{ if eq $lang $cur.Site.Language.Lang }}
+          <span class="pp-langswitch__item is-active" aria-current="true">{{ upper $lang }}</span>
+          {{ else if $target }}
+          <a class="pp-langswitch__item" href="{{ $target }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
+          {{ end }}
+          {{ end }}
+        </div>
+        {{ end }}
+
         <!-- Hamburger button, shows up only on smaller screen-->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseBottom"
                 aria-controls="navbarCollapseBottom" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,23 +73,8 @@
                         <a class="nav-link" href="{{ .URL }}">{{ .Name }}</a>
                     </li>
                     {{ end }}
-                    {{ if hugo.IsMultilingual }}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-uppercase" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-globe2"></i> {{ $.Site.Language.Lang }}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end nav-languages">
-                            {{ range $.Site.Home.AllTranslations }}
-                            <li>
-                                <a class="dropdown-item" href="{{ .RelPermalink }}">
-                                    <i class="bi bi-{{ if eq .Language.Lang $.Site.Language.Lang }}check-{{ end }}circle"></i>
-                                    <span lang="{{ .Language.Label }}"> {{ .Language.Label }}</span>
-                                </a>
-                            </li>
-                            {{ end }}
-                        </ul>
-                    </li>
-                    {{ end }}
+                    {{/* Přepínač jazyků je teď mimo tenhle collapse — viz výše.
+                         Tady byl nedostupný na mobilu. */}}
                     {{ with .Site.Params.repository }}
                     <li class="nav-item">
                         <a class="nav-link" href="{{ . }}">

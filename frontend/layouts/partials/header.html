@@ -1,0 +1,31 @@
+{{/* Přepis motivu: banner s názvem stránky.
+
+     ⚠️ Motiv vykresloval `<h2 id="home-banner">` na KAŽDÉ stránce. Na titulce to
+     znamenalo, že se název portálu objevil dvakrát — jednou v banneru, jednou
+     jako nadpis obsahu — a zároveň neměla žádná stránka `<h1>` z banneru.
+
+     Banner je proto `<h1>` — je to nadpis stránky a každá stránka má mít právě
+     jeden. Dashboardy měly ten svůj název DVAKRÁT ze stejného důvodu jako titulka
+     (banner + vlastní `<h1>` v dashboards/single.html); ten druhý je odstraněný.
+
+     Zbytek souboru je motiv beze změny.
+*/}}
+<div class="header"
+  style="background-image: linear-gradient(to bottom, rgba(55, 174, 148, 0.52), rgba(55, 174, 148, 0.73)), url('/images/banner.jpg');background-size: cover;background-position: center;">
+  <div class="container">
+    <h1 id="home-banner">{{ .Title }}</h1>
+  </div>
+</div>
+{{ if not .IsHome }}
+<nav class="breadcrumbs" aria-label="breadcrumb">
+  <div class="container">
+    <ol class="breadcrumb">
+      {{- range .Ancestors.Reverse }}
+        <li class="breadcrumb-item"><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+      {{- end }}
+      <li class="breadcrumb-item"><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+    </ol>
+  </div>
+</nav>
+
+{{ end }}

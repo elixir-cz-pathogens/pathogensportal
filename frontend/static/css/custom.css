@@ -135,3 +135,33 @@
   .pp-home-news-item { grid-template-columns: 1fr; }
   .pp-home-news-item__desc { grid-column: 1; }
 }
+
+/* ── Přepínač jazyků (vždy viditelný) ────────────────────────────────────── */
+.pp-langswitch { display: inline-flex; align-items: center; gap: 2px; }
+.pp-langswitch__item {
+  display: inline-block; padding: .15rem .5rem; border-radius: 6px;
+  font-size: .82rem; font-weight: 600; letter-spacing: .03em;
+  text-decoration: none; color: #52514e; border: 1px solid transparent;
+}
+.pp-langswitch__item:hover { background: #f2f1ee; color: #0b0b0b; }
+.pp-langswitch__item.is-active { background: #e6f0e9; color: #1b6b4a; border-color: #bcdccb; cursor: default; }
+
+/* ── Pruh partnerů v patičce ─────────────────────────────────────────────── */
+.pp-partners { border-top: 1px solid #e2e1dc; margin-top: 1.25rem; padding-top: 1rem; }
+.pp-partners__label {
+  text-align: center; font-size: .72rem; text-transform: uppercase;
+  letter-spacing: .08em; color: #77766f; margin: 0 0 .75rem;
+}
+.pp-partners__grid {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: 1.25rem 2rem;
+}
+.pp-partners__grid img {
+  height: 44px; width: auto; max-width: 160px; object-fit: contain;
+  /* Loga jsou od devíti různých organizací a v devíti různých barvách. Odbarvení
+     v klidu a plná barva při najetí drží patičku klidnou, aniž by kohokoli
+     schovávalo. */
+  filter: grayscale(1); opacity: .75; transition: filter .15s, opacity .15s;
+}
+.pp-partners__grid a:hover img, .pp-partners__grid a:focus-visible img { filter: none; opacity: 1; }
+@media (max-width: 576px) { .pp-partners__grid { gap: 1rem 1.25rem; } .pp-partners__grid img { height: 34px; } }
