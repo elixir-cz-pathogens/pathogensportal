@@ -1,49 +1,11 @@
-{{/* Mapa signálů detekce anomálií po krajích.
+{{/* Mapa signálů pro použití v obsahu.
 
      Usage: {{< signals-map src="/data/charts/anomaly_signals.json" title="Titulek" >}}
 
-     Kraj se obarví podle POČTU signálů; po najetí (nebo tabem, nebo kliknutím na
-     dotyku) se vpravo vypíšou hraniční hodnoty pro ten kraj. Vedle mapy trvale
-     visí souhrn za CELOU ČR — to jsou v datech řádky s kraj_kod = "CZ", které
-     `detect_anomalies.py` počítá zvlášť ze součtu za republiku, ne jako součet
-     krajských signálů.
-
-     ⛔ Data plní /js/pp-charts.js z TÉHOŽ anomaly_signals.json, který používá
-     tabulka signálů — žádný nový soubor a tedy ani žádná změna v -db. Agregace
-     po krajích se dělá v prohlížeči; při 71 signálech je to zdarma.
+     Vlastní značkování je v partials/signals-map.html, protože tutéž mapu
+     vykresluje i titulní stránka (layouts/index.html), která shortcode volat nemůže.
 */}}
-{{ $src   := .Get "src" | default "/data/charts/anomaly_signals.json" }}
-{{ $title := .Get "title" | default "" }}
-
-<figure class="pp-card pp-signalmap" data-pp-signalmap data-src="{{ $src }}">
-  {{ with $title }}
-  <figcaption class="pp-card__head">
-    <h2 class="pp-card__title">{{ . }}</h2>
-  </figcaption>
-  {{ end }}
-
-  <div class="pp-signalmap__grid">
-    <div class="pp-signalmap__mapcol">
-      <div class="pp-map__legend">
-        <span>méně signálů (<span data-pp-min>—</span>)</span>
-        <div class="pp-map__ramp" role="presentation"></div>
-        <span>více signálů (<span data-pp-max>—</span>)</span>
-      </div>
-      <div class="pp-map">
-        {{ partial "cz-map-svg.html" . }}
-      </div>
-      <p class="pp-note pp-signalmap__hint">
-        Najeďte na kraj (nebo se na něj přepněte tabulátorem) — vpravo se objeví
-        jeho hraniční hodnoty. Klepnutím se kraj přišpendlí.
-      </p>
-    </div>
-
-    <aside class="pp-signalmap__panel" data-pp-signalmap-panel aria-live="polite">
-      <div class="pp-skeleton" style="height:220px"></div>
-    </aside>
-  </div>
-
-  <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>načítám data…</span>
-  </div>
-</figure>
+{{ partial "signals-map.html" (dict
+   "ctx"   .Page
+   "src"   (.Get "src")
+   "title" (.Get "title")) }}

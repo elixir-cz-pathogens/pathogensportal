@@ -34,8 +34,8 @@
   {{ $sigPath := "static/data/charts/anomaly_signals.json" }}
   {{ if fileExists $sigPath }}
   {{ $sig := readFile $sigPath | transform.Unmarshal }}
-  {{ $top := first 5 (sort ($sig.signals | default slice) "score" "desc") }}
-  {{ with $top }}
+  {{ $all := $sig.signals | default slice }}
+  {{ with $all }}
   <section class="pp-home-signals mb-5">
     <div class="pp-home-sec-head">
       <h2>{{ cond $en "What is above its expected level right now" "Co teď překračuje očekávanou hladinu" }}</h2>
@@ -48,21 +48,31 @@
       {{ with $sig.target_period }}· {{ . }}{{ end }}
       · {{ $sig.n_series_scored }} {{ cond $en "series screened" "prověřených řad" }}
     </p>
-    <div class="pp-home-signal-list">
-      {{ range . }}
-      <a class="pp-home-signal" href="{{ (cond $en "/en/dashboards/signals/" "/dashboards/signals/") }}">
-        <span class="pp-home-signal__score" title="{{ cond $en "How many times further past the threshold than the threshold itself is from the expected level" "Kolikrát dál za prahem, než je práh od očekávané hladiny" }}">{{ lang.FormatNumber 1 .score }}×</span>
-        <span class="pp-home-signal__body">
-          <strong>{{ .diagnoza_nazev }}</strong>
-          <span class="pp-home-signal__where">{{ .kraj_nazev }}</span>
-        </span>
-        <span class="pp-home-signal__nums">
-          {{ cond $en "observed" "pozorováno" }} <strong>{{ lang.FormatNumber 0 .observed }}</strong>
-          · {{ cond $en "expected" "očekáváno" }} {{ lang.FormatNumber 1 .expected }}
-        </span>
-      </a>
+
+    {{/* ⛔ Filtruje se $all, NE seznam top 5. Uvnitř `with` je tečka ten seznam,
+         takže `where . "kraj_kod" "CZ"` by hledal celostátní řádky mezi pěti
+         nejsilnějšími krajskými a našel nic. Panel by zůstal prázdný a nic by
+         to neohlásilo.
+
+         `fallback` je souhrn za ČR sestavený UŽ PŘI BUILDU: bez JS zůstane
+         vidět, s JS ho renderSignalMap nahradí týmž obsahem, takže se při
+         načtení nic nekmitne. */}}
+    {{ $nat := sort (where $all "kraj_kod" "CZ") "score" "desc" }}
+    {{ $fallback := "" }}
+    {{ with $nat }}
+      {{ $rows := "" }}
+      {{ range first 5 . }}
+        {{ $rows = printf `%s<tr><td>%s</td><td class="num">%s</td><td class="num">%s</td><td class="num">%s</td><td class="num"><strong>%s×</strong></td></tr>`
+            $rows .diagnoza_nazev (lang.FormatNumber 0 .observed) (lang.FormatNumber 1 .expected) (lang.FormatNumber 1 .threshold) (lang.FormatNumber 1 .score) }}
       {{ end }}
-    </div>
+      {{ $fallback = printf `<div class="pp-signalmap__panelhead"><h3>%s</h3><span class="pp-signalmap__count">%d %s</span></div><div class="pp-signalmap__tablewrap"><table class="pp-table pp-signalmap__table"><thead><tr><th>%s</th><th class="num">%s</th><th class="num">%s</th><th class="num">%s</th><th class="num">%s</th></tr></thead><tbody>%s</tbody></table></div>`
+          (cond $en "Czech Republic" "Česká republika") (len .) (cond $en "nationwide signals" "celostátních signálů")
+          (cond $en "Diagnosis" "Diagnóza") (cond $en "Cases" "Případy") (cond $en "Expected" "Očekáváno")
+          (cond $en "Threshold" "Práh") (cond $en "Strength" "Síla") $rows }}
+    {{ end }}
+
+    {{ partial "signals-map.html" (dict "ctx" $ "fallback" $fallback) }}
+
     <p class="pp-home-caveat">
       <i class="bi bi-info-circle" aria-hidden="true"></i>
       {{ if $en }}
@@ -153,6 +163,10 @@
 
 {{/* Filtr rejstříku. Vanilla, ~15 řádků, žádná knihovna — viz PP-7.
      Bez JS zůstane seznam celý viditelný, což je použitelný stav. */}}
+{{/* Mapa signálů se plní klientsky. pp-charts.js se jinak načítá jen
+     v dashboards/single.html, takže na titulce si ho musíme přidat sami. */}}
+<script src="/js/pp-charts.js"></script>
+
 <script>
 (function () {
   var input = document.getElementById('pp-index-filter');
