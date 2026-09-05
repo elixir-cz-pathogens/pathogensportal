@@ -1,6 +1,5 @@
 ---
 title: "Ebola BDBV 2026 — Ebolaviry"
-origin: ai-assisted
 description: "Sekce situačního reportu: Ebolaviry. Zdroj: IMG AV ČR / UJEP."
 tags: ["ebola", "epidemiologie", "IMG AV ČR", "Afrika"]
 data_source: 'Jan Pačes & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> · Licence CC BY 4.0'

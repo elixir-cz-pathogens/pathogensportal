@@ -1,6 +1,5 @@
 ---
 title: "Ebola — Bundibugyo virus (DRC/Uganda 2026)"
-origin: ai-assisted
 description: "Situační report vypuknutí Bundibugyo viru v DRC a Ugandě 2026. Zdroj: IMG AV ČR / UJEP. Verze v82, ověřeno 2026-09-04."
 image: "/images/cards/ebola.svg"
 highlight: true
