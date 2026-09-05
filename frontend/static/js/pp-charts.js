@@ -878,8 +878,6 @@
             path.classList.remove("is-clickable");
             path.removeAttribute("tabindex");
             path.removeAttribute("aria-label");
-            var label = svg.querySelector('[data-region-label="' + code + '"]');
-            if (label) label.style.fill = t.textMuted;
           });
         }
 
@@ -938,8 +936,6 @@
             var sc = typeof sig.score === "number" ? sig.score : min;
             var ratio = max === min ? 1 : (sc - min) / (max - min);
             path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
-            var label = svg.querySelector('[data-region-label="' + rc + '"]');
-            if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
             path.classList.add("is-clickable");
             path.setAttribute("tabindex", "0");
             path.setAttribute("aria-label",

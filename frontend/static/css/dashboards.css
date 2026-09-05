@@ -789,3 +789,24 @@
   stroke: var(--pp-text);
   stroke-width: 1.25;
 }
+
+/* ── Čistota mapy signálů ─────────────────────────────────────────────────── */
+
+/* Názvy krajů jen v tooltipu, ne přímo v mapě. Čtrnáct popisků přes republiku
+   dělá z mapy text; identita kraje je potřeba až ve chvíli, kdy se na něj člověk
+   ptá — a tehdy ji dodá tooltip.
+   ⛔ Skryto jen tady. Choropleta incidence na /dashboards/infectious-diseases/
+   používá totéž SVG a popisky tam nesou hlavní informaci. */
+.pp-signalmap .pp-map [data-region-label] { display: none; }
+
+/* ⛔ Výchozí fokusový rámeček prohlížeče kreslí kolem SVG cesty OBDÉLNÍK podle
+   její bounding boxu — přes půl republiky, černý, přes sousední kraje.
+   `outline: none` samo o sobě by ale rozbilo ovládání klávesnicí, takže se
+   nahrazuje zvýrazněním samotného kraje: silnější tah a jemné ztmavení. */
+.pp-signalmap .pp-map [data-region]:focus,
+.pp-signalmap .pp-map [data-region]:focus-visible { outline: none; }
+.pp-signalmap .pp-map [data-region].is-clickable:focus-visible {
+  stroke: var(--pp-text);
+  stroke-width: 3;
+  opacity: .85;
+}
