@@ -1,52 +1,66 @@
-{{/* Mapa signálů po krajích + panel s hraničními hodnotami.
+{{/* Signály: tabulka diagnóz jako přepínač + mapa vybrané diagnózy.
 
      Použití:
-       {{ partial "signals-map.html" (dict "ctx" . "src" "…" "title" "…" "fallback" $html) }}
+       {{ partial "signals-map.html" (dict "ctx" . "src" "…" "rows" $html "national" $html) }}
 
-     `fallback` je nepovinný předrenderovaný obsah panelu. Bez JS zůstane
-     zobrazený; s JS ho renderSignalMap přepíše a panel začne reagovat na kraje.
-     Titulka ho plní souhrnem za ČR sestaveným při buildu — což je přesně to, co
-     panel ukazuje ve výchozím stavu, takže se nic nekmitne.
+     Model: mapa NEUKAZUJE počet signálů, ale JEDNU vybranou diagnózu — kraje se
+     obarví podle síly jejího signálu, kraje bez signálu zůstanou bílé. Tabulka
+     vlevo je zároveň výpis i přepínač; ve výchozím stavu je vybraný nejsilnější
+     signál.
 
-     ⛔ Vyžaduje /js/pp-charts.js. Ten se načítá v dashboards/single.html; kdo
-     tenhle partial volá odjinud (např. layouts/index.html), musí si ho přidat sám.
+     `rows` a `national` jsou předrenderované při buildu, takže bez JS je vidět
+     celá tabulka (mapa se bez JS neobarví — je to jedna z mála věcí na webu,
+     kde by šlo o skutečnou ztrátu, proto ta tabulka).
+
+     ⛔ Vyžaduje /js/pp-charts.js.
 */}}
 {{ $ctx      := .ctx }}
 {{ $src      := .src | default "/data/charts/anomaly_signals.json" }}
 {{ $title    := .title | default "" }}
-{{ $fallback := .fallback | default "" }}
+{{ $rows     := .rows | default "" }}
 {{ $en       := eq $ctx.Site.Language.Lang "en" }}
 
 <figure class="pp-card pp-signalmap" data-pp-signalmap data-src="{{ $src }}">
   {{ with $title }}
-  <figcaption class="pp-card__head">
-    <h2 class="pp-card__title">{{ . }}</h2>
-  </figcaption>
+  <figcaption class="pp-card__head"><h2 class="pp-card__title">{{ . }}</h2></figcaption>
   {{ end }}
 
   <div class="pp-signalmap__grid">
-    <div class="pp-signalmap__mapcol">
-      <div class="pp-map__legend">
-        <span>{{ cond $en "fewer signals" "méně signálů" }} (<span data-pp-min>—</span>)</span>
-        <div class="pp-map__ramp" role="presentation"></div>
-        <span>{{ cond $en "more signals" "více signálů" }} (<span data-pp-max>—</span>)</span>
-      </div>
-      <div class="pp-map">
-        {{ partial "cz-map-svg.html" $ctx }}
+    {{/* ── Tabulka = výpis i přepínač ─────────────────────────────────── */}}
+    <div class="pp-signalmap__listcol">
+      <div class="pp-signalmap__tablewrap">
+        <table class="pp-table pp-signalmap__table">
+          <thead>
+            <tr>
+              <th scope="col">{{ cond $en "Diagnosis" "Diagnóza" }}</th>
+              <th scope="col" class="num">{{ cond $en "Regions" "Krajů" }}</th>
+              <th scope="col" class="num">{{ cond $en "Max strength" "Nejvyšší síla" }}</th>
+            </tr>
+          </thead>
+          <tbody data-pp-signalmap-rows>{{ $rows | safeHTML }}</tbody>
+        </table>
       </div>
       <p class="pp-note pp-signalmap__hint">
-        {{ if $en }}
-        Hover a region — or tab to it — to see its thresholds on the right. Tap pins it.
-        {{ else }}
-        Najeďte na kraj (nebo se na něj přepněte tabulátorem) — vpravo se objeví jeho
-        hraniční hodnoty. Klepnutím se kraj přišpendlí.
-        {{ end }}
+        {{ if $en }}Pick a diagnosis to map it. The strongest signal is selected by default.
+        {{ else }}Vyberte diagnózu a zobrazí se na mapě. Ve výchozím stavu je vybraný nejsilnější signál.{{ end }}
       </p>
     </div>
 
-    <aside class="pp-signalmap__panel" data-pp-signalmap-panel aria-live="polite">
-      {{ with $fallback }}{{ . | safeHTML }}{{ else }}<div class="pp-skeleton" style="height:220px"></div>{{ end }}
-    </aside>
+    {{/* ── Mapa vybrané diagnózy ──────────────────────────────────────── */}}
+    <div class="pp-signalmap__mapcol">
+      <p class="pp-signalmap__selected" data-pp-signalmap-title>&nbsp;</p>
+      <div class="pp-map">
+        {{ partial "cz-map-svg.html" $ctx }}
+        <div class="pp-tooltip" role="status"></div>
+      </div>
+      <p class="pp-signalmap__empty" data-pp-signalmap-empty hidden></p>
+      <div class="pp-map__legend" data-pp-signalmap-legend hidden>
+        <span>{{ cond $en "weaker" "slabší" }} (<span data-pp-min>—</span>×)</span>
+        <div class="pp-map__ramp" role="presentation"></div>
+        <span>{{ cond $en "stronger" "silnější" }} (<span data-pp-max>—</span>×)</span>
+      </div>
+      <p class="pp-signalmap__national" data-pp-signalmap-national hidden></p>
+    </div>
   </div>
 
   <div class="pp-card__foot">

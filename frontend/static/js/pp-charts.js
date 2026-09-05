@@ -800,124 +800,166 @@
     themeListeners.forEach(function (callback) { callback(); });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
 
-  /* ---------------- Mapa signálů po krajích ---------------- */
+  /* ---------------- Signály: tabulka + mapa jedné diagnózy ---------------- */
 
-  /* Obarví kraje podle POČTU signálů a vedle mapy drží panel s hraničními
-     hodnotami. Čte tentýž anomaly_signals.json jako tabulka signálů; agregace po
-     krajích se dělá tady, ne v -db, takže to nevyžaduje žádný nový datový soubor
-     ani release.
+  /* Mapa neukazuje POČET signálů, ale JEDNU vybranou diagnózu: kraje se obarví
+     podle síly jejího signálu, kraje bez signálu zůstanou bílé. Tabulka vlevo je
+     výpis i přepínač; ve výchozím stavu je vybraný nejsilnější signál.
 
-     ⚠️ Řádky s kraj_kod === "CZ" NEJSOU součtem krajů — detect_anomalies.py je
-     počítá zvlášť nad celostátní řadou. Sečíst je s krajskými by dvojitě počítalo
-     tytéž případy, proto jdou do panelu ČR a do mapy vůbec ne. */
+     Čte tentýž anomaly_signals.json jako všechno ostatní kolem signálů — žádný
+     nový datový soubor, tedy ani změna v -db.
+
+     ⚠️ Řádky s kraj_kod === "CZ" NEJSOU součtem krajů; detect_anomalies.py je
+     počítá zvlášť nad celostátní řadou. Do mapy proto nejdou vůbec a zobrazují se
+     jako samostatná věta pod ní. */
   function renderSignalMap(root) {
-    var svg = root.querySelector("svg");
-    var panel = root.querySelector("[data-pp-signalmap-panel]");
-    if (!svg || !panel) return;
+    var svg     = root.querySelector("svg");
+    var tbody   = root.querySelector("[data-pp-signalmap-rows]");
+    var titleEl = root.querySelector("[data-pp-signalmap-title]");
+    var emptyEl = root.querySelector("[data-pp-signalmap-empty]");
+    var legend  = root.querySelector("[data-pp-signalmap-legend]");
+    var natEl   = root.querySelector("[data-pp-signalmap-national]");
+    var tooltip = root.querySelector(".pp-tooltip");
+    if (!svg || !tbody) return;
 
     loadChartData(root.dataset.src)
       .then(function (result) {
-        var data = result.payload || {};
-        var all = data.signals || [];
-        var national = [];
-        var byRegion = {};
-        var names = {};
+        var all = (result.payload || {}).signals || [];
 
+        /* Seskupení podle diagnózy. Klíčem je KÓD MKN-10, ne český název —
+           název je volný text a je to jediná věc, která se dá přejmenovat. */
+        var groups = {};
         all.forEach(function (sig) {
-          if (sig.kraj_kod === "CZ") { national.push(sig); return; }
-          if (!byRegion[sig.kraj_kod]) byRegion[sig.kraj_kod] = [];
-          byRegion[sig.kraj_kod].push(sig);
-          names[sig.kraj_kod] = sig.kraj_nazev;
-        });
-        Object.keys(byRegion).forEach(function (code) {
-          byRegion[code].sort(function (a, b) { return b.score - a.score; });
-        });
-        national.sort(function (a, b) { return b.score - a.score; });
-
-        var counts = Object.keys(byRegion).map(function (c) { return byRegion[c].length; });
-        var max = counts.length ? Math.max.apply(null, counts) : 0;
-        var min = counts.length ? Math.min.apply(null, counts) : 0;
-        var t = tokens();
-
-        function rows(list) {
-          if (!list.length) {
-            return '<p class="pp-signalmap__none">' + tr("Žádný signál nad prahem.") + "</p>";
+          var key = sig.diagnoza;
+          if (!groups[key]) {
+            groups[key] = { code: key, name: sig.diagnoza_nazev || key, regions: {}, national: null, max: 0 };
           }
-          return '<div class="pp-signalmap__tablewrap"><table class="pp-table pp-signalmap__table">' +
-            "<thead><tr>" +
-            "<th scope=\"col\">" + tr("Diagnóza") + "</th>" +
-            "<th scope=\"col\" class=\"num\">" + tr("Případy") + "</th>" +
-            "<th scope=\"col\" class=\"num\">" + tr("Očekáváno") + "</th>" +
-            "<th scope=\"col\" class=\"num\">" + tr("Práh") + "</th>" +
-            "<th scope=\"col\" class=\"num\">" + tr("Síla") + "</th>" +
-            "</tr></thead><tbody>" +
-            list.map(function (s) {
-              return "<tr><td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza) + "</td>" +
-                '<td class="num">' + fmt(s.observed) + "</td>" +
-                '<td class="num">' + fmt(s.expected) + "</td>" +
-                '<td class="num">' + fmt(s.threshold) + "</td>" +
-                '<td class="num"><strong>' + fmt(s.score) + "×</strong></td></tr>";
-            }).join("") +
-            "</tbody></table></div>";
+          if (sig.kraj_kod === "CZ") { groups[key].national = sig; return; }
+          groups[key].regions[sig.kraj_kod] = sig;
+          if (sig.score > groups[key].max) groups[key].max = sig.score;
+        });
+
+        var order = Object.keys(groups).sort(function (a, b) {
+          return groups[b].max - groups[a].max;
+        });
+        if (!order.length) return;
+
+        var t = tokens();
+        var regionPaths = {};
+        svg.querySelectorAll("[data-region]").forEach(function (path) {
+          regionPaths[path.getAttribute("data-region")] = path;
+        });
+
+        function clearMap() {
+          Object.keys(regionPaths).forEach(function (code) {
+            var path = regionPaths[code];
+            /* ⛔ Bílá, ne „nejsvětlejší odstín škály". Kraj bez signálu není kraj
+               s nejnižší hodnotou — je to kraj, o kterém model nic netvrdí, a to
+               se nesmí splést s „skoro nic". */
+            path.style.fill = "#ffffff";
+            path.style.stroke = t.border;
+            path.classList.remove("is-clickable");
+            path.removeAttribute("tabindex");
+            path.removeAttribute("aria-label");
+            var label = svg.querySelector('[data-region-label="' + code + '"]');
+            if (label) label.style.fill = t.textMuted;
+          });
         }
 
-        function paint(code) {
-          var isNational = !code;
-          var list = isNational ? national : (byRegion[code] || []);
-          var title = isNational ? tr("Česká republika") : (names[code] || code);
-          panel.innerHTML =
-            '<div class="pp-signalmap__panelhead">' +
-              "<h3>" + escapeHtml(title) + "</h3>" +
-              '<span class="pp-signalmap__count">' + list.length + " " +
-                (isNational ? tr("celostátních signálů") : tr("signálů")) + "</span>" +
-            "</div>" +
-            (isNational
-              ? '<p class="pp-signalmap__lead">' +
-                  tr("Počítáno nad celostátní řadou, ne jako součet krajů — tytéž případy by se jinak započítaly dvakrát.") +
-                "</p>"
-              : "") +
-            rows(list);
+        function select(code) {
+          var g = groups[code];
+          if (!g) return;
+
+          tbody.querySelectorAll("[data-dg]").forEach(function (tr) {
+            var on = tr.getAttribute("data-dg") === code;
+            tr.classList.toggle("is-selected", on);
+            tr.setAttribute("aria-selected", on ? "true" : "false");
+          });
+
+          titleEl.textContent = g.name;
+          clearMap();
+
+          var codes = Object.keys(g.regions);
+          var scores = codes.map(function (c) { return g.regions[c].score; });
+          var min = scores.length ? Math.min.apply(null, scores) : 0;
+          var max = scores.length ? Math.max.apply(null, scores) : 0;
+
+          if (!codes.length) {
+            /* Diagnóza má jen celostátní signál, v žádném kraji ne. Mapa zůstane
+               bílá a řekne proč — prázdná mapa bez vysvětlení vypadá jako chyba. */
+            emptyEl.hidden = false;
+            emptyEl.textContent = tr("V žádném kraji tato diagnóza signál nemá.");
+            legend.hidden = true;
+          } else {
+            emptyEl.hidden = true;
+            legend.hidden = false;
+            legend.querySelector("[data-pp-min]").textContent = fmt(min);
+            legend.querySelector("[data-pp-max]").textContent = fmt(max);
+          }
+
+          codes.forEach(function (rc) {
+            var path = regionPaths[rc];
+            if (!path) return;
+            var sig = g.regions[rc];
+            var ratio = max === min ? 1 : (sig.score - min) / (max - min);
+            path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
+            var label = svg.querySelector('[data-region-label="' + rc + '"]');
+            if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
+            path.classList.add("is-clickable");
+            path.setAttribute("tabindex", "0");
+            path.setAttribute("aria-label",
+              sig.kraj_nazev + ": " + fmt(sig.observed) + " " + tr("případů") +
+              ", " + tr("očekáváno") + " " + fmt(sig.expected) +
+              ", " + tr("práh") + " " + fmt(sig.threshold));
+
+            function show(event) {
+              tooltip.style.display = "block";
+              tooltip.innerHTML =
+                "<strong>" + escapeHtml(sig.kraj_nazev) + "</strong><br>" +
+                tr("případů") + ": " + fmt(sig.observed) + "<br>" +
+                tr("očekáváno") + ": " + fmt(sig.expected) + "<br>" +
+                tr("práh") + ": " + fmt(sig.threshold) + "<br>" +
+                tr("síla") + ": " + fmt(sig.score) + "×";
+              var rect = root.getBoundingClientRect();
+              var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
+              var y = event.clientY !== undefined ? event.clientY : rect.top;
+              tooltip.style.left = (x - rect.left + 12) + "px";
+              tooltip.style.top = (y - rect.top - 70) + "px";
+            }
+            path.addEventListener("mouseenter", show);
+            path.addEventListener("mousemove", show);
+            path.addEventListener("focus", show);
+            path.addEventListener("mouseleave", function () { tooltip.style.display = "none"; });
+            path.addEventListener("blur", function () { tooltip.style.display = "none"; });
+          });
+
+          if (g.national) {
+            natEl.hidden = false;
+            natEl.innerHTML = "<strong>" + tr("Celostátně") + ":</strong> " +
+              fmt(g.national.observed) + " " + tr("případů") + ", " +
+              tr("očekáváno") + " " + fmt(g.national.expected) + ", " +
+              tr("práh") + " " + fmt(g.national.threshold) +
+              " (" + fmt(g.national.score) + "×)";
+          } else {
+            natEl.hidden = true;
+          }
         }
 
-        var pinned = null;
-        paint(null);
-
-        Object.keys(byRegion).forEach(function (code) {
-          var path = svg.querySelector('[data-region="' + code + '"]');
-          if (!path) return;
-          var n = byRegion[code].length;
-          var ratio = max === min ? 0.5 : (n - min) / (max - min);
-          path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
-          var label = svg.querySelector('[data-region-label="' + code + '"]');
-          if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
-          path.setAttribute("tabindex", "0");
-          path.setAttribute("role", "button");
-          path.setAttribute("aria-label", (names[code] || code) + ": " + n + " " + tr("signálů"));
-          path.classList.add("is-clickable");
-
-          path.addEventListener("mouseenter", function () { if (!pinned) paint(code); });
-          path.addEventListener("focus", function () { paint(code); });
-          path.addEventListener("mouseleave", function () { if (!pinned) paint(null); });
-          /* Dotykové zařízení hover nemá, proto přišpendlení klepnutím. Druhé
-             klepnutí na týž kraj ho odšpendlí zpátky na ČR. */
-          path.addEventListener("click", function () {
-            pinned = pinned === code ? null : code;
-            paint(pinned);
-            svg.querySelectorAll(".is-pinned").forEach(function (el) { el.classList.remove("is-pinned"); });
-            if (pinned) path.classList.add("is-pinned");
+        tbody.querySelectorAll("[data-dg]").forEach(function (row) {
+          row.setAttribute("tabindex", "0");
+          row.setAttribute("role", "button");
+          row.addEventListener("click", function () { select(row.getAttribute("data-dg")); });
+          row.addEventListener("keydown", function (e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); select(row.getAttribute("data-dg")); }
           });
         });
 
-        var legend = root.querySelector(".pp-map__legend");
-        if (legend) {
-          legend.querySelector("[data-pp-min]").textContent = fmt(min);
-          legend.querySelector("[data-pp-max]").textContent = fmt(max);
-        }
+        select(order[0]);
         setOrigin(root, result.origin);
       })
       .catch(function () {
-        panel.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
-          "<span>" + tr("Data signálů se nepodařilo načíst.") + "</span></div>";
+        var host = root.querySelector("[data-pp-signalmap-title]");
+        if (host) host.textContent = tr("Data signálů se nepodařilo načíst.");
       });
   }
 

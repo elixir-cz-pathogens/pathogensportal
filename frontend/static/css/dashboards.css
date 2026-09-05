@@ -717,3 +717,29 @@
   .pp-signalmap__grid { grid-template-columns: 1fr; }
   .pp-signalmap__panel { min-height: 0; }
 }
+
+/* Přepínací varianta: tabulka vlevo, mapa jedné diagnózy vpravo. */
+.pp-signalmap__listcol .pp-signalmap__tablewrap { max-height: 22rem; overflow-y: auto; }
+.pp-signalmap__table tbody tr[data-dg] { cursor: pointer; }
+.pp-signalmap__table tbody tr[data-dg]:hover { background: var(--pp-surface); }
+.pp-signalmap__table tbody tr[data-dg].is-selected {
+  background: var(--pp-seq-low);
+  box-shadow: inset 3px 0 0 var(--pp-seq-high);
+}
+.pp-signalmap__table tbody tr[data-dg]:focus-visible { outline: 2px solid var(--pp-seq-high); outline-offset: -2px; }
+.pp-signalmap__selected { font-weight: 600; margin: 0 0 .4rem; min-height: 1.4em; }
+.pp-signalmap__empty {
+  margin: .5rem 0 0; padding: .5rem .75rem; font-size: .85rem;
+  color: var(--pp-text-secondary); background: var(--pp-surface);
+  border: 1px dashed var(--pp-border); border-radius: var(--pp-radius);
+}
+.pp-signalmap__national {
+  margin: .6rem 0 0; font-size: .82rem; color: var(--pp-text-secondary);
+  border-top: 1px solid var(--pp-border); padding-top: .5rem;
+}
+.pp-map .pp-tooltip { line-height: 1.35; }
+.pp-signalmap__natflag {
+  display: inline-block; margin-left: .35rem; padding: 0 .35em;
+  border: 1px solid var(--pp-border); border-radius: 4px;
+  font-size: .68rem; color: var(--pp-text-muted); vertical-align: middle;
+}
