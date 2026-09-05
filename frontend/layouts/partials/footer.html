@@ -93,7 +93,11 @@
     // first column ascending, which in curated tables destroys the order the
     // author chose — the "Major events" timeline sorted as text ("10. 7." before
     // "5. 5.") and the most important source ended up in the middle.
-    new DataTable('table', {
+    // ⛔ `table` bralo VŠECHNY tabulky na stránce, včetně těch, které si řídí
+    // vlastní skript. Tabulka signálů na titulce je zároveň přepínač mapy —
+    // DataTables ji stránkoval po 25 řádcích a klik na řádek pak mohl vybrat
+    // něco jiného, než na co uživatel klikl.
+    new DataTable('table:not([data-no-datatable])', {
       order: [],
       pageLength: 25,
       lengthMenu: [10, 25, 50, 100],

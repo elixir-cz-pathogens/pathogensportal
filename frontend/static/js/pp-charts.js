@@ -857,7 +857,6 @@
                s nejnižší hodnotou — je to kraj, o kterém model nic netvrdí, a to
                se nesmí splést s „skoro nic". */
             path.style.fill = "#ffffff";
-            path.style.stroke = t.border;
             path.classList.remove("is-clickable");
             path.removeAttribute("tabindex");
             path.removeAttribute("aria-label");

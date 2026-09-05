@@ -743,3 +743,20 @@
   border: 1px solid var(--pp-border); border-radius: 4px;
   font-size: .68rem; color: var(--pp-text-muted); vertical-align: middle;
 }
+
+/* ⛔ Obrysy krajů na mapě signálů.
+   Obecné `.pp-map path` má `stroke: var(--pp-surface-raised)`, tedy BÍLOU — na
+   plné choropletě to funguje jako oddělovač vyplněných krajů, ale tady je většina
+   mapy bílá a bílý obrys na bílé výplni je neviditelný. Vypadalo to, že Česko
+   tvoří jen ty kraje, které mají signál.
+   Mapa musí být čitelná jako mapa i tehdy, když v ní není ani jeden signál. */
+.pp-signalmap .pp-map path[data-region] {
+  stroke: var(--pp-text-muted);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.pp-signalmap .pp-map path[data-region].is-clickable {
+  /* Kraj se signálem: tmavší obrys, ať vystoupí z bílého okolí. */
+  stroke: var(--pp-text);
+  stroke-width: 1.25;
+}

@@ -80,8 +80,11 @@
     {{ range $code, $g := $byDg }}{{ $list = $list | append $g }}{{ end }}
     {{ $list = sort $list "max" "desc" }}
 
+    {{/* ⛔ Jen deset nejsilnějších. Celý výpis patří na stránku Signály; tady je
+         to přepínač mapy, ne archiv. Do zavedení DataTables se sem stránkování
+         nevrací — tabulka, která se sama stránkuje po 25, přestává být přepínač. */}}
     {{ $rows := "" }}
-    {{ range $list }}
+    {{ range first 10 $list }}
       {{/* Diagnóza jen s celostátním signálem má v krajích nulu. Vypsat u ní
            „0,0×" by tvrdilo, že signál je nulový; ona ho má, jen ne v kraji. */}}
       {{ $strength := cond (gt .regions 0) (printf "%s×" (lang.FormatNumber 1 .max)) "—" }}
