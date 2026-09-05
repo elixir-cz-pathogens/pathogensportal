@@ -800,6 +800,127 @@
     themeListeners.forEach(function (callback) { callback(); });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
 
+  /* ---------------- Mapa signálů po krajích ---------------- */
+
+  /* Obarví kraje podle POČTU signálů a vedle mapy drží panel s hraničními
+     hodnotami. Čte tentýž anomaly_signals.json jako tabulka signálů; agregace po
+     krajích se dělá tady, ne v -db, takže to nevyžaduje žádný nový datový soubor
+     ani release.
+
+     ⚠️ Řádky s kraj_kod === "CZ" NEJSOU součtem krajů — detect_anomalies.py je
+     počítá zvlášť nad celostátní řadou. Sečíst je s krajskými by dvojitě počítalo
+     tytéž případy, proto jdou do panelu ČR a do mapy vůbec ne. */
+  function renderSignalMap(root) {
+    var svg = root.querySelector("svg");
+    var panel = root.querySelector("[data-pp-signalmap-panel]");
+    if (!svg || !panel) return;
+
+    loadChartData(root.dataset.src)
+      .then(function (result) {
+        var data = result.payload || {};
+        var all = data.signals || [];
+        var national = [];
+        var byRegion = {};
+        var names = {};
+
+        all.forEach(function (sig) {
+          if (sig.kraj_kod === "CZ") { national.push(sig); return; }
+          if (!byRegion[sig.kraj_kod]) byRegion[sig.kraj_kod] = [];
+          byRegion[sig.kraj_kod].push(sig);
+          names[sig.kraj_kod] = sig.kraj_nazev;
+        });
+        Object.keys(byRegion).forEach(function (code) {
+          byRegion[code].sort(function (a, b) { return b.score - a.score; });
+        });
+        national.sort(function (a, b) { return b.score - a.score; });
+
+        var counts = Object.keys(byRegion).map(function (c) { return byRegion[c].length; });
+        var max = counts.length ? Math.max.apply(null, counts) : 0;
+        var min = counts.length ? Math.min.apply(null, counts) : 0;
+        var t = tokens();
+
+        function rows(list) {
+          if (!list.length) {
+            return '<p class="pp-signalmap__none">' + tr("Žádný signál nad prahem.") + "</p>";
+          }
+          return '<div class="pp-signalmap__tablewrap"><table class="pp-table pp-signalmap__table">' +
+            "<thead><tr>" +
+            "<th scope=\"col\">" + tr("Diagnóza") + "</th>" +
+            "<th scope=\"col\" class=\"num\">" + tr("Případy") + "</th>" +
+            "<th scope=\"col\" class=\"num\">" + tr("Očekáváno") + "</th>" +
+            "<th scope=\"col\" class=\"num\">" + tr("Práh") + "</th>" +
+            "<th scope=\"col\" class=\"num\">" + tr("Síla") + "</th>" +
+            "</tr></thead><tbody>" +
+            list.map(function (s) {
+              return "<tr><td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza) + "</td>" +
+                '<td class="num">' + fmt(s.observed) + "</td>" +
+                '<td class="num">' + fmt(s.expected) + "</td>" +
+                '<td class="num">' + fmt(s.threshold) + "</td>" +
+                '<td class="num"><strong>' + fmt(s.score) + "×</strong></td></tr>";
+            }).join("") +
+            "</tbody></table></div>";
+        }
+
+        function paint(code) {
+          var isNational = !code;
+          var list = isNational ? national : (byRegion[code] || []);
+          var title = isNational ? tr("Česká republika") : (names[code] || code);
+          panel.innerHTML =
+            '<div class="pp-signalmap__panelhead">' +
+              "<h3>" + escapeHtml(title) + "</h3>" +
+              '<span class="pp-signalmap__count">' + list.length + " " +
+                (isNational ? tr("celostátních signálů") : tr("signálů")) + "</span>" +
+            "</div>" +
+            (isNational
+              ? '<p class="pp-signalmap__lead">' +
+                  tr("Počítáno nad celostátní řadou, ne jako součet krajů — tytéž případy by se jinak započítaly dvakrát.") +
+                "</p>"
+              : "") +
+            rows(list);
+        }
+
+        var pinned = null;
+        paint(null);
+
+        Object.keys(byRegion).forEach(function (code) {
+          var path = svg.querySelector('[data-region="' + code + '"]');
+          if (!path) return;
+          var n = byRegion[code].length;
+          var ratio = max === min ? 0.5 : (n - min) / (max - min);
+          path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
+          var label = svg.querySelector('[data-region-label="' + code + '"]');
+          if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
+          path.setAttribute("tabindex", "0");
+          path.setAttribute("role", "button");
+          path.setAttribute("aria-label", (names[code] || code) + ": " + n + " " + tr("signálů"));
+          path.classList.add("is-clickable");
+
+          path.addEventListener("mouseenter", function () { if (!pinned) paint(code); });
+          path.addEventListener("focus", function () { paint(code); });
+          path.addEventListener("mouseleave", function () { if (!pinned) paint(null); });
+          /* Dotykové zařízení hover nemá, proto přišpendlení klepnutím. Druhé
+             klepnutí na týž kraj ho odšpendlí zpátky na ČR. */
+          path.addEventListener("click", function () {
+            pinned = pinned === code ? null : code;
+            paint(pinned);
+            svg.querySelectorAll(".is-pinned").forEach(function (el) { el.classList.remove("is-pinned"); });
+            if (pinned) path.classList.add("is-pinned");
+          });
+        });
+
+        var legend = root.querySelector(".pp-map__legend");
+        if (legend) {
+          legend.querySelector("[data-pp-min]").textContent = fmt(min);
+          legend.querySelector("[data-pp-max]").textContent = fmt(max);
+        }
+        setOrigin(root, result.origin);
+      })
+      .catch(function () {
+        panel.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
+          "<span>" + tr("Data signálů se nepodařilo načíst.") + "</span></div>";
+      });
+  }
+
   /* ---------------- Start ---------------- */
 
   function init() {
@@ -812,6 +933,7 @@
     document.querySelectorAll("[data-pp-stats]").forEach(renderStats);
     document.querySelectorAll("[data-pp-map]").forEach(renderMap);
     document.querySelectorAll("[data-pp-signals]").forEach(renderSignals);
+    document.querySelectorAll("[data-pp-signalmap]").forEach(renderSignalMap);
   }
 
   if (document.readyState === "loading") {

@@ -675,3 +675,45 @@
   font-size: 0.8rem;
   color: var(--pp-text-muted, #77766f);
 }
+
+/* ── Mapa signálů (PP-57) ──────────────────────────────────────────────────
+   Mapa vlevo, hraniční hodnoty vpravo. Panel drží ČR, dokud se nenajede na kraj. */
+.pp-signalmap__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+.pp-signalmap__hint { font-size: .8rem; color: var(--pp-text-muted); margin-top: .4rem; }
+.pp-signalmap__panel {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  padding: .85rem 1rem;
+  /* Panel se mění při najetí na kraj. Bez pevné minimální výšky by se pod myší
+     poskakovalo rozvržení celé karty. */
+  min-height: 16rem;
+}
+.pp-signalmap__panelhead {
+  display: flex; align-items: baseline; justify-content: space-between;
+  gap: .75rem; flex-wrap: wrap; border-bottom: 1px solid var(--pp-border);
+  padding-bottom: .5rem; margin-bottom: .6rem;
+}
+.pp-signalmap__panelhead h3 { margin: 0; font-size: 1.05rem; }
+.pp-signalmap__count { font-size: .8rem; color: var(--pp-text-muted); white-space: nowrap; }
+.pp-signalmap__lead { font-size: .78rem; color: var(--pp-text-muted); margin: 0 0 .6rem; }
+.pp-signalmap__none { font-size: .875rem; color: var(--pp-text-muted); margin: 0; }
+.pp-signalmap__tablewrap { overflow-x: auto; }
+.pp-signalmap__table { width: 100%; font-size: .82rem; }
+.pp-signalmap__table .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pp-signalmap__table th { font-weight: 600; color: var(--pp-text-secondary); }
+
+.pp-map [data-region].is-clickable { cursor: pointer; transition: opacity .12s; }
+.pp-map [data-region].is-clickable:hover,
+.pp-map [data-region].is-clickable:focus-visible { opacity: .82; }
+.pp-map [data-region].is-pinned { stroke: var(--pp-text); stroke-width: 2.5; }
+
+@media (max-width: 860px) {
+  .pp-signalmap__grid { grid-template-columns: 1fr; }
+  .pp-signalmap__panel { min-height: 0; }
+}
