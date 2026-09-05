@@ -95,6 +95,18 @@
     <div class="container">
         <div class="collapse navbar-collapse" id="navbarCollapseBottom">
 
+            {{/* ⛔ navbar_top (O portálu, GitHub) se vykresluje i tady, protože
+                 nahoře sedí v `<div class="collapse navbar-collapse">` BEZ id —
+                 a hamburger cílí na #navbarCollapseBottom. Pod šířkou lg se na
+                 „O portálu" nedalo dostat vůbec. Stejná past jako u přepínače
+                 jazyků, který proto sedí mimo všechny collapse.
+                 `d-lg-none`: na desktopu ať to není dvakrát. */}}
+            <div class="d-lg-none">
+                {{ range .Site.Menus.navbar_top }}
+                <div class="main_menu_item pb-1"><a href="{{ .URL }}">{{ .Name }}</a></div>
+                {{ end }}
+            </div>
+
             <!-- Top nav list i.e. About, Contact, Language, etc -->
             <hr class="d-lg-none">
 
