@@ -159,6 +159,8 @@
       <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny dashboardy" }} <i class="bi bi-arrow-right-short"></i></a>
     </div>
 
+    <div class="pp-home-index-grid">
+    <div class="pp-home-index-main">
     <label class="pp-home-filter">
       <i class="bi bi-funnel" aria-hidden="true"></i>
       <input type="search" id="pp-index-filter" autocomplete="off"
@@ -180,6 +182,45 @@
     <p class="pp-home-index-empty" id="pp-index-empty" hidden>
       {{ cond $en "Nothing matches that." "Tomu nic neodpovídá." }}
     </p>
+    </div>
+
+    {{/* ── Témata ────────────────────────────────────────────────────────────
+         Vrácená sem po přestavbě titulky. Patří vedle rejstříku, protože obojí
+         dělá totéž — dostane čtenáře na dashboard. Rejstřík podle názvu nemoci,
+         témata napříč nemocemi (kraje, surveillance, ÚZIS…).
+
+         ⛔ Filtr na tagy s obsahem je nutný: .Site.Taxonomies NEREspektuje
+         `build: list: never`, kdežto site.RegularPages ano. Bez něj vedou tagy
+         schovaných podstránek na prázdné stránky tagů (PP-43, PP-51). */}}
+    {{- /* ⛔ Odkazy jdou přes relLangURL, ne natvrdo "/tags/…". Absolutní cesta
+           ignoruje jazyk, takže anglická titulka odkazovala na české stránky tagů
+           — z 28 odkazů 18 na neexistující URL. Stejná past jako `url` místo
+           `pageRef` v menu (PP-52): odkaz se tváří funkčně a vede jinam.
+
+           ⚠️ Zároveň se sbírá PŮVODNÍ podoba tagu. `.Site.Taxonomies.tags` drží
+           normalizovaný klíč, takže „IMG AV ČR" by se vypsalo jako „img av čr" —
+           zatímco na kartách dashboardů se vypisuje z .Params.tags správně.
+           Stejný tag dvěma způsoby na jedné stránce vypadá jako chyba. */ -}}
+    {{- $visible := slice -}}
+    {{- $labels := dict -}}
+    {{- range site.RegularPages -}}
+      {{- range .Params.tags -}}
+        {{- $visible = $visible | append (. | urlize) -}}
+        {{- $labels = merge $labels (dict (. | urlize) .) -}}
+      {{- end -}}
+    {{- end -}}
+    <aside class="pp-home-topics" aria-labelledby="pp-topics-head">
+      <h3 id="pp-topics-head">{{ cond $en "Topics" "Témata" }}</h3>
+      <p class="pp-home-topics__lead">{{ cond $en "Jump across diseases" "Napříč nemocemi" }}</p>
+      <div class="pp-home-topics__list">
+        {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+        {{ if in $visible ($name | urlize) }}
+        <a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
+        {{ end }}
+        {{ end }}
+      </div>
+    </aside>
+    </div>
 
     {{/* Legenda — barva bez legendy je nedešifrovatelná. */}}
     <div class="pp-origin-legend mt-3">

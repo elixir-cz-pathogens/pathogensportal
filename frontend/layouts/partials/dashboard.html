@@ -23,7 +23,7 @@
         {{ end }}
         <div class="px-2 pb-3">
             {{ range .Page.Params.tags }}
-            <span class="topic_badge_small"><a href="/tags/{{ urlize . }}">{{ . }}</a></span>
+            <span class="topic_badge_small"><a href="{{ (printf "/tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a></span>
             {{ end }}
         </div>
     </div>

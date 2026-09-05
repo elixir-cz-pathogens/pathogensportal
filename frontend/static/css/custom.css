@@ -165,3 +165,42 @@
 }
 .pp-partners__grid a:hover img, .pp-partners__grid a:focus-visible img { filter: none; opacity: 1; }
 @media (max-width: 576px) { .pp-partners__grid { gap: 1rem 1.25rem; } .pp-partners__grid img { height: 34px; } }
+
+/* ── Rejstřík + boční panel Témata ───────────────────────────────────────── */
+.pp-home-index-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
+  gap: 1.25rem;
+  align-items: start;
+}
+.pp-home-index-main { min-width: 0; }
+.pp-home-topics {
+  border: 1px solid #e2e1dc;
+  border-radius: 10px;
+  background: #fcfcfb;
+  padding: .85rem 1rem;
+  position: sticky;
+  top: 1rem;
+}
+.pp-home-topics h3 { margin: 0; font-size: 1rem; }
+.pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: #77766f; }
+.pp-home-topics__list { display: flex; flex-wrap: wrap; gap: .35rem; }
+.pp-home-topic {
+  display: inline-block;
+  padding: .12rem .55rem;
+  border: 1px solid #e2e1dc;
+  border-radius: 999px;
+  background: #fff;
+  font-size: .8rem;
+  text-decoration: none;
+  color: #52514e;
+  transition: background-color .15s, border-color .15s, color .15s;
+}
+.pp-home-topic:hover, .pp-home-topic:focus-visible {
+  background: #eaf2fd; border-color: #2a78d6; color: #1b4f8f;
+}
+@media (max-width: 860px) {
+  .pp-home-index-grid { grid-template-columns: 1fr; }
+  /* Sticky v jednosloupcovém rozvržení jen poskakuje. */
+  .pp-home-topics { position: static; }
+}

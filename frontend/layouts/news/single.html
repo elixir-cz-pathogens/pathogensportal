@@ -20,7 +20,7 @@
         {{ with .Params.tags }}
         <span><b>{{ i18n "topics" }}:</b></span>
         {{ range . }}
-        <span class="topic_badge_small"><a href="/tags/{{ urlize . }}">{{ . }}</a></span>
+        <span class="topic_badge_small"><a href="{{ (printf "/tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a></span>
         {{ end }}
         {{ end }}
     </div>

@@ -165,7 +165,7 @@
 {{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
 {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
                         {{ if in $visible ($name | urlize) }}
-                        <a class="d-block" href="/tags/{{ urlize $name }}">{{ $name }}</a>
+                        <a class="d-block" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ $name }}</a>
                         {{ end }}
                         {{ end }}
                     </div>
@@ -225,7 +225,7 @@
                 {{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible2 = $visible2 | append (. | urlize) -}}{{- end -}}{{- end -}}
                 {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
                 {{ if in $visible2 ($name | urlize) }}
-                <a class="dropdown-item m-0" href="/tags/{{ urlize $name }}">{{ $name }}</a>
+                <a class="dropdown-item m-0" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ $name }}</a>
                 {{ end }}
                 {{ end }}
             </div>
