@@ -15,6 +15,12 @@
         <div class="p-2">
             {{ .Page.Description }}
         </div>
+        {{/* Původ dat (PP-57) — na kartě, protože rozhodnutí „otevřu tohle?"
+             padá tady, ne až na cílové stránce. Nikdy jako osa řazení: čtenář
+             naviguje podle nemoci, ne podle toho, odkud data jsou. */}}
+        {{ with partial "origin-badge.html" (dict "page" .Page "size" "sm") }}
+        <div class="px-2 pb-1">{{ . }}</div>
+        {{ end }}
         <div class="px-2 pb-3">
             {{ range .Page.Params.tags }}
             <span class="topic_badge_small"><a href="/tags/{{ urlize . }}">{{ . }}</a></span>

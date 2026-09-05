@@ -19,6 +19,12 @@
     {{ with .Description }}<p class="pp-dash-lead">{{ . }}</p>{{ end }}
 
     <div class="pp-meta">
+      {{/* Původ dat (PP-57) — první v řadě metadat. U `ai-assisted` je to
+           tvrzení o integritě, ne ozdoba: `data_source` u těch stránek uvádí
+           jména dvou lidí a samo o sobě neřekne, že text psal stroj. */}}
+      {{ with partial "origin-badge.html" (dict "page" .) }}
+      <span class="pp-meta__item">{{ . }}</span>
+      {{ end }}
       {{ with .Params.data_source }}
       <span class="pp-meta__item"><i class="bi bi-database" aria-hidden="true"></i> Zdroj: {{ . | safeHTML }}</span>
       {{ end }}

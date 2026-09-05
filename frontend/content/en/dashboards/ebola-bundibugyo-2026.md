@@ -1,5 +1,6 @@
 ---
 title: "Ebola — Bundibugyo virus (DRC/Uganda 2026)"
+origin: ai-assisted
 description: "Situation report on the 2026 Bundibugyo virus outbreak in the DRC and Uganda — case overview, genomics, treatment and vaccines, risk to the Czech Republic. Source: IMG CAS / UJEP."
 image: "/images/cards/ebola.svg"
 highlight: true

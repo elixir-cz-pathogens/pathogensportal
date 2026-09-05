@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Hepatitis"
+origin: aggregated
 description: "Viral hepatitis A, B and other forms in the Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-hepatitis.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "hepatitis"]

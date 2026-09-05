@@ -1,5 +1,6 @@
 ---
 title: "Influenza — regional surveillance"
+origin: aggregated
 description: "Weekly laboratory detections of respiratory viruses by Czech region — from SZÚ/NRL weekly PDF reports, updated every week."
 image: "/images/cards/flu-regional.svg"
 highlight: false

@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Other"
+origin: aggregated
 description: "Aggregate of residual ICD categories of infectious diseases that do not fit any specific group, Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-other.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN"]

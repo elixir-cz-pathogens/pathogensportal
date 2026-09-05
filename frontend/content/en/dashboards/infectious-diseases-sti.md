@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Sexually transmitted"
+origin: aggregated
 description: "Chlamydial infections, trichomoniasis and other sexually transmitted diseases in the Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-sti.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "STI"]

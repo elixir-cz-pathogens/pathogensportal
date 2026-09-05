@@ -1,5 +1,6 @@
 ---
 title: "Chřipka — regionální surveillance"
+origin: aggregated
 description: "Týdenní laboratorní záchyty respiračních virů po krajích ČR — z týdenních PDF hlášení SZÚ/NRL, aktualizováno každý týden."
 image: "/images/cards/flu-regional.svg"
 highlight: false

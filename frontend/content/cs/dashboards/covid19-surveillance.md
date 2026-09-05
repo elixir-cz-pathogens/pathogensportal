@@ -1,5 +1,6 @@
 ---
 title: "COVID-19 Surveillance"
+origin: aggregated
 description: "Epidemiologická situace SARS-CoV-2 v České republice — denní případy, hospitalizace, testování a vakcinace."
 image: "/images/cards/covid.svg"
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "surveillance", "MZČR", "ČR"]

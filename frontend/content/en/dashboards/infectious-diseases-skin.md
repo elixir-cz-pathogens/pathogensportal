@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Skin/contact"
+origin: aggregated
 description: "Scabies, erysipelas, pediculosis — skin infections transmitted by direct contact, Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-skin.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "skin infections"]

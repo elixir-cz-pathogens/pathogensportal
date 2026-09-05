@@ -1,129 +1,174 @@
+{{/* Titulní stránka (PP-57).
+
+     Čtyři bloky, v tomhle pořadí: co portál je → co teď překračuje očekávanou
+     hladinu → novinky → rejstřík patogenů.
+
+     ⛔ Nahrazuje šablonu motivu, která ukazovala náhled dashboardů, náhled
+     novinek, prázdný blok Akce a oblak tagů. Ta odpovídala na otázku „co tu
+     všechno je"; tahle odpovídá na „na co se mám teď dívat" a „kde najdu ten
+     svůj patogen".
+*/}}
 {{ define "main" }}
+<link rel="stylesheet" href="/css/dashboards.css">
 
-<!-- Main content -->
-<div class="row">
-    <div class="col-md-8 vert-line-right mt-3">
+{{ $en := eq .Site.Language.Lang "en" }}
 
-        <!-- Dashboards -->
-        <div class="row">
-            <div class="col-8">
-                <h3 class="mt-0">{{ i18n "dashboards" }}</h3>
-            </div>
-            <div class="col-4 mt-2 pt-1 text-end see-all-link-text">
-                <a href="/dashboards">
-                    {{ i18n "seeDashboards" }}
-                    <i class="bi bi-arrow-right-square-fill"></i>
-                </a>
-            </div>
-        </div>
-        {{ partial "dashboards.html" . }}
+<div class="pp-viz">
 
-        <!-- News -->
-        <div class="row mt-5">
-            <div class="col-8">
-                <h3 class="mt-0">{{ i18n "newsAndHighlights" }}</h3>
-            </div>
-            <div class="col-4 mt-2 pt-1 text-end see-all-link-text">
-                <a href="/news">
-                    {{ i18n "seeNewsAndHighlights" }}
-                    <i class="bi bi-arrow-right-square-fill"></i>
-                </a>
-            </div>
-        </div>
-        {{ partial "highlights.html" . }}
+  {{/* ── 1. Co portál je ───────────────────────────────────────────────── */}}
+  <section class="pp-home-intro mb-4">
+    <h1 class="mt-0">{{ .Site.Title }}</h1>
+    {{ with .Content }}<div class="pp-home-lead">{{ . }}</div>{{ end }}
+  </section>
 
-        <!-- Biobanks -->
-        {{ with .Site.Params.biobank_url }}
-        <div class="row mt-5">
-            <div class="col-8">
-                <h3 class="mt-0">{{ i18n "findSamplesOnNationalBiobanks" }}</h3>
-            </div>
-            <div class="col-4 mt-2 pt-1 text-end see-all-link-text">
-                <a href="{{ . }}">
-                    {{ i18n "searchDatabase" }}
-                    <i class="bi bi-arrow-right-square-fill"></i>
-                </a>
-            </div>
-        </div>
-        {{ end }}
+  {{/* ── 2. Signály ────────────────────────────────────────────────────────
+       ⛔ Nadpis říká „překračuje očekávanou hladinu", NE „predikce". Metoda
+       (Farrington/Noufaily) počítá, kolik případů by dané období mělo mít, a
+       hlásí překročení. O budoucnosti neříká nic. „Predikce" na titulce slibuje
+       výhled, který model nedává — a je to formulace, kterou novinář převezme.
+
+       Čte se při buildu ze statického JSONu. Pipeline ho commituje, deploy
+       přestaví web, takže je to čerstvé bez jediného řádku JS. Když soubor
+       chybí, blok se prostě nevykreslí — lepší než prázdná karta. */}}
+  {{ $sigPath := "static/data/charts/anomaly_signals.json" }}
+  {{ if fileExists $sigPath }}
+  {{ $sig := readFile $sigPath | transform.Unmarshal }}
+  {{ $top := first 5 (sort ($sig.signals | default slice) "score" "desc") }}
+  {{ with $top }}
+  <section class="pp-home-signals mb-5">
+    <div class="pp-home-sec-head">
+      <h2>{{ cond $en "What is above its expected level right now" "Co teď překračuje očekávanou hladinu" }}</h2>
+      <a class="pp-home-more" href="{{ (cond $en "/en/dashboards/signals/" "/dashboards/signals/") }}">
+        {{ cond $en "All signals" "Všechny signály" }} <i class="bi bi-arrow-right-short"></i>
+      </a>
+    </div>
+    <p class="pp-home-sub">
+      {{ $sig.n_signals }} {{ cond $en "series above the expected endemic level" "řad nad očekávanou endemickou hladinou" }}
+      {{ with $sig.target_period }}· {{ . }}{{ end }}
+      · {{ $sig.n_series_scored }} {{ cond $en "series screened" "prověřených řad" }}
+    </p>
+    <div class="pp-home-signal-list">
+      {{ range . }}
+      <a class="pp-home-signal" href="{{ (cond $en "/en/dashboards/signals/" "/dashboards/signals/") }}">
+        <span class="pp-home-signal__score" title="{{ cond $en "How many times further past the threshold than the threshold itself is from the expected level" "Kolikrát dál za prahem, než je práh od očekávané hladiny" }}">{{ lang.FormatNumber 1 .score }}×</span>
+        <span class="pp-home-signal__body">
+          <strong>{{ .diagnoza_nazev }}</strong>
+          <span class="pp-home-signal__where">{{ .kraj_nazev }}</span>
+        </span>
+        <span class="pp-home-signal__nums">
+          {{ cond $en "observed" "pozorováno" }} <strong>{{ lang.FormatNumber 0 .observed }}</strong>
+          · {{ cond $en "expected" "očekáváno" }} {{ lang.FormatNumber 1 .expected }}
+        </span>
+      </a>
+      {{ end }}
+    </div>
+    <p class="pp-home-caveat">
+      <i class="bi bi-info-circle" aria-hidden="true"></i>
+      {{ if $en }}
+      A signal is a statistical screen, <strong>not a confirmed outbreak</strong>. It can also be a
+      change in reporting or plain chance — at the 99th percentile roughly 1 % of series cross the
+      threshold by accident.
+      {{ else }}
+      Signál je statistický screening, <strong>ne potvrzená epidemie</strong>. Za překročením může
+      stát i změna vykazování nebo prostá náhoda — při 99. percentilu čekáme zhruba 1 % překročení
+      čistou náhodou.
+      {{ end }}
+    </p>
+  </section>
+  {{ end }}
+  {{ end }}
+
+  {{/* ── 3. Novinky ────────────────────────────────────────────────────── */}}
+  {{ $news := .Site.GetPage "section" "news" }}
+  {{ with $news }}
+  {{ $items := first 3 .RegularPages }}
+  {{ with $items }}
+  <section class="pp-home-news mb-5">
+    <div class="pp-home-sec-head">
+      <h2>{{ cond $en "News" "Novinky" }}</h2>
+      <a class="pp-home-more" href="{{ $news.RelPermalink }}">{{ cond $en "All news" "Všechny novinky" }} <i class="bi bi-arrow-right-short"></i></a>
+    </div>
+    <div class="pp-home-news-list">
+      {{ range . }}
+      <a class="pp-home-news-item" href="{{ .RelPermalink }}">
+        <span class="pp-home-news-item__date">{{ .Date.Format "2. 1. 2006" }}</span>
+        <span class="pp-home-news-item__title">{{ .Title }}</span>
+        {{ with .Description }}<span class="pp-home-news-item__desc">{{ . }}</span>{{ end }}
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+  {{ end }}
+
+  {{/* ── 4. Rejstřík patogenů ──────────────────────────────────────────────
+       ⛔ Rejstřík, NE fulltextový vyhledávač. Statický web by na hledání
+       potřeboval klientský JS index (Pagefind/Fuse/lunr), což naráží na
+       otevřené PP-7 (vendorované knihovny). Filtrovaný seznam reaguje okamžitě,
+       bez JS zobrazí prostě všechno, a nemá problém prázdného výsledku.
+
+       Filtruje se přes title + popis + tagy, takže „vakcíny" najde i podstránku
+       schovanou pod `build: list: never`. */}}
+  {{ $dash := .Site.GetPage "section" "dashboards" }}
+  {{ with $dash }}
+  <section class="pp-home-index">
+    <div class="pp-home-sec-head">
+      <h2>{{ cond $en "Pathogen index" "Rejstřík patogenů" }}</h2>
+      <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny dashboardy" }} <i class="bi bi-arrow-right-short"></i></a>
     </div>
 
-    <!-- Right sidebar -->
-    <div class="col-md-4 ms-auto p-3">
-        <hr class="d-lg-none">
+    <label class="pp-home-filter">
+      <i class="bi bi-funnel" aria-hidden="true"></i>
+      <input type="search" id="pp-index-filter" autocomplete="off"
+             placeholder="{{ cond $en "Filter by name, topic or tag…" "Filtrovat podle názvu, tématu nebo tagu…" }}"
+             aria-label="{{ cond $en "Filter the pathogen index" "Filtrovat rejstřík patogenů" }}">
+    </label>
 
-        <!-- Topics box -->
-        <div class="bg-home-topics mb-4">
-            <h4 class="mt-0 mb-1">{{ i18n "topics" }}</h4>
-            <p class="mb-2 small">{{ i18n "topicsList" }}</p>
-            {{/* Override theme: jen tagy s obsahem — tagy patřící pouze skrytým
-                 podstránkám (build: list: never) by vedly na prázdné stránky. */}}
-            {{- /* Jen tagy přiřazené viditelné stránce: site.RegularPages respektuje
-     build: list: never, mapa .Site.Taxonomies nikoli — tagy skrytých
-     podstránek by vedly na prázdné stránky tagů. */ -}}
-{{- $visible := slice -}}
-{{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
-{{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-            {{ if in $visible ($name | urlize) }}
-                <a href="/tags/{{ urlize $name }}"><span class="bg-home-topics-btn">{{ $name }}</span></a>
-            {{ end }}
-            {{ end }}
-        </div>
+    <ul class="pp-home-index-list" id="pp-index-list">
+      {{ range .Pages.ByTitle }}
+      <li class="pp-home-index-item"
+          data-hay="{{ lower (printf "%s %s %s" .Title (.Description | default "") (delimit (.Params.tags | default slice) " ")) }}">
+        <a href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Title }}</a>
+        {{ with partial "origin-badge.html" (dict "page" . "size" "sm") }}{{ . }}{{ end }}
+        {{ if .Params.redirect_url }}<span class="pp-origin-badge pp-origin-badge--sm" style="color:#77766f;background:#f2f1ee">{{ cond $en "external" "externí" }} <i class="bi bi-box-arrow-up-right"></i></span>{{ end }}
+        {{ with .Description }}<span class="pp-home-index-item__desc">{{ . }}</span>{{ end }}
+      </li>
+      {{ end }}
+    </ul>
+    <p class="pp-home-index-empty" id="pp-index-empty" hidden>
+      {{ cond $en "Nothing matches that." "Tomu nic neodpovídá." }}
+    </p>
 
-        <!-- Events -->
-        {{ $events := .Site.GetPage "section" "events" }}
-
-        {{ if $events }}
-        <section id="events-section">
-            <div class="row mt-4">
-                <h4 class="mb-1">{{ i18n "eventsAndTrainings" }}</h4>
-                <p class="mb-2 small">{{ i18n "eventsAndTrainingsList" }}</p>
-            </div>
-            <div class="row px-2">
-                <div class="border p-3">
-
-
-                    {{ $upcomingEvents := where (sort $events.RegularPages ".Params.start_date" "asc") ".Params.start_date" "ge" (now.Format "2006-01-02T15:04:05Z07:00") }}
-
-                    {{ if gt (len $upcomingEvents) 0 }}
-
-                        {{ range first 3 $upcomingEvents }}
-                        <div>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    {{ range .Params.categories }}
-                                    <span class="badge card-badge mb-1">{{ . | title }}</span>
-                                    {{ end }}
-                                    <h6>
-                                        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-                                    </h6>
-                                </div>
-                                <div>
-                                    <div class="px-2 py-1 d-flex flex-column rounded card-badge mw-100">
-                                        <div class="px-2 fs-6 mx-auto">{{ .Params.start_date | time.Format "02" }}</div>
-                                        <div class="pb-1 px-2 fs-6 mx-auto">{{ .Params.start_date | time.Format "Jan" }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="px-4 py-1">
-                                <hr class="my-2">
-                            </div>
-                        </div>
-                        {{ end }}
-
-                    {{ else }}
-                        <div class="text-center">
-                            <p>{{ i18n "noUpcomingEvents" }}</p>
-                        </div>
-                    {{ end }}
-                    <div class="mt-3 bg-see-all-link">
-                        <a class="dark-blue" href="/events/">{{ i18n "seeAllEvents" }} <i
-                                class="bi bi-arrow-right-square-fill"></i></a>
-                    </div>
-                </div>
-            </div>
-        </section>
-        {{ end }}
+    {{/* Legenda — barva bez legendy je nedešifrovatelná. */}}
+    <div class="pp-origin-legend mt-3">
+      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--aggregated pp-origin-badge--sm"><i class="bi bi-diagram-3"></i>{{ cond $en "Public source" "Veřejný zdroj" }}</span> {{ cond $en "collected by the portal" "portál je jen shromažďuje" }}</span>
+      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--own pp-origin-badge--sm"><i class="bi bi-award"></i>{{ cond $en "Our data" "Naše data" }}</span> {{ cond $en "produced or processed by us" "vznikla u nás nebo je zpracováváme" }}</span>
+      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--ai-assisted pp-origin-badge--sm"><i class="bi bi-robot"></i>{{ cond $en "AI-processed" "Zpracováno AI"}}</span> {{ cond $en "written by an AI agent, expert-reviewed" "sepsala AI, prošlo odbornou revizí" }}</span>
     </div>
+  </section>
+  {{ end }}
+
 </div>
+
+{{/* Filtr rejstříku. Vanilla, ~15 řádků, žádná knihovna — viz PP-7.
+     Bez JS zůstane seznam celý viditelný, což je použitelný stav. */}}
+<script>
+(function () {
+  var input = document.getElementById('pp-index-filter');
+  var list  = document.getElementById('pp-index-list');
+  var empty = document.getElementById('pp-index-empty');
+  if (!input || !list) return;
+  var items = Array.prototype.slice.call(list.querySelectorAll('.pp-home-index-item'));
+  input.addEventListener('input', function () {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    items.forEach(function (li) {
+      var hit = !q || (li.dataset.hay || '').indexOf(q) !== -1;
+      li.hidden = !hit;
+      if (hit) shown++;
+    });
+    if (empty) empty.hidden = shown !== 0;
+  });
+})();
+</script>
 {{ end }}

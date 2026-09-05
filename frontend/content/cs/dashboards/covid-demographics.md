@@ -1,5 +1,6 @@
 ---
 title: "COVID-19 — Věk a vakcinace"
+origin: aggregated
 description: "4,9 milionu potvrzených případů COVID-19 v ČR podle věku a stavu očkování — úmrtí, smrtnost, hospitalizace. Otevřená data MZČR, aktualizováno průběžně."
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "úmrtí", "vakcinace", "epidemiologie", "MZČR"]

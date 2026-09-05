@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Tick- and animal-borne"
+origin: aggregated
 description: "Tick-borne encephalitis, Lyme borreliosis, animal bites, tularaemia — Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-vector.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "tick-borne"]

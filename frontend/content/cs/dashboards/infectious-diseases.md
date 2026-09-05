@@ -1,5 +1,6 @@
 ---
 title: "Infekční nemoci — přehled"
+origin: aggregated
 description: "Přehled hlášených infekčních nemocí v ČR 2018–2025 dle ÚZIS — regionální mapa, top diagnózy, věková struktura a tematické skupiny nemocí."
 image: "/images/cards/infectious-hub.svg"
 highlight: true

@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Childhood/airborne"
+origin: aggregated
 description: "Varicella, herpes zoster, scarlet fever, mumps, measles — annual case counts in the Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-childhood.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "childhood diseases"]

@@ -1,5 +1,6 @@
 ---
 title: "Chřipka a respirační viry"
+origin: aggregated
 description: "Virologická surveillance chřipky a respiračních virů v České republice — sezónní přehledy 2012–2026, data SZÚ/NRL."
 image: "/images/cards/flu.svg"
 highlight: true

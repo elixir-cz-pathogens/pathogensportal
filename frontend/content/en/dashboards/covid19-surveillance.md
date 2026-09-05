@@ -1,5 +1,6 @@
 ---
 title: "COVID-19 Surveillance"
+origin: aggregated
 description: "The SARS-CoV-2 epidemiological situation in the Czech Republic — daily cases, hospitalisations, testing and vaccination."
 image: "/images/cards/covid.svg"
 highlight: true

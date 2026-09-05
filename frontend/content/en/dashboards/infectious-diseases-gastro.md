@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — Gastrointestinal/foodborne"
+origin: aggregated
 description: "Salmonellosis, viral intestinal infections, shigellosis and other foodborne infections in the Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-gastro.svg"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "foodborne"]

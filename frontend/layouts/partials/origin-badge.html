@@ -1,0 +1,42 @@
+{{/* Štítek původu dat (PP-57).
+
+     Použití:  {{ partial "origin-badge.html" (dict "page" . "size" "sm") }}
+
+     ⛔ Původ je UZAVŘENÝ ČÍSELNÍK ve frontmatteru (`origin:`), ne text odvozený
+     z `data_source`. Odvozovat ho nejde: `hantavirus-mhondius` i ebola stránky
+     mají v `data_source` doslova stejnou citaci „Jan Pačes & Michaela Liegertová
+     — IMG AV ČR", a přitom jsou to různé kategorie. Právě tu dvojici je potřeba
+     rozlišit nejvíc.
+
+     ⚠️ Barva nikdy nestojí sama — vždy nese i slovní štítek. Bez něj je
+     nepoužitelná pro barvoslepé čtenáře a nedešifrovatelná pro všechny ostatní.
+
+     Stránka bez `origin:` nevykreslí nic. To je záměr: raději žádné tvrzení než
+     tvrzení nastavené omylem.
+*/}}
+{{ $p := .page }}
+{{ $size := .size | default "" }}
+{{ $o := $p.Params.origin }}
+{{ $en := eq $p.Site.Language.Lang "en" }}
+{{ with $o }}
+{{ $label := "" }}{{ $title := "" }}{{ $icon := "" }}
+{{ if eq . "aggregated" }}
+  {{ $label = cond $en "Public source" "Veřejný zdroj" }}
+  {{ $icon = "bi-diagram-3" }}
+  {{ $title = cond $en "Data published by an external institution. The portal collects and visualises it; the source is authoritative." "Data zveřejněná externí institucí. Portál je shromažďuje a vykresluje, závazný je původní zdroj." }}
+{{ else if eq . "own" }}
+  {{ $label = cond $en "Our data" "Naše data" }}
+  {{ $icon = "bi-award" }}
+  {{ $title = cond $en "Produced by us, or handed to us for processing. We stand behind it." "Vznikla u nás, nebo jsme je dostali ke zpracování. Ručíme za ně." }}
+{{ else if eq . "ai-assisted" }}
+  {{ $label = cond $en "AI-processed" "Zpracováno AI" }}
+  {{ $icon = "bi-robot" }}
+  {{ $title = cond $en "Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication." "Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí." }}
+{{ end }}
+{{ with $label }}
+<span class="pp-origin-badge pp-origin-badge--{{ $o }}{{ if $size }} pp-origin-badge--{{ $size }}{{ end }}"
+      title="{{ $title }}">
+  <i class="bi {{ $icon }}" aria-hidden="true"></i>{{ . }}
+</span>
+{{ end }}
+{{ end }}

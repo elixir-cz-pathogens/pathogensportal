@@ -1,5 +1,6 @@
 ---
 title: "Influenza and respiratory viruses"
+origin: aggregated
 description: "Virological surveillance of influenza and respiratory viruses in the Czech Republic — seasonal overviews 2012–2026, NIPH/NRL data."
 image: "/images/cards/flu.svg"
 highlight: true

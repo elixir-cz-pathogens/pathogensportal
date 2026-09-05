@@ -18,3 +18,120 @@
   width: auto;
   object-fit: contain;
 }
+
+/* ── Štítek původu dat (PP-57) ──────────────────────────────────────────────
+   Tokeny jsou v duchu dashboards.css, ale musí platit i mimo `.pp-viz` — štítek
+   se vykresluje na kartách i na titulce, které ten wrapper nemají.
+
+   ⛔ Záměrně NEPOUŽÍVÁ červenou ani oranžovou. Ty jsou v tomhle projektu
+   vyhrazené pro stav (--pp-status-warn / --pp-status-alert), a „zpracováno AI"
+   není varování — je to informace o původu. Fialová se s ničím nepere. */
+:root {
+  --pp-origin-aggregated: #2a78d6;
+  --pp-origin-aggregated-bg: #eaf2fd;
+  --pp-origin-own: #1b7a54;
+  --pp-origin-own-bg: #e6f4ee;
+  --pp-origin-ai: #5b46bd;
+  --pp-origin-ai-bg: #eeebfa;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pp-origin-aggregated: #7fb4f0;
+    --pp-origin-aggregated-bg: #16283d;
+    --pp-origin-own: #6cc9a1;
+    --pp-origin-own-bg: #143024;
+    --pp-origin-ai: #b4a4f3;
+    --pp-origin-ai-bg: #221d3a;
+  }
+}
+
+.pp-origin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid currentColor;
+}
+.pp-origin-badge--sm { font-size: 0.72rem; padding: 0.1em 0.5em; }
+.pp-origin-badge i { font-size: 0.9em; }
+
+.pp-origin-badge--aggregated { color: var(--pp-origin-aggregated); background: var(--pp-origin-aggregated-bg); }
+.pp-origin-badge--own        { color: var(--pp-origin-own);        background: var(--pp-origin-own-bg); }
+.pp-origin-badge--ai-assisted{ color: var(--pp-origin-ai);         background: var(--pp-origin-ai-bg); }
+
+/* Legenda nad seznamem dashboardů */
+.pp-origin-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e1dc;
+  border-radius: 10px;
+  background: #fcfcfb;
+  margin-bottom: 1.25rem;
+}
+.pp-origin-legend__item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+
+/* ── Titulní stránka (PP-57) ─────────────────────────────────────────────── */
+.pp-home-lead { font-size: 1.05rem; max-width: 62ch; color: #52514e; }
+.pp-home-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+.pp-home-sec-head h2 { margin: 0 0 .25rem; font-size: 1.35rem; }
+.pp-home-more { white-space: nowrap; font-size: .9rem; text-decoration: none; }
+.pp-home-sub { color: #77766f; font-size: .875rem; margin: 0 0 .75rem; }
+
+/* Signály */
+.pp-home-signal-list { display: grid; gap: .4rem; }
+.pp-home-signal {
+  display: grid; grid-template-columns: auto 1fr auto; gap: .85rem; align-items: center;
+  padding: .6rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px;
+  background: #fff; text-decoration: none; color: inherit;
+}
+.pp-home-signal:hover { border-color: #c9c8c1; background: #fcfcfb; }
+.pp-home-signal__score {
+  font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1rem;
+  color: #b3322f; min-width: 3.2rem; text-align: right;
+}
+.pp-home-signal__where { color: #77766f; font-size: .85rem; margin-left: .5rem; }
+.pp-home-signal__nums { color: #52514e; font-size: .82rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pp-home-caveat { margin-top: .6rem; font-size: .85rem; color: #52514e; max-width: 72ch; }
+
+/* Novinky */
+.pp-home-news-list { display: grid; gap: .4rem; }
+.pp-home-news-item {
+  display: grid; grid-template-columns: 7.5rem 1fr; gap: .25rem .85rem; align-items: baseline;
+  padding: .55rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px;
+  background: #fff; text-decoration: none; color: inherit;
+}
+.pp-home-news-item:hover { border-color: #c9c8c1; background: #fcfcfb; }
+.pp-home-news-item__date { color: #77766f; font-size: .82rem; font-variant-numeric: tabular-nums; }
+.pp-home-news-item__title { font-weight: 600; }
+.pp-home-news-item__desc { grid-column: 2; color: #52514e; font-size: .85rem; }
+
+/* Rejstřík */
+.pp-home-filter {
+  display: flex; align-items: center; gap: .5rem; margin: .25rem 0 .85rem;
+  padding: .45rem .75rem; border: 1px solid #e2e1dc; border-radius: 999px; background: #fff; max-width: 30rem;
+}
+.pp-home-filter i { color: #77766f; }
+.pp-home-filter input { border: 0; outline: 0; flex: 1; background: transparent; font-size: .95rem; }
+.pp-home-index-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .3rem; }
+.pp-home-index-item {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
+  padding: .5rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px; background: #fff;
+}
+.pp-home-index-item > a { font-weight: 600; text-decoration: none; }
+.pp-home-index-item__desc { flex-basis: 100%; color: #52514e; font-size: .85rem; }
+.pp-home-index-empty { color: #77766f; font-size: .9rem; padding: .5rem 0; }
+
+@media (max-width: 576px) {
+  .pp-home-signal { grid-template-columns: auto 1fr; }
+  .pp-home-signal__nums { grid-column: 2; }
+  .pp-home-news-item { grid-template-columns: 1fr; }
+  .pp-home-news-item__desc { grid-column: 1; }
+}

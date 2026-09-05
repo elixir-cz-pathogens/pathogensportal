@@ -1,5 +1,6 @@
 ---
 title: "COVID-19 — Age and vaccination"
+origin: aggregated
 description: "4.9 million confirmed COVID-19 cases in the Czech Republic by age and vaccination status — deaths, case fatality, hospitalisations. Czech MoH open data, updated continuously."
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "deaths", "vaccination", "epidemiology", "Czech MoH"]

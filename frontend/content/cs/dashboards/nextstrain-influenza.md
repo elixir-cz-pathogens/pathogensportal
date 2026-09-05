@@ -1,5 +1,6 @@
 ---
 title: "Fylogeneze chřipky (Nextstrain)"
+origin: aggregated
 description: "Fylogeneze sezónní chřipky — H3N2, H1N1pdm a typ B. Evoluční vývoj hemaglutininu a predikce pro vakcinaci."
 image: "/images/cards/phylo.svg"
 highlight: false

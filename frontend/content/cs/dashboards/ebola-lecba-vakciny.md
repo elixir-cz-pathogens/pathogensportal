@@ -1,5 +1,6 @@
 ---
 title: "Ebola BDBV 2026 — Léčba a vakcíny"
+origin: ai-assisted
 description: "Sekce situačního reportu: Léčba a vakcíny. Zdroj: IMG AV ČR / UJEP."
 tags: ["ebola", "epidemiologie", "IMG AV ČR", "Afrika"]
 data_source: 'Jan Pačes & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> · Licence CC BY 4.0'

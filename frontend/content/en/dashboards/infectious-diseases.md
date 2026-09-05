@@ -1,5 +1,6 @@
 ---
 title: "Infectious Diseases — ISIN dashboard"
+origin: aggregated
 description: "Overview of notified infectious diseases in the Czech Republic 2018–2025 from ÚZIS — regional map, top diagnoses, age structure and seasonal trends."
 image: "/images/cards/infectious-hub.svg"
 highlight: true

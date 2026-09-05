@@ -1,5 +1,6 @@
 ---
 title: "Infekční nemoci — Ostatní"
+origin: aggregated
 description: "Souhrn zbytkových ICD kategorií infekčních nemocí, co nezapadají do žádné konkrétní skupiny, v ČR 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-other.svg"
 tags: ["infekční nemoci", "ÚZIS", "ISIN"]

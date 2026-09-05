@@ -1,5 +1,6 @@
 ---
 title: "Signály — detekce anomálií"
+origin: own
 description: "Automatické vyhledávání překročení očekávané hladiny v 1 200+ řadách hlášených infekčních nemocí (diagnóza × kraj, ÚZIS ISIN) metodou Farrington/Noufaily."
 image: "/images/cards/signals.svg"
 highlight: true
