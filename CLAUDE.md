@@ -1,8 +1,7 @@
 # CLAUDE.md — pathogensportal
 
 Public repo of **Pathogen Portal CZ** — a static Hugo website plus a data pipeline that feeds it.
-Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork
-(`origin = elixir-cz-pathogens/pathogensportal`) is the working repo.
+Working repo: `elixir-cz-pathogens/pathogensportal` (transferred to the org 11 Aug 2026).
 Live site: `https://pathogens.vm.cesnet.cz` · Staging: `https://pathogens-dev.vm.cesnet.cz` (`noindex`).
 
 Docs, code and commit messages are in **English**. The only Czech is the site's own content in
