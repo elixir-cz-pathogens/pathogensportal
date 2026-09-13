@@ -1,4 +1,13 @@
 ---
+# ⛔ NENÍ to dashboard, je to stránka s vlastní funkcionalitou (mapa +
+# přepínač diagnóz), a proto nežije v sekci dashboards. `type` ale zůstává
+# `dashboards`: JEN layouts/dashboards/single.html načítá /js/pp-charts.js,
+# bez kterého se mapa nikdy neobarví. Bez tohohle řádku se stránka přesune
+# a ztichne — vypadá hotově a nefunguje.
+type: dashboards
+# Stará adresa musí dál fungovat: odkazují na ni dvě publikované novinky.
+aliases:
+  - "/dashboards/signals/"
 title: "Signals — anomaly detection"
 origin: own
 description: "Automated screening of 1,200+ notified infectious disease time series (diagnosis × region, ÚZIS ISIN) for exceedances of the expected level using the Farrington/Noufaily method."
@@ -6,7 +15,9 @@ image: "/images/cards/signals.svg"
 highlight: true
 tags: ["anomaly detection", "surveillance", "early warning", "ÚZIS", "statistics"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
-update_freq: "With every data pipeline run"
+# The date of the last run comes from generated_at in this JSON, not from here.
+update_from: "anomaly_signals.json"
+update_read: "stamp"
 ---
 
 Infectious disease notifications form more than **1,200 time series** (114 diagnoses ×
@@ -14,6 +25,8 @@ Infectious disease notifications form more than **1,200 time series** (114 diagn
 therefore screens them automatically: for every series it computes the **expected
 endemic level** from seasonality and history, and shows the months where the notified
 count exceeded the threshold.
+
+{{< signals-map src="/data/charts/anomaly_signals.json" title="Where the signal is — by region" >}}
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Series above the expected level" >}}
 

@@ -33,7 +33,7 @@ zásadně liší:
 |---|---|
 | **Veřejný zdroj** | Data zveřejněná externí institucí (MZČR, ÚZIS, SZÚ, ECDC, ČSÚ). Portál je shromažďuje a vykresluje; závazný je původní zdroj. |
 | **Naše data** | Vznikla u nás, nebo jsme je dostali ke zpracování. Ručíme za ně. |
-| **Zpracováno AI** | Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí. |
+| **Vytvořeno s pomocí AI** | Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí. |
 
 ## Kdo portál provozuje
 

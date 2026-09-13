@@ -2,7 +2,7 @@
 title: "Wastewater Monitoring"
 origin: aggregated
 description: "Surveillance of SARS-CoV-2 and polioviruses in municipal wastewater — an early warning signal for pathogen circulation at the population level."
-image: "/images/cards/wastewater.svg"
+image: "/images/cards/wastewater.webp"
 highlight: true
 tags: ["wastewater", "SARS-CoV-2", "poliovirus", "surveillance", "Czech Republic"]
 data_source: '<a href="https://szu.gov.cz/temata-zdravi-a-bezpecnosti/surveillance-odpadnich-vod/" target="_blank">NIPH — wastewater surveillance</a>'

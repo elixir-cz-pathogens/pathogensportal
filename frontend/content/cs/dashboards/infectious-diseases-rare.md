@@ -2,7 +2,9 @@
 title: "Infekční nemoci — Vzácné závažné"
 origin: aggregated
 description: "Záškrt, opičí neštovice, meningokok, břišní tyfus, Q horečka, brucelóza, žlutá zimnice, tularemie — v ČR 2018–2025 (ÚZIS ISIN)."
-image: "/images/cards/id-rare.svg"
+image: "/images/cards/id-rare.webp"
+update_from: "isin_group_rare_severe.json"
+update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "vzácné nemoci"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:

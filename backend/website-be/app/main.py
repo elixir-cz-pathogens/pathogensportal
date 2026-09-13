@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from . import charts
+from . import charts, db
 from .config import settings
 
 app = FastAPI(title=settings.service_name)
@@ -27,7 +27,29 @@ _DB_UNAVAILABLE = "The database is unavailable."
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok", "service": settings.service_name}
+    """Service health, with the database reported separately (PP-8).
+
+    ⛔ Always HTTP 200, even when the database is down — and that is deliberate.
+    This service is designed to survive a dead database: `/api/charts` answers 503
+    and the frontend falls back to the static JSON, so the site keeps working. A
+    health check that returned 503 would make an orchestrator restart a process
+    that is doing exactly what it was designed to do, and restarting it would not
+    bring the database back.
+
+    The distinction PP-8 asks for is therefore in the BODY: `status` is this
+    service, `database` is its dependency. Whoever needs "service + DB" checks
+    both fields; whoever needs "is the process alive" checks the status code.
+    """
+    try:
+        db.ping()
+        database = "ok"
+    except psycopg.Error:
+        database = "unavailable"
+    return {
+        "status": "ok",
+        "service": settings.service_name,
+        "database": database,
+    }
 
 
 @app.get("/api/charts")

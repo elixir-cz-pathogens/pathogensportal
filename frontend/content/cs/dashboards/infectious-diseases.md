@@ -6,7 +6,8 @@ image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infekční nemoci", "surveillance", "ÚZIS", "kraje", "ČR"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
-update_freq: "Průběžná aktualizace (data 2018–2025)"
+update_from: "isin_monthly_trend.json"
+update_read: "month"
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="prehled" >}}

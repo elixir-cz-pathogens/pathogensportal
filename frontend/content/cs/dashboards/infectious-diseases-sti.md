@@ -2,7 +2,9 @@
 title: "Infekční nemoci — Pohlavně přenosné"
 origin: aggregated
 description: "Chlamydiové infekce, trichomoniáza a další pohlavně přenosné nemoci v ČR 2018–2025 (ÚZIS ISIN)."
-image: "/images/cards/id-sti.svg"
+image: "/images/cards/id-sti.webp"
+update_from: "isin_group_sti.json"
+update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "STI"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:

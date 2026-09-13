@@ -8,35 +8,21 @@
      — IMG AV ČR", a přitom jsou to různé kategorie. Právě tu dvojici je potřeba
      rozlišit nejvíc.
 
-     ⚠️ Barva nikdy nestojí sama — vždy nese i slovní štítek. Bez něj je
-     nepoužitelná pro barvoslepé čtenáře a nedešifrovatelná pro všechny ostatní.
+     ⚠️ TENHLE štítek nese barvu i slovo zároveň, a proto zůstává na stránce
+     dashboardu a v legendě. Karty ve výpisech od 8. 9. 2026 ukazují jen barevný
+     rámeček — vysvětlení je v legendě na /dashboards/. Je to vědomý ústupek
+     vzhledu: samotná barva je pro barvoslepé čtenáře nečitelná, proto karta
+     nese původ aspoň v `title` a ve skrytém textu pro odečítač.
 
      Stránka bez `origin:` nevykreslí nic. To je záměr: raději žádné tvrzení než
      tvrzení nastavené omylem.
 */}}
 {{ $p := .page }}
 {{ $size := .size | default "" }}
-{{ $o := $p.Params.origin }}
-{{ $en := eq $p.Site.Language.Lang "en" }}
-{{ with $o }}
-{{ $label := "" }}{{ $title := "" }}{{ $icon := "" }}
-{{ if eq . "aggregated" }}
-  {{ $label = cond $en "Public source" "Veřejný zdroj" }}
-  {{ $icon = "bi-diagram-3" }}
-  {{ $title = cond $en "Data published by an external institution. The portal collects and visualises it; the source is authoritative." "Data zveřejněná externí institucí. Portál je shromažďuje a vykresluje, závazný je původní zdroj." }}
-{{ else if eq . "own" }}
-  {{ $label = cond $en "Our data" "Naše data" }}
-  {{ $icon = "bi-award" }}
-  {{ $title = cond $en "Produced by us, or handed to us for processing. We stand behind it." "Vznikla u nás, nebo jsme je dostali ke zpracování. Ručíme za ně." }}
-{{ else if eq . "ai-assisted" }}
-  {{ $label = cond $en "AI-processed" "Zpracováno AI" }}
-  {{ $icon = "bi-robot" }}
-  {{ $title = cond $en "Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication." "Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí." }}
-{{ end }}
-{{ with $label }}
-<span class="pp-origin-badge pp-origin-badge--{{ $o }}{{ if $size }} pp-origin-badge--{{ $size }}{{ end }}"
-      title="{{ $title }}">
-  <i class="bi {{ $icon }}" aria-hidden="true"></i>{{ . }}
+{{ $m := partial "origin-meta.html" $p }}
+{{ with $m }}
+<span class="pp-origin-badge pp-origin-badge--{{ .key }}{{ if $size }} pp-origin-badge--{{ $size }}{{ end }}"
+      title="{{ .title }}">
+  <i class="bi {{ .icon }}" aria-hidden="true"></i>{{ .label }}
 </span>
-{{ end }}
 {{ end }}

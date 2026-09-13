@@ -1,31 +1,31 @@
 <!-- MAIN CONTENT -->
 
 <!-- Top navigation bar with logo and menu beside the logo -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white pb-0">
+{{/* ⛔ Bez `navbar-expand-*`. Do 9. 9. 2026 ho tenhle navbar potřeboval kvůli
+     pruhu s „O portálu", který v něm seděl v `collapse` bez `id`. Ten pruh je
+     pryč — „O portálu" je teď v rozklikávacím menu — takže tady není co
+     rozbalovat, a hlavně: bez `navbar-expand-lg` Bootstrap přestane nad `lg`
+     skrývat `.navbar-toggler`, takže tlačítko drží samo a nemusí ho zachraňovat
+     výjimka v CSS. */}}
+<nav class="navbar navbar-light bg-white pb-0">
     <div class="container">
+        {{/* ⛔ V hlavičce je JEN logo portálu. Loga partnerů odsud odešla 9. 9. 2026:
+             ELIXIR, ÚMG, VZÚ a Program švýcarsko-české spolupráce stály vedle
+             názvu na každé stránce a přebíjely to, na čem je čtenář.
+
+             ⚠️ Poděkování se tím NEZTRATILO a ztratit se nesmí. Všech devět
+             partnerů včetně švýcarského programu vykresluje partners.html
+             z patičky, tedy také na každé stránce — u dotačního loga je viditelné
+             uvedení podmínka, ne zdvořilost. Kdo by rušil i patičku, musí to
+             nejdřív ověřit u poskytovatele.
+
+             ⚠️ `params.logo` v hugo.toml tím ztratilo v NAŠÍ šabloně odběratele.
+             Nechává se: šablona motivu ho pořád čte, a patička si logo ELIXIRu
+             bere vlastní cestou. */}}
         <!-- Logo -->
         <div class="d-flex navbar-brand">
             <a href="{{ relURL .Site.BaseURL }}">
                 <img class="mt-1 me-lg-3 portal-logo" src="/images/portal.png" alt="Pathogens Portal">
-            </a>
-
-            {{ if .Site.Params.logo }}
-            <a href="https://elixir-europe.org" target="_blank" rel="noopener" class="d-none d-lg-block">
-                <img class="px-2 py-lg-1 custom-logo" src="{{ relURL .Site.Params.logo }}" alt="ELIXIR Europe">
-            </a>
-            {{ end }}
-
-            <a href="https://www.img.cas.cz" target="_blank" rel="noopener" class="d-none d-lg-block">
-                <img class="px-2 py-lg-1 custom-logo" src="/images/IMG.png" alt="Ústav molekulární genetiky AV ČR">
-            </a>
-
-            <a href="https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav" target="_blank" rel="noopener" class="d-none d-lg-block">
-                <img class="px-2 py-lg-1 custom-logo" src="/images/VZU.png" alt="Vojenský zdravotní ústav">
-            </a>
-
-            {{- /* Logo programu podle jazyka stránky — oficiální balíček má CZ a EN variantu. */ -}}
-            <a href="https://www.swiss-contribution.cz/" target="_blank" rel="noopener" class="d-none d-lg-block">
-                <img class="px-2 py-lg-1 custom-logo" src="/images/swiss-contribution-{{ if eq .Site.Language.Lang "en" }}en{{ else }}cz{{ end }}.png" alt="{{ if eq .Site.Language.Lang "en" }}Swiss-Czech Cooperation Programme{{ else }}Program švýcarsko-české spolupráce{{ end }}">
             </a>
         </div>
 
@@ -39,8 +39,12 @@
 
              Odkazuje na PŘEKLAD AKTUÁLNÍ STRÁNKY, když existuje; jinak na domovskou
              stránku druhého jazyka. Motiv odkazoval vždycky na domovskou. */}}
+        {{/* Přepínač jazyků a tlačítko menu jsou jedna skupina vpravo v hlavičce,
+             na místě, kde do 9. 9. 2026 stálo „O portálu". */}}
+        <div class="d-flex align-items-center ms-auto gap-2">
+
         {{ if hugo.IsMultilingual }}
-        <div class="pp-langswitch ms-auto me-2" role="group" aria-label="{{ if eq .Site.Language.Lang "en" }}Language{{ else }}Jazyk{{ end }}">
+        <div class="pp-langswitch" role="group" aria-label="{{ if eq .Site.Language.Lang "en" }}Language{{ else }}Jazyk{{ end }}">
           {{ $cur := . }}
           {{ range .Site.Languages }}
           {{ $lang := .Lang }}
@@ -56,42 +60,22 @@
         </div>
         {{ end }}
 
-        <!-- Hamburger button, shows up only on smaller screen-->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseBottom"
-                aria-controls="navbarCollapseBottom" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="navbarCollapseBottom" aria-expanded="false"
+                aria-label="{{ if eq .Site.Language.Lang "en" }}Menu{{ else }}Nabídka{{ end }}">
             <span class="navbar-toggler-icon"></span>
         </button>
-
-        <!-- Navigation links beside logo, visible only on biger screen -->
-        <div class="d-flex flex-column align-items-end collapse navbar-collapse">
-
-            <!-- Top navbar list i.e. About, Contact, Language, etc -->
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav ml-auto navbar-top">
-                    {{ range .Site.Menus.navbar_top }}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ .URL }}">{{ .Name }}</a>
-                    </li>
-                    {{ end }}
-                    {{/* Přepínač jazyků je teď mimo tenhle collapse — viz výše.
-                         Tady byl nedostupný na mobilu. */}}
-                    {{ with .Site.Params.repository }}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ . }}">
-                            <i class="bi bi-github"></i>
-                        </a>
-                    </li>
-                    {{ end }}
-                </ul>
-            </div>
-
         </div>
+
     </div>
 </nav>
 <!-- ENDS HERE - Top navigation bar with logo and menu beside the logo -->
 
-<!-- Expandable top navigation menu, controlled by above defined hamburger button, only visible on small screens -->
-<nav class="navbar navbar-expand-lg navbar-light pt-0 pb-1">
+{{/* Menu pro VŠECHNY šířky, otevírá se hamburgerem výše.
+     ⛔ Bez `navbar-expand-*` schválně: s `navbar-expand-lg` se na desktopu
+     rozbalí samo a sedí roztažené pod hlavičkou, což je přesně to, co odsud
+     mělo zmizet. */}}
+<nav class="navbar navbar-light pt-0 pb-1">
     <div class="container">
         <div class="collapse navbar-collapse" id="navbarCollapseBottom">
 
@@ -100,18 +84,26 @@
                  a hamburger cílí na #navbarCollapseBottom. Pod šířkou lg se na
                  „O portálu" nedalo dostat vůbec. Stejná past jako u přepínače
                  jazyků, který proto sedí mimo všechny collapse.
-                 `d-lg-none`: na desktopu ať to není dvakrát. */}}
-            <div class="d-lg-none">
+
+                 ⛔ `d-lg-none` odsud zmizelo 9. 9. 2026 spolu s pruhem vpravo
+                 v hlavičce, kde „O portálu" stávalo. Ta třída tu byla proto, aby
+                 položka nebyla na desktopu dvakrát — druhý výskyt už neexistuje,
+                 takže s ní by „O portálu" nad `lg` zmizelo úplně. */}}
+            <div>
                 {{ range .Site.Menus.navbar_top }}
                 <div class="main_menu_item pb-1"><a href="{{ .URL }}">{{ .Name }}</a></div>
                 {{ end }}
             </div>
 
             <!-- Top nav list i.e. About, Contact, Language, etc -->
-            <hr class="d-lg-none">
+            <hr>
 
-            <!-- Main navigation menu for all pages, English site. Visible only in smaller devices -->
-            <div class="d-lg-none">
+            {{/* ⛔ Tenhle blok NESMÍ mít `d-lg-none`. Měl ho, dokud existovala
+                 vodorovná lišta pro desktop — po jejím odstranění 9. 9. 2026 by
+                 hamburger nad `lg` otevíral PRÁZDNÉ menu. Chyceno vykreslením
+                 otevřeného stavu, ne čtením kódu: zavřené menu vypadá správně
+                 v obou případech. */}}
+            <div>
                 {{ $events := .Site.GetPage "section" "dashboards" }}
                 {{ if $events }}
                 <div class="main_menu_item pb-1">
@@ -172,65 +164,25 @@
                 </div>
                 {{ end }}
             </div>
-            <hr class="d-lg-none">
 
         </div>
     </div>
 </nav>
 <!-- ENDS HERE - Expandable top navigation menu, controlled by above defined hamburger button -->
 
-<!-- Main navigation menu, English version. Visibile only on bigger screens -->
-<div class="container mb-3 d-none d-lg-block">
-    <div class="row row-cols-auto">
-        {{ $events := .Site.GetPage "section" "dashboards" }}
-        {{ if $events }}
-        <div class="col-auto main_menu_item">
-            <a class="dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-               data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-haspopup="true"
-               aria-expanded="false">{{ i18n "dataDashboards" }}</a>
-            <div class="dropdown-menu main_menu_item_sub" aria-labelledby="navbarDropdownMenuLink">
-                <a class="dropdown-item m-0" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
-                {{ range $events.RegularPages }}
-                <a class="dropdown-item m-0" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
-                {{ end }}
-            </div>
-        </div>
-        {{ end }}
-        {{ range where .Site.Menus.main "Identifier" "ne" "dashboards" }}
-        <div class="col-auto main_menu_item">
-            {{ $menuName := .Identifier }} <!-- Use . to refer to the current context -->
-            {{ $menu := index $.Site.Menus $menuName }} <!-- Use $.Site to refer to the site context -->
-            {{ if $menu }}
-            <a class="dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-               data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-haspopup="true"
-               aria-expanded="false">{{ .Name }}</a>
-            <div class="dropdown-menu main_menu_item_sub" aria-labelledby="navbarDropdownMenuLink">
-                {{ range $menu }}
-                <a class="dropdown-item m-0" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
-                {{ end }}
-            </div>
-            {{ else }}
-            <a href="{{ .URL }}">{{ .Name }}</a>
-            {{ end }}
-        </div>
-        {{ end }}
-        {{ if .Site.Taxonomies.tags }}
-        <div class="col-auto main_menu_item">
-            <a class="dropdown-toggle" href="#" id="navbarDropdownMenuLink"
-               data-bs-auto-close="outside" data-bs-toggle="dropdown" aria-haspopup="true"
-               aria-expanded="false">{{ i18n "topics" }}</a>
-            <div class="dropdown-menu main_menu_item_sub" aria-labelledby="navbarDropdownMenuLink">
-                {{- /* Stejný filtr jako v mobilním menu — jen tagy s obsahem. */ -}}
-                {{- $visible2 := slice -}}
-                {{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible2 = $visible2 | append (. | urlize) -}}{{- end -}}{{- end -}}
-                {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-                {{ if in $visible2 ($name | urlize) }}
-                <a class="dropdown-item m-0" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ $name }}</a>
-                {{ end }}
-                {{ end }}
-            </div>
-        </div>
-        {{ end }}
-    </div>
-</div>
-<!--  ENDS HERE - Main navigation menu, English version for bigger screens -->
+{{/* ⛔ Tady stávala vodorovná lišta menu — `d-none d-lg-block`, tedy druhé
+     vykreslení TÝCHŽ položek jen pro desktop. Odstraněna 9. 9. 2026: menu se
+     má rozkliknout, ne sedět roztažené pod hlavičkou.
+
+     Od té doby má web JEDNO menu pro všechny šířky — `#navbarCollapseBottom`
+     výše. Proto z jeho `<nav>` zmizelo `navbar-expand-lg`: s ním se na
+     desktopu rozbalilo samo a schování by nic neřešilo.
+
+     ⚠️ Hamburger je v horním `<nav>`, které si `navbar-expand-lg` PONECHALO —
+     bez něj by se sbalil i pruh s „O portálu", který nemá `id` a nešlo by ho
+     ničím otevřít. Bootstrap ale v takovém navbaru tlačítko nad `lg` skrývá,
+     takže ho custom.css musí zobrazit zpátky (`.navbar-toggler`). Ty dva kusy
+     drží pohromadě: kdo vrátí `navbar-expand-lg` dolů nebo to pravidlo v CSS
+     smaže, zůstane bez menu.
+
+     Vrátit vodorovnou lištu = tenhle soubor v git historii před 9. 9. 2026. */}}

@@ -1,0 +1,39 @@
+{{/* Původ dat — jedno místo, kde žijí popisky, ikony a vysvětlení.
+
+     Usage: {{ $m := partial "origin-meta.html" $page }}
+            {{ if $m }}{{ $m.key }} {{ $m.label }} {{ $m.title }} {{ $m.icon }}{{ end }}
+
+     Vrací nic (nil) pro stránku bez `origin:`. To je záměr: raději žádné tvrzení
+     než tvrzení nastavené omylem.
+
+     ⛔ Existuje proto, že tytéž tři kategorie teď vykreslují TŘI různá místa —
+     barevný rámeček karty, štítek na stránce dashboardu a legenda na
+     /dashboards/. Kdyby si každé drželo vlastní text, rozejdou se a legenda
+     začne vysvětlovat barvy, které už nikde nejsou.
+
+     ⛔ Původ je UZAVŘENÝ ČÍSELNÍK ve frontmatteru, ne text odvozený
+     z `data_source`. Odvozovat ho nejde: `hantavirus-mhondius` i ebola stránky
+     mají v `data_source` doslova stejnou citaci „Jan Pačes & Michaela Liegertová
+     — IMG AV ČR", a přitom jsou to různé kategorie. Právě tu dvojici je potřeba
+     rozlišit nejvíc.
+*/}}
+{{ $o := .Params.origin }}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $out := "" }}
+{{ if eq $o "aggregated" }}
+  {{ $out = dict "key" $o "icon" "bi-diagram-3"
+      "label" (cond $en "Public source" "Veřejný zdroj")
+      "lead"  (cond $en "collected by the portal" "portál je jen shromažďuje")
+      "title" (cond $en "Data published by an external institution. The portal collects and visualises it; the source is authoritative." "Data zveřejněná externí institucí. Portál je shromažďuje a vykresluje, závazný je původní zdroj.") }}
+{{ else if eq $o "own" }}
+  {{ $out = dict "key" $o "icon" "bi-award"
+      "label" (cond $en "Our data" "Naše data")
+      "lead"  (cond $en "produced or processed by us" "vznikla u nás nebo je zpracováváme")
+      "title" (cond $en "Produced by us, or handed to us for processing. We stand behind it." "Vznikla u nás, nebo jsme je dostali ke zpracování. Ručíme za ně.") }}
+{{ else if eq $o "ai-assisted" }}
+  {{ $out = dict "key" $o "icon" "bi-robot"
+      "label" (cond $en "AI-assisted" "Vytvořeno s pomocí AI")
+      "lead"  (cond $en "written by an AI agent, expert-reviewed" "sepsala AI, prošlo odbornou revizí")
+      "title" (cond $en "Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication." "Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí.") }}
+{{ end }}
+{{ return $out }}

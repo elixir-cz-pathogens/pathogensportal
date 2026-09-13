@@ -2,7 +2,7 @@
 title: "Fylogeneze chřipky (Nextstrain)"
 origin: aggregated
 description: "Fylogeneze sezónní chřipky — H3N2, H1N1pdm a typ B. Evoluční vývoj hemaglutininu a predikce pro vakcinaci."
-image: "/images/cards/phylo.svg"
+image: "/images/cards/flu.webp"
 highlight: false
 tags: ["chřipka", "genomika", "fylogeneze", "Nextstrain"]
 data_source: '<a href="https://nextstrain.org/influenza" target="_blank">Nextstrain Influenza</a> · <a href="https://gisaid.org" target="_blank">GISAID EpiFlu</a>'

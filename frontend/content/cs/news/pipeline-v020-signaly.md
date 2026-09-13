@@ -13,7 +13,7 @@ Portál dostal největší aktualizaci od svého spuštění. Datová pipeline v
 **Signály — detekce anomálií.** Přes 1 200 časových řad hlášených infekčních nemocí
 (diagnóza × kraj) teď každý běh pipeline automaticky prochází statistický systém
 včasného varování metodou Farrington/Noufaily — stejnou, jakou používá britská UKHSA.
-Stránka [Signály](/dashboards/signals/) ukazuje, kde jsou hlášené počty nad očekávanou
+Stránka [Signály](/signals/) ukazuje, kde jsou hlášené počty nad očekávanou
 hladinou. Při zpětném testu systém zachytil pertusovou epidemii 2024 **tři měsíce
 předtím, než se stala veřejným tématem**.
 

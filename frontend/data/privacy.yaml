@@ -1,0 +1,55 @@
+# Text upozornění o zpracování dat (PP-55).
+#
+# Proč v datovém souboru a ne v šabloně: je to text, který bude někdo upravovat
+# bez toho, aby sahal na Hugo šablonu — a proto, aby se česká a anglická verze
+# daly porovnat vedle sebe, ne hledat mezi `cond` výrazy.
+#
+# ⛔ Když se tenhle text mění, musí se měnit i to, co portál doopravdy dělá.
+# Oznámení, které tvrdí něco jiného než realita, je horší než žádné.
+#
+# ⚠️ Zkráceno 7. 9. 2026 na DVĚ sekce: co sbíráme a jaká máte práva. Zmínka
+# o položce v localStorage zůstala uvnitř první sekce — proužek se po zavření
+# musí „pamatovat", že už byl viděn, a oznámení, které mlčí o jediné věci, kterou
+# do zařízení ukládáme, by bylo nepřesné právě v tom bodě, na který se lidé ptají.
+cs:
+  banner: >-
+    Portál si o návštěvě ukládá provozní záznam (IP adresa, čas, stránka)
+    a používá vlastní statistiku návštěvnosti. Bez cookies, bez sledování napříč weby.
+  more: Podrobnosti
+  dismiss: Rozumím
+  title: Zpracování osobních údajů
+  close: Zavřít
+  switch: English
+  sections:
+    - h: Co sbíráme
+      p:
+        - "**Provozní záznam webového serveru** — IP adresa, čas, adresa stránky, typ prohlížeče a odkud jste přišli. Maže se po **14 dnech**."
+        - "**Počty návštěv podle organizace** — IP adresa se přeloží na organizaci (například „Univerzita Karlova“) a **zahodí**. Uchovávají se jen počty. Nejsou to osobní údaje."
+        - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data neodcházejí třetím stranám."
+        - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Není to identifikátor a nikam neodchází."
+    - h: Vaše práva
+      p:
+        - "Máte právo na přístup ke svým údajům, na jejich opravu nebo výmaz, na omezení zpracování, právo vznést námitku a podat stížnost u [Úřadu pro ochranu osobních údajů](https://uoou.gov.cz)."
+        - "⚠️ Prakticky: v provozním záznamu vás **nedokážeme dohledat**, pokud nesdělíte IP adresu a přibližný čas návštěvy — nic jiného, podle čeho hledat, neuchováváme."
+        - "Správcem je **Ústav molekulární genetiky AV ČR**. Kontakt: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"
+en:
+  banner: >-
+    This portal keeps a server access log of your visit (IP address, time, page)
+    and runs its own visitor statistics. No cookies, no cross-site tracking.
+  more: Details
+  dismiss: Got it
+  title: Processing of personal data
+  close: Close
+  switch: Čeština
+  sections:
+    - h: What we collect
+      p:
+        - "**Web server access log** — IP address, time, page address, browser type and referring page. Deleted after **14 days**."
+        - "**Visit counts by organisation** — the IP address is resolved to an organisation (for example “Charles University”) and **discarded**. Only counts are kept. They are not personal data."
+        - "**Which pages are read** — our own analytics running on our server, with no cookies and no device identifier. The data does not go to third parties."
+        - "**On your device** we store a single item, and only so that this notice does not appear on every visit. It is not an identifier and it goes nowhere."
+    - h: Your rights
+      p:
+        - "You have the right of access to your data, to rectification or erasure, to restriction of processing, to object, and to lodge a complaint with the [Czech Data Protection Authority](https://uoou.gov.cz)."
+        - "⚠️ In practice: we **cannot find you** in the access log unless you tell us the IP address and roughly when you visited — we keep nothing else to search on."
+        - "The controller is the **Institute of Molecular Genetics of the Czech Academy of Sciences**. Contact: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"

@@ -2,7 +2,7 @@
 title: "Influenza Phylogeny (Nextstrain)"
 origin: aggregated
 description: "Phylogeny of seasonal influenza — H3N2, H1N1pdm and type B. Evolution of haemagglutinin and predictions for vaccine strain selection."
-image: "/images/cards/phylo.svg"
+image: "/images/cards/flu.webp"
 highlight: false
 tags: ["influenza", "genomics", "phylogeny", "Nextstrain"]
 data_source: '<a href="https://nextstrain.org/influenza" target="_blank">Nextstrain Influenza</a> · <a href="https://gisaid.org" target="_blank">GISAID EpiFlu</a>'

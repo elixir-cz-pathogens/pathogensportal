@@ -42,6 +42,17 @@ def connect() -> Iterator[psycopg.Connection]:
         yield conn
 
 
+def ping() -> None:
+    """Raises psycopg.Error when the database is not reachable or not answering.
+
+    Deliberately a real round-trip (`SELECT 1`), not just `connect()`: a socket
+    that accepts and then hangs is exactly the failure a health check exists to
+    notice, and opening a connection alone would not.
+    """
+    with connect() as conn:
+        conn.execute("SELECT 1").fetchone()
+
+
 def ensure_schema() -> None:
     with connect() as conn:
         for statement in SCHEMA_STATEMENTS:

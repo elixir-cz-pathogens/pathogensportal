@@ -27,6 +27,16 @@
 
     <link rel="stylesheet" href="/vendor/datatables/css/dataTables.bootstrap5.min.css">
 
+    {{/* ⛔ Barevné tokeny (--pp-surface, --pp-border, --pp-grid, --pp-text…) žijí
+         v dashboards.css na .pp-viz. Načítal ho jen layout titulky a jednotlivého
+         dashboardu, takže na /dashboards/ a na stránkách tagů byly VŠECHNY
+         nedefinované: karty tam neměly pozadí ani okraj a přechod ve vzorku
+         legendy byl neplatný, tedy průhledný. Barvy původu to nepostihlo — ty
+         jsou na :root v custom.css — a chyba proto vypadala jako „málo
+         kontrastní“, ne jako chybějící stylopis.
+         Od chvíle, kdy je dlaždice na třech různých místech, patří tokeny sem. */}}
+    <link rel="stylesheet" href="/css/dashboards.css">
+
     <!-- Custom site overrides -->
     <link rel="stylesheet" href="/css/custom.css">
 
@@ -35,9 +45,13 @@
     {{ end }}
 
     {{/* ── Visitor statistics (Umami, self-hosted) ─────────────────────────────
-         Emitted ONLY when params.analytics.website_id is set, so a site without
-         it — a local build, a PR preview, production before this is decided —
-         ships no tracker at all rather than a broken one.
+         Each machine has its OWN Umami and its own id, so the id is looked up
+         by the host being built for — `baseURL` comes from STAGING_HOST /
+         PRODUCTION_HOST at deploy time. A host with no entry emits nothing,
+         which is what excludes local builds and `hugo server`. A PR preview is
+         excluded by the path test: it builds on the staging HOST but under
+         /preview/pr-N/, and counting it would mix our own review traffic into
+         the readership figures.
 
          Cookieless and first-party by design:
            · no cookie, nothing stored on the reader's device, so no consent
@@ -51,10 +65,12 @@
          script reads data-website-id off its own tag. Renaming them silently
          collects nothing. */}}
     {{ with .Site.Params.analytics }}
-    {{ if .website_id }}
+    {{ $u := urls.Parse $.Site.BaseURL }}
+    {{ $id := index (.hosts | default dict) $u.Host }}
+    {{ if and $id (in (slice "" "/") $u.Path) }}
     <script defer
             src="{{ .script_url | default "/stats/script.js" }}"
-            data-website-id="{{ .website_id }}"
+            data-website-id="{{ $id }}"
             {{ with .host_url }}data-host-url="{{ . }}"{{ end }}></script>
     {{ end }}
     {{ end }}

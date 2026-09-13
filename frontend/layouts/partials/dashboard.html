@@ -1,30 +1,10 @@
-{{/* Override theme šablony: relLangURL prefixuje statické obrázky jazykem
-     (/en/images/…), který neexistuje — statika je společná. */}}
+{{/* Obal pro bootstrapové výpisy motivu (stránky tagů, jeho vlastní list.html).
+
+     ⛔ Tenhle partial volají šablony motivu uvnitř `row row-cols-*`, takže musí
+     vracet `col`. Naše vlastní výpisy (titulka, /dashboards/) používají CSS grid
+     a sahají rovnou na dashboard-tile.html — obal by v mřížce překážel.
+
+     Vzhled karty samotné je v dashboard-tile.html, pro všechny stejný. */}}
 <div class="col p-2">
-    <div class="bg-dashboard">
-        <div aria-hidden="true">
-            <a href="{{ if .Page.Params.redirect_url }}{{ .Page.Params.redirect_url }}{{ else }}{{ .Page.RelPermalink }}{{ end }}">
-                <img class="img-fluid" alt="Thumbnail for {{ .Name }}" src="{{ relURL .Page.Params.image }}">
-            </a>
-        </div>
-        <div class="p-2 bg-dashboard-title">
-            <h6><a href="{{ if .Page.Params.redirect_url }}{{ .Page.Params.redirect_url }}{{ else }}{{ .Page.RelPermalink }}{{ end }}">{{ .Name }}</a>
-            {{/* Ať je na první pohled poznat, co je naše stránka a co odkaz ven. */}}
-            {{ if .Page.Params.redirect_url }}<span class="badge text-bg-light border ms-1 fw-normal">{{ if eq .Page.Site.Language.Lang "en" }}external{{ else }}externí{{ end }} <i class="bi bi-box-arrow-up-right small"></i></span>{{ end }}</h6>
-        </div>
-        <div class="p-2">
-            {{ .Page.Description }}
-        </div>
-        {{/* Původ dat (PP-57) — na kartě, protože rozhodnutí „otevřu tohle?"
-             padá tady, ne až na cílové stránce. Nikdy jako osa řazení: čtenář
-             naviguje podle nemoci, ne podle toho, odkud data jsou. */}}
-        {{ with partial "origin-badge.html" (dict "page" .Page "size" "sm") }}
-        <div class="px-2 pb-1">{{ . }}</div>
-        {{ end }}
-        <div class="px-2 pb-3">
-            {{ range .Page.Params.tags }}
-            <span class="topic_badge_small"><a href="{{ (printf "/tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a></span>
-            {{ end }}
-        </div>
-    </div>
+  {{ partial "dashboard-tile.html" (dict "page" .Page "full" true) }}
 </div>

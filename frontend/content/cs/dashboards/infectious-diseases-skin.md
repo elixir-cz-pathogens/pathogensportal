@@ -3,6 +3,8 @@ title: "Infekční nemoci — Kožní/kontaktní"
 origin: aggregated
 description: "Svrab, erysipel, zavšivení — kontaktem přenášené kožní infekce v ČR 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-skin.svg"
+update_from: "isin_group_skin_contact.json"
+update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "kožní infekce"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:

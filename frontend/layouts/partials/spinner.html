@@ -1,0 +1,20 @@
+{{/* Ukazatel načítání — emblém portálu, který se otáčí.
+
+     Usage: {{ partial "spinner.html" . }}   (kontext = stránka, kvůli jazyku)
+
+     ⛔ Patří DOVNITŘ .pp-skeleton. pp-charts.js po načtení dat volá
+     skeleton.remove(), takže se spinner uklidí sám a v JS není potřeba měnit
+     ani řádek. Umístěný vedle skeletonu by po načtení zůstal viset.
+
+     ⚠️ Emblém, ne celé logo. portal.png obsahuje i nápis „PATHOGENS“, který by
+     se při rotaci obracel vzhůru nohama. portal-mark.png je jen ten kruhový
+     znak — je kulatý, takže se točí kolem svého středu a nehází sebou.
+
+     ⚠️ alt="" a text pro odečítač zvlášť: „Pathogens Portal“ přečtené dokola
+     u načítání neříká nic. role="status" oznámí změnu, až obsah dorazí. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<span class="pp-spinner" role="status">
+  <img class="pp-spinner__mark" src="/images/portal-mark.png" alt=""
+       width="44" height="44" decoding="async">
+  <span class="visually-hidden">{{ cond $en "Loading…" "Načítá se…" }}</span>
+</span>

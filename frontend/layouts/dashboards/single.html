@@ -6,7 +6,7 @@
      the page in `.container`, so there is no further container here.
 */}}
 {{ define "main" }}
-<link rel="stylesheet" href="/css/dashboards.css">
+{{ $en := eq .Site.Language.Lang "en" }}
 {{/* Report pages come from an external generator and carry their own class
      names — reports.css translates them into portal tokens. It is not loaded
      anywhere else. */}}
@@ -30,11 +30,17 @@
       <span class="pp-meta__item">{{ . }}</span>
       {{ end }}
       {{ with .Params.data_source }}
-      <span class="pp-meta__item"><i class="bi bi-database" aria-hidden="true"></i> Zdroj: {{ . | safeHTML }}</span>
+      <span class="pp-meta__item"><i class="bi bi-database" aria-hidden="true"></i> {{ cond $en "Source" "Zdroj" }}: {{ . | safeHTML }}</span>
       {{ end }}
-      {{ with .Params.update_freq }}
-      <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Aktualizace: {{ . }}</span>
-      {{ end }}
+      {{/* Jak čerstvý dashboard je. Celá logika i její zdůvodnění jsou
+           v update-stamp.html; sem patří jen vykreslení. `update_freq` je
+           záložní slovní údaj pro stránky, které vlastní datum mít nemůžou. */}}
+      {{ $u := partial "update-stamp.html" . }}
+      {{ if $u }}
+      <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ $u.text }}</span>
+      {{ else }}{{ with .Params.update_freq }}
+      <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ cond $en "Updated" "Aktualizace" }}: {{ . }}</span>
+      {{ end }}{{ end }}
       {{ with .Params.tags }}
       <span class="pp-meta__item">
         {{ range . }}<span class="pp-tag">{{ . }}</span>{{ end }}

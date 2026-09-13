@@ -2,11 +2,12 @@
 title: "Chřipka a respirační viry"
 origin: aggregated
 description: "Virologická surveillance chřipky a respiračních virů v České republice — sezónní přehledy 2012–2026, data SZÚ/NRL."
-image: "/images/cards/flu.svg"
+image: "/images/cards/flu.webp"
 highlight: true
 tags: ["chřipka", "RSV", "surveillance", "SZÚ", "ČR"]
 data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">SZÚ — Národní referenční laboratoř pro chřipku</a>'
-update_freq: "Týdně během sezóny (aktuální sezóna 2025/26)"
+update_from: "flu_weekly.json"
+update_read: "week"
 ---
 
 ### Sezónní přehled chřipky

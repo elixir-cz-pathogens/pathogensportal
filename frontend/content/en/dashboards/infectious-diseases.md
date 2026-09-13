@@ -6,7 +6,8 @@ image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infectious diseases", "surveillance", "ÚZIS", "regions", "Czech Republic"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
-update_freq: "Continuous updates (data 2018–2025)"
+update_from: "isin_monthly_trend.json"
+update_read: "month"
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="prehled" >}}

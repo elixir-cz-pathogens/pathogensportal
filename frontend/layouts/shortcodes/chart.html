@@ -24,7 +24,7 @@
   {{ with $subtitle }}<p class="pp-card__subtitle">{{ . }}</p>{{ end }}
 
   <div class="pp-card__plot" style="height:{{ $height }}px">
-    <div class="pp-skeleton"></div>
+    <div class="pp-skeleton pp-skeleton--spinner">{{ partial "spinner.html" .Page }}</div>
     <canvas id="{{ $id }}" role="img" aria-label="{{ $title | default "Graf" }}"></canvas>
   </div>
 

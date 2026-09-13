@@ -35,6 +35,9 @@ data submodule.
   the generated JSONs); a finite dictionary in `pp-charts.js` translates the common ones, the 114 ISIN
   diagnosis names remain Czech with a note on the pages (permanent fix tracked as pathogensportal-db#47).
   New content pages must be added in both languages or the EN site silently loses them.
+  ⚠️ **`aliases:` must be written language-neutral.** Hugo prefixes the language onto an alias of a
+  non-default language, so `/en/dashboards/signals/` in `content/en/` builds `/en/en/dashboards/signals/`
+  and the real English URL 404s. Write the Czech form in both files. (Found 9 Sep 2026, live on staging.)
 
 **Data model (A):** chart JSON is **committed** into `frontend/static/data/charts/` (the site stays static).
 To regenerate from the submodule:
@@ -44,6 +47,11 @@ OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/gene
 # or through the container:
 docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
 ```
+
+⛔ **Check `git status -sb` before you edit anything in this repo.** The pipeline commits to `dev` on its
+own schedule, so a checkout goes stale without anyone touching it — on 9 Sep 2026 a local `dev` was
+**173 commits behind** and an edit to it looked like it had done nothing, because staging builds from
+`origin/dev`. "I pulled recently" is not the same as "I am current".
 
 ⚠️ **On `dev` this is automated since 31 Aug 2026 — do not hand-edit the generated files there.**
 A push to `pathogensportal-db`'s `dev` branch makes the dev server run the pipeline and **commit** the
@@ -55,6 +63,21 @@ merge.
 ⏳ Model A itself is transitional. `pp-charts.js` already asks `/api/charts` first and falls back to
 the committed JSON only when the backend is absent, so once website-be + Postgres run the data stops
 needing to be committed at all.
+
+⛔ **Never type an update date into a dashboard's front matter.** A page names a chart file and says how
+to read a date out of it — `update_from: "flu_weekly.json"` + `update_read: "week"` — and
+`layouts/partials/update-stamp.html` does the reading. A hand-written date rots at the next pipeline run
+with nothing to correct it, because the pipeline rewrites only the `ebola-*` pages.
+
+⛔ **`update_read` must stay explicit; do not "simplify" it into guessing from the file.** The last label
+of a series is a period in `flu_weekly` (`KT 36/26`), an age band in `covid_by_age` (`80+`) and a region
+in `flu_regional_overview` (`Liberecký`). Anything that takes the last label automatically prints an age
+band as an update date on a third of the dashboards, and it looks like a valid figure.
+Readings: `stamp` (`generated_at` = pipeline run → "Aktualizace: …", else `posledni_datum` = data extent
+→ "Data k …"), `period-end`, `week` (ISO week → its Sunday), `month`, `year`. ⚠️ Month and year are not
+converted to a day — ISIN by disease group is an annual series and a fabricated 31 Dec would claim daily
+precision. ⚠️ Four pages have no date to read and keep a sentence about frequency: the two Nextstrain
+builds and wastewater run on someone else's server, hantavirus is a closed situational report.
 
 ## Common commands
 

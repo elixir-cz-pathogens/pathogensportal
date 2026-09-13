@@ -68,6 +68,13 @@
 
   </div>
 
+  {{/* Trvalý odkaz na podrobnosti — proužek se zavře, informace musí zůstat
+       dosažitelná. Otevírá totéž okno; JS je v privacy-notice.html. */}}
+  {{ $pl := cond (eq .Site.Language.Lang "en") "en" "cs" }}
+  <div class="d-flex justify-content-center small mt-2">
+    <a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index .Site.Data.privacy $pl).title }}</a>
+  </div>
+
   {{/* Všichni partneři a sponzoři, na každé stránce webu. */}}
   {{ partial "partners.html" . }}
 
@@ -113,3 +120,5 @@
     })
   })
 </script>
+
+{{ partial "privacy-notice.html" . }}

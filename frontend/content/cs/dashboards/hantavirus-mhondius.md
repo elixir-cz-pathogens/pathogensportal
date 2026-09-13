@@ -2,7 +2,7 @@
 title: "Hantavirus — Výletní loď MV Hondius"
 origin: own
 description: "Situační report vypuknutí viru Andes (hantavirus) spojeného s výletní lodí MV Hondius — přehled, časová osa, riziko pro ČR. Zdroj: IMG AV ČR / UJEP."
-image: "/images/cards/hantavirus.svg"
+image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiologie", "IMG AV ČR"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'

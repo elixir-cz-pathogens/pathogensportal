@@ -34,15 +34,22 @@
   --pp-origin-ai: #5b46bd;
   --pp-origin-ai-bg: #eeebfa;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --pp-origin-aggregated: #7fb4f0;
-    --pp-origin-aggregated-bg: #16283d;
-    --pp-origin-own: #6cc9a1;
-    --pp-origin-own-bg: #143024;
-    --pp-origin-ai: #b4a4f3;
-    --pp-origin-ai-bg: #221d3a;
-  }
+/* ⛔ Spínač je [data-bs-theme="dark"], NE prefers-color-scheme. Zbytek webu
+   (dashboards.css, tokeny --pp-surface a spol.) se přepíná tímhle atributem,
+   takže tenhle blok na prefers-color-scheme obarvoval štítky natmavo podle
+   NASTAVENÍ OS, zatímco stránka kolem nich zůstala světlá — tmavé ostrůvky na
+   bílé. Dva spínače pro jednu věc nejsou volba, jsou chyba.
+
+   ⚠️ data-bs-theme dnes nikdo nenastavuje (pp-charts.js ho jen pozoruje), takže
+   tenhle blok je zatím neaktivní. To je záměr: web je světlý, dokud někdo tmavý
+   režim vědomě nezapne, a pak se přepne CELÝ. */
+[data-bs-theme="dark"] {
+  --pp-origin-aggregated: #7fb4f0;
+  --pp-origin-aggregated-bg: #16283d;
+  --pp-origin-own: #6cc9a1;
+  --pp-origin-own-bg: #143024;
+  --pp-origin-ai: #b4a4f3;
+  --pp-origin-ai-bg: #221d3a;
 }
 
 .pp-origin-badge {
@@ -83,55 +90,32 @@
 .pp-home-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .pp-home-sec-head h2 { margin: 0 0 .25rem; font-size: 1.35rem; }
 .pp-home-more { white-space: nowrap; font-size: .9rem; text-decoration: none; }
-.pp-home-sub { color: #77766f; font-size: .875rem; margin: 0 0 .75rem; }
+.pp-home-sub { color: var(--pp-text-muted); font-size: .875rem; margin: 0 0 .75rem; }
 
 /* Signály */
-.pp-home-signal-list { display: grid; gap: .4rem; }
-.pp-home-signal {
-  display: grid; grid-template-columns: auto 1fr auto; gap: .85rem; align-items: center;
-  padding: .6rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px;
-  background: #fff; text-decoration: none; color: inherit;
-}
-.pp-home-signal:hover { border-color: #c9c8c1; background: #fcfcfb; }
-.pp-home-signal__score {
-  font-variant-numeric: tabular-nums; font-weight: 700; font-size: 1rem;
-  color: #b3322f; min-width: 3.2rem; text-align: right;
-}
-.pp-home-signal__where { color: #77766f; font-size: .85rem; margin-left: .5rem; }
-.pp-home-signal__nums { color: #52514e; font-size: .82rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.pp-home-caveat { margin-top: .6rem; font-size: .85rem; color: #52514e; max-width: 72ch; }
 
 /* Novinky */
 .pp-home-news-list { display: grid; gap: .4rem; }
 .pp-home-news-item {
   display: grid; grid-template-columns: 7.5rem 1fr; gap: .25rem .85rem; align-items: baseline;
-  padding: .55rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px;
-  background: #fff; text-decoration: none; color: inherit;
+  padding: .55rem .85rem; border: 1px solid var(--pp-border); border-radius: 10px;
+  background: var(--pp-surface-raised); text-decoration: none; color: inherit;
 }
-.pp-home-news-item:hover { border-color: #c9c8c1; background: #fcfcfb; }
-.pp-home-news-item__date { color: #77766f; font-size: .82rem; font-variant-numeric: tabular-nums; }
+.pp-home-news-item:hover { border-color: var(--pp-border-strong); background: var(--pp-surface); }
+.pp-home-news-item__date { color: var(--pp-text-muted); font-size: .82rem; font-variant-numeric: tabular-nums; }
 .pp-home-news-item__title { font-weight: 600; }
-.pp-home-news-item__desc { grid-column: 2; color: #52514e; font-size: .85rem; }
+.pp-home-news-item__desc { grid-column: 2; color: var(--pp-text-secondary); font-size: .85rem; }
 
 /* Rejstřík */
 .pp-home-filter {
   display: flex; align-items: center; gap: .5rem; margin: .25rem 0 .85rem;
   padding: .45rem .75rem; border: 1px solid #e2e1dc; border-radius: 999px; background: #fff; max-width: 30rem;
 }
-.pp-home-filter i { color: #77766f; }
+.pp-home-filter i { color: var(--pp-text-muted); }
 .pp-home-filter input { border: 0; outline: 0; flex: 1; background: transparent; font-size: .95rem; }
-.pp-home-index-list { list-style: none; padding: 0; margin: 0; display: grid; gap: .3rem; }
-.pp-home-index-item {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
-  padding: .5rem .85rem; border: 1px solid #e2e1dc; border-radius: 10px; background: #fff;
-}
-.pp-home-index-item > a { font-weight: 600; text-decoration: none; }
-.pp-home-index-item__desc { flex-basis: 100%; color: #52514e; font-size: .85rem; }
-.pp-home-index-empty { color: #77766f; font-size: .9rem; padding: .5rem 0; }
+.pp-home-index-empty { color: var(--pp-text-muted); font-size: .9rem; padding: .5rem 0; }
 
 @media (max-width: 576px) {
-  .pp-home-signal { grid-template-columns: auto 1fr; }
-  .pp-home-signal__nums { grid-column: 2; }
   .pp-home-news-item { grid-template-columns: 1fr; }
   .pp-home-news-item__desc { grid-column: 1; }
 }
@@ -166,41 +150,369 @@
 .pp-partners__grid a:hover img, .pp-partners__grid a:focus-visible img { filter: none; opacity: 1; }
 @media (max-width: 576px) { .pp-partners__grid { gap: 1rem 1.25rem; } .pp-partners__grid img { height: 34px; } }
 
-/* ── Rejstřík + boční panel Témata ───────────────────────────────────────── */
-.pp-home-index-grid {
+/* ── Dashboardy + boční panel Témata ─────────────────────────────────────
+   Témata sedí VEDLE karet, ne v samostatném pásu pod novinkami: obojí
+   vede na dashboard, jen jinou osou — karty podle nemoci, témata napříč
+   nemocemi (kraje, surveillance, ÚZIS). Odtržené na konec stránky se
+   čtou jako patička. */
+.pp-home-dash-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
   gap: 1.25rem;
   align-items: start;
 }
-.pp-home-index-main { min-width: 0; }
+.pp-home-dash-main { min-width: 0; }
 .pp-home-topics {
-  border: 1px solid #e2e1dc;
+  border: 1px solid var(--pp-border);
   border-radius: 10px;
-  background: #fcfcfb;
+  background: var(--pp-surface);
   padding: .85rem 1rem;
   position: sticky;
   top: 1rem;
 }
 .pp-home-topics h3 { margin: 0; font-size: 1rem; }
-.pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: #77766f; }
+.pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: var(--pp-text-muted); }
 .pp-home-topics__list { display: flex; flex-wrap: wrap; gap: .35rem; }
 .pp-home-topic {
   display: inline-block;
   padding: .12rem .55rem;
-  border: 1px solid #e2e1dc;
+  border: 1px solid var(--pp-border);
   border-radius: 999px;
-  background: #fff;
+  background: var(--pp-surface-raised);
   font-size: .8rem;
   text-decoration: none;
-  color: #52514e;
+  color: var(--pp-text-secondary);
   transition: background-color .15s, border-color .15s, color .15s;
 }
+/* ⛔ Neutrální, ne modrá. Tenhle hover měl přesně hodnoty
+   --pp-origin-aggregated / -bg, tedy barvu, která na téže stránce znamená
+   „Veřejný zdroj" — a její legenda visí pár řádků nad pásem témat. Téma není
+   původ dat; půjčovat si barvu, která už nese význam, mate. Barvy původu
+   a stavu jsou v tomhle projektu vyhrazené (viz komentář u :root výš). */
 .pp-home-topic:hover, .pp-home-topic:focus-visible {
-  background: #eaf2fd; border-color: #2a78d6; color: #1b4f8f;
+  background: var(--pp-surface); border-color: var(--pp-border-strong); color: var(--pp-text);
 }
 @media (max-width: 860px) {
-  .pp-home-index-grid { grid-template-columns: 1fr; }
   /* Sticky v jednosloupcovém rozvržení jen poskakuje. */
   .pp-home-topics { position: static; }
+  .pp-home-dash-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Upozornění o zpracování dat (PP-55) ─────────────────────────────────── */
+.pp-privacy {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 1080;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
+  gap: .6rem 1.25rem;
+  padding: .7rem 1rem;
+  background: #1f1f1e; color: #f2f1ee;
+  font-size: .85rem; line-height: 1.4;
+  box-shadow: 0 -2px 12px rgba(0,0,0,.18);
+}
+.pp-privacy__text { margin: 0; max-width: 68ch; }
+.pp-privacy__actions { display: flex; gap: .5rem; align-items: center; }
+.pp-privacy__link {
+  background: none; border: 0; padding: .25rem .1rem;
+  color: #9ec5f5; font: inherit; text-decoration: underline; cursor: pointer;
+}
+.pp-privacy__link:hover { color: #c9dffb; }
+.pp-privacy__ok {
+  background: #f2f1ee; color: #1f1f1e; border: 0; border-radius: 6px;
+  padding: .3rem .9rem; font: inherit; font-weight: 600; cursor: pointer;
+}
+.pp-privacy__ok:hover { background: #fff; }
+.pp-privacy__footer { color: #77766f; text-decoration: underline; }
+
+.pp-privacy-dialog {
+  max-width: 46rem; width: calc(100% - 2rem);
+  border: 1px solid #e2e1dc; border-radius: 12px; padding: 0;
+  color: #0b0b0b; background: #fff;
+}
+.pp-privacy-dialog::backdrop { background: rgba(11,11,11,.45); }
+.pp-privacy-dialog article { padding: 1.25rem 1.5rem 1.5rem; }
+.pp-privacy-dialog__head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+  border-bottom: 1px solid #e2e1dc; padding-bottom: .6rem; margin-bottom: .9rem;
+}
+.pp-privacy-dialog__head h2 { margin: 0; font-size: 1.2rem; }
+.pp-privacy-dialog__x {
+  background: none; border: 0; font-size: 1.6rem; line-height: 1;
+  color: #77766f; cursor: pointer; padding: 0 .2rem;
+}
+.pp-privacy-dialog__x:hover { color: #0b0b0b; }
+.pp-privacy-dialog h3 { font-size: .98rem; margin: 1.1rem 0 .3rem; }
+.pp-privacy-dialog p { margin: 0 0 .5rem; font-size: .875rem; line-height: 1.5; }
+@media (max-width: 576px) {
+  .pp-privacy { flex-direction: column; align-items: flex-start; }
+  .pp-privacy__actions { align-self: stretch; justify-content: flex-end; }
+}
+.pp-privacy-dialog__tools { display: flex; align-items: center; gap: .5rem; }
+.pp-privacy-dialog__lang {
+  background: none; border: 1px solid #e2e1dc; border-radius: 6px;
+  padding: .12rem .55rem; font: inherit; font-size: .78rem;
+  color: #52514e; cursor: pointer; white-space: nowrap;
+}
+.pp-privacy-dialog__lang:hover { background: #f2f1ee; color: #0b0b0b; }
+
+/* ── Titulka: navigace po webu ────────────────────────────────────────────
+   Dlaždice, ne odkazy v řádku: rozhodnutí „kam dál" je hlavní věc, kterou
+   titulka řeší, a zaslouží si plochu, na kterou se dá trefit prstem.
+
+   ⛔ Barvy z tokenů --pp-* (definuje dashboards.css na .pp-viz), ne natvrdo.
+   Původní verze měla natvrdo #fff a k tomu vlastní @media prefers-color-scheme,
+   která pozadí ztmavila, ALE BARVU TEXTU NECHALA — z karet se na tmavém OS
+   staly černé boxy s tmavým písmem. Tokeny přepínají povrch i text zároveň,
+   takže se to rozejít nemůže. */
+.pp-home-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: .5rem;
+}
+.pp-home-navtile {
+  display: flex; flex-direction: column; gap: .15rem;
+  padding: .8rem .9rem;
+  border: 1px solid var(--pp-border); border-radius: 8px;
+  background: var(--pp-surface-raised);
+  color: var(--pp-text); text-decoration: none;
+  transition: border-color .12s, background .12s, transform .12s;
+}
+.pp-home-navtile:hover, .pp-home-navtile:focus-visible {
+  border-color: var(--pp-text-muted); background: var(--pp-surface); transform: translateY(-1px);
+}
+.pp-home-navtile i { font-size: 1.15rem; color: var(--pp-text-muted); margin-bottom: .1rem; }
+.pp-home-navtile__t { font-weight: 600; }
+.pp-home-navtile__d { font-size: .8rem; color: var(--pp-text-muted); line-height: 1.35; }
+
+/* ── Karta dashboardu — titulka i /dashboards/ ────────────────────────────
+   ⛔ JEDNA podoba pro obě místa. Dřív měl každý výpis vlastní: titulka tuhle
+   dlaždici, /dashboards/ bootstrapovou kartu z motivu s natvrdo modrým
+   pruhem. Značkování je společné v dashboard-tile.html.
+   ⚠️ Poměr stran obrázku je zafixovaný (400×220 jako zdrojová SVG). Bez toho
+   mřížka poskakuje, jak se obrázky donačítají, a u karet různé výšky se
+   rozjedou i řádky pod nimi. */
+.pp-tilegrid {
+  list-style: none; padding: 0; margin: .75rem 0 0;
+  /* 10rem = 15rem / 1.5. Obrázek se zmenší sám (drží aspect-ratio), text ne —
+     proto jsou písmo i odsazení níž zmenšené ve stejném poměru. Jinak by na
+     menší kartě text vyrostl vůči obrázku a karta by přestala být obrázková. */
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: .6rem;
+}
+.pp-tile {
+  display: flex; flex-direction: column;
+  border: 1px solid var(--pp-border); border-radius: 8px; overflow: hidden;
+  background: var(--pp-surface-raised); color: var(--pp-text);
+  transition: border-color .12s, box-shadow .12s;
+}
+.pp-tile:hover { border-color: var(--pp-text-muted); box-shadow: var(--pp-shadow); }
+.pp-tile__link { text-decoration: none; color: inherit; display: block; }
+.pp-tile__img {
+  display: block; width: 100%; height: auto; aspect-ratio: 400 / 220;
+  object-fit: cover; background: var(--pp-grid);
+}
+.pp-tile__title {
+  display: block; font-weight: 600; line-height: 1.25;
+  font-size: .88rem;
+  padding: .45rem .5rem .2rem;
+}
+
+/* ── Karta bez popisu a tagů (titulka) ────────────────────────────────────
+   Karta je položka mřížky, takže se natáhne do výšky nejvyšší karty v řádku.
+   Odkaz uvnitř se ale netáhl s ní, takže u jednořádkového názvu zůstal pod
+   barevným pruhem bílý zbytek do dna — a protože délka názvů se liší, byl
+   u každé karty jinak vysoký.
+
+   Řeší to název: doroste na dno a vezme si tu výšku i s podbarvením. Text
+   zůstává nahoře, hned pod obrázkem, takže názvy drží společnou linku napříč
+   řádkem — kdyby se vycentroval, každý by seděl jinde.
+
+   ⚠️ Neřeš to přes `align-items: start` na mřížce. Bílý pruh zmizí taky, ale
+   karty přestanou mít společné dno a řádek se roztřepí. */
+.pp-tile--compact .pp-tile__link { flex: 1 1 auto; display: flex; flex-direction: column; }
+.pp-tile--compact .pp-tile__title { flex: 1 1 auto; }
+/* Spodní linka pruhu tu nemá co oddělovat — sedla by si na 2px rámeček karty
+   a dno by vypadalo trojnásobně silné. */
+.pp-tile--compact.pp-origin-edge .pp-tile__title { border-bottom: 0; }
+
+
+/* ── Značka „obrázek vygenerovala AI" ─────────────────────────────────────
+   V rohu náhledu, ne vypálená v obrázku: generátory kreslí text nespolehlivě,
+   vypálenou značku nejde opravit bez přegenerování a odečítač obrazovky ji
+   nepřečte. Tahle je na všech obrázcích stejná a zmizí s výměnou souboru.
+
+   ⚠️ Mluví o OBRÁZKU. Štítek původu vedle mluví o DATECH — jsou to dvě různá
+   tvrzení a nesmí splynout, proto tahle značka záměrně nepoužívá fialovou
+   --pp-origin-ai. */
+.pp-tile__imgwrap { position: relative; display: block; }
+.pp-ai-mark {
+  position: absolute; right: .3rem; bottom: .3rem;
+  display: inline-flex; align-items: center; gap: .2rem;
+  padding: .05rem .3rem;
+  border-radius: 999px;
+  /* Vlastní tmavý podklad, ne token: leží na OBRÁZKU, jehož barvu neznáme,
+     takže kontrast musí zajistit sama a v obou motivech stejně. */
+  background: rgb(11 11 11 / .62);
+  color: #fff;
+  font-size: .62rem; font-weight: 600; letter-spacing: .02em;
+  line-height: 1.5;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+.pp-ai-mark i { font-size: .66rem; }
+
+/* ── Značka „odkaz vede ven" ──────────────────────────────────────────────
+   Do rohu náhledu, ne pod název. Slovo „externí" pod názvem přebíjelo název
+   samotný; tohle je stejný symbol, jaký na odkaz ven používá kdeco, takže
+   nepotřebuje popisek — jen musí být vidět. Pro odečítač je němá, text nese
+   .visually-hidden uvnitř odkazu.
+
+   Podklad je stejný jako u značky AI a ze stejného důvodu: leží na fotce,
+   jejíž barvu neznáme, takže kontrast musí zajistit sama a v obou motivech
+   stejně. */
+.pp-ext-mark {
+  position: absolute; right: .3rem; top: .3rem;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.15rem; height: 1.15rem;
+  border-radius: 999px;
+  background: rgb(11 11 11 / .55);
+  color: #fff;
+  font-size: .62rem; line-height: 1;
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+}
+
+/* ── Původ dat jako barva rámečku karty ───────────────────────────────────
+   Nahrazuje slovní štítek na kartách ve výpisech (8. 9. 2026).
+
+   ⛔ Barva tu stojí SAMA, což je vědomý ústupek vzhledu a má svou cenu:
+   barvoslepý čtenář z ní nepozná nic a odečítač obrazovky barvu nečte vůbec.
+   Proto karta nese původ i v `title` a ve skrytém textu, a proto je na
+   /dashboards/ legenda. Kdyby ta legenda zmizela, rámečky přestanou cokoli
+   znamenat — nerozbijí se, jen zůstanou dekorací.
+
+   ⚠️ Musí být ZA pravidly motivu: .bg-dashboard má natvrdo modrý okraj
+   #295986. custom.css se načítá po theme.css, takže při stejné specifičnosti
+   vyhrává tohle. Kdyby se pořadí načítání změnilo, rámečky tiše zmodrají. */
+/* Každá kategorie si nastaví svou trojici; pravidla níž pak sahají jen na
+   --edge / --edge-bg / --edge-glow a nemusí se opakovat třikrát.
+   ⚠️ --edge-glow je RGB TROJICE bez obalu, ne barva: jde do rgb(… / alfa),
+   protože záře potřebuje průhlednost, kterou hotový hex nedá. */
+.pp-origin-edge--aggregated  { --edge: var(--pp-origin-aggregated); --edge-bg: var(--pp-origin-aggregated-bg); --edge-glow: 42 120 214; }
+.pp-origin-edge--own         { --edge: var(--pp-origin-own);        --edge-bg: var(--pp-origin-own-bg);        --edge-glow: 27 122 84; }
+.pp-origin-edge--ai-assisted { --edge: var(--pp-origin-ai);         --edge-bg: var(--pp-origin-ai-bg);         --edge-glow: 91 70 189; }
+
+.pp-origin-edge {
+  border-style: solid; border-width: 2px; border-color: var(--edge);
+  /* Neonová záře „za rámečkem". Dvě vrstvy: těsný prstenec hned u okraje, který
+     dělá tu sytost, a krátký rozostřený nádech kolem. Jedna široká vrstva byla
+     slabá a rozpitá zároveň — světlo se rozprostřelo do plochy, místo aby
+     drželo u hrany.
+
+     ⚠️ Rozostření se 9. 9. 2026 stáhlo z 9px na 5px (hover ze 14 na 8). Sytost
+     šla nahoru, ne dolů: užší záře při stejné alfě vypadá slabší, protože jí
+     ubyde plocha. Kdo bude hodnoty ladit dál, musí hýbat OBOJÍM — a taky
+     vzorkem v legendě, který je miniaturou téhle karty. */
+  box-shadow:
+    0 0 0 2px rgb(var(--edge-glow) / .38),
+    0 0 5px 0 rgb(var(--edge-glow) / .78);
+}
+/* ⛔ Hover nesmí barvu původu přebít — je to informace, ne dekorace. Zesílí se
+   jen záře. Předchozí verze tu nastavovala `border-color: inherit`, takže při
+   najetí barva původu na okamžik zmizela. */
+.pp-tile.pp-origin-edge:hover {
+  border-color: var(--edge);
+  box-shadow:
+    0 0 0 3px rgb(var(--edge-glow) / .5),
+    0 0 8px 0 rgb(var(--edge-glow) / 1);
+}
+
+/* Podbarvení názvu — samotný 2px rámeček se v mřížce ztrácel. Barva je táž jako
+   rámeček, jen tlumená, takže obojí čte jako jedna informace, ne jako dvě. */
+.pp-origin-edge .pp-tile__title {
+  background: var(--edge-bg);
+  border-bottom: 1px solid var(--edge);
+  padding: .5rem .6rem;
+}
+
+/* ⚠️ Tmavý motiv se v tomhle projektu spíná [data-bs-theme="dark"], NE podle
+   nastavení systému. Na tmavém podkladu potřebuje záře světlejší hodnoty. */
+[data-bs-theme="dark"] .pp-origin-edge--aggregated  { --edge-glow: 127 180 240; }
+[data-bs-theme="dark"] .pp-origin-edge--own         { --edge-glow: 108 201 161; }
+[data-bs-theme="dark"] .pp-origin-edge--ai-assisted { --edge-glow: 180 164 243; }
+
+/* Kdo si vyžádal omezení pohybu, nepřijde o barvu — mizí jen změna při najetí. */
+@media (prefers-reduced-motion: reduce) {
+  .pp-tile.pp-origin-edge:hover {
+    box-shadow: 0 0 0 2px rgb(var(--edge-glow) / .38), 0 0 5px 0 rgb(var(--edge-glow) / .78);
+  }
+}
+
+/* ── Legenda k barvám — JEN na /dashboards/ ──────────────────────────────── */
+.pp-origin-legend--page {
+  border: 1px solid var(--pp-border);
+  border-radius: 10px;
+  background: var(--pp-surface);
+  padding: 1rem 1.15rem 1.15rem;
+  display: block;
+}
+.pp-origin-legend__head { font-size: 1.05rem; margin: 0; }
+.pp-origin-legend__lead { margin: .15rem 0 .85rem; font-size: .85rem; color: var(--pp-text-muted); }
+.pp-origin-legend__items {
+  display: grid; gap: .7rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+}
+.pp-origin-legend--page .pp-origin-legend__item {
+  display: flex; align-items: flex-start; gap: .6rem; font-size: .88rem;
+}
+/* ⚠️ Vzorek je MINIATURA KARTY, ne barevný čtvereček. Čtverec s okrajem
+   a zaoblenými rohy je tvar zaškrtávacího políčka — čtenář ho četl jako ovládací
+   prvek, ne jako ukázku. Proto na šířku, v poměru karty, a s pruhem dole, který
+   zastupuje podbarvený název.
+
+   Bere rámeček, podbarvení i záři z týchž proměnných --edge*, takže se s kartou
+   nemůže rozejít.
+   ⛔ Barvu si musí nastavit sám — nese jen modifikátor `--aggregated`, ne
+   základní třídu `.pp-origin-edge`, kde border-color a záře žijí. */
+.pp-origin-legend__swatch {
+  flex: 0 0 auto;
+  width: 3.25rem; height: 2.1rem;
+  border-radius: 4px; border-style: solid; border-width: 2px;
+  border-color: var(--edge);
+  /* ⛔ Spodní pruh v PLNÉ barvě, ne v bledém podbarvení karty. První pokus měl
+     obojí skoro bílé a vzorek pak vypadal jako prázdné vstupní pole — přesně to
+     zaškrtávátko, kvůli kterému se to předělávalo. Plný pruh dělá z obrysu
+     miniaturu karty. */
+  background: linear-gradient(
+    to bottom,
+    var(--pp-grid) 0 58%,
+    var(--edge) 58% 100%
+  );
+  box-shadow:
+    0 0 0 2px rgb(var(--edge-glow) / .35),
+    0 0 4px 0 rgb(var(--edge-glow) / .78);
+  margin-top: .2rem;
+}
+.pp-origin-legend__desc { display: block; color: var(--pp-text-secondary); line-height: 1.4; }
+
+/* Plná varianta (/dashboards/, stránky tagů) — s popisem a tagy.
+   ⚠️ Širší sloupec než na titulce, a je to nutnost, ne nedůslednost: do 10rem
+   karty se nevešel ani jeden z popisů (měřeno: 66 znaků se vejde, popisy mají
+   114–158). Vzhled karty je týž, jen dostane místo na text. */
+.pp-tilegrid--full { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+.pp-tile__desc {
+  margin: .3rem 0 0; padding: 0 .6rem;
+  font-size: .8rem; color: var(--pp-text-secondary); line-height: 1.4;
+}
+.pp-tile__tags { padding: .5rem .6rem .6rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+.pp-tile__desc + .pp-tile__tags { padding-top: .45rem; }
+.pp-tile > :last-child { margin-bottom: 0; }
+
+/* ── Hamburger na všech šířkách ────────────────────────────────────────────
+   Od 9. 9. 2026 má web jedno menu pro všechny šířky: vodorovná lišta pod
+   hlavičkou je pryč a `#navbarCollapseBottom` se otevírá tlačítkem.
+
+   ⏳ Výjimka `.navbar-expand-lg .navbar-toggler { display: inline-block }` tu
+   stála jediný den. Byla potřeba, dokud horní navbar musel mít
+   `navbar-expand-lg` kvůli pruhu s „O portálu". Ten pruh je pryč, navbar už
+   expand nemá, a Bootstrap tlačítko sám neskrývá — pravidlo se tím stalo
+   zbytečným a je smazané, ne ponechané „pro jistotu". */
+.navbar-toggler:focus-visible { outline: 2px solid var(--pp-origin-aggregated, #2a78d6); outline-offset: 2px; }

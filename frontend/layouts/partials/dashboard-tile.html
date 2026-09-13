@@ -1,0 +1,64 @@
+{{/* Karta dashboardu — JEDINÁ podoba, kterou má portál.
+
+     Usage: {{ partial "dashboard-tile.html" (dict "page" $p "full" true) }}
+
+     `full` = s popisem a tagy (výpis /dashboards/, stránky tagů).
+     bez něj  = jen obrázek a název (titulka).
+
+     ⛔ Existuje proto, že titulka a /dashboards/ měly každá vlastní značkování
+     i vlastní styl: titulka moderní dlaždici z tokenů, výpis bootstrapovou
+     kartu s natvrdo modrým pruhem #295986 z motivu. Dva vzhledy pro tutéž věc
+     se rozejdou vždycky — tohle je jedno místo, kde se karta mění.
+
+     ⚠️ Rozdíl mezi oběma je JEN `full`. Nic jiného se lišit nesmí; kdyby ano,
+     patří to sem jako další přepínač, ne do druhé šablony.
+
+     `pp-tile--compact` je tentýž přepínač obrácený, aby na něj dosáhlo CSS:
+     bez popisu a tagů je název POSLEDNÍ prvek karty a musí dorůst na její dno.
+     Karta je totiž položka mřížky a roste do výšky nejvyšší karty v řádku —
+     u jednořádkového názvu zbyl pod barevným pruhem bílý pruh do dna.
+
+     ⚠️ Původ dat nese barva rámečku, ne štítek. Barva sama je pro barvoslepé
+     čtenáře i pro odečítač nula informace, proto `title` na kartě a skrytý
+     text; vysvětlení barev je v legendě na /dashboards/.
+
+     ⚠️ Odkaz ven značí JEN ikonka v rohu náhledu (9. 9. 2026). Slovo „externí"
+     pod názvem bylo ve výpisu hlasitější než samotný název dashboardu. Ikonka
+     je běžný symbol pro „otevře se jinde", takže vedle názvu nic vysvětlovat
+     nemusí — ale sama o sobě je pro odečítač němá, proto `title` a skrytý text
+     UVNITŘ odkazu, ať se přečte jako jeho součást.
+
+     ⛔ Není to totéž co barva rámečku. Ta říká, ODKUD JSOU DATA, ne kam vede
+     odkaz: `aggregated` má 15 z 18 dashboardů a externí jsou z nich tři. Kdyby
+     tahle ikonka zmizela s odůvodněním „barva to říká taky", nezůstane po ní
+     nic. */}}
+{{ $p    := .page }}
+{{ $full := .full | default false }}
+{{ $en   := eq $p.Site.Language.Lang "en" }}
+{{ $m    := partial "origin-meta.html" $p }}
+{{ $img  := partial "card-image.html" $p }}
+{{ $href := cond (ne $p.Params.redirect_url nil) ($p.Params.redirect_url | default "") $p.RelPermalink }}
+
+<div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}{{ with $m }} pp-origin-edge pp-origin-edge--{{ .key }}{{ end }}"
+     {{ with $m }}title="{{ .label }} — {{ .title }}"{{ end }}>
+  {{ with $m }}<span class="visually-hidden">{{ .label }}</span>{{ end }}
+  <a class="pp-tile__link" href="{{ $href }}">
+    <span class="pp-tile__imgwrap">
+      <img class="pp-tile__img" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
+      {{/* Vpravo nahoře, ať se nepotká se značkou AI vpravo dole. */}}
+      {{ if $p.Params.redirect_url }}
+      <span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}" aria-hidden="true"><i class="bi bi-box-arrow-up-right"></i></span>
+      {{ end }}
+      {{ if $img.ai }}{{ partial "ai-image-mark.html" $p }}{{ end }}
+    </span>
+    <span class="pp-tile__title">{{ $p.Title }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}</span>
+  </a>
+  {{ if $full }}
+  {{ with $p.Description }}<p class="pp-tile__desc">{{ . }}</p>{{ end }}
+  {{ with $p.Params.tags }}
+  <div class="pp-tile__tags">
+    {{ range . }}<a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a>{{ end }}
+  </div>
+  {{ end }}
+  {{ end }}
+</div>

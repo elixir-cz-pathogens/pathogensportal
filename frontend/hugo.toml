@@ -5,6 +5,27 @@ defaultContentLanguage = "cs"
 defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 
+# ⛔ Zdroj .Lastmod, podle kterého titulka řadí karty. Bez tohohle je .Lastmod
+# u VŠECH dashboardů nulový — žádný nemá v hlavičce `date:` — a řazení „podle
+# data úpravy" by vracelo pořadí podle ničeho, které vypadá, že funguje.
+#
+# ⚠️ Vyžaduje PLNOU historii při buildu. Oba deploye mají `fetch-depth: 0`;
+# preview workflow ho dostalo dopsané ve stejné změně. Na mělkém klonu dostane
+# každý soubor datum jediného commitu a pořadí se tiše sesype do jednoho data.
+enableGitInfo = true
+
+# ⛔ `lastmod` a `date` z hlavičky PŘED gitem. Výchozí pořadí Hugo dává :git
+# první, jenže datum z gitu tady neznamená „kdy se obsah změnil": squash-merge
+# PR #62 (7. 9. 2026) sáhl na 123 souborů najednou, takže osm z devíti
+# dashboardů má identické datum, a datová pipeline commituje do content/
+# sama (123 commitů od 1. 9., 7 z nich do dashboardů). Řazení podle gitu proto
+# míchá „úpravu textu" s „proběhl robot".
+#
+# S tímhle pořadím stačí do hlavičky dashboardu dopsat `date:` a ten výsledek
+# přebije. Git zůstává jako záchranná síť pro stránky bez data.
+[frontmatter]
+  lastmod = ['lastmod', 'date', ':git', ':default']
+
 [params]
   mail = "hpaces@img.cas.cz"
   # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)
@@ -13,17 +34,6 @@ enableRobotsTXT = true
   images = ["/images/og-card-2026-09.png"]
   homepage = "https://pathogens.vm.cesnet.cz"
   logo = "/images/elixir_logo.png"
-  # ⛔ VYPNUTO NA PRODUKCI (7. 9. 2026). Blok „Co teď překračuje očekávanou
-  # hladinu" se na titulce zatím nemá zobrazovat; na `dev` zůstává zapnutý a
-  # vyvíjí se dál. Šablona je na obou větvích SHODNÁ — liší se jen tenhle řádek,
-  # aby se z index.html nestal konfliktní bod při každém releasu.
-  #
-  # ⚠️ Plochý klíč, ne [params.homepage]. Za prvé `homepage` už je nad tímhle
-  # obsazené jako URL portálu, takže by z toho byla kolize „key homepage should
-  # be a table, not a value". Za druhé podtabulka uprostřed [params] by pohltila
-  # všechny klíče pod sebou — `apibase` a analytiku — a to tiše.
-  home_signals = false
-
   # Base URL of the charts API. Empty = same origin (production: the Apache proxy).
   # The dev server runs on a different port from the BE -> compose sets HUGO_PARAMS_APIBASE.
   # No underscore, deliberately: Hugo treats `_` in an env variable name as a level
@@ -40,10 +50,30 @@ enableRobotsTXT = true
   # a secret — it appears in the page source of every visitor. What IS sensitive
   # is the Umami login, which is not here and never should be.
   [params.analytics]
-    website_id = ""
     # Same-origin path served by the Apache /stats/ proxy. A third-party host
     # here would be blocked by ad blockers and would defeat the point.
     script_url = "/stats/script.js"
+
+    # ── One id per machine, keyed by the host it belongs to ──────────────────
+    # Each machine runs its OWN Umami with its own database, so an id is only
+    # meaningful on the machine that issued it. The build picks the entry
+    # matching the host it is building for — `baseURL` comes from STAGING_HOST /
+    # PRODUCTION_HOST at deploy time — and emits nothing when there is no match.
+    #
+    # ⛔ This is why the file does NOT differ between `dev` and `main`. Keeping a
+    # single id here and deleting it on the way to main would be a rule enforced
+    # by a comment; this is enforced by the build. A host with no entry (a local
+    # build, a PR preview, a new machine) ships no tracker rather than a wrong one.
+    #
+    # ⚠️ Sending production's visitors to staging's id would produce numbers that
+    # exist and are wrong — worse than no numbers. That is the failure this shape
+    # prevents.
+    #
+    # ⛔ Must stay the LAST thing in [params.analytics]: a TOML sub-table header
+    # swallows every key after it, so a plain key added below would land in here.
+    [params.analytics.hosts]
+      "pathogens-dev.vm.cesnet.cz" = "d1dc6fc0-e043-4089-b4f5-ebdad26e9f88"
+      "pathogens.vm.cesnet.cz" = "368bbdc4-e019-4134-add7-d6b5a1bd6e9f"
 
 # ⛔ Menu entries use `pageRef`, never `url`. A menu entry's `url` is emitted
 # verbatim and Hugo does NOT prefix it with the language, even inside
@@ -72,6 +102,14 @@ enableRobotsTXT = true
       name = "Dashboardy"
       pageRef = "/dashboards"
       weight = 10
+    # ⛔ Signály musí být v menu. Stránka odešla ze sekce dashboardů a od
+    # 9. 9. 2026 na ni nevede ani dlaždice z titulky — tohle je jediná
+    # navigační cesta, kterou má.
+    [[languages.cs.menus.main]]
+      identifier = "signals"
+      name = "Signály"
+      pageRef = "/signals"
+      weight = 15
     [[languages.cs.menus.main]]
       identifier = "news"
       name = "Novinky"
@@ -104,6 +142,14 @@ enableRobotsTXT = true
       name = "Dashboards"
       pageRef = "/dashboards"
       weight = 10
+    # ⛔ Signály musí být v menu. Stránka odešla ze sekce dashboardů a od
+    # 9. 9. 2026 na ni nevede ani dlaždice z titulky — tohle je jediná
+    # navigační cesta, kterou má.
+    [[languages.en.menus.main]]
+      identifier = "signals"
+      name = "Signals"
+      pageRef = "/signals"
+      weight = 15
     [[languages.en.menus.main]]
       identifier = "news"
       name = "News"

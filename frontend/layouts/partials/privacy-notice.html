@@ -1,0 +1,130 @@
+{{/* Upozornění na zpracování dat při první návštěvě (PP-55).
+
+     Proužek dole + rozkliknutelné okno s podrobnostmi. Text je v
+     `data/privacy.yaml`, aby se dal upravovat bez sahání na šablonu a aby šly
+     obě jazykové verze porovnat vedle sebe.
+
+     ⛔ NENÍ to cookie lišta a nesmí se v ni proměnit. Nežádá o souhlas, protože
+     souhlas se tu nevyžaduje: nic sledovacího se do zařízení neukládá. Jen
+     informuje — proto „Rozumím", ne „Souhlasím", a proto tu není žádné
+     „Odmítnout": nebylo by co odmítnout, a tlačítko, které nic nedělá, je horší
+     než žádné.
+
+     ⚠️ Zavření SE ukládá — jedna položka v localStorage, jinak by se proužek
+     objevoval při každé návštěvě. To je uložení do zařízení, a text v okně to
+     přiznává vlastní sekcí. Oznámení, které v prvním odstavci tvrdí, že nic
+     neukládá, a přitom ukládá, je horší než žádné.
+
+     `<dialog>` je nativní prvek — žádná knihovna, což respektuje otevřené PP-7.
+*/}}
+{{ $lang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
+{{ $t := index .Site.Data.privacy $lang }}
+
+<div class="pp-privacy" id="pp-privacy-bar" role="region"
+     aria-label="{{ $t.title }}" hidden>
+  <p class="pp-privacy__text">{{ $t.banner }}</p>
+  <div class="pp-privacy__actions">
+    <button type="button" class="pp-privacy__link" id="pp-privacy-more">{{ $t.more }}</button>
+    <button type="button" class="pp-privacy__ok" id="pp-privacy-ok">{{ $t.dismiss }}</button>
+  </div>
+</div>
+
+<dialog class="pp-privacy-dialog" id="pp-privacy-dialog" aria-labelledby="pp-privacy-h">
+  {{/* ⚠️ Obě jazykové verze se vykreslují do stránky, jedna skrytá. Přepínač
+       v hlavičce jen prohodí, která je vidět.
+
+       Proč takhle a ne odkazem na druhou jazykovou verzi webu: čtenář, který si
+       chce přečíst, co o něm sbíráme, nemá kvůli tomu opouštět stránku, na které
+       je — přišel by o rozečtený obsah. Text má dohromady pod 2 kB, takže to
+       nestojí za nic; kdyby rostl, patří to za `fetch`.
+
+       ⛔ Výchozí je jazyk STRÁNKY, ne prohlížeče. Kdo čte českou verzi portálu,
+       dostane české znění; přepínač je nabídka, ne domněnka o tom, kdo je. */}}
+  {{ $pageLang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
+  {{ $other := cond (eq $pageLang "en") "cs" "en" }}
+  <article>
+    <header class="pp-privacy-dialog__head">
+      <h2 id="pp-privacy-h" data-pp-t="title">{{ (index .Site.Data.privacy $pageLang).title }}</h2>
+      <div class="pp-privacy-dialog__tools">
+        <button type="button" class="pp-privacy-dialog__lang" id="pp-privacy-lang"
+                data-cs="{{ (index .Site.Data.privacy "cs").switch }}"
+                data-en="{{ (index .Site.Data.privacy "en").switch }}">{{ (index .Site.Data.privacy $pageLang).switch }}</button>
+        <button type="button" class="pp-privacy-dialog__x" id="pp-privacy-close"
+                aria-label="{{ (index .Site.Data.privacy $pageLang).close }}">&times;</button>
+      </div>
+    </header>
+    {{ range $l := slice "cs" "en" }}
+    {{ $t := index $.Site.Data.privacy $l }}
+    <div class="pp-privacy-dialog__body" data-lang="{{ $l }}"{{ if ne $l $pageLang }} hidden{{ end }}>
+      {{ range $t.sections }}
+      <h3>{{ .h }}</h3>
+      {{ range .p }}<p>{{ . | markdownify }}</p>{{ end }}
+      {{ end }}
+    </div>
+    {{ end }}
+  </article>
+</dialog>
+
+<script>
+(function () {
+  var KEY = "pp-privacy-seen";
+  /* ⚠️ `safeJS` je tu nutné. Bez něj Hugo výstup `jsonify` zaescapuje jako HTML
+     a do stránky se vypíše ŘETĚZEC "{\"cs\":…}" místo objektu — `TITLES[lang]`
+     pak vrací undefined a nadpis okna se při přepnutí jazyka nezmění. Syntakticky
+     je to přitom v pořádku, takže `node --check` mlčí. */
+  var TITLES = {{ dict "cs" (index .Site.Data.privacy "cs").title "en" (index .Site.Data.privacy "en").title | jsonify | safeJS }};
+  var bar = document.getElementById("pp-privacy-bar");
+  var dlg = document.getElementById("pp-privacy-dialog");
+  if (!bar || !dlg) return;
+
+  /* ⚠️ localStorage může vyhodit výjimku, ne jen vrátit null — v privátním okně
+     některých prohlížečů a při zakázaných datech webu. Bez try/catch by tady
+     skript spadl a proužek by se neukázal NIKDY, což je přesně opačná chyba,
+     než jakou by si člověk představil. */
+  function seen() {
+    try { return localStorage.getItem(KEY) === "1"; } catch (e) { return false; }
+  }
+  function remember() {
+    try { localStorage.setItem(KEY, "1"); } catch (e) { /* zůstane při každé návštěvě */ }
+  }
+
+  if (!seen()) bar.hidden = false;
+
+  document.getElementById("pp-privacy-ok").addEventListener("click", function () {
+    remember();
+    bar.hidden = true;
+  });
+
+  function openDialog() {
+    if (typeof dlg.showModal === "function") { dlg.showModal(); } else { dlg.setAttribute("open", ""); }
+  }
+  document.getElementById("pp-privacy-more").addEventListener("click", openDialog);
+
+  /* Přepnutí jazyka uvnitř okna — jen prohodí, která z obou verzí je vidět.
+     Mění i nadpis a popisek tlačítka, jinak by okno hlásilo jeden jazyk
+     a obsahovalo druhý. */
+  var langBtn = document.getElementById("pp-privacy-lang");
+  if (langBtn) {
+    langBtn.addEventListener("click", function () {
+      var bodies = dlg.querySelectorAll("[data-lang]");
+      var showing = null, other = null;
+      bodies.forEach(function (b) { (b.hidden ? (other = b) : (showing = b)); });
+      if (!showing || !other) return;
+      showing.hidden = true;
+      other.hidden = false;
+      var lang = other.getAttribute("data-lang");
+      var head = dlg.querySelector('[data-pp-t="title"]');
+      if (head) head.textContent = TITLES[lang] || head.textContent;
+      langBtn.textContent = langBtn.getAttribute("data-" + lang) || langBtn.textContent;
+    });
+  }
+  document.getElementById("pp-privacy-close").addEventListener("click", function () { dlg.close(); });
+
+  /* Odkaz v patičce — informace musí zůstat dostupná i po zavření proužku. */
+  var footerLink = document.getElementById("pp-privacy-footer-link");
+  if (footerLink) footerLink.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
+
+  /* Kliknutí mimo obsah zavře. `<dialog>` sám tohle nedělá. */
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+})();
+</script>

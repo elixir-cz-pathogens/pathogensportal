@@ -1,24 +1,68 @@
 {{/* Signály: tabulka diagnóz jako přepínač + mapa vybrané diagnózy.
 
      Použití:
-       {{ partial "signals-map.html" (dict "ctx" . "src" "…" "rows" $html "national" $html) }}
+       {{ partial "signals-map.html" (dict "ctx" . "src" "…" "limit" 10) }}
+
+     `limit` 0 nebo nevyplněno = všechny diagnózy.
 
      Model: mapa NEUKAZUJE počet signálů, ale JEDNU vybranou diagnózu — kraje se
      obarví podle síly jejího signálu, kraje bez signálu zůstanou bílé. Tabulka
      vlevo je zároveň výpis i přepínač; ve výchozím stavu je vybraný nejsilnější
      signál.
 
-     `rows` a `national` jsou předrenderované při buildu, takže bez JS je vidět
-     celá tabulka (mapa se bez JS neobarví — je to jedna z mála věcí na webu,
-     kde by šlo o skutečnou ztrátu, proto ta tabulka).
+     Seznam se staví ZDE, při buildu, takže bez JS je vidět celý výpis (mapa se
+     bez JS neobarví — je to jedna z mála věcí na webu, kde by šlo o skutečnou
+     ztrátu, proto ten seznam).
+
+     ⛔ Stavěl se dřív v layouts/index.html a předával se sem hotový jako `rows`.
+     Shortcode `signals-map` ho ale předat neuměl, takže volání z obsahu
+     vykreslilo prázdný přepínač — pp-charts.js seznam nestaví, jen čte hotové
+     [data-dg] prvky. Proto je ta logika tady: jedno místo, obě volání.
 
      ⛔ Vyžaduje /js/pp-charts.js.
 */}}
 {{ $ctx      := .ctx }}
 {{ $src      := .src | default "/data/charts/anomaly_signals.json" }}
 {{ $title    := .title | default "" }}
-{{ $rows     := .rows | default "" }}
+{{ $limit    := int (.limit | default 0) }}
 {{ $en       := eq $ctx.Site.Language.Lang "en" }}
+
+{{/* ⛔ Seskupuje se podle KÓDU MKN-10 (`diagnoza`), ne podle českého názvu.
+     Název je volný text z ÚZIS a je to jediná věc, která se dá přejmenovat;
+     kód je klíč.
+
+     ⚠️ Řádky s kraj_kod = "CZ" se do počtu krajů NEPOČÍTAJÍ — jsou to
+     celostátní řady počítané zvlášť, ne součet krajů. */}}
+{{ $rows := "" }}
+{{ $path := printf "static%s" $src }}
+{{ if fileExists $path }}
+  {{ $all := (readFile $path | transform.Unmarshal).signals | default slice }}
+  {{ $byDg := dict }}
+  {{ range $all }}
+    {{ $k := .diagnoza }}
+    {{ $cur := index $byDg $k | default (dict "code" $k "name" .diagnoza_nazev "max" 0.0) }}
+    {{ $max := $cur.max }}
+    {{ if and (ne .kraj_kod "CZ") (gt .score $cur.max) }}{{ $max = .score }}{{ end }}
+    {{ $byDg = merge $byDg (dict $k (dict "code" $k "name" $cur.name "max" $max)) }}
+  {{ end }}
+
+  {{/* ⛔ Seřazeno podle SÍLY, ne podle kódu. `range` nad mapou jde v pořadí
+       klíčů, takže seznam začínal na A02 — zatímco mapa se otevírá na
+       nejsilnějším signálu. Dva různé „první řádky" na jedné kartě. */}}
+  {{ $list := slice }}
+  {{ range $code, $g := $byDg }}{{ $list = $list | append $g }}{{ end }}
+  {{ $list = sort $list "max" "desc" }}
+  {{ if gt $limit 0 }}{{ $list = first (math.Min $limit (len $list)) $list }}{{ end }}
+
+  {{ range $list }}
+    {{ $rows = printf `%s<li><button type="button" class="pp-signalmap__item" data-dg="%s">%s</button></li>`
+        $rows .code .name }}
+  {{ end }}
+{{ end }}
+
+{{/* Bez dat se nevykreslí nic. Prázdný přepínač vedle prázdné mapy vypadá jako
+     rozbitá stránka, kdežto chybějící blok jako blok, který zrovna nemá co říct. */}}
+{{ if $rows }}
 
 <figure class="pp-card pp-signalmap" data-pp-signalmap data-src="{{ $src }}">
   {{ with $title }}
@@ -57,3 +101,4 @@
   </div>
 
 </figure>
+{{ end }}

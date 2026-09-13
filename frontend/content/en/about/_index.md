@@ -35,7 +35,7 @@ substantially from page to page:
 |---|---|
 | **Public source** | Data published by an external institution (Czech MoH, ÚZIS, NIPH, ECDC, Czech Statistical Office). The portal collects and visualises it; the original source is authoritative. |
 | **Our data** | Produced by us, or handed to us for processing. We stand behind it. |
-| **AI-processed** | Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication. |
+| **AI-assisted** | Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication. |
 
 ## Who runs the portal
 

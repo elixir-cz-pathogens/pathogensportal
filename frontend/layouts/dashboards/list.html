@@ -1,0 +1,58 @@
+{{/* Výpis dashboardů. Přebíjí šablonu motivu jen kvůli legendě.
+
+     ⛔ Legenda je JEN tady. Karty ve výpisech nesou původ dat barvou rámečku,
+     a barva bez vysvětlení je nedešifrovatelná — tohle je to jediné místo, kde
+     se čtenář dozví, co která znamená. Když tenhle blok zmizí, rámečky se
+     nerozbijí, jen přestanou cokoli znamenat.
+*/}}
+{{ define "main" }}
+{{/* ⛔ .pp-viz není dekorace — na něm jsou definované VŠECHNY barevné
+     tokeny (dashboards.css). Bez tohohle obalu se `var(--pp-surface-raised)`
+     ani `var(--pp-border)` nevyhodnotí, karta ztratí pozadí i okraj a vypadá
+     jako by se styly nenačetly. Barvy původu to nepostihlo, ty jsou na :root,
+     takže rámeček zůstal vidět a chyba se tvářila jako „málo kontrastní“. */}}
+<div class="pp-viz">
+{{ $en := eq .Site.Language.Lang "en" }}
+
+<div class="mb-3">
+    {{ .Content }}
+</div>
+
+{{/* ⛔ Táž mřížka jako na titulce, ne bootstrapová řada. Jediný rozdíl proti
+     titulce je `full` — popis a tagy. Kdyby se lišilo cokoli dalšího, patří to
+     do dashboard-tile.html jako přepínač, ne sem. */}}
+<div class="pp-tilegrid pp-tilegrid--full mb-3">
+    {{ $paginatedPages := .Paginate (.Data.Pages) 9 }}
+    {{ range $paginatedPages.Pages }}
+    {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}
+    {{ end }}
+</div>
+<div class="d-flex justify-content-end">
+    {{ template "_internal/pagination.html" . }}
+</div>
+
+{{/* Popisky se berou z origin-meta.html, ať legenda a rámečky nemůžou tvrdit
+     každý něco jiného. Prochází se pevný číselník, ne stránky — legenda má být
+     úplná i ve chvíli, kdy zrovna na téhle straně stránkování některá kategorie
+     není. */}}
+<aside class="pp-origin-legend pp-origin-legend--page mt-4" aria-labelledby="pp-legend-head">
+  <h2 id="pp-legend-head" class="pp-origin-legend__head">{{ cond $en "What the card border colour means" "Co znamená barva rámečku karty" }}</h2>
+  <p class="pp-origin-legend__lead">{{ cond $en "Every dashboard says where its data comes from." "U každého dashboardu je vidět, odkud jsou jeho data." }}</p>
+  <div class="pp-origin-legend__items">
+    {{ range slice "aggregated" "own" "ai-assisted" }}
+    {{ $m := partial "origin-meta.html" (dict "Params" (dict "origin" .) "Site" $.Site) }}
+    {{ with $m }}
+    <div class="pp-origin-legend__item">
+      <span class="pp-origin-legend__swatch pp-origin-edge--{{ .key }}" aria-hidden="true"></span>
+      <div>
+        <strong>{{ .label }}</strong>
+        <span class="pp-origin-legend__desc">{{ .title }}</span>
+      </div>
+    </div>
+    {{ end }}
+    {{ end }}
+  </div>
+</aside>
+
+</div>
+{{ end }}

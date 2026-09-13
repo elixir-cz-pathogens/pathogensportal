@@ -3,6 +3,8 @@ title: "Infekční nemoci — Klíšťaty/zvířaty přenášené"
 origin: aggregated
 description: "Klíšťová encefalitida, lymeská borelióza, kousnutí zvířaty, tularemie — v ČR 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-vector.svg"
+update_from: "isin_group_vector_animal.json"
+update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "klíšťata", "zoonózy"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:

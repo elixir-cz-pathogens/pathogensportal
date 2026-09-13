@@ -1,0 +1,48 @@
+{{/* Stránka tagu. Přebíjí šablonu motivu kvůli jedinému slovu — `Type` místo
+     `Section` u bloku dashboardů.
+
+     ⛔ Motiv vypisoval `where .Data.Pages "Section" "dashboards"`. Když se
+     8. 9. 2026 Signály přestěhovaly z /dashboards/signals/ na /signals/, přestaly
+     do té sekce patřit a ze VŠECH svých stránek tagů zmizely — přitom tag
+     „detekce anomálií" na ně na titulce dál odkazoval. Prázdná stránka za
+     odkazem, který se tváří funkčně; přesně ta past, kterou hlídá PP-43/PP-51.
+
+     `Type` je správný klíč, protože Signály `type: dashboards` v hlavičce už
+     mají (drží jim layout kvůli pp-charts.js). Hugo u stránek bez `type`
+     dosazuje sekci, takže se pro obsah sekce dashboards nic nemění.
+*/}}
+{{ define "main" }}
+{{/* ⛔ .pp-viz není dekorace — na něm jsou definované VŠECHNY barevné
+     tokeny (dashboards.css). Bez tohohle obalu se `var(--pp-surface-raised)`
+     ani `var(--pp-border)` nevyhodnotí, karta ztratí pozadí i okraj a vypadá
+     jako by se styly nenačetly. Barvy původu to nepostihlo, ty jsou na :root,
+     takže rámeček zůstal vidět a chyba se tvářila jako „málo kontrastní“. */}}
+<div class="pp-viz">
+
+{{ .Content }}
+
+{{ $dash := where .Data.Pages "Type" "dashboards" }}
+{{ $news := where .Data.Pages "Section" "news" }}
+
+<h3><i class="bi bi-three-dots-vertical"></i> {{ i18n "dataDashboards" }} ({{ len $dash }})</h3>
+<div class="container mt-3 mb-5">
+    {{/* Táž mřížka a táž karta jako na titulce a na /dashboards/. */}}
+    <div class="pp-tilegrid pp-tilegrid--full">
+        {{ range $dash }}
+        {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}
+        {{ end }}
+    </div>
+    <hr class="mt-4">
+</div>
+
+<h3><i class="bi bi-three-dots-vertical"></i> {{ i18n "newsAndHighlights" }} ({{ len $news }})</h3>
+<div class="container mt-3 mb-5">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
+        {{ range $news }}
+        {{ partial "highlight.html" . }}
+        {{ end }}
+    </div>
+    <hr>
+</div>
+</div>
+{{ end }}

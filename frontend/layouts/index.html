@@ -1,15 +1,17 @@
 {{/* Titulní stránka (PP-57).
 
-     Čtyři bloky, v tomhle pořadí: co portál je → co teď překračuje očekávanou
-     hladinu → novinky → rejstřík patogenů.
+     Pět bloků: co portál je → kam dál po webu → dashboardy jako karty →
+     novinky → témata.
+
+     ⛔ Blok signálů tu BYL a je pryč. Mapa i přepínač teď žijí na
+     /signals/, kde je kolem nich vysvětlení, jak se práh počítá a co
+     signál neznamená. Na titulce visely bez toho kontextu a titulka kvůli nim
+     začínala nejtechničtějším, co portál má. Zůstal odkaz v navigaci.
 
      ⛔ Nahrazuje šablonu motivu, která ukazovala náhled dashboardů, náhled
-     novinek, prázdný blok Akce a oblak tagů. Ta odpovídala na otázku „co tu
-     všechno je"; tahle odpovídá na „na co se mám teď dívat" a „kde najdu ten
-     svůj patogen".
+     novinek, prázdný blok Akce a oblak tagů.
 */}}
 {{ define "main" }}
-<link rel="stylesheet" href="/css/dashboards.css">
 
 {{ $en := eq .Site.Language.Lang "en" }}
 
@@ -22,101 +24,117 @@
     {{ with .Content }}<div class="pp-home-lead">{{ . }}</div>{{ end }}
   </section>
 
-  {{/* ⛔ Blok signálů je za přepínačem `params.homepage.signals`, ne smazaný.
-       Na produkci je vypnutý (rozhodnutí 7. 9. 2026), na dev zapnutý a vyvíjí se.
+  {{/* ── 2. Navigace po webu ───────────────────────────────────────────────
+       Odkazy se berou přes .Site.GetPage, ne natvrdo — RelPermalink je pak
+       jazykově správný sám od sebe. Stejná past jako `url` místo `pageRef`
+       v menu (PP-52) a natvrdo psané /tags/ (PP-51): natvrdo psaná cesta se
+       tváří funkčně a v druhém jazyce vede jinam.
 
-       Proč přepínač a ne smazání bloku: kdyby se `main` a `dev` lišily o šedesát
-       řádků v tomhle souboru, stal by se z něj konfliktní bod při KAŽDÉM dalším
-       releasu — `dev` ten soubor dál mění. Takhle je soubor na obou větvích
-       shodný a liší se jediný řádek v hugo.toml.
+       Dlaždice, u které se cíl nenajde, se přeskočí — lepší než odkaz na 404. */}}
+  {{ $signals := .Site.GetPage "/signals" }}
+  {{ $nav := slice
+      (dict "p" (.Site.GetPage "section" "dashboards") "icon" "bi-grid-1x2-fill"
+            "t" (cond $en "Dashboards"  "Dashboardy")
+            "d" (cond $en "Every data view the portal publishes" "Všechny datové přehledy portálu"))
+      (dict "p" $signals "icon" "bi-activity"
+            "t" (cond $en "Signals"     "Signály")
+            "d" (cond $en "What is above its expected level right now" "Co teď překračuje očekávanou hladinu"))
+      (dict "p" (.Site.GetPage "section" "news") "icon" "bi-newspaper"
+            "t" (cond $en "News"        "Novinky")
+            "d" (cond $en "What changed on the portal" "Co se na portálu změnilo"))
+      (dict "p" (.Site.GetPage "section" "events") "icon" "bi-calendar-event"
+            "t" (cond $en "Events"      "Akce")
+            "d" (cond $en "Talks, workshops and meetings" "Přednášky, workshopy a setkání"))
+      (dict "p" (.Site.GetPage "section" "about") "icon" "bi-info-circle"
+            "t" (cond $en "About"       "O portálu")
+            "d" (cond $en "Who runs it, where the data comes from" "Kdo ho dělá a odkud jsou data"))
+  }}
+  <nav class="pp-home-nav mb-5" aria-label="{{ cond $en "Sections of this site" "Sekce webu" }}">
+    {{/* ⚠️ `$it := .` PŘED `with`: uvnitř `with` se kontext přepne na stránku,
+         takže .icon a .t z dlaždice by byly prázdné. Tiše — `with` na
+         neexistujícím klíči nic nehlásí, jen nevykreslí. */}}
+    {{ range $nav }}
+    {{ $it := . }}
+    {{ with $it.p }}
+    <a class="pp-home-navtile" href="{{ .RelPermalink }}">
+      <i class="bi {{ $it.icon }}" aria-hidden="true"></i>
+      <span class="pp-home-navtile__t">{{ $it.t }}</span>
+      <span class="pp-home-navtile__d">{{ $it.d }}</span>
+    </a>
+    {{ end }}
+    {{ end }}
+  </nav>
 
-       ⚠️ Zapnout zpátky = `signals = true` v hugo.toml. Nic jiného. */}}
-  {{ if .Site.Params.home_signals }}
-  {{/* ── 2. Signály ────────────────────────────────────────────────────────
-       ⛔ Nadpis říká „překračuje očekávanou hladinu", NE „predikce". Metoda
-       (Farrington/Noufaily) počítá, kolik případů by dané období mělo mít, a
-       hlásí překročení. O budoucnosti neříká nic. „Predikce" na titulce slibuje
-       výhled, který model nedává — a je to formulace, kterou novinář převezme.
+  {{/* ── 3. Dashboardy jako karty ──────────────────────────────────────────
+       ⛔ Karty, ne textový seznam. Rozhodnutí „otevřu tohle?" padá podle toho,
+       o čem dashboard je; obrázek to řekne dřív než řádek textu.
 
-       Čte se při buildu ze statického JSONu. Pipeline ho commituje, deploy
-       přestaví web, takže je to čerstvé bez jediného řádku JS. Když soubor
-       chybí, blok se prostě nevykreslí — lepší než prázdná karta. */}}
-  {{ $sigPath := "static/data/charts/anomaly_signals.json" }}
-  {{ if fileExists $sigPath }}
-  {{ $sig := readFile $sigPath | transform.Unmarshal }}
-  {{ $all := $sig.signals | default slice }}
-  {{ with $all }}
-  <section class="pp-home-signals mb-5">
+       Filtr zůstává — jde o rejstřík, ne o fulltext. Statický web by na hledání
+       potřeboval klientský JS index (Pagefind/Fuse/lunr), což naráží na otevřené
+       PP-7 (vendorované knihovny). Filtrovaný seznam reaguje okamžitě, bez JS
+       zobrazí prostě všechno a nemá problém prázdného výsledku.
+
+       ⚠️ Vypisují se jen dashboardy, které nejsou schované pod
+       `build: list: never` — podstránky rozcestníků (ebola, infekční nemoci)
+       sem nepatří, jinak by tu byl každý hub dvakrát. */}}
+  {{ $dash := .Site.GetPage "section" "dashboards" }}
+  {{ with $dash }}
+  <section class="pp-home-cards mb-5">
     <div class="pp-home-sec-head">
-      <h2>{{ cond $en "What is above its expected level right now" "Co teď překračuje očekávanou hladinu" }}</h2>
-      <a class="pp-home-more" href="{{ (cond $en "/en/dashboards/signals/" "/dashboards/signals/") }}">
-        {{ cond $en "All signals" "Všechny signály" }} <i class="bi bi-arrow-right-short"></i>
-      </a>
+      <h2>{{ cond $en "Latest dashboards" "Nejnovější dashboardy" }}</h2>
+      <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny dashboardy" }} <i class="bi bi-arrow-right-short"></i></a>
     </div>
-    {{/* Tabulka se staví UŽ PŘI BUILDU: bez JS je vidět celý výpis, s JS se
-         z ní stane přepínač mapy. Obě strany vycházejí z téhož JSONu, takže se
-         nemají jak rozejít.
 
-         ⛔ Seskupuje se podle KÓDU MKN-10 (`diagnoza`), ne podle českého názvu.
-         Název je volný text z ÚZIS a je to jediná věc, která se dá přejmenovat;
-         kód je klíč. (Totéž řeší PPDB-47 pro překlady.)
+    <div class="pp-home-dash-grid">
+    <div class="pp-home-dash-main">
+    {{/* ⛔ Řadí se podle .Lastmod, což je díky enableGitInfo datum posledního
+         commitu nad souborem. Bez toho přepínače je .Lastmod u VŠECH dashboardů
+         nulový (žádný nemá `date:` v hlavičce) a tohle by tiše vracelo pořadí
+         podle ničeho.
 
-         ⚠️ Řádky s kraj_kod = "CZ" se do počtu krajů NEPOČÍTAJÍ — jsou to
-         celostátní řady počítané zvlášť, ne součet krajů. */}}
-    {{ $byDg := dict }}
-    {{ range $all }}
-      {{ $k := .diagnoza }}
-      {{ $cur := index $byDg $k | default (dict "code" $k "name" .diagnoza_nazev "regions" 0 "max" 0.0 "nat" false) }}
-      {{ $regions := $cur.regions }}{{ $max := $cur.max }}{{ $nat := $cur.nat }}
-      {{ if eq .kraj_kod "CZ" }}
-        {{ $nat = true }}
-      {{ else }}
-        {{ $regions = add $cur.regions 1 }}
-        {{ if gt .score $cur.max }}{{ $max = .score }}{{ end }}
+         ⚠️ Datum se na kartě záměrně NEVYPISUJE. Je to datum úpravy STRÁNKY, ne
+         čerstvost dat — grafy se plní z JSONu, který přegenerovává pipeline,
+         takže „Aktualizováno 5. 9." vedle živého grafu by čtenáře nechalo
+         věřit, že data jsou z 5. 9. Pořadí to nese, tvrzení ne.
+
+         ⚠️ Dnes to rozliší jen dvě položky: sedm z devíti dashboardů se
+         naposledy změnilo jedním hromadným commitem, takže sdílejí datum a
+         jejich vzájemné pořadí je libovolné. Rozejde se, jak se budou upravovat
+         po jednom. */}}
+    <div class="pp-tilegrid">
+      {{ range first 6 .Pages.ByLastmod.Reverse }}
+      {{ partial "dashboard-tile.html" (dict "page" . "full" false) }}
       {{ end }}
-      {{ $byDg = merge $byDg (dict $k (dict "code" $k "name" $cur.name "regions" $regions "max" $max "nat" $nat)) }}
-    {{ end }}
+    </div>
+    </div>
 
-    {{/* ⛔ Seřazeno podle SÍLY, ne podle kódu. `range` nad mapou jde v pořadí
-         klíčů, takže tabulka začínala na A02 — zatímco mapa se otevírá na
-         nejsilnějším signálu. Dva různé „první řádky" na jedné kartě. */}}
-    {{ $list := slice }}
-    {{ range $code, $g := $byDg }}{{ $list = $list | append $g }}{{ end }}
-    {{ $list = sort $list "max" "desc" }}
-
-    {{/* ⛔ Jen deset nejsilnějších. Celý výpis patří na stránku Signály; tady je
-         to přepínač mapy, ne archiv. Do zavedení DataTables se sem stránkování
-         nevrací — tabulka, která se sama stránkuje po 25, přestává být přepínač. */}}
-    {{ $rows := "" }}
-    {{ range first 10 $list }}
-      {{ $rows = printf `%s<li><button type="button" class="pp-signalmap__item" data-dg="%s">%s</button></li>`
-          $rows .code .name }}
-    {{ end }}
-
-    {{ partial "signals-map.html" (dict "ctx" $ "rows" $rows) }}
-
-    <p class="pp-home-caveat">
-      <i class="bi bi-info-circle" aria-hidden="true"></i>
-      {{/* ⛔ Bez čísla o falešné pozitivitě. Tvrzení „při 99. percentilu ~1 %
-           překročení náhodou" platilo pro předchozí metodu; od PPDB-54 běží
-           bayesovská FDR (payload nese `fdr`), u které se falešná pozitivita
-           popisuje jinak. Správnou formulaci musí dodat autor metody — do té
-           doby je poctivější neuvádět žádné číslo než uvádět zastaralé. */}}
-      {{ if $en }}
-      A signal is a statistical screen, <strong>not a confirmed outbreak</strong>. It can also be a
-      change in reporting or plain chance.
-      {{ else }}
-      Signál je statistický screening, <strong>ne potvrzená epidemie</strong>. Za překročením může
-      stát i změna vykazování nebo prostá náhoda.
+{{- $visible := slice -}}
+  {{- $labels := dict -}}
+  {{- range site.RegularPages -}}
+    {{- range .Params.tags -}}
+      {{- $visible = $visible | append (. | urlize) -}}
+      {{- $labels = merge $labels (dict (. | urlize) .) -}}
+    {{- end -}}
+  {{- end -}}
+    <aside class="pp-home-topics" aria-labelledby="pp-topics-head">
+      <h3 id="pp-topics-head">{{ cond $en "Topics" "Témata" }}</h3>
+      {{/* ⚠️ Říká, že se jde JINAM. Chipy sedí vedle filtru, který filtruje na
+           místě — bez tohohle rozlišení vypadají jako druhá sada filtrů. */}}
+      <p class="pp-home-topics__lead">{{ cond $en "Jump across diseases" "Napříč nemocemi" }}</p>
+      <div class="pp-home-topics__list">
+      {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
+      {{ if in $visible ($name | urlize) }}
+      <a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
       {{ end }}
-    </p>
+      {{ end }}
+      </div>
+    </aside>
+    </div>
+
   </section>
   {{ end }}
-  {{ end }}
 
-  {{ end }}
-
-  {{/* ── 3. Novinky ────────────────────────────────────────────────────── */}}
+  {{/* ── 4. Novinky ────────────────────────────────────────────────────── */}}
   {{ $news := .Site.GetPage "section" "news" }}
   {{ with $news }}
   {{ $items := first 3 .RegularPages }}
@@ -139,119 +157,6 @@
   {{ end }}
   {{ end }}
 
-  {{/* ── 4. Rejstřík patogenů ──────────────────────────────────────────────
-       ⛔ Rejstřík, NE fulltextový vyhledávač. Statický web by na hledání
-       potřeboval klientský JS index (Pagefind/Fuse/lunr), což naráží na
-       otevřené PP-7 (vendorované knihovny). Filtrovaný seznam reaguje okamžitě,
-       bez JS zobrazí prostě všechno, a nemá problém prázdného výsledku.
-
-       Filtruje se přes title + popis + tagy, takže „vakcíny" najde i podstránku
-       schovanou pod `build: list: never`. */}}
-  {{ $dash := .Site.GetPage "section" "dashboards" }}
-  {{ with $dash }}
-  <section class="pp-home-index">
-    <div class="pp-home-sec-head">
-      <h2>{{ cond $en "Pathogen index" "Rejstřík patogenů" }}</h2>
-      <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny dashboardy" }} <i class="bi bi-arrow-right-short"></i></a>
-    </div>
-
-    <div class="pp-home-index-grid">
-    <div class="pp-home-index-main">
-    <label class="pp-home-filter">
-      <i class="bi bi-funnel" aria-hidden="true"></i>
-      <input type="search" id="pp-index-filter" autocomplete="off"
-             placeholder="{{ cond $en "Filter by name, topic or tag…" "Filtrovat podle názvu, tématu nebo tagu…" }}"
-             aria-label="{{ cond $en "Filter the pathogen index" "Filtrovat rejstřík patogenů" }}">
-    </label>
-
-    <ul class="pp-home-index-list" id="pp-index-list">
-      {{ range .Pages.ByTitle }}
-      <li class="pp-home-index-item"
-          data-hay="{{ lower (printf "%s %s %s" .Title (.Description | default "") (delimit (.Params.tags | default slice) " ")) }}">
-        <a href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Title }}</a>
-        {{ with partial "origin-badge.html" (dict "page" . "size" "sm") }}{{ . }}{{ end }}
-        {{ if .Params.redirect_url }}<span class="pp-origin-badge pp-origin-badge--sm" style="color:#77766f;background:#f2f1ee">{{ cond $en "external" "externí" }} <i class="bi bi-box-arrow-up-right"></i></span>{{ end }}
-        {{ with .Description }}<span class="pp-home-index-item__desc">{{ . }}</span>{{ end }}
-      </li>
-      {{ end }}
-    </ul>
-    <p class="pp-home-index-empty" id="pp-index-empty" hidden>
-      {{ cond $en "Nothing matches that." "Tomu nic neodpovídá." }}
-    </p>
-    </div>
-
-    {{/* ── Témata ────────────────────────────────────────────────────────────
-         Vrácená sem po přestavbě titulky. Patří vedle rejstříku, protože obojí
-         dělá totéž — dostane čtenáře na dashboard. Rejstřík podle názvu nemoci,
-         témata napříč nemocemi (kraje, surveillance, ÚZIS…).
-
-         ⛔ Filtr na tagy s obsahem je nutný: .Site.Taxonomies NEREspektuje
-         `build: list: never`, kdežto site.RegularPages ano. Bez něj vedou tagy
-         schovaných podstránek na prázdné stránky tagů (PP-43, PP-51). */}}
-    {{- /* ⛔ Odkazy jdou přes relLangURL, ne natvrdo "/tags/…". Absolutní cesta
-           ignoruje jazyk, takže anglická titulka odkazovala na české stránky tagů
-           — z 28 odkazů 18 na neexistující URL. Stejná past jako `url` místo
-           `pageRef` v menu (PP-52): odkaz se tváří funkčně a vede jinam.
-
-           ⚠️ Zároveň se sbírá PŮVODNÍ podoba tagu. `.Site.Taxonomies.tags` drží
-           normalizovaný klíč, takže „IMG AV ČR" by se vypsalo jako „img av čr" —
-           zatímco na kartách dashboardů se vypisuje z .Params.tags správně.
-           Stejný tag dvěma způsoby na jedné stránce vypadá jako chyba. */ -}}
-    {{- $visible := slice -}}
-    {{- $labels := dict -}}
-    {{- range site.RegularPages -}}
-      {{- range .Params.tags -}}
-        {{- $visible = $visible | append (. | urlize) -}}
-        {{- $labels = merge $labels (dict (. | urlize) .) -}}
-      {{- end -}}
-    {{- end -}}
-    <aside class="pp-home-topics" aria-labelledby="pp-topics-head">
-      <h3 id="pp-topics-head">{{ cond $en "Topics" "Témata" }}</h3>
-      <p class="pp-home-topics__lead">{{ cond $en "Jump across diseases" "Napříč nemocemi" }}</p>
-      <div class="pp-home-topics__list">
-        {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-        {{ if in $visible ($name | urlize) }}
-        <a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
-        {{ end }}
-        {{ end }}
-      </div>
-    </aside>
-    </div>
-
-    {{/* Legenda — barva bez legendy je nedešifrovatelná. */}}
-    <div class="pp-origin-legend mt-3">
-      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--aggregated pp-origin-badge--sm"><i class="bi bi-diagram-3"></i>{{ cond $en "Public source" "Veřejný zdroj" }}</span> {{ cond $en "collected by the portal" "portál je jen shromažďuje" }}</span>
-      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--own pp-origin-badge--sm"><i class="bi bi-award"></i>{{ cond $en "Our data" "Naše data" }}</span> {{ cond $en "produced or processed by us" "vznikla u nás nebo je zpracováváme" }}</span>
-      <span class="pp-origin-legend__item"><span class="pp-origin-badge pp-origin-badge--ai-assisted pp-origin-badge--sm"><i class="bi bi-robot"></i>{{ cond $en "AI-processed" "Zpracováno AI"}}</span> {{ cond $en "written by an AI agent, expert-reviewed" "sepsala AI, prošlo odbornou revizí" }}</span>
-    </div>
-  </section>
-  {{ end }}
-
 </div>
 
-{{/* Filtr rejstříku. Vanilla, ~15 řádků, žádná knihovna — viz PP-7.
-     Bez JS zůstane seznam celý viditelný, což je použitelný stav. */}}
-{{/* Mapa signálů se plní klientsky. pp-charts.js se jinak načítá jen
-     v dashboards/single.html, takže na titulce si ho musíme přidat sami. */}}
-<script src="/js/pp-charts.js"></script>
-
-<script>
-(function () {
-  var input = document.getElementById('pp-index-filter');
-  var list  = document.getElementById('pp-index-list');
-  var empty = document.getElementById('pp-index-empty');
-  if (!input || !list) return;
-  var items = Array.prototype.slice.call(list.querySelectorAll('.pp-home-index-item'));
-  input.addEventListener('input', function () {
-    var q = input.value.trim().toLowerCase();
-    var shown = 0;
-    items.forEach(function (li) {
-      var hit = !q || (li.dataset.hay || '').indexOf(q) !== -1;
-      li.hidden = !hit;
-      if (hit) shown++;
-    });
-    if (empty) empty.hidden = shown !== 0;
-  });
-})();
-</script>
 {{ end }}

@@ -13,7 +13,7 @@ version **0.2.0**, and several new things have appeared on the site with it:
 **Signals — anomaly detection.** More than 1,200 notified infectious disease time
 series (diagnosis × region) are now screened on every pipeline run by a statistical
 early-warning system using the Farrington/Noufaily method — the same one used by the
-UK Health Security Agency. The [Signals](/en/dashboards/signals/) page shows where
+UK Health Security Agency. The [Signals](/en/signals/) page shows where
 notified counts exceed the expected level. In a backtest, the system caught the 2024
 pertussis epidemic **three months before it became a public topic**.
 

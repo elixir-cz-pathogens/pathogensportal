@@ -2,7 +2,9 @@
 title: "Infekční nemoci — Časté dětské/vzdušné"
 origin: aggregated
 description: "Plané neštovice, pásový opar, spála, příušnice, spalničky — roční počty případů v ČR 2018–2025 (ÚZIS ISIN)."
-image: "/images/cards/id-childhood.svg"
+image: "/images/cards/id-childhood.webp"
+update_from: "isin_group_childhood_airborne.json"
+update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "dětské nemoci"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:

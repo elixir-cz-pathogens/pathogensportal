@@ -1,0 +1,118 @@
+{{/* Jak čerstvý je dashboard — přečtené z DAT, ne opsané do hlavičky.
+
+     Usage: {{ $u := partial "update-stamp.html" $page }}
+            {{ with $u }}{{ .text }}{{ end }}
+
+     Hlavička říká DVĚ věci a obě jsou povinné:
+       update_from: "flu_weekly.json"   — ze kterého souboru
+       update_read: "week"              — jak se v něm má datum číst
+
+     ⛔ `update_read` NENÍ zbytečná duplicita a nesmí se „zjednodušit" na hádání
+     podle obsahu. Poslední popisek řady je u `flu_weekly` období („KT 36/26"),
+     ale u `covid_by_age` věková kategorie („80+“) a u `flu_regional_overview`
+     název kraje („Liberecký“). Automat, který bere poslední popisek, by na
+     třetině dashboardů napsal jako datum aktualizace věk nebo kraj — a vypadalo
+     by to jako platný údaj.
+
+     ── Hodnoty `update_read` ────────────────────────────────────────────────
+     stamp       (výchozí) `generated_at` = kdy běžela pipeline; jinak
+                 `posledni_datum` = po které datum sahají data
+     period-end  `obdobi` ve tvaru „A – B“, bere se B
+     week        poslední popisek „KT WW/RR“ → neděle toho ISO týdne
+     month       poslední popisek „RRRR-MM“
+     year        poslední popisek „RRRR“
+
+     ⛔ Dvě různá tvrzení, dva různé popisky, a nesmí splynout. `generated_at`
+     říká KDY BĚŽELA PIPELINE, všechno ostatní říká PO KTERÉ OBDOBÍ SAHAJÍ DATA.
+     Běh 9. 9. může přinést čísla k 8. 9.; jeden popisek pro obojí by čtenáři
+     tvrdil, že má v ruce den, který v souboru není.
+
+     ⚠️ Měsíc a rok se NEPŘEVÁDÍ na den. ISIN po skupinách je roční řada —
+     „31. 12. 2025“ by předstíralo denní přesnost, kterou ta data nemají.
+
+     Stránka bez `update_from` nevrací nic a `update_freq` z hlavičky se použije
+     tak jak je. To je případ stránek, které žádné vlastní datum mít nemůžou:
+     Nextstrain a odpadní vody běží na cizím serveru, hantavirus je uzavřený
+     situační report. */}}
+{{ $en   := eq .Site.Language.Lang "en" }}
+{{ $file := .Params.update_from }}
+{{ $read := .Params.update_read | default "stamp" }}
+{{ $out  := "" }}
+
+{{ with $file }}
+  {{ $path := printf "static/data/charts/%s" . }}
+  {{ if not (os.FileExists $path) }}
+    {{ errorf "update_from: %q neexistuje (stránka %q)" $path $.Title }}
+  {{ else }}
+    {{ $j := os.ReadFile $path | transform.Unmarshal }}
+
+    {{/* ── kdy běžela pipeline / po které datum sahají data ─────────────── */}}
+    {{ if eq $read "stamp" }}
+      {{ if $j.generated_at }}
+        {{ $t := time.AsTime $j.generated_at }}
+        {{ $out = dict "text" (printf "%s: %s"
+            (cond $en "Updated" "Aktualizace")
+            ($t.Format (cond $en "2 Jan 2006, 15:04 MST" "2. 1. 2006, 15:04 MST"))) }}
+      {{ else if $j.posledni_datum }}
+        {{ $t := time.AsTime $j.posledni_datum }}
+        {{ $out = dict "text" (printf "%s %s"
+            (cond $en "Data through" "Data k")
+            ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+      {{ else }}
+        {{ errorf "update_read \"stamp\": %q nemá generated_at ani posledni_datum (stránka %q)" $path $.Title }}
+      {{ end }}
+
+    {{/* ── „2021-01-01 – 2026-09-08“ → konec období ─────────────────────── */}}
+    {{ else if eq $read "period-end" }}
+      {{ $o := $j.obdobi }}
+      {{ if not $o }}{{ errorf "update_read \"period-end\": %q nemá pole obdobi (stránka %q)" $path $.Title }}{{ end }}
+      {{/* Pomlčka je EN DASH s mezerami, tak ji generátor píše. */}}
+      {{ $end := trim (index (last 1 (split $o "–")) 0) " " }}
+      {{ $t := time.AsTime $end }}
+      {{ $out = dict "text" (printf "%s %s"
+          (cond $en "Data through" "Data k")
+          ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+
+    {{/* ── „KT 36/26“ → neděle 36. ISO týdne 2026 ───────────────────────── */}}
+    {{ else if eq $read "week" }}
+      {{ $labels := $j.labels }}
+      {{ if not $labels }}{{ errorf "update_read \"week\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
+      {{ $lastLabel := index $labels (sub (len $labels) 1) }}
+      {{ $ww := index (split (index (last 1 (split $lastLabel " ")) 0) "/") 0 | int }}
+      {{ $yy := index (split (index (last 1 (split $lastLabel " ")) 0) "/") 1 | int }}
+      {{ $year := add 2000 $yy }}
+      {{/* 4. leden leží VŽDY v 1. ISO týdnu — odtud se počítá všechno ostatní.
+           Den v týdnu se čte přes Format "Mon", protože .Weekday v šabloně
+           vrací jméno, ne číslo, se kterým by šlo počítat. */}}
+      {{ $jan4 := time.AsTime (printf "%d-01-04T00:00:00Z" $year) }}
+      {{ $off := index (dict "Mon" 0 "Tue" 1 "Wed" 2 "Thu" 3 "Fri" 4 "Sat" 5 "Sun" 6) ($jan4.Format "Mon") }}
+      {{ $sunday := $jan4.AddDate 0 0 (add (mul (sub $ww 1) 7) (sub 6 $off)) }}
+      {{ $out = dict "text" (printf "%s %s (%s)"
+          (cond $en "Data through" "Data k")
+          ($sunday.Format (cond $en "2 Jan 2006" "2. 1. 2006"))
+          (cond $en (printf "week %d/%d" $ww $yy) $lastLabel)) }}
+
+    {{/* ── „2025-12“ ────────────────────────────────────────────────────── */}}
+    {{ else if eq $read "month" }}
+      {{ $labels := $j.labels }}
+      {{ if not $labels }}{{ errorf "update_read \"month\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
+      {{ $l := index $labels (sub (len $labels) 1) }}
+      {{ $p := split $l "-" }}
+      {{ $out = dict "text" (printf "%s %s/%s"
+          (cond $en "Data through" "Data k") (index $p 1) (index $p 0)) }}
+
+    {{/* ── „2025“ ───────────────────────────────────────────────────────── */}}
+    {{ else if eq $read "year" }}
+      {{ $labels := $j.labels }}
+      {{ if not $labels }}{{ errorf "update_read \"year\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
+      {{ $out = dict "text" (printf "%s %s"
+          (cond $en "Data for" "Data za rok")
+          (index $labels (sub (len $labels) 1))) }}
+
+    {{ else }}
+      {{ errorf "update_read: neznámá hodnota %q (stránka %q)" $read $.Title }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ return $out }}

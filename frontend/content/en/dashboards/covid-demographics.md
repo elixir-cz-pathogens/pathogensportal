@@ -5,7 +5,8 @@ description: "4.9 million confirmed COVID-19 cases in the Czech Republic by age 
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "deaths", "vaccination", "epidemiology", "Czech MoH"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH — COVID-19 Open Data</a>'
-update_freq: "With every data pipeline run (sources updated daily)"
+update_from: "covid_by_vaccination.json"
+update_read: "period-end"
 build:
   list: never
   render: always

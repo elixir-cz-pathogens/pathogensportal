@@ -1,0 +1,93 @@
+name: "CHECK: Backend ↔ DB integration"
+
+# Integrační testy backendu proti SKUTEČNÉ PostgreSQL (PP-12).
+#
+# Proč zvlášť, a ne v _test-backend.yml: ten se volá i z obou deploy workflow, a
+# přidat do nasazení start databáze znamená prodloužit každý deploy o službu,
+# která s nasazením nemá co dělat. Tady běží jen na PR do `main`.
+#
+# ⛔ Schéma se bere z `pathogensportal-db/db/init.sql`, tedy ze submodulu.
+# Testovat proti ručně opsané kopii by dokázalo jen to, že se naše kopie shoduje
+# sama se sebou — a právě rozejití těch dvou je věc, kterou to má chytit.
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: backend-integration-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_DB: pathogens
+          POSTGRES_USER: portal
+          POSTGRES_PASSWORD: ci_only_not_a_secret
+        ports:
+          - 5432:5432
+        # Bez health-check by testy startovaly dřív, než Postgres přijímá spojení,
+        # a padaly by nahodile — což je horší než nemít je vůbec.
+        options: >-
+          --health-cmd "pg_isready -U portal -d pathogens"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Schéma je v submodulu; bez něj testy nemají co aplikovat.
+          submodules: true
+
+      - name: Stop if the submodule schema is missing
+        run: |
+          if [ ! -f pathogensportal-db/db/init.sql ]; then
+            echo "::error::pathogensportal-db/db/init.sql is missing — the submodule did not check out."
+            echo "The schema must come from the submodule; there is nothing to test against."
+            exit 1
+          fi
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -q -r backend/website-be/requirements.txt
+
+      - name: Integration tests
+        working-directory: backend/website-be
+        env:
+          PP_TEST_DB: "1"
+          DB_HOST: 127.0.0.1
+          DB_PORT: "5432"
+          POSTGRES_DB: pathogens
+          POSTGRES_USER: portal
+          POSTGRES_PASSWORD: ci_only_not_a_secret
+        run: |
+          set -o pipefail
+          pytest -q -m integration --junitxml=/tmp/integration.xml | tee /tmp/out.txt
+
+      # ⛔ Kontrola, která nemůže selhat, není kontrola. Integrační testy jsou
+      # přeskočené, když PP_TEST_DB není nastavené — a přeskočená sada hlásí
+      # stejnou zelenou jako procházející. Kdyby se marker přejmenoval, databáze
+      # nenastartovala nebo se soubor přesunul, tenhle job by bez tohohle kroku
+      # tiše prošel a tvářil se, že backend proti DB testujeme.
+      - name: Refuse to pass when no integration test actually ran
+        run: |
+          python - <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          r = ET.parse("/tmp/integration.xml").getroot()
+          suite = r if r.tag == "testsuite" else r.find("testsuite")
+          total = int(suite.get("tests", 0))
+          skipped = int(suite.get("skipped", 0))
+          ran = total - skipped
+          print(f"integration tests: {total} collected, {skipped} skipped, {ran} actually ran")
+          if ran < 1:
+              print("::error::No integration test ran — refusing to report success.")
+              sys.exit(1)
+          PY

@@ -1,4 +1,13 @@
 ---
+# ⛔ NENÍ to dashboard, je to stránka s vlastní funkcionalitou (mapa +
+# přepínač diagnóz), a proto nežije v sekci dashboards. `type` ale zůstává
+# `dashboards`: JEN layouts/dashboards/single.html načítá /js/pp-charts.js,
+# bez kterého se mapa nikdy neobarví. Bez tohohle řádku se stránka přesune
+# a ztichne — vypadá hotově a nefunguje.
+type: dashboards
+# Stará adresa musí dál fungovat: odkazují na ni dvě publikované novinky.
+aliases:
+  - "/dashboards/signals/"
 title: "Signály — detekce anomálií"
 origin: own
 description: "Automatické vyhledávání překročení očekávané hladiny v 1 200+ řadách hlášených infekčních nemocí (diagnóza × kraj, ÚZIS ISIN) metodou Farrington/Noufaily."
@@ -6,7 +15,9 @@ image: "/images/cards/signals.svg"
 highlight: true
 tags: ["detekce anomálií", "surveillance", "včasné varování", "ÚZIS", "statistika"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
-update_freq: "S každým během datové pipeline"
+# Datum posledního běhu se bere z generated_at v tomhle JSON, ne odsud.
+update_from: "anomaly_signals.json"
+update_read: "stamp"
 ---
 
 Data o infekčních nemocech tvoří přes **1 200 časových řad** (114 diagnóz × 14 krajů
@@ -14,6 +25,8 @@ plus celostátní součty) — příliš mnoho na to, aby je kdokoli sledoval o�
 stránka je proto prochází automaticky: pro každou řadu spočítá **očekávanou endemickou
 hladinu** ze sezónnosti a historie a zobrazí měsíce, kdy hlášený počet překročil
 prahovou mez.
+
+{{< signals-map src="/data/charts/anomaly_signals.json" title="Kde signál je — podle kraje" >}}
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Řady nad očekávanou hladinou" >}}
 

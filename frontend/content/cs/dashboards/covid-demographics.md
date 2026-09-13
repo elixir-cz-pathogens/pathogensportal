@@ -5,7 +5,8 @@ description: "4,9 milionu potvrzených případů COVID-19 v ČR podle věku a s
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "úmrtí", "vakcinace", "epidemiologie", "MZČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR — Otevřená data COVID-19</a>'
-update_freq: "S každým během datové pipeline (zdroje aktualizovány denně)"
+update_from: "covid_by_vaccination.json"
+update_read: "period-end"
 build:
   list: never
   render: always

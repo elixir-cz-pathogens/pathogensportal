@@ -1,11 +1,14 @@
 {{/* Mapa signálů pro použití v obsahu.
 
-     Usage: {{< signals-map src="/data/charts/anomaly_signals.json" title="Titulek" >}}
+     Usage: {{< signals-map src="/data/charts/anomaly_signals.json" title="Titulek" limit="10" >}}
 
-     Vlastní značkování je v partials/signals-map.html, protože tutéž mapu
-     vykresluje i titulní stránka (layouts/index.html), která shortcode volat nemůže.
+     `limit` vynechané nebo 0 = všechny diagnózy.
+
+     Vlastní značkování i sestavení seznamu je v partials/signals-map.html —
+     jedno místo pro obsah i pro šablony.
 */}}
 {{ partial "signals-map.html" (dict
    "ctx"   .Page
    "src"   (.Get "src")
-   "title" (.Get "title")) }}
+   "title" (.Get "title")
+   "limit" (.Get "limit" | default 0)) }}

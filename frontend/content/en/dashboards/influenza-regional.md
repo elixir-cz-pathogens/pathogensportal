@@ -2,11 +2,12 @@
 title: "Influenza — regional surveillance"
 origin: aggregated
 description: "Weekly laboratory detections of respiratory viruses by Czech region — from SZÚ/NRL weekly PDF reports, updated every week."
-image: "/images/cards/flu-regional.svg"
+image: "/images/cards/flu.webp"
 highlight: false
 tags: ["influenza", "surveillance", "regions", "NIPH", "Czech Republic"]
 data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'
-update_freq: "Weekly (running season 2025/26)"
+update_from: "flu_regional_weekly.json"
+update_read: "week"
 ---
 
 ### Season totals by region

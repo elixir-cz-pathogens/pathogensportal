@@ -3,6 +3,8 @@ title: "Infectious Diseases — Other"
 origin: aggregated
 description: "Aggregate of residual ICD categories of infectious diseases that do not fit any specific group, Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-other.svg"
+update_from: "isin_group_other.json"
+update_read: "year"
 tags: ["infectious diseases", "ÚZIS", "ISIN"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
 build:

@@ -2,11 +2,12 @@
 title: "Influenza and respiratory viruses"
 origin: aggregated
 description: "Virological surveillance of influenza and respiratory viruses in the Czech Republic — seasonal overviews 2012–2026, NIPH/NRL data."
-image: "/images/cards/flu.svg"
+image: "/images/cards/flu.webp"
 highlight: true
 tags: ["influenza", "RSV", "surveillance", "NIPH", "Czech Republic"]
 data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'
-update_freq: "Weekly during the season (current season 2025/26)"
+update_from: "flu_weekly.json"
+update_read: "week"
 ---
 
 ### Seasonal influenza overview
