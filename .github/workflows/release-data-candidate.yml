@@ -1,0 +1,74 @@
+name: "AUTOMATION: Cut release data candidate"
+
+# Triggered manually to prepare a release candidate — regenerates data using the
+# newest -db RELEASE (not the dev branch), writes to no-issue/release-data, and
+# opens a PR for review before merging to main.
+#
+# This replaces the manual step: sudo systemctl start pathogensportal-datapipeline-release.service
+#
+# Required:
+#   secret: DEV_SSH_KEY        (SSH key for the dev machine, same as pipeline-trigger)
+#   vars:   DEV_HOST           (dev machine FQDN)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "cut release" to confirm'
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  release-data:
+    runs-on: ubuntu-latest
+    environment: release
+    steps:
+      - name: Verify confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "cut release" ]; then
+            echo "❌ Confirmation mismatch. Type exactly: cut release"
+            exit 1
+          fi
+
+      - name: Trigger release data build on dev server
+        env:
+          SSH_KEY: ${{ secrets.DEV_SSH_KEY }}
+          DEV_HOST: ${{ vars.DEV_HOST }}
+          DEV_USER: pipeline-trigger
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/dev-key
+          chmod 600 ~/.ssh/dev-key
+
+          # The pipeline-trigger account has a forced command that runs the release script
+          echo "=== Starting release data build on $DEV_HOST ==="
+          ssh -i ~/.ssh/dev-key -o StrictHostKeyChecking=accept-new \
+              "$DEV_USER@$DEV_HOST" 2>&1 | tee build.log
+
+          # Check if it succeeded
+          if grep -q "published to" build.log; then
+            echo "✅ Release data build completed successfully"
+            echo "📋 Review the PR at: https://github.com/elixir-cz-pathogens/pathogensportal/pulls?q=no-issue/release-data"
+          else
+            echo "❌ Build may have failed — check logs on the server:"
+            echo "   ssh $DEV_HOST 'journalctl -u pathogensportal-datapipeline-release.service -n 50'"
+            exit 1
+          fi
+
+      - name: Report
+        run: |
+          echo "## Release Data Candidate"
+          echo ""
+          echo "✅ Release build triggered successfully"
+          echo ""
+          echo "**Before merging, check:**"
+          echo "1. PR at: https://github.com/elixir-cz-pathogens/pathogensportal/pulls"
+          echo "2. Data changes (especially Ebola version)"
+          echo "3. **IMPORTANT:** Recent infra changes that might affect the pipeline:"
+          echo "   - Check `-priv` git log for changes to datapipeline role, deployed rules, etc."
+          echo "   - If there were changes: open an issue in pathogensportal-db mentioning them"
+          echo "   - This prevents @jirkavlasak from working around already-fixed problems"
+          echo ""
+          echo "**Merge when ready.**"

@@ -131,6 +131,9 @@ through Apache.
 ## Related repos
 
 - `pathogensportal-priv` — **private** infra (Ansible, configs, Vault). Nothing infra or secret goes here.
+  **IMPORTANT:** When you fix something that affects the pipeline's behavior (like PPDB-30), add a note to
+  the release notes or open an issue in `-db` to notify `jirkavlasak`. Silent fixes lead to duplicate work
+  (he worked around PPDB-30 after it was fixed, wasting an evening on a solved problem).
 - `pathogensportal-db` — scrapers + DB schema, attached as a **submodule pinned to a release tag**
   (currently `v0.4.0`; URL in `.gitmodules` points at the `elixir-cz-pathogens` org). After every
   pipeline release the pin must be bumped in a PR here, or production keeps building the old
@@ -141,3 +144,42 @@ through Apache.
 - **Never commit secrets or real data** (the repo is public). Data stays out of git via `.gitignore`.
 - Keep the live site working — production deploys from `upstream` on the CESNET VM; don't break the build.
 - When editing the site, verify it still builds (`hugo`) before opening a PR to `main`.
+
+## ⛔ Trust boundary: the pipeline-trigger account (B5)
+
+A push to `pathogensportal-db` `dev` makes the **dev server** `docker build` + `docker run` that branch HEAD 
+**as root**, with the portal's working tree mounted **writable**, on the machine that holds the **portal deploy 
+key** (which can push to `main`).
+
+**The chain:**
+1. `jirkavlasak` pushes to `-db` `dev`
+2. GitHub sends a webhook to `pipeline-trigger@pathogens-dev` (forced-command SSH key)
+3. The forced command runs `/usr/local/sbin/pipeline-trigger`
+4. That script starts the hourly pipeline (`systemctl start pathogensportal-datapipeline.service`)
+5. The pipeline builds a Docker image from whatever is at `-db` `dev` HEAD
+6. Inside the container, the data generator runs as root
+7. Outputs are bind-mounted into the portal working tree `/opt/pathogensportal-datapipeline/portal/`
+8. The pipeline commits and pushes using the deploy key (which has write to the portal)
+
+**The trust model:**
+- `jirkavlasak` has write to `-db` (owner of that repo)
+- The build runs as root but outputs to bind-mounted directories with limited scope
+- The deploy key can only push to the portal repo, and only to `dev` (production requires a PR)
+- The portal is public, so compromise is visibility + staging unavailability, not data theft
+
+**Known constraints:**
+- If `-db`'s Dockerfile was malicious, it runs as root on the server (the highest risk)
+- If generated Python code was malicious, same issue
+- The working tree mount allows writing anywhere within `pathogensportal-datapipeline/`; doesn't escape it
+- The machine is a CESNET VM with limited network access (dev only, no external facing ports)
+
+**Mitigations:**
+- All code paths reviewed before merge to `-db` (by `jirkavlasak`, who is trusted)
+- The pipeline runs on **dev only**, never production
+- Outputs are limited to known directories (`frontend/static/data/charts/`, `frontend/content/cs/dashboards/`)
+- The deploy key is read-only in production (needs a PR for any production change)
+- The server is hardened (firewall, SSH key-only, no password login)
+
+This is acceptable because `-db` is owned by a colleague who reviews all changes, and the blast radius is 
+limited to staging. **Do not add write-access to production or expand the data mount scope without 
+re-evaluating this risk.**
