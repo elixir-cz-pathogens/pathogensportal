@@ -1,0 +1,85 @@
+name: "AUTOMATION: Sync main → dev"
+
+# Po každém mergi do `main` vrátí `main` zpátky do `dev`.
+#
+# ⛔ PROČ TO VŮBEC MUSÍ EXISTOVAT. Do `main` se merguje SQUASH, takže commity
+# z `dev` se na `main` nikdy neobjeví — a všechno, co vznikne přímo na `main`
+# (hotfix, obsahové PR od AI, oprava workflow), se na `dev` nikdy nedostane.
+# Rozdíl tím po každém releasu roste a projevuje se tiše:
+#
+#   · 7. 9. 2026 chyběl na `dev` `check-content-sanitizer.yaml` — a to je na
+#     `main` POVINNÁ kontrola. Workflow s `pull_request` se spouští z hlavičkové
+#     větve, takže PR z čisté `dev` větve by ji nikdy nespustil a zůstal by viset
+#     na kontrole, která nemůže začít. Stejný tvar jako incident
+#     `backend-tests / pytest`, který v srpnu blokoval PR osm dní.
+#   · 7. 9. 2026 měl `main` ebolu ve v83 a `dev` ve v82 — merge `dev` → `main` by
+#     produkci VRÁTIL o verzi zpět. Chytila to ruční kontrola diffu.
+#   · 2. 9. 2026 by stejná konstelace vrátila A2 a shodila web na 404.
+#
+# ⚠️ Tohle je náplast, ne léčba. Skutečná oprava je položka C2: buď přestat
+# squashovat do `main`, nebo zrušit dlouho žijící `dev`. Dokud platí obojí,
+# rozcházení je vlastnost, ne nehoda — a pak ho má srovnávat stroj, ne člověk,
+# který si na to musí vzpomenout po každém releasu.
+# ⛔ TENHLE SOUBOR MUSÍ ŽÍT NA `main`. U události `push` bere GitHub definici
+# workflow z větve, KTERÁ SE PUSHUJE — takže kopie na `dev` se nikdy nespustí.
+# Poprvé jsem ho omylem přidal jen na `dev` a byl by to němý strážce: existoval
+# by, tvářil se, že hlídá, a nikdy by nevystřelil.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: sync-main-to-dev
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Merge main into dev
+        id: merge
+        run: |
+          set -euo pipefail
+          git config user.name "pathogensportal sync"
+          git config user.email "noreply@github.com"
+          git checkout dev
+
+          # Ptáme se PŘED mergem, ne po něm: „je main už v dev?" je jednoznačná
+          # otázka, kdežto rozpoznávat prázdný merge z reflogu (HEAD@{1}) je
+          # křehké — po „Already up to date." se HEAD nehne a reflog nemusí mít
+          # co porovnat.
+          if git merge-base --is-ancestor origin/main dev; then
+            echo "result=nochange" >> "$GITHUB_OUTPUT"
+          elif git merge origin/main --no-edit -m "no-issue: sync main → dev (${GITHUB_SHA::7})"; then
+            git push origin dev
+            echo "result=merged" >> "$GITHUB_OUTPUT"
+          else
+            # ⛔ Konflikt se NEŘEŠÍ automaticky. Generovaná data by šlo brát
+            # z `dev` naslepo, ale konflikt na šabloně nebo workflow je věc, kde
+            # se automat rozhodnout nemá — a tichý špatný merge do `dev` je horší
+            # než rozejité větve, protože se pak vydá.
+            git merge --abort
+            echo "result=conflict" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Report
+        run: |
+          case "${{ steps.merge.outputs.result }}" in
+            merged)   echo "✅ dev je srovnaný s main." ;;
+            nochange) echo "ℹ️  dev už main obsahoval, nic k dělání." ;;
+            conflict)
+              echo "::error::Merge main → dev skončil konfliktem a NEBYL proveden."
+              echo "Vyřeš ho ručně: git checkout dev && git merge origin/main"
+              echo "⚠️ Dokud to nikdo neudělá, dev postrádá to, co je na main —"
+              echo "   včetně workflow souborů, na kterých stojí povinné kontroly."
+              exit 1 ;;
+          esac

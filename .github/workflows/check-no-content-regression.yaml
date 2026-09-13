@@ -1,0 +1,106 @@
+name: "CHECK: No Content Regression"
+
+# Fails a PR into `main` that would REPLACE PUBLISHED CONTENT WITH OLDER CONTENT.
+#
+# WHY THIS EXISTS
+# ---------------
+# Found on 9 Sep 2026, while writing the change list for the next release. `main`
+# carried Ebola v84 (7 Sep data, 94 points); `dev` carried v83 (4 Sep, 91 points),
+# because Michaela's content PR #69 went straight into `main` and `dev` was never
+# realigned. A `dev` → `main` merge would have taken eight published pages and
+# seven chart files three days backwards.
+#
+# Nothing would have stopped it. `hugo-build` builds older data perfectly happily,
+# `content-sanitizer` reads markup and not dates, and the reviewer sees a diff of
+# 127 files in which "94 → 91" is one number among thousands. This is exactly the
+# class of mistake CI is for: mechanical, invisible to review, and silent once
+# merged.
+#
+# WHY NOT SIMPLY "main must not be ahead of the branch"
+# ----------------------------------------------------
+# It was the first idea and it is wrong twice over.
+#
+#   Too strict: PRs into `main` do not only come from `dev`. A content PR cut from
+#   `dev` (which is how #69's siblings arrive) is behind `main` the moment any
+#   release lands, and would be blocked for a topology that harms nothing.
+#
+#   Too weak: being level with `main` proves nothing about the RESULT. Resolve the
+#   Ebola conflict toward v83 and the branch is perfectly up to date while still
+#   publishing older pages than the ones already live. That is the likelier
+#   mistake, because it happens while a human is staring at a conflict.
+#
+# So the check reads the MERGE RESULT — what this PR would actually put on
+# production — and compares its dates and versions against what production serves
+# today. Topology is reported for context and decides nothing.
+#
+# WHAT COUNTS AS A REGRESSION
+# ---------------------------
+# Only monotonic facts, so that a legitimate change cannot trip it:
+#   * `update_freq: … · v84 · …` on the Ebola pages — the generator's own version
+#   * `posledni_datum` in a chart file — how far the data reaches
+#   * `generated_at` in a chart file — when the pipeline ran
+#
+# ⛔ Series LENGTH is deliberately reported and not enforced. `flu_weekly` holds
+# one season and resets to a single point every autumn; a rule of "never shorter"
+# would fire every October on a correct file, and a check that cries wolf annually
+# is a check people learn to click past.
+#
+# A real, intended rollback (bad data withdrawn) will fail here. That is the point
+# — it should take a deliberate act. `enforce_admins` is off on this repo, so an
+# admin can merge past it; the failure text says so rather than pretending the
+# check is a wall.
+#
+# ⚠️ The job name is flat and calls no reusable workflow, so the status reported to
+# branch protection is exactly `no-content-regression`. A required check whose name
+# did not match what was reported blocked every PR into `main` for 8 days in Aug
+# 2026 (`backend-tests` vs `backend-tests / pytest`) — do not turn this into a
+# caller job.
+#
+# ⏳ Do NOT make this required until it has reported at least once on a real PR.
+# That is the same 8-day lesson: a required check that has never run is
+# indistinguishable from a check that is stuck.
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: no-content-regression-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  no-content-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Full history: the job diffs the merge result against origin/main, and a
+          # shallow clone has no origin/main to diff against.
+          fetch-depth: 0
+          # No submodules — this reads frontend/content and frontend/static/data only.
+
+      - name: Compare the merge result against what production serves
+        run: |
+          set -euo pipefail
+          # ⛔ Explicit refspec. `actions/checkout` configures remote.origin.fetch
+          # for the ref it checked out — for a PR that is the merge ref — so a bare
+          # `git fetch origin main` can update FETCH_HEAD and leave `origin/main`
+          # nonexistent. The script would then find no base for any file.
+          git fetch --no-tags --quiet origin +refs/heads/main:refs/remotes/origin/main
+          git rev-parse --verify --quiet origin/main >/dev/null || {
+            echo "🚨 origin/main did not resolve after fetching it — refusing to guess."
+            exit 1
+          }
+          echo "ℹ️  Base: origin/main ($(git rev-parse --short origin/main))"
+          echo "ℹ️  This PR would publish the tree checked out here ($(git rev-parse --short HEAD))"
+          echo ""
+          behind=$(git rev-list --count HEAD..origin/main)
+          if [ "$behind" -gt 0 ]; then
+            echo "ℹ️  main has $behind commit(s) this branch does not contain."
+            echo "    That is context, not a verdict — the comparison below decides."
+            echo ""
+          fi
+          python3 .github/scripts/check_no_content_regression.py

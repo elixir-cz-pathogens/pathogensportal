@@ -34,18 +34,36 @@ into `dev`; CI polices the commit convention at the `dev → main` PR (it checks
 
 ## Workflow overview
 
+⚠️ **Rows below re-read against the files on 9 Sep 2026.** Five workflows were missing from this table
+and both deploy rows said "disabled", which stopped being true on 17 Aug 2026 — the sections further down
+this file have not had the same pass and may still describe an older repo.
+
 | File | Category | Trigger | Blocks merge? |
 |---|---|---|---|
 | `check-commit-message.yaml` | Validation | PR → `main` | ✅ yes |
 | `hugo-build.yml` | CI | PR → `main` | ✅ yes |
-| `backend-tests.yml` | CI | PR → `main` | ✅ yes (pytest of the BE services) |
+| `backend-tests.yml` | CI | PR → `main` | ✅ yes — reports as **`backend-tests / pytest`**, and the name must match exactly |
+| `check-content-sanitizer.yaml` | Validation | PR → `main` | ✅ yes — no foreign markup in `content/` |
+| `check-no-content-regression.yaml` | Validation | PR → `main` | ⏳ not yet — must report on a real PR before it is made required |
+| `check-backend-integration.yaml` | CI | PR → `main` | ⚪ no |
+| `check-submodule-pin.yaml` | Validation | PR → `main` | ⚪ no |
 | `check-branch-name.yaml` | Validation | PR → `main` | ⚪ no (informational) |
+| `preview-content.yml` | Automation | content PR | — |
+| `auto-sync-main-to-dev.yaml` | Automation | push to `main` | — merges `main` back into `dev` after every release |
 | `auto-issue-prefix.yaml` | Automation | issue opened | — |
 | `auto-branch-issue-tracking.yaml` | Automation | push to `feature/**`,`bugfix/**`,`docs/**` | — |
 | `auto-pr-open-notify.yml` | Automation | PR opened | — |
 | `auto-pr-merged-notify.yaml` | Automation | PR merged | — |
-| `deploy-staging.yml` | Deploy | push to `dev` | ⛔ **disabled** |
-| `deploy-production.yml` | Deploy | push to `main` | ⛔ **disabled** |
+| `deploy-staging.yml` | Deploy | push to `dev` | ✅ **live since 17 Aug 2026** (`DEPLOY_STAGING_ENABLED`) |
+| `deploy-production.yml` | Deploy | push to `main` | ✅ **live since 17 Aug 2026** (`DEPLOY_PRODUCTION_ENABLED`) |
+
+**`check-no-content-regression.yaml`** compares the merge result with what `main` already serves and fails
+if a date or a version goes backwards — the Ebola version stamp, `posledni_datum`, `generated_at`. It
+exists because `main` receives content directly (Ebola deliveries, hotfixes) while `dev` runs ahead on
+everything else, so a release can silently revert published pages. Series *length* is reported, never
+enforced: `flu_weekly` resets every autumn. The logic is in
+`.github/scripts/check_no_content_regression.py` so it can be run against any two commits and shown to
+fail on a real regression.
 
 ## Conventions
 
