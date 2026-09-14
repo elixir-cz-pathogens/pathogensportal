@@ -64,9 +64,7 @@ jobs:
 
       - name: Checkout only the Hugo theme submodule (not pathogensportal-db)
         run: |
-          git config --file .gitmodules --name-only --get-regexp path \
-            | grep -v pathogensportal-db | sed 's/submodule\.\(.*\)\.path/\1/' \
-            | xargs -I {} git submodule update --init {}
+          git submodule update --init -- frontend/themes/hugo-pathogens-portal
         # Only the theme is needed for the Hugo build. The -db submodule
         # contains scrapers and generators only used on the server; excluding
         # it keeps deploys fast and means -db can go private in the future
