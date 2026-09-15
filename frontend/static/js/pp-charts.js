@@ -515,7 +515,15 @@
           beginAtZero: !logY, // log(0) neexistuje; osa začíná na nejmenší hodnotě
           grid: { color: t.grid, drawTicks: false },
           border: { display: false },
-          ticks: { color: t.textMuted, padding: 8, callback: function (v) { return fmt(v); } }
+          ticks: {
+            color: t.textMuted,
+            padding: 8,
+            // Logarithmic minor ticks cluster near each decade. Label only
+            // powers of ten so normal-size text stays readable on short plots.
+            callback: function (v, index, ticks) {
+              return logY && !ticks[index].major ? "" : fmt(v);
+            }
+          }
         }
       }
     };

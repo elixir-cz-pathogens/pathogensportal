@@ -10,7 +10,7 @@
 {{/* Report pages come from an external generator and carry their own class
      names — reports.css translates them into portal tokens. It is not loaded
      anywhere else. */}}
-{{ if .Params.report }}<link rel="stylesheet" href="/css/reports.css">{{ end }}
+{{ if .Params.report }}<link rel="stylesheet" href="{{ "css/reports.css" | relURL }}">{{ end }}
 
 <div class="pp-viz">
   <header class="pp-dash-header">
