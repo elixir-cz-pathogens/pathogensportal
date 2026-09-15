@@ -390,12 +390,43 @@
 
   /* ---------------- Graf ---------------- */
 
+  /** Thin date ticks after fitting the plot, keeping both endpoints and all data. */
+  function fitDateTicks(scale) {
+    var ticks = scale.ticks;
+    if (ticks.length < 2 || scale.width <= 0) return;
+    var ctx = scale.ctx;
+    ctx.save();
+    ctx.font = Chart.helpers.toFont(scale.options.ticks.font, Chart.defaults.font).string;
+    var widths = ticks.map(function (tick) { return ctx.measureText(tick.label).width; });
+    ctx.restore();
+    // Category bars reserve half a category at either end; line charts do not.
+    var range = scale.max - scale.min + (scale.options.offset ? 1 : 0);
+    for (var count = Math.min(12, ticks.length); count >= 2; count--) {
+      var indices = [];
+      for (var i = 0; i < count; i++) {
+        indices.push(Math.round(i * (ticks.length - 1) / (count - 1)));
+      }
+      var fits = indices.every(function (index, slot) {
+        if (!slot) return true;
+        var prev = indices[slot - 1];
+        var distance = (ticks[index].value - ticks[prev].value) * scale.width / range;
+        return distance >= (widths[prev] + widths[index]) / 2 + 8;
+      });
+      if (fits || count === 2) {
+        scale.ticks = indices.map(function (index) { return ticks[index]; });
+        return;
+      }
+    }
+  }
+
   function baseOptions(t, datasets, chartType, payload) {
     var multi = datasets.length > 1;
     // Číselná osa X: vzdálenost na ose odpovídá hodnotě, ne pořadí popisku.
     // Bez ní se u srovnání trajektorií kreslí den 0→4 stejně široce jako 59→85
     // a sklony křivek — tedy to jediné, co má graf ukázat — nic neznamenají.
     var linearX = payload && payload.x_scale === "linear";
+    var dateX = !linearX && payload && Array.isArray(payload.labels) && payload.labels.length > 0 &&
+      payload.labels.every(function (label) { return /^\d{4}-\d{2}-\d{2}$/.test(label); });
     var xUnit = (payload && payload.x_unit) || "";
     var logY = payload && payload.y_scale === "logarithmic";
     var lineCount = datasets.filter(function (d) {
@@ -465,7 +496,16 @@
             : undefined,
           grid: { display: false },
           border: { color: t.grid },
-          ticks: { color: t.textMuted, maxTicksLimit: 12, maxRotation: 0, autoSkip: true }
+          // Auto-skip runs before the final plot width is known. In narrow line
+          // charts, the end-value gutter can then leave the chosen dates overlapping.
+          afterFit: dateX ? fitDateTicks : undefined,
+          ticks: {
+            color: t.textMuted,
+            // Measure the actual last date too, so fit() reserves its edge padding.
+            maxTicksLimit: dateX ? undefined : 12,
+            maxRotation: 0,
+            autoSkip: !dateX
+          }
         },
         y: {
           // Logaritmická osa se hodí tam, kde řady spolu srovnávané leží o řády
@@ -475,7 +515,15 @@
           beginAtZero: !logY, // log(0) neexistuje; osa začíná na nejmenší hodnotě
           grid: { color: t.grid, drawTicks: false },
           border: { display: false },
-          ticks: { color: t.textMuted, padding: 8, callback: function (v) { return fmt(v); } }
+          ticks: {
+            color: t.textMuted,
+            padding: 8,
+            // Logarithmic minor ticks cluster near each decade. Label only
+            // powers of ten so normal-size text stays readable on short plots.
+            callback: function (v, index, ticks) {
+              return logY && !ticks[index].major ? "" : fmt(v);
+            }
+          }
         }
       }
     };

@@ -14,7 +14,7 @@
      u načítání neříká nic. role="status" oznámí změnu, až obsah dorazí. */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 <span class="pp-spinner" role="status">
-  <img class="pp-spinner__mark" src="/images/portal-mark.png" alt=""
+  <img class="pp-spinner__mark" src="{{ "images/portal-mark.png" | relURL }}" alt=""
        width="44" height="44" decoding="async">
   <span class="visually-hidden">{{ cond $en "Loading…" "Načítá se…" }}</span>
 </span>

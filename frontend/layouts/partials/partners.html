@@ -33,7 +33,7 @@
   <div class="pp-partners__grid">
     {{ range $partners }}
     <a href="{{ .url }}" target="_blank" rel="noopener" title="{{ .name }}" aria-label="{{ .name }}">
-      <img src="{{ .img }}" alt="{{ .name }}" loading="lazy">
+      <img src="{{ .img | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy">
     </a>
     {{ end }}
   </div>
