@@ -1,0 +1,167 @@
+{
+  "@context": {
+    "@vocab": "https://schema.org/",
+    "dcterms": "http://purl.org/dc/terms/"
+  },
+  "@graph": [
+    {
+      "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#drc-bdbv-sitrep-timeseries",
+      "@type": "Dataset",
+      "name": "DRC Bundibugyo virus disease SitRep time series",
+      "alternateName": "Časová řada SitRepů DRK k onemocnění způsobenému virem Bundibugyo",
+      "description": "Curated time series of cumulative confirmed cases, cumulative deaths among confirmed cases and directly reported daily values from public DRC INSP/COUSP SitReps used by the website chart.",
+      "url": "https://titan.img.cas.cz/ebola/graf-vyvoj.html",
+      "identifier": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#drc-bdbv-sitrep-timeseries",
+      "version": "v86",
+      "dateModified": "2026-09-18",
+      "temporalCoverage": "2026-05-30/2026-09-16",
+      "spatialCoverage": {
+        "@type": "Country",
+        "name": "Democratic Republic of the Congo"
+      },
+      "isAccessibleForFree": true,
+      "conditionsOfAccess": "Publicly accessible.",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "copyrightNotice": "CC BY 4.0 applies to the original data curation and metadata, not to the linked source documents.",
+      "creator": [
+        { "@id": "https://orcid.org/0000-0003-3059-6127" },
+        { "@id": "https://orcid.org/0000-0003-3858-856X" }
+      ],
+      "keywords": ["Bundibugyo virus", "BDBV", "Ebola disease", "DRC", "SitRep", "confirmed cases", "deaths among confirmed cases", "time series"],
+      "measurementTechnique": "Manual curation from public DRC INSP/COUSP SitReps without interpolation of missing days or unavailable daily metrics.",
+      "variableMeasured": [
+        "Cumulative confirmed cases",
+        "Cumulative deaths among confirmed cases",
+        "Newly reported confirmed cases",
+        "Newly reported deaths among confirmed cases when stated comparably"
+      ],
+      "distribution": [
+        {
+          "@type": "DataDownload",
+          "name": "Curated time series in CSV",
+          "contentUrl": "https://titan.img.cas.cz/ebola/data/drc-bdbv-sitrep-timeseries.csv",
+          "encodingFormat": "text/csv",
+          "license": "https://creativecommons.org/licenses/by/4.0/"
+        },
+        {
+          "@type": "DataDownload",
+          "name": "JSON Schema for one data row",
+          "contentUrl": "https://titan.img.cas.cz/ebola/data/schema.json",
+          "encodingFormat": "application/schema+json"
+        }
+      ],
+      "isBasedOn": [
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_125_16_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_124_15_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_123_14_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_122_13_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_121_12_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_120_11_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_119_10_09_2026-1.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_118_09_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_117_08_09_2026.pdf",
+
+
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_116_07_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_115_06_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_114_05_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_113_04_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_112_03_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_111_02_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_110_01_09_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/09/SitRep_MVEBDB_109_31_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_108_30_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_107_29_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_106_28_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_105_27_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_104_26_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_103_25_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_102_24_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_101_23_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/100.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/99.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_098_20_08_2026_VF_98.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/97-1.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/96.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/95.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/94.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_093_15_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVEBDB_092_14_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/91.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_090_12_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_089_11_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_088_10_08_2026_11.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_087_09_08_2026_VF.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_086_080826.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_085_070826_TK-2.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SITREP_MVEBDB_084_060826.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_083_05-08-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_082_04_08_2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_081_03_08_2026_VF.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_080_02-08-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_079_01-08-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_078_31-07-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/08/SitRep_MVE_RDC_N_077_30-07-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_74_27-07-2026_OKKK.pdf",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_73_26-07-2026.pdf",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_72_25-07-2026.pdf",
+        "https://insp.cd/sitrep-n071-mvb_24-07-2026/",
+        "https://insp.cd/sitrep-n070-mvb_23-07-2026/",
+        "https://insp.cd/sitrep-n069-mvb_22-07-2026/",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep_MVE_RDC_N%C2%B0_68_21-07-2026.pdf",
+        "https://insp.cd/sitrep-n067-mvb_20-07-2026/",
+        "https://insp.cd/sitrep-n066-mvb_19-07-2026/",
+        "https://insp.cd/sitrep-n065-mvb_18-07-2026/",
+        "https://insp.cd/sitrep-n064-mvb_17-07-2026/",
+        "https://insp.cd/sitrep-n062-mvb_15-07-2026/",
+        "https://insp.cd/sitrep-n061-mvb_14-07-2026/",
+        "https://insp.cd/sitrep-n060-mvb-13-07-2026/",
+        "https://insp.cd/wp-content/uploads/2026/07/SitRep-MVE-17-No59-Analytique-final-3.pdf",
+        "https://insp.cd/sitrep-n058-mvb_11-07-2026/",
+        "https://insp.cd/sitrep-n057-mvb_10-07-2026/",
+        "https://insp.cd/sitrep-n056-mvb_09-07-2026/",
+        "https://insp.cd/sitrep-n055-mvb_08-07-2026/",
+        "https://insp.cd/sitrep-n054-mvb_07-07-2026/",
+        "https://insp.cd/sitrep-n053-mvb_06-07-2026/",
+        "https://insp.cd/sitrep-n052-mvb_05-07-2026/"
+      ],
+      "subjectOf": [
+        { "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#webpage" },
+        { "@id": "https://titan.img.cas.cz/ebola/en/graf-vyvoj.html#webpage" }
+      ]
+    },
+    {
+      "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#webpage",
+      "@type": "WebPage",
+      "url": "https://titan.img.cas.cz/ebola/graf-vyvoj.html",
+      "name": "Graf vývoje případů a úmrtí",
+      "inLanguage": "cs",
+      "dateModified": "2026-09-18",
+      "version": "v86",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "mainEntity": { "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#drc-bdbv-sitrep-timeseries" }
+    },
+    {
+      "@id": "https://titan.img.cas.cz/ebola/en/graf-vyvoj.html#webpage",
+      "@type": "WebPage",
+      "url": "https://titan.img.cas.cz/ebola/en/graf-vyvoj.html",
+      "name": "Case and death trajectory chart",
+      "inLanguage": "en",
+      "translationOfWork": { "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#webpage" },
+      "dateModified": "2026-09-18",
+      "version": "v86",
+      "license": "https://creativecommons.org/licenses/by/4.0/",
+      "mainEntity": { "@id": "https://titan.img.cas.cz/ebola/graf-vyvoj.html#drc-bdbv-sitrep-timeseries" }
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3059-6127",
+      "@type": "Person",
+      "name": "Jan Pačes"
+    },
+    {
+      "@id": "https://orcid.org/0000-0003-3858-856X",
+      "@type": "Person",
+      "name": "Michaela Liegertová"
+    }
+  ]
+}
