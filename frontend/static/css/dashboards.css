@@ -680,6 +680,29 @@
   color: var(--pp-text-muted, #77766f);
 }
 
+/* ── Signály: nový kanál hlášení EWS (PP-75) ────────────────────────────────
+   Nerozhodnutelné signály jsou v tabulce pod vlastním nadpisem a ztlumené:
+   čtenář je má vidět, ale nesmí je číst jako potvrzená překročení. */
+.pp-table tr.pp-signals-divider th {
+  text-align: left;
+  position: static;
+  padding-top: 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pp-text-muted);
+  background: var(--pp-surface);
+  border-bottom: 1px solid var(--pp-border);
+  white-space: normal;
+}
+
+.pp-table tr.pp-signals-undecided td,
+.pp-table tr.pp-signals-undecided td strong {
+  color: var(--pp-text-muted);
+  font-weight: 400;
+}
+
 /* ── Mapa signálů (PP-57) ──────────────────────────────────────────────────
    Mapa vlevo, hraniční hodnoty vpravo. Panel drží ČR, dokud se nenajede na kraj. */
 .pp-signalmap__grid {
@@ -856,27 +879,4 @@
    ne v pohybu. Stejné pravidlo už platí pro shimmer a pro přepínání mapy. */
 @media (prefers-reduced-motion: reduce) {
   .pp-spinner__mark { animation: none; opacity: .75; }
-}
-
-/* ── Signály: nový kanál hlášení EWS (PP-75) ────────────────────────────────
-   Nerozhodnutelné signály jsou v tabulce pod vlastním nadpisem a ztlumené:
-   čtenář je má vidět, ale nesmí je číst jako potvrzená překročení. */
-.pp-table tr.pp-signals-divider th {
-  text-align: left;
-  position: static;
-  padding-top: 0.9rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--pp-text-muted);
-  background: var(--pp-surface);
-  border-bottom: 1px solid var(--pp-border);
-  white-space: normal;
-}
-
-.pp-table tr.pp-signals-undecided td,
-.pp-table tr.pp-signals-undecided td strong {
-  color: var(--pp-text-muted);
-  font-weight: 400;
 }
