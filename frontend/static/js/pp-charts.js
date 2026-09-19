@@ -96,7 +96,15 @@
     "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
     "Souhrnná data se nepodařilo načíst.": "Summary data could not be loaded.",
     "Data mapy se nepodařilo načíst.": "Map data could not be loaded.",
-    "Signály se nepodařilo načíst": "Signals could not be loaded"
+    "Signály se nepodařilo načíst": "Signals could not be loaded",
+    "nelze rozhodnout": "cannot be decided",
+    ", z toho ": ", of which ",
+    " nelze rozhodnout kvůli novému kanálu hlášení": " cannot be decided because of the new reporting channel",
+    "Nárůst může být jen nový kanál hlášení — nelze rozhodnout": "The rise may be just the new reporting channel — cannot be decided",
+    "Z toho novým kanálem": "Of which via the new channel",
+    "z toho novým kanálem": "of which via the new channel",
+    "Kolik z nahlášených případů přišlo novým kanálem hlášení (EWS), který funguje od července 2025 a v historii chybí": "How many of the reported cases arrived through the new reporting channel (EWS), which has operated since July 2025 and is absent from the history",
+    "nelze rozhodnout — nový kanál hlášení": "cannot be decided — new reporting channel"
   };
   function tr(text) {
     if (!EN || text === null || text === undefined) return text;
@@ -781,6 +789,7 @@
     var body = root.querySelector("[data-pp-signals-body]");
 
     function typeBadge(s) {
+      if (isUndecided(s)) return '<span class="badge text-bg-secondary">' + tr("nelze rozhodnout") + '</span>';
       if (s.type === "rare") return '<span class="badge text-bg-warning">' + tr("vzácná nemoc") + '</span>';
       if (s.type === "sporadic") return '<span class="badge text-bg-warning">' + tr("mimo dosavadní výskyt") + '</span>';
       return s.score !== null && s.score !== undefined ? fmt(s.score) + "×" : "—";
@@ -793,6 +802,7 @@
         '<p class="pp-card__subtitle">' + tr("Období ") + '<strong>' + escapeHtml(String(data.target_period || "—")) +
         "</strong>" + tr(" · hodnoceno ") + fmt(data.n_series_scored) + tr(" řad (diagnóza × kraj) · ") +
         "<strong>" + fmt(signals.length) + tr(" překročení") + "</strong>" +
+        (data.n_signals_undecided ? tr(", z toho ") + fmt(data.n_signals_undecided) + tr(" nelze rozhodnout kvůli novému kanálu hlášení") : "") +
         (expectedByChance ? " · ~" + fmt(expectedByChance) + tr(" z nich čekáme čistou náhodou") : "") +
         "</p>";
 
@@ -802,12 +812,24 @@
         return;
       }
 
+      /* Detektor řadí nerozhodnutelné signály na konec; před první z nich patří
+         nadpis, ať je jasné, že pod ním už nejde o potvrzená překročení. */
+      var firstUndecided = -1;
+      signals.forEach(function (s, i) { if (firstUndecided < 0 && isUndecided(s)) firstUndecided = i; });
+
       var rows = signals.map(function (s, i) {
-        return "<tr" + (i >= SIGNALS_PREVIEW ? ' hidden data-pp-signals-extra' : "") + ">" +
+        var hidden = i >= SIGNALS_PREVIEW ? ' hidden data-pp-signals-extra' : "";
+        var divider = i === firstUndecided
+          ? "<tr" + hidden + ' class="pp-signals-divider"><th colspan="8" scope="colgroup">' +
+            tr("Nárůst může být jen nový kanál hlášení — nelze rozhodnout") + "</th></tr>"
+          : "";
+        var viaChannel = s.reporting_channel ? fmt(s.reporting_channel.ews) : "—";
+        return divider + "<tr" + hidden + (isUndecided(s) ? ' class="pp-signals-undecided"' : "") + ">" +
           '<td class="text-end">' + (i + 1) + "</td>" +
           "<td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza || "?") + "</td>" +
           "<td>" + escapeHtml(s.kraj_nazev || s.kraj_kod || "?") + "</td>" +
           '<td class="text-end"><strong>' + fmt(s.observed) + "</strong></td>" +
+          '<td class="text-end">' + viaChannel + "</td>" +
           '<td class="text-end">' + fmtInt(s.expected) + "</td>" +
           '<td class="text-end">' + fmtInt(s.threshold) + "</td>" +
           '<td class="text-end">' + typeBadge(s) + "</td>" +
@@ -818,6 +840,7 @@
         '<caption class="visually-hidden">' + tr("Řady nad očekávanou hladinou") + '</caption>' +
         '<thead><tr><th scope="col">#</th><th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Kraj") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Nahlášeno") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik z nahlášených případů přišlo novým kanálem hlášení (EWS), který funguje od července 2025 a v historii chybí") + '">' + tr("Z toho novým kanálem") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce") + '">' + tr("Obvykle bývá") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál") + '">' + tr("Ještě v normě do") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolikrát dál za hranicí normy, než jak daleko je hranice od běžného stavu; 1× = přesně na hranici") + '">' + tr("Překročeno") + '</th></tr></thead>' +
@@ -853,6 +876,17 @@
         body.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span><span>' +
           tr("Signály se nepodařilo načíst") + " (" + escapeHtml(err.message) + ").</span></div>";
       });
+  }
+
+  /* ---------------- Nový kanál hlášení (EWS) ----------------
+   * ÚZIS od 7/2025 přijímá případy i přes hlášení EWS a řady tím skokově rostou,
+   * aniž by nemocných přibylo. Detektor (pathogensportal-db, channel_verdict)
+   * u každého dotčeného signálu říká, jestli platí i po odečtení těch případů.
+   * „Nerozhodnutelný“ = nárůst může být celý jen nový kanál; portál ho ukazuje,
+   * ale odděleně a bez síly — jinak by tabulce i mapě vévodily falešné epidemie.
+   */
+  function isUndecided(sig) {
+    return !!(sig && sig.reporting_channel && !sig.reporting_channel.robust);
   }
 
   /* ---------------- Přebarvení při přepnutí motivu ---------------- */
@@ -904,7 +938,8 @@
           }
           if (sig.kraj_kod === "CZ") { groups[key].national = sig; return; }
           groups[key].regions[sig.kraj_kod] = sig;
-          if (sig.score > groups[key].max) groups[key].max = sig.score;
+          /* Pořadí diagnóz určují jen signály, o kterých jde rozhodnout. */
+          if (!isUndecided(sig) && sig.score > groups[key].max) groups[key].max = sig.score;
         });
 
         var order = Object.keys(groups).sort(function (a, b) {
@@ -967,7 +1002,8 @@
              nepočítá a stránka Signály to popisuje jako samostatný štítek. Bez
              filtru by Math.min/max vrátily NaN a mixHex by dostal NaN poměr, takže
              by se diagnóza složená jen z takových signálů vykreslila bez barev. */
-          var scores = codes.map(function (c) { return g.regions[c].score; })
+          var scores = codes.filter(function (c) { return !isUndecided(g.regions[c]); })
+            .map(function (c) { return g.regions[c].score; })
             .filter(function (v) { return typeof v === "number"; });
           var min = scores.length ? Math.min.apply(null, scores) : 0;
           var max = scores.length ? Math.max.apply(null, scores) : 0;
@@ -991,13 +1027,17 @@
             var sig = g.regions[rc];
             var sc = typeof sig.score === "number" ? sig.score : min;
             var ratio = max === min ? 1 : (sc - min) / (max - min);
-            path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
+            /* Nerozhodnutelný signál nedostane odstín škály — síla, kterou by
+               vyjadřoval, může být celá jen nový kanál hlášení. Šedá ≠ bílá:
+               kraj signál má, jen o něm nejde rozhodnout. */
+            path.style.fill = isUndecided(sig) ? withAlpha(t.rest, 0.35) : mixHex(t.seqLow, t.seqHigh, ratio);
             path.classList.add("is-clickable");
             path.setAttribute("tabindex", "0");
             path.setAttribute("aria-label",
               sig.kraj_nazev + ": " + tr("nahlášeno") + " " + fmt(sig.observed) +
               ", " + tr("obvykle bývá") + " " + fmtInt(sig.expected) +
-              ", " + tr("ještě v normě do") + " " + fmtInt(sig.threshold));
+              ", " + tr("ještě v normě do") + " " + fmtInt(sig.threshold) +
+              (isUndecided(sig) ? ", " + tr("nelze rozhodnout — nový kanál hlášení") : ""));
 
           });
 
@@ -1034,7 +1074,9 @@
               tr("nahlášeno") + ": " + fmt(sig.observed) + "<br>" +
               tr("obvykle bývá") + ": " + fmtInt(sig.expected) + "<br>" +
               tr("ještě v normě do") + ": " + fmtInt(sig.threshold) + "<br>" +
-              tr("překročeno") + " " + fmt(sig.score) + "×";
+              (sig.reporting_channel ? tr("z toho novým kanálem") + ": " + fmt(sig.reporting_channel.ews) + "<br>" : "") +
+              (isUndecided(sig) ? "<em>" + tr("nelze rozhodnout — nový kanál hlášení") + "</em>"
+                                : tr("překročeno") + " " + fmt(sig.score) + "×");
             var rect = mapBox.getBoundingClientRect();
             var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
             var y = event.clientY !== undefined ? event.clientY : rect.top;
