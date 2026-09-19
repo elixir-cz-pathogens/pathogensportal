@@ -35,6 +35,7 @@ prahovou mez.
 | Sloupec | Význam |
 |---|---|
 | **Nahlášeno** | Kolik případů bylo za daný měsíc skutečně nahlášeno. |
+| **Z toho novým kanálem** | Kolik z nahlášených případů přišlo přes hlášení EWS — způsob hlášení, který ÚZIS zavedl v červenci 2025 a který v historii chybí. |
 | **Obvykle bývá** | Endemická hladina z modelu: kolik případů by tahle nemoc v tomhle kraji a v tomhle ročním období měla mít v běžném roce. Počítá se z historie 2018–dosud se sníženou vahou minulých epidemií. |
 | **Ještě v normě do** | Horní mez toho, co se ještě dá vysvětlit běžným kolísáním (99. percentil predikčního intervalu). Počet mezi *Obvykle bývá* a touhle hranicí je normální provoz; nad ní začíná signál. |
 | **Překročeno** | Kolikrát dál za hranicí normy, než jak daleko je ta hranice od běžného stavu. **1×** = přesně na hranici, **2×** = dvakrát tak daleko za ní. Čím vyšší, tím méně pravděpodobné, že jde o náhodu. |
@@ -42,6 +43,25 @@ prahovou mez.
 Příklad z tabulky: hepatitida A v Jihomoravském kraji — obvykle tam bývá **1** případ,
 za normální by se dalo považovat až **5**, nahlášeno jich bylo **80**. To je ~19× dál,
 než kam sahá běžné kolísání — a to už náhoda prakticky nevysvětlí.
+
+
+### Nový kanál hlášení: proč u části signálů „nelze rozhodnout"
+
+Od července 2025 přijímá ÚZIS případy i novou cestou, přes hlášení EWS. U některých
+nemocí tudy teď přichází většina případů — u pásového oparu 62 %, u lymeské boreliózy
+(„jiné spirochetové infekce") 59 %, u infekční mononukleózy 51 %. Řada tím skokově
+vzroste, **aniž by nemocných přibylo**: jen se víc případů dozvíme.
+
+Prostě je odečíst nejde. Část hlášení se do nového kanálu přelila ze starého (pásový
+opar hlášený starou cestou klesl z ~340 na ~175 případů měsíčně), takže počet
+srovnatelný s minulými roky neznáme — víme jen, že leží někde mezi „nahlášeno bez
+nového kanálu" a „nahlášeno celkem". Tabulka proto signály dělí na dvě části:
+
+- **nahoře** signály, které platí, i když případy z nového kanálu úplně vynecháme —
+  tam jde o skutečné překročení, ať se přelilo cokoli;
+- **pod nadpisem „nelze rozhodnout"** řady, kde nad hranicí normy jsou jen díky
+  případům z nového kanálu. Může za nimi být skutečný nárůst i pouhá změna hlášení
+  a z dat to rozlišit nejde. Na mapě jsou tyto kraje šedé, ne v odstínu síly.
 
 Dva štítky nahrazují sílu tam, kde statistický model nedává smysl:
 
