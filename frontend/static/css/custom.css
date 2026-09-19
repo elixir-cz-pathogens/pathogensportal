@@ -516,3 +516,50 @@
    expand nemá, a Bootstrap tlačítko sám neskrývá — pravidlo se tím stalo
    zbytečným a je smazané, ne ponechané „pro jistotu". */
 .navbar-toggler:focus-visible { outline: 2px solid var(--pp-origin-aggregated, #2a78d6); outline-offset: 2px; }
+
+/* ── Katalog datových zdrojů (PP-77) — stránka O portálu → Data a citace ───
+   Mimo dashboardy, proto barvy z Bootstrapu (--bs-*), ne z tokenů .pp-viz:
+   ty tady nejsou definované a tmavý režim by zůstal bez barev. */
+.pp-catalogue {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));
+  gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+
+.pp-source {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.pp-source__name { font-size: 1.05rem; margin: 0; }
+.pp-source__publisher { margin: 0; font-size: 0.85rem; color: var(--bs-secondary-color); }
+
+.pp-source__facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.2rem 0.9rem;
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.pp-source__facts dt { font-weight: 500; color: var(--bs-secondary-color); }
+.pp-source__facts dd { margin: 0; overflow-wrap: anywhere; }
+.pp-source__limits { margin: 0; font-size: 0.875rem; }
+.pp-source__links { margin: auto 0 0; font-size: 0.85rem; padding-top: 0.35rem; }
+
+.pp-cite {
+  border-left: 3px solid var(--bs-border-color);
+  padding: 0.5rem 0 0.5rem 1rem;
+  margin: 0.75rem 0 1rem;
+  font-size: 0.95rem;
+}
+
+.pp-datafiles { max-height: 22rem; overflow: auto; border: 1px solid var(--bs-border-color); border-radius: 10px; }
+.pp-datafiles table { margin: 0; font-size: 0.85rem; }
+.pp-datafiles thead th { position: sticky; top: 0; background: var(--bs-body-bg); }

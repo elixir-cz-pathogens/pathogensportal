@@ -1,0 +1,22 @@
+{{/* Seznam strojově čitelných souborů, ze kterých portál kreslí grafy.
+
+     Usage: {{< data-files >}}
+
+     Čte se z disku při buildu (static/data/charts), ne z ručního seznamu: výpis
+     adresáře je na serveru záměrně vypnutý, takže bez téhle stránky by o souborech
+     nikdo nevěděl — a ruční seznam by zastaral s prvním novým grafem.
+*/}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-datafiles">
+  <table class="table table-sm">
+    <thead><tr><th>{{ if $en }}File{{ else }}Soubor{{ end }}</th><th class="text-end">{{ if $en }}Size{{ else }}Velikost{{ end }}</th></tr></thead>
+    <tbody>
+    {{ range sort (os.ReadDir "static/data/charts") "Name" }}
+      {{ if strings.HasSuffix .Name ".json" }}
+      <tr><td><a href="{{ printf "data/charts/%s" .Name | relURL }}"><code>{{ .Name }}</code></a></td>
+          <td class="text-end">{{ div .Size 1024 | lang.FormatNumber 0 }} kB</td></tr>
+      {{ end }}
+    {{ end }}
+    </tbody>
+  </table>
+</div>

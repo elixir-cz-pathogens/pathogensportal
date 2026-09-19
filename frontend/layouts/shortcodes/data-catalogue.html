@@ -1,0 +1,51 @@
+{{/* Katalog datových zdrojů — z data/sources.yaml.
+
+     Usage: {{< data-catalogue >}}
+
+     Pro lidi karta na zdroj (co to je, licence, pokrytí, co z dat NEJDE vyčíst,
+     kde na portálu se používá), pro stroje schema.org/DataCatalog v JSON-LD.
+     Odkaz na dashboard se vykreslí jen tehdy, když stránka existuje — zdroj tak
+     může být v katalogu dřív než jeho dashboard a build kvůli tomu nespadne.
+*/}}
+{{ $lang := .Site.Language.Lang }}
+{{ $en := eq $lang "en" }}
+{{ $sources := hugo.Data.sources }}
+{{ $pick := dict }}
+
+<div class="pp-catalogue">
+{{ range $sources }}
+  {{ $src := . }}
+  <article class="pp-source" id="zdroj-{{ .id }}">
+    <h3 class="pp-source__name">{{ index .name $lang | default .name.cs }}</h3>
+    <p class="pp-source__publisher">{{ .publisher }}</p>
+    <dl class="pp-source__facts">
+      <dt>{{ if $en }}Coverage{{ else }}Pokrytí{{ end }}</dt>
+      <dd>{{ if reflect.IsMap .coverage }}{{ index .coverage $lang | default .coverage.cs }}{{ else }}{{ .coverage }}{{ end }}</dd>
+      <dt>{{ if $en }}Granularity{{ else }}Podrobnost{{ end }}</dt>
+      <dd>{{ index .grain $lang | default .grain.cs }}</dd>
+      <dt>{{ if $en }}Updated{{ else }}Aktualizace{{ end }}</dt>
+      <dd>{{ index .frequency $lang | default .frequency.cs }}</dd>
+      <dt>{{ if $en }}Format{{ else }}Formát{{ end }}</dt>
+      <dd>{{ if reflect.IsMap .format }}{{ index .format $lang | default .format.cs }}{{ else }}{{ .format }}{{ end }}</dd>
+      <dt>{{ if $en }}Licence{{ else }}Licence{{ end }}</dt>
+      <dd>{{ with .licence.url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ $src.licence.name }}</a>{{ else }}{{ .licence.name }}{{ end }}</dd>
+    </dl>
+    <p class="pp-source__limits"><strong>{{ if $en }}What the data cannot tell you.{{ else }}Co z dat nejde vyčíst.{{ end }}</strong> {{ index .limits $lang | default .limits.cs }}</p>
+    <p class="pp-source__links">
+      <a href="{{ .url }}" target="_blank" rel="noopener">{{ if $en }}Original source{{ else }}Původní zdroj{{ end }}</a>
+      {{ with .download }} · <a href="{{ . }}" target="_blank" rel="noopener">{{ if $en }}data file{{ else }}datový soubor{{ end }}</a>{{ end }}
+      {{ range .pages }}{{ with site.GetPage . }} · <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}{{ end }}
+    </p>
+  </article>
+{{ end }}
+</div>
+
+{{ $datasets := slice }}
+{{ range $sources }}
+  {{ $d := dict "@type" "Dataset" "name" (index .name $lang | default .name.cs) "description" (index .limits $lang | default .limits.cs) "url" .url "creator" (dict "@type" "Organization" "name" .publisher) }}
+  {{ with .licence.url }}{{ $d = merge $d (dict "license" .) }}{{ end }}
+  {{ with .download }}{{ $d = merge $d (dict "distribution" (dict "@type" "DataDownload" "contentUrl" . "encodingFormat" "text/csv")) }}{{ end }}
+  {{ $datasets = $datasets | append $d }}
+{{ end }}
+{{ $catalog := dict "@context" "https://schema.org" "@type" "DataCatalog" "name" .Site.Title "url" .Page.Permalink "inLanguage" $lang "dataset" $datasets }}
+<script type="application/ld+json">{{ $catalog | jsonify | safeJS }}</script>
