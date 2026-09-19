@@ -857,3 +857,373 @@
 @media (prefers-reduced-motion: reduce) {
   .pp-spinner__mark { animation: none; opacity: .75; }
 }
+
+/* ── Chřipka: intenzita sezóny, trend a předpověď (PP-74) ───────────────────
+   Pásma intenzity jsou JEDEN odstín od světlé po tmavou — intenzita je velikost,
+   ne kategorie. Stavové barvy (--pp-status-*) sem nepatří: zelená/oranžová/
+   červená nese na portálu význam „v pořádku / pozor / vážné“ u Signálů. */
+.pp-viz {
+  --pp-band-1: #e6f0fd;
+  --pp-band-2: #c3dcfa;
+  --pp-band-3: #94bff3;
+  --pp-band-4: #5d9be8;
+  --pp-fan: rgba(11, 11, 11, 0.13);
+  --pp-now-bg: #eaf2fd;
+}
+
+[data-bs-theme="dark"] .pp-viz {
+  --pp-band-1: #182c45;
+  --pp-band-2: #1c3f6b;
+  --pp-band-3: #235594;
+  --pp-band-4: #2f6fbd;
+  --pp-fan: rgba(255, 255, 255, 0.16);
+  --pp-now-bg: #16283d;
+}
+
+.pp-flu-status {
+  margin: 0 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pp-flu-status__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: end;
+  border-top: 1px solid var(--pp-border);
+  border-bottom: 1px solid var(--pp-border);
+  padding-block: 20px;
+}
+
+.pp-flu-eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-text-muted);
+}
+
+.pp-flu-status__level {
+  font-size: 2.2rem;
+  line-height: 1.1;
+  font-weight: 600;
+  margin-top: 2px;
+  color: var(--pp-text);
+}
+
+.pp-flu-status__sentence {
+  color: var(--pp-text-secondary);
+  margin: 6px 0 0;
+  max-width: 48ch;
+}
+
+.pp-flu-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.pp-flu-fact__v {
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--pp-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-flu-fact__l {
+  font-size: 0.78rem;
+  color: var(--pp-text-muted);
+  line-height: 1.35;
+}
+
+.pp-flu-meter {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.pp-flu-meter__seg {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.pp-flu-meter__bar {
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--pp-border);
+}
+
+/* Aktuální pásmo se pozná tvarem (vyšší pruh, silný rámeček), ne jen barvou. */
+.pp-flu-meter__seg[data-on="true"] .pp-flu-meter__bar {
+  height: 16px;
+  margin-top: -3px;
+  border: 2px solid var(--pp-text);
+}
+
+.pp-flu-meter__name {
+  font-size: 0.78rem;
+  color: var(--pp-text-muted);
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.pp-flu-meter__seg[data-on="true"] .pp-flu-meter__name {
+  color: var(--pp-text);
+  font-weight: 600;
+}
+
+.pp-flu-meter__from {
+  font-size: 0.72rem;
+  color: var(--pp-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-flu-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.pp-flu-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  align-items: center;
+}
+
+.pp-flu-controls label {
+  font-size: 0.8rem;
+  color: var(--pp-text-secondary);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+}
+
+.pp-flu-controls select {
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--pp-text);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.pp-flu-controls input[type="range"] {
+  width: min(240px, 50vw);
+  accent-color: var(--pp-series-1);
+}
+
+.pp-flu-now {
+  color: var(--pp-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-flu-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  font-size: 0.8rem;
+  color: var(--pp-text-secondary);
+  margin: 0 0 8px;
+}
+
+.pp-flu-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pp-flu-key {
+  display: inline-block;
+  width: 22px;
+  height: 0;
+  border-top: 2.5px solid var(--pp-text);
+}
+
+.pp-flu-key--actual { border-top: 1.5px solid var(--pp-text-muted); }
+.pp-flu-key--past { border-top: 1px solid var(--pp-series-rest); }
+.pp-flu-key--threshold { border-top: 1.5px dashed var(--pp-text-secondary); }
+
+.pp-flu-key--forecast {
+  width: 26px;
+  height: 9px;
+  border-top: 2px dashed var(--pp-text);
+  background: var(--pp-fan);
+}
+
+.pp-flu-block { margin: 0 0 1.5rem; }
+.pp-flu-block .pp-table-scroll { margin-bottom: 0.75rem; }
+
+.pp-flu-lede {
+  color: var(--pp-text-secondary);
+  font-size: 0.9rem;
+  max-width: 80ch;
+  margin: 0 0 0.75rem;
+}
+
+.pp-flu-lede:empty { display: none; }
+
+/* .pp-table zarovnává čísla doprava; textové sloupce si o levou stranu řeknou. */
+.pp-table th.l,
+.pp-table td.l { text-align: left; }
+
+.pp-table td.pp-flu-wrap { white-space: normal; min-width: 260px; }
+
+.pp-table tr.pp-flu-now td {
+  background: var(--pp-now-bg);
+  color: var(--pp-text);
+  font-weight: 500;
+}
+
+.pp-flu-pbar {
+  display: inline-block;
+  width: 80px;
+  height: 8px;
+  border: 1px solid var(--pp-border);
+  border-radius: 2px;
+  vertical-align: middle;
+  background: var(--pp-surface-raised);
+}
+
+.pp-flu-pbar i {
+  display: block;
+  height: 100%;
+  background: var(--pp-text-secondary);
+}
+
+.pp-flu-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--pp-border);
+  margin-right: 7px;
+  vertical-align: -1px;
+}
+
+/* ── Panel metodiky ({{< method >}}) — stejný na všech dashboardech ───────── */
+.pp-method {
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  background: var(--pp-surface-raised);
+  margin: 0 0 1.5rem;
+}
+
+.pp-method--inside {
+  border: 0;
+  border-top: 1px solid var(--pp-border);
+  border-radius: 0;
+  background: none;
+  margin: 10px 0 0;
+}
+
+.pp-method > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 14px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--pp-text);
+}
+
+.pp-method--inside > summary { padding-inline: 0; }
+.pp-method > summary::-webkit-details-marker { display: none; }
+.pp-method > summary:hover { color: var(--pp-series-1); }
+
+.pp-method > summary:focus-visible {
+  outline: 2px solid var(--pp-series-1);
+  outline-offset: 2px;
+}
+
+.pp-method__sign {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--pp-border);
+  border-radius: 4px;
+  position: relative;
+}
+
+.pp-method__sign::before,
+.pp-method__sign::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 50%;
+  height: 1.5px;
+  margin-top: -0.75px;
+  background: currentColor;
+}
+
+.pp-method__sign::after { transform: rotate(90deg); }
+.pp-method[open] .pp-method__sign::after { display: none; }
+
+.pp-method__body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 36px;
+  padding: 6px 14px 18px;
+  border-top: 1px solid var(--pp-border);
+  font-size: 0.875rem;
+  color: var(--pp-text-secondary);
+}
+
+.pp-method--inside .pp-method__body { padding-inline: 0; }
+.pp-method__part { min-width: 0; }
+
+.pp-method__part h4 {
+  margin: 10px 0 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-text-muted);
+}
+
+.pp-method__part p,
+.pp-method__part ul { margin: 0 0 9px; }
+.pp-method__part ul { padding-left: 1.1em; }
+.pp-method__part li { margin-bottom: 5px; }
+.pp-method__part strong { color: var(--pp-text); font-weight: 600; }
+
+.pp-method__part pre {
+  margin: 0 0 9px;
+  padding: 9px 11px;
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-grid);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--pp-text);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.pp-method__part pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.pp-method__part .pp-flu-block,
+.pp-method__part .pp-table-scroll { margin-bottom: 9px; }
+
+@media (max-width: 760px) {
+  .pp-flu-status__grid,
+  .pp-method__body { grid-template-columns: minmax(0, 1fr); }
+  .pp-flu-status__level { font-size: 1.8rem; }
+}

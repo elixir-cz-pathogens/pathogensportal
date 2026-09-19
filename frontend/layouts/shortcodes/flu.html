@@ -1,0 +1,78 @@
+{{/* Chřipka — intenzita sezóny (MEM), trend a předpověď nad ILI a ARI.
+
+     Usage: {{< flu part="status" >}}   stav: intenzita, trend, výhled + stupnice
+            {{< flu part="chart" indicator="ili" title="…" subtitle="…" note="…" controls="true" >}}
+            {{< flu part="outlook" >}}  aktuální předpověď na čtyři týdny
+            {{< flu part="replay" >}}   předpověď vydaná v přehrávaném týdnu
+            {{< flu part="seasons" >}}  jak dopadly minulé sezóny
+            {{< flu part="backtest" >}} {{< flu part="evaluation" >}} {{< flu part="excluded" >}}
+                                        tabulky do panelů metodiky
+
+     Šablona vydává jen kostru; obsah doplní /js/pp-flu.js z jednoho souboru
+     flu_mem.json (pathogensportal-db, compute_mem.py). Všechny části na stránce
+     sdílejí zvolenou sezónu a týden — ovládání je u grafu s controls="true".
+
+     Karta grafu se `{{ .Inner }}` umí zabalit panel metodiky: patří vizuálně
+     ke grafu, ne pod něj.
+*/}}
+{{ $part := .Get "part" }}
+{{ $src  := .Get "src" | default "/data/charts/flu_mem.json" }}
+{{ $en   := eq .Site.Language.Lang "en" }}
+
+{{ if eq $part "status" }}
+<section class="pp-flu-status" data-pp-flu="status" data-src="{{ $src }}" aria-live="polite">
+  <div class="pp-flu-status__grid">
+    <div>
+      <div class="pp-flu-eyebrow" data-f="eyebrow"></div>
+      <div class="pp-flu-status__level" data-f="level"><span class="pp-skeleton" style="display:block;height:2.4rem;width:60%"></span></div>
+      <p class="pp-flu-status__sentence" data-f="sentence"></p>
+    </div>
+    <div class="pp-flu-facts">
+      <div><div class="pp-flu-fact__v" data-f="value"></div><div class="pp-flu-fact__l">{{ if $en }}ILI per 100,000 population, weekly{{ else }}ILI na 100 tis. obyvatel za týden{{ end }}</div></div>
+      <div><div class="pp-flu-fact__v" data-f="trend"></div><div class="pp-flu-fact__l" data-f="trendNote"></div></div>
+      <div><div class="pp-flu-fact__v" data-f="outlook"></div><div class="pp-flu-fact__l" data-f="outlookNote"></div></div>
+    </div>
+  </div>
+  <div class="pp-flu-meter" data-f="meter" role="img" aria-label="{{ if $en }}Intensity scale{{ else }}Stupnice intenzity{{ end }}"></div>
+</section>
+
+{{ else if eq $part "chart" }}
+{{ $ind := .Get "indicator" | default "ili" }}
+<figure class="pp-card" data-pp-flu="chart" data-indicator="{{ $ind }}" data-src="{{ $src }}">
+  <figcaption class="pp-card__head pp-flu-head">
+    <div>
+      <h2 class="pp-card__title">{{ .Get "title" }}</h2>
+      {{ with .Get "subtitle" }}<p class="pp-card__subtitle">{{ . }}</p>{{ end }}
+    </div>
+    {{ if eq (.Get "controls") "true" }}
+    <div class="pp-flu-controls">
+      <label>{{ if $en }}Season{{ else }}Sezóna{{ end }} <select data-f="season"></select></label>
+      <label>{{ if $en }}Replay week by week{{ else }}Přehrát po týdnech{{ end }} <input type="range" data-f="week" min="0" max="32" step="1"></label>
+    </div>
+    {{ else }}
+    <p class="pp-card__subtitle pp-flu-now" data-f="now"></p>
+    {{ end }}
+  </figcaption>
+
+  <div class="pp-flu-legend" data-f="legend"></div>
+  <div class="pp-card__plot" style="height:{{ .Get "height" | default "400" }}px">
+    <div class="pp-skeleton"></div>
+    <canvas role="img" aria-label="{{ .Get "title" }}"></canvas>
+  </div>
+
+  {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+  <p class="pp-note" data-f="forecastNote"></p>
+  {{ .Inner }}
+  <div class="pp-card__foot">
+    <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+    <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+  </div>
+  <div class="pp-table-wrap" data-open="false" data-f="weekTable"></div>
+</figure>
+
+{{ else }}
+<div class="pp-flu-block" data-pp-flu="{{ $part }}" data-src="{{ $src }}">
+  <p class="pp-flu-lede" data-f="lede"></p>
+  <div class="pp-table-scroll"><table class="pp-table" data-f="table"></table></div>
+</div>
+{{ end }}

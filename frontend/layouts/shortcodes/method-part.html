@@ -1,0 +1,5 @@
+{{/* Jedna ze čtyř částí panelu metodiky — viz method.html. */}}
+<div class="pp-method__part">
+  <h4>{{ .Get "title" }}</h4>
+  {{ .Inner | .Page.RenderString (dict "display" "block") }}
+</div>

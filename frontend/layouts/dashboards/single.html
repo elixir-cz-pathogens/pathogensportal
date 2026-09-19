@@ -77,4 +77,6 @@
   window.PP_API_BASE = {{ .Site.Params.apibase | default "" }};
 </script>
 <script src="{{ "js/pp-charts.js" | relURL }}"></script>
+{{/* Stránky s chřipkovou intenzitou mají vlastní skript — jinde se nenačítá. */}}
+{{ if .HasShortcode "flu" }}<script src="{{ "js/pp-flu.js" | relURL }}"></script>{{ end }}
 {{ end }}
