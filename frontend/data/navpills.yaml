@@ -32,6 +32,9 @@ infekcni-nemoci:
     - id: sti
       url: /dashboards/infectious-diseases-sti/
       label: { cs: Pohlavně přenosné, en: Sexually transmitted }
+    - id: tbc
+      url: /dashboards/infectious-diseases-tbc/
+      label: { cs: Tuberkulóza, en: Tuberculosis }
     - id: vzacne
       url: /dashboards/infectious-diseases-rare/
       label: { cs: Vzácné závažné, en: Rare severe }

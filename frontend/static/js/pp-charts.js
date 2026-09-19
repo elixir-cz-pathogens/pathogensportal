@@ -96,6 +96,18 @@
     "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
     "Souhrnná data se nepodařilo načíst.": "Summary data could not be loaded.",
     "Data mapy se nepodařilo načíst.": "Map data could not be loaded.",
+    "Syfilis": "Syphilis",
+    "Kapavka": "Gonorrhoea",
+    "Venerický lymfogranulom": "Lymphogranuloma venereum",
+    "Muži": "Men",
+    "Ženy": "Women",
+    "Tuberkulóza (A15–A19)": "Tuberculosis (A15–A19)",
+    "Narození v ČR": "Born in Czechia",
+    "Narození v zahraničí": "Born abroad",
+    "Rok hlášení": "Year of notification",
+    "Rok incidence": "Year of incidence",
+    "na 100 000 obyvatel": "per 100,000 population",
+    "na 100 000 mužů / žen": "per 100,000 men / women",
     "Signály se nepodařilo načíst": "Signals could not be loaded"
   };
   function tr(text) {
