@@ -1,0 +1,171 @@
+# Katalog datových zdrojů portálu — jediné místo, kde je popsané, odkud co bereme.
+#
+# Čte ho shortcode {{< data-catalogue >}} (stránka O portálu → Data a citace):
+# vykreslí z něj přehled pro lidi a schema.org/DataCatalog (JSON-LD) pro stroje.
+#
+# Pravidla:
+#   - `licence.name` psát tak, jak ji uvádí ZDROJ. Když ji zdroj neuvádí, napsat to
+#     ("neuvedena") — domyšlená licence je horší než přiznaná mezera.
+#   - `pages` jsou cesty stránek, kde se zdroj používá. Shortcode odkáže jen na ty,
+#     které existují, takže sem může přijít zdroj dřív než jeho dashboard.
+#   - `limits` = co z dat NEJDE vyčíst. Povinné pole, ne ozdoba.
+#   - Pořadí = pořadí na stránce: nejdřív česká surveillance, pak kontext.
+
+- id: uzis-isin
+  name: { cs: "Infekční nemoci v ČR (ISIN)", en: "Infectious diseases in Czechia (ISIN)" }
+  publisher: "ÚZIS ČR"
+  url: "https://www.nzip.cz/data/2621-infekcni-nemoci-otevrena-data"
+  download: "https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv"
+  licence: { name: "volný přístup (otevřená data ÚZIS)", url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  format: "CSV + CSVW metadata"
+  coverage: "2018–2025"
+  grain: { cs: "měsíc × kraj × diagnóza MKN-10 × věk × pohlaví", en: "month × region × ICD-10 diagnosis × age × sex" }
+  frequency: { cs: "ročně (soubor z ledna 2026 končí prosincem 2025)", en: "annual (the January 2026 file ends in December 2025)" }
+  limits:
+    cs: "Neobsahuje COVID-19, tuberkulózu, syfilis, kapavku ani HIV — mají vlastní registry. Od července 2025 přichází část případů novým kanálem hlášení (EWS), řady proto nejsou přes tento zlom přímo srovnatelné."
+    en: "Does not include COVID-19, tuberculosis, syphilis, gonorrhoea or HIV — these have their own registers. Since July 2025 some cases arrive through a new reporting channel (EWS), so series are not directly comparable across that break."
+  pages: ["/dashboards/infectious-diseases", "/signals"]
+
+- id: uzis-rpn
+  name: { cs: "Registr pohlavních nemocí", en: "Register of Sexually Transmitted Diseases" }
+  publisher: "ÚZIS ČR"
+  url: "https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data"
+  download: "https://datanzis.uzis.gov.cz/data/NR-29-RPN/NR-29-01/Otevrena-data-NR-29-01-pohlavni-nemoci.csv"
+  licence: { name: "volný přístup (otevřená data ÚZIS)", url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  format: "CSV + CSVW metadata"
+  coverage: "1994–2025"
+  grain: { cs: "rok × okres bydliště × diagnóza × věk × pohlaví", en: "year × district of residence × diagnosis × age × sex" }
+  frequency: { cs: "ročně", en: "annual" }
+  limits:
+    cs: "Jen syfilis, kapavka a venerický lymfogranulom. Hlášené případy rostou i s intenzitou testování; HIV v otevřených datech není."
+    en: "Only syphilis, gonorrhoea and lymphogranuloma venereum. Notified cases also rise with testing intensity; HIV is not available as open data."
+  pages: ["/dashboards/infectious-diseases-sti"]
+
+- id: uzis-rtbc
+  name: { cs: "Registr tuberkulózy", en: "Tuberculosis Register" }
+  publisher: "ÚZIS ČR"
+  url: "https://www.nzip.cz/data/2671-tuberkuloza-epidemiologie-otevrena-data"
+  download: "https://datanzis.uzis.gov.cz/data/NR-30-RTBC/NR-30-01/Otevrena-data-NR-30-01-tuberkuloza-epidemiologie.csv"
+  licence: { name: "volný přístup (otevřená data ÚZIS)", url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  format: "CSV + CSVW metadata"
+  coverage: "2000–2024"
+  grain: { cs: "rok a čtvrtletí × kraj × věk × rodná země", en: "year and quarter × region × age × country of birth" }
+  frequency: { cs: "ročně, s ročním zpožděním", en: "annual, with a one-year lag" }
+  limits:
+    cs: "Kolem 430 případů ročně na celou republiku — rozdíly mezi kraji a roky jsou z velké části náhoda. Rodná země není občanství ani místo nákazy."
+    en: "Around 430 cases a year nationwide — differences between regions and years are largely chance. Country of birth is neither citizenship nor place of infection."
+  pages: ["/dashboards/infectious-diseases-tbc"]
+
+- id: mzcr-covid
+  name: { cs: "COVID-19 v ČR — otevřené datové sady", en: "COVID-19 in Czechia — open datasets" }
+  publisher: "MZČR / ÚZIS ČR"
+  url: "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19"
+  licence: { name: "otevřená data MZČR", url: "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" }
+  format: "CSV, API"
+  coverage: { cs: "od března 2020", en: "since March 2020" }
+  grain: { cs: "den; podle sady věk, kraj, stav očkování", en: "day; by dataset age, region, vaccination status" }
+  frequency: { cs: "denně", en: "daily" }
+  limits:
+    cs: "Testovací strategie se v čase měnila, takže počty případů z různých období nejsou srovnatelné. Část sad je archivní."
+    en: "Testing strategy changed over time, so case counts from different periods are not comparable. Some datasets are archival."
+  pages: ["/dashboards/covid19-surveillance", "/dashboards/covid-demographics"]
+
+- id: szu-respiratory
+  name: { cs: "Virologická surveillance chřipky a respiračních virů", en: "Virological surveillance of influenza and respiratory viruses" }
+  publisher: "SZÚ — Národní referenční laboratoř pro chřipku"
+  url: "https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/"
+  licence: { name: "neuvedena — zveřejněné zprávy SZÚ, uvádíme zdroj" }
+  format: "PDF (týdenní zprávy, sezónní archivy)"
+  coverage: { cs: "sezóny 2012/13–dosud; týdně od 2024/25", en: "seasons 2012/13–present; weekly from 2024/25" }
+  grain: { cs: "týden × virus; týden × kraj", en: "week × virus; week × region" }
+  frequency: { cs: "týdně, celoročně", en: "weekly, year-round" }
+  limits:
+    cs: "Data čteme z PDF, strojově čitelný export neexistuje. Počty záchytů rostou s objemem testování — mezi sezónami nejsou přímo srovnatelné. Sezóny 2022/23–2023/24 už zdroj online nemá, vezeme je v repozitáři."
+    en: "Data are read from PDFs; no machine-readable export exists. Detection counts grow with testing volume and are not directly comparable between seasons. Seasons 2022/23–2023/24 are no longer online at the source; we keep them in the repository."
+  pages: ["/dashboards/influenza-surveillance", "/dashboards/influenza-regional"]
+
+- id: who-fluid-flunet
+  name: { cs: "WHO FluID a FluNet — hlášení ČR", en: "WHO FluID and FluNet — Czech reports" }
+  publisher: "WHO"
+  url: "https://www.who.int/tools/flunet"
+  licence: { name: "neuvedena u datové sady — podmínky WHO, uvádíme zdroj" }
+  format: "CSV (xMart API)"
+  coverage: { cs: "ILI/ARI od 2009/10; laboratorní záchyty od 1997", en: "ILI/ARI since 2009/10; laboratory detections since 1997" }
+  grain: { cs: "týden; u ILI/ARI i věková skupina", en: "week; ILI/ARI also by age group" }
+  frequency: { cs: "týdně; mimo sezónu se zpožděním", en: "weekly; delayed out of season" }
+  limits:
+    cs: "ILI a ARI jsou klinické diagnózy od části ordinací, ne laboratorně potvrzená chřipka. Pokrytá populace se mění (v sezóně 2025/26 skokově). Přes léto se nehlásí."
+    en: "ILI and ARI are clinical diagnoses from a subset of practices, not laboratory-confirmed influenza. The covered population changes (abruptly in 2025/26). Not reported over the summer."
+  pages: ["/dashboards/influenza-intensity"]
+
+- id: ecdc-erviss
+  name: { cs: "ERVISS — evropská respirační surveillance", en: "ERVISS — European respiratory surveillance" }
+  publisher: "ECDC / WHO Europe"
+  url: "https://erviss.org/"
+  download: "https://github.com/EU-ECDC/Respiratory_viruses_weekly_data"
+  licence: { name: "neuvedena v repozitáři — podmínky ECDC, uvádíme zdroj" }
+  format: "CSV (GitHub)"
+  coverage: { cs: "ČR od týdne 25/2022", en: "Czechia since week 25/2022" }
+  grain: { cs: "týden × ukazatel × věková skupina", en: "week × indicator × age group" }
+  frequency: { cs: "týdně", en: "weekly" }
+  limits:
+    cs: "Tatáž česká hlášení jako WHO FluID, jen čerstvější. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení."
+    en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays."
+  pages: ["/dashboards/influenza-intensity"]
+
+- id: ecdc-respicast
+  name: { cs: "RespiCast — předpovědi ILI a ARI", en: "RespiCast — ILI and ARI forecasts" }
+  publisher: "ECDC, ISI Foundation, LSHTM"
+  url: "https://respicast.ecdc.europa.eu/"
+  download: "https://github.com/european-modelling-hubs/RespiCast-SyndromicIndicators"
+  licence: { name: "neuvedena — před veřejným použitím ověřit u provozovatele hubu" }
+  format: "CSV (GitHub)"
+  coverage: { cs: "od října 2024", en: "since October 2024" }
+  grain: { cs: "týdenní kolo × cílový týden × 23 kvantilů", en: "weekly round × target week × 23 quantiles" }
+  frequency: { cs: "týdně", en: "weekly" }
+  limits:
+    cs: "Předpověď, ne měření. Pro ČR je o ~15 % lepší než nejjednodušší referenční model, ale intervaly má užší, než slibuje (95% pás zachytil 85 % případů), a nástup vlny nevidí."
+    en: "A forecast, not a measurement. For Czechia it is ~15% better than the simplest reference model, but its intervals are narrower than claimed (the 95% band contained 85% of outcomes) and it does not see the onset of a wave."
+  pages: ["/dashboards/influenza-intensity"]
+
+- id: csu-population
+  name: { cs: "Počet obyvatel podle krajů", en: "Population by region" }
+  publisher: "ČSÚ"
+  url: "https://data.csu.gov.cz/"
+  licence: { name: "otevřená data ČSÚ", url: "https://csu.gov.cz/otevrena-data" }
+  format: "CSV (DataStat API, sada PORKR01)"
+  coverage: "2000–2025"
+  grain: { cs: "rok × kraj × pohlaví", en: "year × region × sex" }
+  frequency: { cs: "ročně", en: "annual" }
+  limits:
+    cs: "Stav k 31. 12., ne střední stav; rozdíl je v desetinách procenta. Věková struktura zatím chybí, incidence proto nejsou věkově standardizované."
+    en: "As of 31 December, not mid-year; the difference is tenths of a percent. Age structure is not yet included, so incidences are not age-standardised."
+  pages: ["/dashboards/infectious-diseases"]
+
+- id: ecdc-covid
+  name: { cs: "ECDC — COVID-19, historická řada pro ČR", en: "ECDC — COVID-19, historical series for Czechia" }
+  publisher: "ECDC"
+  url: "https://www.ecdc.europa.eu/en/covid-19/data"
+  licence: { name: "ECDC — volné použití s uvedením zdroje" }
+  format: "CSV"
+  coverage: { cs: "2020 – říjen 2022", en: "2020 – October 2022" }
+  grain: { cs: "den", en: "day" }
+  frequency: { cs: "zdroj přestal publikovat", en: "source no longer published" }
+  limits:
+    cs: "Uzavřená řada, držíme ji jen kvůli historii."
+    en: "A closed series, kept for historical reasons only."
+  pages: ["/dashboards/covid19-surveillance"]
+
+- id: external
+  name: { cs: "Externí dashboardy (Nextstrain, odpadní vody SZÚ)", en: "External dashboards (Nextstrain, SZÚ wastewater)" }
+  publisher: "Nextstrain · SZÚ"
+  url: "https://nextstrain.org/"
+  licence: { name: "podle provozovatele — data nepřebíráme, jen odkazujeme" }
+  format: { cs: "odkaz", en: "link" }
+  coverage: "—"
+  grain: { cs: "—", en: "—" }
+  frequency: { cs: "podle provozovatele", en: "set by the operator" }
+  limits:
+    cs: "Běží na cizím serveru a portál nad nimi nemá kontrolu. Fylogenetické stromy nejsou specifické pro ČR. Odpadní vody SZÚ nemají strojově čitelný export."
+    en: "They run on third-party servers outside the portal's control. The phylogenetic trees are not specific to Czechia. SZÚ wastewater data have no machine-readable export."
+  pages: ["/dashboards/nextstrain-sarscov2", "/dashboards/nextstrain-influenza", "/dashboards/wastewater-monitoring"]
