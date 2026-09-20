@@ -1,6 +1,6 @@
 ---
 title: Data and citation
-description: "Where Pathogen Portal CZ gets its data, under which licence, what the data cannot tell you, how to cite the portal and how to download the data."
+description: "Where Pathogen Portal CZ gets its data, under which licence, what the data cannot tell you and how to download the data."
 menu:
   footer_about:
     name: Data and citation
@@ -21,22 +21,6 @@ the source is right — and we would be glad if you [let us know](#report-an-err
 ## Source catalogue
 
 {{< data-catalogue >}}
-
-## How to cite
-
-Please cite the **original data source** (given next to every chart and in the catalogue above)
-and the portal as the place where you found the data or took the processing from:
-
-<div class="pp-cite">
-Pathogen Portal CZ. Institute of Molecular Genetics of the Czech Academy of Sciences, ELIXIR CZ.
-https://pathogens.vm.cesnet.cz/en/ (accessed DD Month YYYY).
-</div>
-
-For results that are our own work — **Signals** (anomaly detection) and calculations on top of
-the source data — please cite the method as well; its description, tests and exact code version
-are in the [pathogensportal-db](https://github.com/elixir-cz-pathogens/pathogensportal-db)
-repository. The Signals output carries a fingerprint of its input data and the code version, so
-it can be recomputed bit for bit.
 
 ## Licence
 
