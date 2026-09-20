@@ -10,6 +10,13 @@ update_from: "flu_mem.json"
 update_read: "stamp"
 ---
 
+{{< callout tone="warning" >}}
+**Stránka je ve vývoji.** Výpočty i podoba se ještě mění a čísla tu mohou být neúplná nebo
+vzájemně nesourodá: hlášení chodí se zpožděním a zpětně se doplňují, přes léto se nehlásí
+vůbec, pokrytá populace se mezi sezónami mění a předpověď pochází od třetí strany. Neberte
+stránku jako podklad pro rozhodování — závazné jsou údaje SZÚ, ÚZIS a MZČR.
+{{< /callout >}}
+
 {{< flu part="status" />}}
 
 {{< method title="Jak se pozná trend a jak často se trefuje" >}}
@@ -45,7 +52,7 @@ Délku okna (3 týdny) rozhodl právě tenhle test. S okny 4 a 5 týdnů se poř
 {{< /method-part >}}
 {{< /method >}}
 
-{{< flu part="chart" indicator="ili" controls="true" height="400" title="Týdenní nemocnost ILI proti prahům intenzity" subtitle="ILI na 100 tis. obyvatel · říjen až květen (kalendářní týdny 40–20) · celá ČR" note="**Kalendářní týden** je týden podle normy ISO: od pondělí do neděle, týden 1 je ten s prvním čtvrtkem roku. Sezóna se sleduje od týdne 40 (přelom září a října) do týdne 20 (polovina května). ILI = chřipce podobné onemocnění hlášené praktickými lékaři, přepočtené na 100 tis. obyvatel pokryté populace. Jde o klinickou diagnózu, ne laboratorně potvrzenou chřipku. Mimo sezónu stránka ukazuje poslední uzavřenou sezónu — dá se přehrát posuvníkem." >}}
+{{< flu part="chart" indicator="ili" controls="true" height="400" title="Týdenní nemocnost ILI proti prahům intenzity" subtitle="ILI na 100 tis. obyvatel · říjen až květen (kalendářní týdny 40–20) · celá ČR" note="**Kalendářní týden** je týden podle normy ISO: od pondělí do neděle, týden 1 je ten s prvním čtvrtkem roku. Sezóna se sleduje od týdne 40 (přelom září a října) do týdne 20 (polovina května). ILI = chřipce podobné onemocnění hlášené praktickými lékaři, přepočtené na 100 tis. obyvatel pokryté populace. Jde o klinickou diagnózu, ne laboratorně potvrzenou chřipku. Nahoře na stránce je vždy poslední hlášený týden. Graf ukazuje běžící sezónu, jakmile má první hlášení v sezónním okně; do té doby poslední uzavřenou sezónu, kterou lze přehrát posuvníkem — běžící sezóna jde vybrat i tak." >}}
 {{< method inside="true" title="Jak se prahy počítají, jak jsme to ověřili a kde má metoda slabiny" >}}
 {{< method-part title="Metoda" >}}
 **Moving Epidemic Method (MEM)** — standard ECDC a WHO pro chřipkovou surveillance. Tři kroky:

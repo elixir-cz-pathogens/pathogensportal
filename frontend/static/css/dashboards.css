@@ -1227,3 +1227,26 @@
   .pp-method__body { grid-template-columns: minmax(0, 1fr); }
   .pp-flu-status__level { font-size: 1.8rem; }
 }
+
+/* Chřipka: řádek „přehrávaný týden“ a vysvětlení prázdné běžící sezóny */
+.pp-flu-replay {
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  font-size: 0.82rem;
+  color: var(--pp-text-secondary);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-grid);
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pp-flu-replay strong { color: var(--pp-text); font-weight: 600; }
+
+.pp-flu-empty {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  color: var(--pp-text);
+  background: var(--pp-now-bg);
+  border-radius: 6px;
+}
