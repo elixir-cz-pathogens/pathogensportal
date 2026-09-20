@@ -26,6 +26,12 @@
     months: ["led", "úno", "bře", "dub", "kvě", "čvn", "čvc", "srp", "zář", "říj", "lis", "pro"],
     week: "týden", season: "sezóna", from: "od",
     intensity: "Intenzita", notStarted: "Sezóna ještě nezačala", ended: "Epidemické období skončilo",
+    offSeason: "Mimo chřipkovou sezónu",
+    lastReported: "Poslední hlášený týden", replayed: "Přehrávaný týden",
+    sOffSeason: "Týdenní ILI {v} na 100 tis. je hluboko pod epidemickým prahem {t}. Sezónní sledování začíná týdnem 40 (od {d}).",
+    trendNoneNow: "trend — po letní pauze v hlášení zatím nejsou tři souvislé týdny dat",
+    outlookNoneNow: "výhled — aktuální předpověď není k dispozici",
+    running: " — běžící", emptySeason: "Sezóna {s} začíná týdnem 40 ({d}). V sezónním okně zatím nejsou žádná hlášení — poslední hlášený týden je {w} (ILI {v}). Šedě minulé sezóny, čárkovaně předpověď.",
     sEpidemic: "{n}. týden epidemického období. Týdenní ILI je {v} na 100 tis., tedy {x}× nad epidemickým prahem.",
     sBefore: "Týdenní ILI {v} na 100 tis. je pod epidemickým prahem {t}.",
     sAfter: "ILI kleslo zpět pod práh {t}. Epidemické období trvalo {n} týdnů.",
@@ -56,6 +62,7 @@
     nowLede: "Dnes je {today}. Poslední předpověď vyšla {round}; poslední týden s hlášenými daty je {w} ({range}), proto se odhadují i týdny, které už proběhly. Tahle tabulka se přehráváním nemění.",
     replayLede: "Řídí se posuvníkem u grafu: předpověď vydaná {round} a vedle ní, jak to pak doopravdy dopadlo.",
     replayNone: "Pro zvolený týden předpověď není k dispozici — evropský hub RespiCast běží od října 2024.",
+    replayRunning: "U běžící sezóny není co přehrávat — platnou předpověď ukazuje tabulka „Aktuální výhled na čtyři týdny“ výše.",
     outside: " — mimo prahy", error: "Data o intenzitě chřipky se nepodařilo načíst."
   };
   var ENS = {
@@ -65,6 +72,12 @@
     months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
     week: "week", season: "season", from: "from",
     intensity: "Intensity", notStarted: "The season has not started", ended: "The epidemic period is over",
+    offSeason: "Outside the influenza season",
+    lastReported: "Latest reported week", replayed: "Replayed week",
+    sOffSeason: "Weekly ILI of {v} per 100,000 is far below the epidemic threshold of {t}. Seasonal monitoring starts in week 40 (from {d}).",
+    trendNoneNow: "trend — after the summer reporting break there are not yet three consecutive weeks of data",
+    outlookNoneNow: "outlook — no current forecast available",
+    running: " — current", emptySeason: "Season {s} starts in week 40 ({d}). There are no reports in the seasonal window yet — the latest reported week is {w} (ILI {v}). Past seasons in grey, forecast dashed.",
     sEpidemic: "Week {n} of the epidemic period. Weekly ILI is {v} per 100,000 — {x}× the epidemic threshold.",
     sBefore: "Weekly ILI of {v} per 100,000 is below the epidemic threshold of {t}.",
     sAfter: "ILI fell back below the threshold of {t}. The epidemic period lasted {n} weeks.",
@@ -95,6 +108,7 @@
     nowLede: "Today is {today}. The latest forecast was issued on {round}; the last week with reported data is {w} ({range}), so weeks that have already passed are estimated too. This table does not change with the replay.",
     replayLede: "Follows the slider next to the chart: the forecast issued on {round}, next to what actually happened.",
     replayNone: "No forecast is available for the selected week — the European RespiCast hub started in October 2024.",
+    replayRunning: "There is nothing to replay for the current season — the valid forecast is in the “current four-week outlook” table above.",
     outside: " — outside thresholds", error: "Influenza intensity data could not be loaded."
   };
   var L = EN ? ENS : CS;
@@ -183,15 +197,6 @@
   function trendAt(ind, s, i) { return (ind.trend.by_season[s] || [])[i] || null; }
   function peakIdx(s) { return ILI.history[s].indexOf(Math.max.apply(null, ILI.history[s])); }
 
-  /* Výchozí pohled mimo sezónu: dva týdny před začátkem epidemie — tam je vidět
-     práh, trend i předpověď najednou. Když pro ten týden předpověď není, vrchol. */
-  function demoWeek(s) {
-    var v = ILI.history[s], first = -1;
-    v.forEach(function (x, i) { if (first < 0 && x >= T.epidemic) first = i; });
-    var i = Math.max(0, first - 2);
-    return forecastAt(ILI, s, i) ? i : peakIdx(s);
-  }
-
   function phase(s, i) {
     var v = ILI.history[s], first = -1, last = -1;
     for (var j = 0; j <= i; j++) if (v[j] >= T.epidemic) { if (first < 0) first = j; last = j; }
@@ -205,23 +210,31 @@
     return ILI.history[s].reduce(function (last, x, i) { return x !== null ? i : last; }, -1);
   }
 
-  /* Uzavřené sezóny s úplnými daty + běžící sezóna, jakmile má první týden. */
+  /* Uzavřené sezóny s úplnými daty + běžící sezóna — ta VŽDY, i když v sezónním
+     okně (týdny 40–20) ještě nemá jediný bod. Kdo hledá „letošek“, musí ho najít;
+     prázdný graf s vysvětlením je lepší než sezóna, která ve výběru chybí. */
   function selectableSeasons() {
     return Object.keys(ILI.history).filter(function (s) {
       function complete(v) { return v && v.every(function (x) { return x !== null; }); }
-      if (s === ILI.current.season) return lastWeekIdx(s) >= 0;
+      if (s === ILI.current.season) return true;
       return complete(ILI.history[s]) && complete(ARI.history[s]);
     });
+  }
+  function isRunning(s) { return s === ILI.current.season; }
+  /** Předpověď platná pro zobrazený bod: u běžící sezóny poslední vydaná, jinak historická. */
+  function forecastShown(ind) {
+    if (isRunning(season)) return (ind.forecast && ind.forecast.latest) || null;
+    return k >= 0 ? forecastAt(ind, season, k) : null;
   }
 
   /* ---------------- Graf ---------------- */
 
   function fanDatasets(ind) {
-    var fc = forecastAt(ind, season, k), v = ind.history[season];
+    var fc = forecastShown(ind), v = ind.history[season];
     if (!fc) return [];
     function series(field) {
       var a = W.map(function () { return null; });
-      a[k] = v[k];                                   // vějíř vyrůstá z posledního známého bodu
+      if (k >= 0) a[k] = v[k];                       // vějíř vyrůstá z posledního známého bodu
       fc.weeks.forEach(function (w) { var i = keyToIdx(season, w.week); if (i > k) a[i] = w[field]; });
       return a;
     }
@@ -232,7 +245,9 @@
     }
     return band("q025", "q975").concat(band("q250", "q750"), [{
       label: "forecast", ppForecast: true, data: series("q500"), borderColor: token("--pp-text", "#0b0b0b"),
-      borderWidth: 2, borderDash: [5, 4], pointRadius: 0, pointHoverRadius: 4,
+      /* Před začátkem sezóny padne do osy jediný týden předpovědi (40) — samotná
+         čára z jednoho bodu není vidět, proto tečka. */
+      borderWidth: 2, borderDash: [5, 4], pointRadius: k < 0 ? 4 : 0, pointHoverRadius: 4,
       pointBackgroundColor: token("--pp-text", "#0b0b0b"), tension: 0.25, order: 1
     }]);
   }
@@ -310,7 +325,7 @@
 
   function yMax(ind) {
     var all = [];
-    selectableSeasons().forEach(function (s) { all = all.concat(ind.history[s].filter(function (x) { return x !== null; })); });
+    selectableSeasons().forEach(function (s) { all = all.concat((ind.history[s] || []).filter(function (x) { return x !== null; })); });
     var top = Math.max.apply(null, all);
     return ind.intensity_reliable ? ceilTo(Math.max(ind.thresholds.very_high * 1.18, top), 20) : ceilTo(top * 1.08, 100);
   }
@@ -358,7 +373,7 @@
               title: function (items) { return items.length ? weekFull(season, items[0].dataIndex) : ""; },
               label: function (item) {
                 if (item.dataset.ppForecast) {
-                  var w = forecastAt(ind, season, k).weeks.filter(function (x) { return keyToIdx(season, x.week) === item.dataIndex; })[0];
+                  var w = forecastShown(ind).weeks.filter(function (x) { return keyToIdx(season, x.week) === item.dataIndex; })[0];
                   return [fill(L.ttForecast, { m: fmt(w.q500, digits), lo: fmt(w.q025, digits), hi: fmt(w.q975, digits) }),
                           fill(L.ttProb, { p: pct(w.p_epidemic) })];
                 }
@@ -384,25 +399,34 @@
   }
   function probBar(p) { return '<span class="pp-flu-pbar"><i style="width:' + Math.round(100 * p) + '%"></i></span> ' + pct(p); }
 
+  /* Horní blok říká, jak je to TEĎ — poslední hlášený týden, ať je přehrávání
+     u grafu kdekoli. (Dřív sledoval posuvník a stránka tak nahoře ukazovala
+     loňský listopad jako aktuální stav.) */
   function renderStatus() {
     roots("status").forEach(function (root) {
-      var st = phase(season, k), tr = trendAt(ILI, season, k), fc = forecastAt(ILI, season, k);
+      var cur = ILI.current, running = cur.season, inWindow = lastWeekIdx(running) >= 0;
+      var st = inWindow ? phase(running, lastWeekIdx(running)) : { phase: "off", value: cur.value, level: levels()[0] };
+      var tr = ILI.trend.current, fc = ILI.forecast && ILI.forecast.latest;
       var last = fc && fc.weeks[fc.weeks.length - 1];
-      field(root, "eyebrow").textContent = weekFull(season, k) + " · " + L.season + " " + season;
+
+      field(root, "eyebrow").textContent = L.lastReported + " · " + rangeOf(keyMonday(cur.week)) + " (" + L.week + " "
+        + weekName(cur.week) + ") · " + relativeWeek(cur.week);
       field(root, "level").textContent = st.phase === "epidemic" ? L.intensity + " " + st.level.name
-                                       : st.phase === "before" ? L.notStarted : L.ended;
+        : st.phase === "before" ? L.notStarted : st.phase === "after" ? L.ended : L.offSeason;
       field(root, "sentence").textContent =
         st.phase === "epidemic" ? fill(L.sEpidemic, { n: st.week, v: fmt(st.value), x: fmt(st.value / T.epidemic, 1) })
         : st.phase === "before" ? fill(L.sBefore, { v: fmt(st.value), t: fmt(T.epidemic, 0) })
-        : fill(L.sAfter, { t: fmt(T.epidemic, 0), n: st.duration });
+        : st.phase === "after" ? fill(L.sAfter, { t: fmt(T.epidemic, 0), n: st.duration })
+        : fill(L.sOffSeason, { v: fmt(st.value), t: fmt(T.epidemic, 0),
+                               d: monday(startYear(running), 40).toLocaleDateString(LOCALE, { timeZone: "UTC" }) });
       field(root, "value").textContent = fmt(st.value);
       field(root, "trend").textContent = tr ? ARROWS[tr.category] + " " + L.trend[tr.category] : "–";
       field(root, "trendNote").textContent = tr
         ? fill(L.trendNote, { c: (tr.weekly_change >= 0 ? "+" : "−") + fmt(Math.abs(100 * tr.weekly_change), 0), p: pct(tr.p_growth) })
           + (tr.holiday_effect ? L.holiday : "")
-        : L.trendNone;
+        : L.trendNoneNow;
       field(root, "outlook").textContent = last ? pct(last.p_epidemic) : "–";
-      field(root, "outlookNote").textContent = last ? fill(L.outlookNote, { w: +last.week.slice(6) }) : L.outlookNone;
+      field(root, "outlookNote").textContent = last ? fill(L.outlookNote, { w: +last.week.slice(6) }) : L.outlookNoneNow;
 
       var meter = field(root, "meter");
       if (!meter.children.length) {
@@ -418,6 +442,18 @@
     });
   }
 
+  /* Řádek u grafu: co platilo v PŘEHRÁVANÉM týdnu. U běžící sezóny je zbytečný —
+     totéž říká horní blok. */
+  function replayLine() {
+    if (isRunning(season) || k < 0) return "";
+    var st = phase(season, k), tr = trendAt(ILI, season, k), fc = forecastAt(ILI, season, k);
+    var last = fc && fc.weeks[fc.weeks.length - 1];
+    var state = st.phase === "epidemic" ? L.intensity.toLowerCase() + " " + st.level.name : st.phase === "before" ? L.notStarted.toLowerCase() : L.ended.toLowerCase();
+    return "<strong>" + L.replayed + ":</strong> " + weekFull(season, k) + " · ILI " + fmt(st.value) + " · " + state
+      + (tr ? " · " + ARROWS[tr.category] + " " + L.trend[tr.category] : "")
+      + (last ? " · " + fill(L.outlookNote, { w: +last.week.slice(6) }) + " " + pct(last.p_epidemic) : "");
+  }
+
   function renderChartChrome(root) {
     var key = root.getAttribute("data-indicator"), ind = D.indicators[key];
     var legend = field(root, "legend");
@@ -427,13 +463,26 @@
       + '<span><i class="pp-flu-key pp-flu-key--past"></i>' + L.lgPast + "</span>"
       + '<span><i class="pp-flu-key pp-flu-key--threshold"></i>' + L.lgThreshold + "</span>";
 
+    var empty = isRunning(season) && k < 0;
     var now = field(root, "now");
     if (now) {
-      var v = ind.history[season][k], tr = trendAt(ind, season, k), thr = ind.thresholds.epidemic;
+      var v = empty ? ind.current.value : ind.history[season][k];
+      var tr = empty ? ind.trend.current : trendAt(ind, season, k), thr = ind.thresholds.epidemic;
+      var ili = empty ? ILI.current.value : ILI.history[season][k];
       now.innerHTML = fill(L.ariNow, {
         v: "<b>" + fmt(v, 0) + "</b>", ab: v >= thr ? L.above : L.below, t: fmt(thr, 0),
         tr: tr ? " · " + ARROWS[tr.category] + " " + L.trend[tr.category] : "",
-        s: pct(ILI.history[season][k] / v, 1)
+        s: pct(ili / v, 1)
+      });
+    }
+    var replay = field(root, "replay");
+    if (replay) { replay.innerHTML = replayLine(); replay.hidden = !replay.innerHTML; }
+    var note = field(root, "empty");
+    if (note) {
+      note.hidden = !empty;
+      if (empty) note.textContent = fill(L.emptySeason, {
+        s: season, d: monday(startYear(season), 40).toLocaleDateString(LOCALE, { timeZone: "UTC" }),
+        w: weekName(ind.current.week), v: fmt(ILI.current.value)
       });
     }
 
@@ -444,6 +493,7 @@
       table.innerHTML = '<table class="pp-table"><thead><tr><th>' + L.colWeek + '</th><th class="l">' + L.colRange + "</th><th>"
         + L.colIliT + '</th><th class="l">' + L.colBandName + "</th><th>" + L.colAriT + "</th></tr></thead><tbody>"
         + ILI.history[season].map(function (x, i) {
+          if (x === null) return "";                 // běžící sezóna: budoucí týdny do tabulky nepatří
           return "<tr><td>" + W[i] + "/" + weekYear(season, i) + '</td><td class="l">' + weekRange(season, i) + "</td><td>" + fmt(x)
             + '</td><td class="l">' + levelOf(x).name + "</td><td>" + fmt(ARI.history[season][i], 0) + "</td></tr>";
         }).join("") + "</tbody></table>";
@@ -474,7 +524,8 @@
 
   function renderReplay() {
     roots("replay").forEach(function (root) {
-      var fc = forecastAt(ILI, season, k), lede = field(root, "lede"), table = field(root, "table");
+      var fc = k >= 0 ? forecastAt(ILI, season, k) : null, lede = field(root, "lede"), table = field(root, "table");
+      if (isRunning(season)) { lede.textContent = L.replayRunning; table.innerHTML = ""; return; }
       if (!fc) { lede.textContent = L.replayNone; table.innerHTML = ""; return; }
       lede.textContent = fill(L.replayLede, { round: new Date(fc.round).toLocaleDateString(LOCALE) });
       table.innerHTML = "<thead><tr><th>" + L.colWeek + '</th><th class="l">' + L.colRange + "</th><th>" + L.colMedian + "</th><th>" + L.colBand
@@ -557,24 +608,29 @@
     renderReplay();
   }
 
+  function syncSlider(slider) {
+    slider.max = Math.max(0, lastWeekIdx(season));
+    slider.value = Math.max(0, k);
+    slider.disabled = k < 0;                             // běžící sezóna bez dat: není co přehrávat
+  }
+
   function wireControls() {
     roots("chart").forEach(function (root) {
       var select = field(root, "season"), slider = field(root, "week"), toggle = field(root, "tableToggle");
       if (select) {
         select.innerHTML = selectableSeasons().reverse().map(function (s) {
-          return '<option value="' + s + '">' + s + (ILI.seasons_used.indexOf(s) < 0 ? L.outside : "") + "</option>";
+          return '<option value="' + s + '">' + s + (isRunning(s) ? L.running : ILI.seasons_used.indexOf(s) < 0 ? L.outside : "") + "</option>";
         }).join("");
         select.value = season;
         select.addEventListener("change", function () {
           season = select.value;
-          k = season === ILI.current.season ? lastWeekIdx(season) : demoWeek(season);
-          slider.max = season === ILI.current.season ? lastWeekIdx(season) : W.length - 1;
-          slider.value = k;
+          k = lastWeekIdx(season);                       // celá sezóna; u běžící poslední hlášený týden (−1 = ještě žádný)
+          syncSlider(slider);
           roots("chart").forEach(drawChart); renderMoving();
         });
       }
       if (slider) {
-        slider.value = k;
+        syncSlider(slider);
         slider.addEventListener("input", function () {
           k = +slider.value;
           roots("chart").forEach(function (r) {
@@ -600,16 +656,17 @@
 
   function start(data) {
     D = data; ILI = D.indicators.ili; ARI = D.indicators.ari; W = D.season_weeks; T = ILI.thresholds;
-    /* V sezóně se ukazuje běžící sezóna a její poslední týden. Mimo ni (léto,
-       začátek podzimu) by stránka byla prázdná — proto poslední úplná sezóna. */
+    /* Horní blok je vždy „teď“. GRAF ukazuje běžící sezónu, jakmile má v sezónním
+       okně první bod; do té doby poslední uzavřenou sezónu celou (běžící jde vybrat,
+       jen je zatím prázdná — a říká proč). */
     var running = ILI.current.season;
     if (ILI.history[running] && lastWeekIdx(running) >= 0) {
       season = running;
-      k = lastWeekIdx(running);
     } else {
-      season = ILI.seasons_used[ILI.seasons_used.length - 1];
-      k = demoWeek(season);
+      var closed = selectableSeasons().filter(function (s) { return !isRunning(s); });
+      season = closed[closed.length - 1];
     }
+    k = lastWeekIdx(season);
     if (window.Chart) roots("chart").forEach(drawChart);
     wireControls();
     renderStatic();

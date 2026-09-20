@@ -54,7 +54,9 @@
     {{ end }}
   </figcaption>
 
+  <p class="pp-flu-replay" data-f="replay" hidden></p>
   <div class="pp-flu-legend" data-f="legend"></div>
+  <p class="pp-flu-empty" data-f="empty" hidden></p>
   <div class="pp-card__plot" style="height:{{ .Get "height" | default "400" }}px">
     <div class="pp-skeleton"></div>
     <canvas role="img" aria-label="{{ .Get "title" }}"></canvas>
