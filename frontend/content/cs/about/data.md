@@ -1,6 +1,6 @@
 ---
 title: Data a citace
-description: "Odkud Pathogen Portal CZ bere data, pod jakou licencí, co z nich nejde vyčíst, jak portál citovat a jak si data stáhnout."
+description: "Odkud Pathogen Portal CZ bere data, pod jakou licencí, co z nich nejde vyčíst a jak si data stáhnout."
 menu:
   footer_about:
     name: Data a citace
@@ -21,21 +21,6 @@ a budeme rádi, když nám o tom [dáte vědět](#nahlasit-chybu).
 ## Katalog zdrojů
 
 {{< data-catalogue >}}
-
-## Jak citovat
-
-Citujte prosím **původní zdroj dat** (najdete ho u každého grafu a v katalogu výše) a portál
-jako místo, kde jste data našli nebo odkud jste převzali zpracování:
-
-<div class="pp-cite">
-Pathogen Portal CZ. Ústav molekulární genetiky AV ČR, ELIXIR CZ.
-https://pathogens.vm.cesnet.cz/ (citováno DD. MM. RRRR).
-</div>
-
-U výsledků, které jsou naší vlastní prací — **Signály** (detekce anomálií) a výpočty nad
-převzatými daty — citujte i metodu; její popis, testy a přesná verze kódu jsou v repozitáři
-[pathogensportal-db](https://github.com/elixir-cz-pathogens/pathogensportal-db). Výstup
-Signálů nese otisk vstupních dat a verzi kódu, takže jde zpětně přepočítat bit po bitu.
 
 ## Licence
 
