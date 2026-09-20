@@ -1,0 +1,26 @@
+{{/* Výpis novinek. Přebíjí šablonu motivu, která kreslila starou kartu
+     (partials/highlight.html). Od 15. 9. 2026 táž karta a táž mřížka jako
+     dashboardy — dashboard-tile.html pozná novinku podle sekce a místo
+     čerstvosti dat ukáže datum vydání.
+
+     ⛔ .pp-viz nese barevné tokeny karty; bez obalu karta ztratí pozadí
+     i okraj (viz dashboards/list.html). */}}
+{{ define "main" }}
+<div class="pp-viz">
+
+<div class="mb-3">
+    {{ .Content }}
+</div>
+
+<div class="pp-tilegrid pp-tilegrid--full mb-3">
+    {{ $paginatedPages := .Paginate .Data.Pages.ByDate.Reverse 9 }}
+    {{ range $paginatedPages.Pages }}
+    {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}
+    {{ end }}
+</div>
+<div class="d-flex justify-content-end">
+    {{ template "_internal/pagination.html" . }}
+</div>
+
+</div>
+{{ end }}

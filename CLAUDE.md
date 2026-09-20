@@ -67,6 +67,9 @@ needing to be committed at all.
 to read a date out of it — `update_from: "flu_weekly.json"` + `update_read: "week"` — and
 `layouts/partials/update-stamp.html` does the reading. A hand-written date rots at the next pipeline run
 with nothing to correct it, because the pipeline rewrites only the `ebola-*` pages.
+The one exception is `data_as_of: "YYYY-MM-DD"`, for a **closed** report whose figures live in the page
+text and will never change (hantavirus: WHO declared the outbreak over, final summary DON611 as of
+2 Jul 2026). It is a build error to set it together with `update_from`.
 
 ⛔ **`update_read` must stay explicit; do not "simplify" it into guessing from the file.** The last label
 of a series is a period in `flu_weekly` (`KT 36/26`), an age band in `covid_by_age` (`80+`) and a region
@@ -75,8 +78,8 @@ band as an update date on a third of the dashboards, and it looks like a valid f
 Readings: `stamp` (`generated_at` = pipeline run → "Aktualizace: …", else `posledni_datum` = data extent
 → "Data k …"), `period-end`, `week` (ISO week → its Sunday), `month`, `year`. ⚠️ Month and year are not
 converted to a day — ISIN by disease group is an annual series and a fabricated 31 Dec would claim daily
-precision. ⚠️ Four pages have no date to read and keep a sentence about frequency: the two Nextstrain
-builds and wastewater run on someone else's server, hantavirus is a closed situational report.
+precision. ⚠️ Three pages have no date to read and keep a sentence about frequency: the two Nextstrain
+builds and wastewater run on someone else's server. Hantavirus carries `data_as_of` (see above).
 
 ## Common commands
 

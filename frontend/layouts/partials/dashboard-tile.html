@@ -31,27 +31,52 @@
      ⛔ Není to totéž co barva rámečku. Ta říká, ODKUD JSOU DATA, ne kam vede
      odkaz: `aggregated` má 15 z 18 dashboardů a externí jsou z nich tři. Kdyby
      tahle ikonka zmizela s odůvodněním „barva to říká taky", nezůstane po ní
-     nic. */}}
+     nic.
+
+     Datum pod názvem je TOTÉŽ tvrzení jako v metadatech detailu dashboardu,
+     ze stejného update-stamp.html — karta a stránka nesmí tvrdit každá jiné
+     datum. ⛔ Nikdy sem nedávej .Lastmod: to je datum commitu nad stránkou,
+     ne čerstvost dat (viz komentář v index.html). Je UVNITŘ názvu, aby sdílelo
+     jeho podbarvení; na titulce název dorůstá na dno karty a řádek pod ním by
+     z pruhu vypadl. */}}
 {{ $p    := .page }}
 {{ $full := .full | default false }}
 {{ $en   := eq $p.Site.Language.Lang "en" }}
 {{ $m    := partial "origin-meta.html" $p }}
 {{ $img  := partial "card-image.html" $p }}
 {{ $href := cond (ne $p.Params.redirect_url nil) ($p.Params.redirect_url | default "") $p.RelPermalink }}
+{{/* Stejné pořadí jako v dashboards/single.html: datum z dat, jinak slovní
+     `update_freq` u stránek, které vlastní datum mít nemůžou. */}}
+{{ $stamp := "" }}
+{{ $icon  := "bi-arrow-repeat" }}
+{{ if eq $p.Section "news" }}
+  {{/* Karta slouží od 15. 9. 2026 i novinkám. Novinka nemá čerstvost dat,
+       má datum vydání — a to je jiné tvrzení, proto i jiná ikona. */}}
+  {{ $icon  = "bi-calendar3" }}
+  {{ $stamp = $p.Date | time.Format (cond $en "2 Jan 2006" "2. 1. 2006") }}
+{{ else }}
+  {{ with partial "update-stamp.html" $p }}{{ $stamp = .text }}
+  {{ else }}{{ with $p.Params.update_freq }}{{ $stamp = printf "%s: %s" (cond $en "Updated" "Aktualizace") . }}{{ end }}{{ end }}
+{{ end }}
+{{/* Ilustrace karet (/images/cards/) jsou kreslené na výřez karty. Cokoli
+     jiného — typicky logo u novinky — by `cover` ořízl, proto se ukáže celé. */}}
+{{ $contain := and (not (hasPrefix $img.src "/images/cards/")) (ne $img.src "/images/dashboard-placeholder.svg") }}
 
 <div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}{{ with $m }} pp-origin-edge pp-origin-edge--{{ .key }}{{ end }}"
      {{ with $m }}title="{{ .label }} — {{ .title }}"{{ end }}>
   {{ with $m }}<span class="visually-hidden">{{ .label }}</span>{{ end }}
   <a class="pp-tile__link" href="{{ $href }}">
     <span class="pp-tile__imgwrap">
-      <img class="pp-tile__img" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
+      <img class="pp-tile__img{{ if $contain }} pp-tile__img--contain{{ end }}" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
       {{/* Vpravo nahoře, ať se nepotká se značkou AI vpravo dole. */}}
       {{ if $p.Params.redirect_url }}
       <span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}" aria-hidden="true"><i class="bi bi-box-arrow-up-right"></i></span>
       {{ end }}
       {{ if $img.ai }}{{ partial "ai-image-mark.html" $p }}{{ end }}
     </span>
-    <span class="pp-tile__title">{{ $p.Title }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}</span>
+    <span class="pp-tile__title">{{ $p.Title }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}
+      {{- with $stamp }}<span class="pp-tile__stamp"><i class="bi {{ $icon }}" aria-hidden="true"></i> {{ . }}</span>{{ end -}}
+    </span>
   </a>
   {{ if $full }}
   {{ with $p.Description }}<p class="pp-tile__desc">{{ . }}</p>{{ end }}

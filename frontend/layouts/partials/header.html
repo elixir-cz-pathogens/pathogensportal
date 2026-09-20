@@ -21,7 +21,15 @@
   <div class="container">
     <ol class="breadcrumb">
       {{- range .Ancestors.Reverse }}
-        <li class="breadcrumb-item"><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+        {{- /* Sekce, která se negeneruje, nemá adresu (RelPermalink je prázdný).
+               Akce (build.render: never) žijí na titulce, takže drobeček vede na
+               jejich kotvu tam — viz partials/home-events.html. Cokoli jiného bez
+               adresy zůstane textem; prázdné href by vedlo na tutéž stránku. */}}
+        {{- $href := .RelPermalink }}
+        {{- if and (not $href) (eq .Section "events") }}
+          {{- $href = printf "%s#%s" site.Home.RelPermalink (cond (eq site.Language.Lang "en") "events" "akce") }}
+        {{- end }}
+        <li class="breadcrumb-item">{{ if $href }}<a href="{{ $href }}">{{ .Title }}</a>{{ else }}{{ .Title }}{{ end }}</li>
       {{- end }}
       <li class="breadcrumb-item"><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
     </ol>

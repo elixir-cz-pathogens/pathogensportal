@@ -1,0 +1,20 @@
+{{/* Přebíjí shortcode motivu (themes/…/shortcodes/organization.html) JEN kvůli
+     velikosti loga. Motiv roztahoval logo na celou šířku sloupce, takže úzký
+     štít VZÚ byl na stránce Partneři vysoký přes 300 px. Rozměr teď počítá
+     partials/logo-box.html — stejně jako v patičce, jen ve větším měřítku.
+
+     `alt` je prázdný záměrně: jméno organizace stojí hned vedle. */}}
+{{ $img := .Get "img" }}
+{{ $s := partialCached "logo-box.html" (dict "src" $img "area" 12000 "hmax" 85 "wmax" 210) $img "affiliations" }}
+<div class="row">
+    <div class="col-12 col-md-4 col-lg-3 d-none d-md-block">
+        <figure class="figure mt-3 pp-org-logo">
+            <img alt="" src="{{ $img }}" width="{{ $s.w }}" height="{{ $s.h }}" loading="lazy">
+        </figure>
+    </div>
+    <div class="col-12 col-md-8 col-lg-9">
+        <h6>{{ .Get "name" }}</h6>
+        {{ .Inner | markdownify }}
+    </div>
+</div>
+<hr class="faded" />

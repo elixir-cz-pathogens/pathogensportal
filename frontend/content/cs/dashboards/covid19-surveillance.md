@@ -3,18 +3,15 @@ title: "COVID-19 Surveillance"
 origin: aggregated
 description: "Epidemiologická situace SARS-CoV-2 v České republice — denní případy, hospitalizace, testování a vakcinace."
 image: "/images/cards/covid.webp"
+highlight: true
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "surveillance", "MZČR", "ČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">MZČR — onemocnění aktuálně</a>'
 # Datum se bere z posledni_datum v tomhle JSON, ne odsud.
 update_from: "covid_summary.json"
 update_read: "stamp"
-build:
-  list: never
-  render: always
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="covid" >}}
-
 <a href="https://onemocneni-aktualne.mzcr.cz/covid-19" target="_blank" class="btn btn-primary mb-3 me-2">
   Oficiální COVID-19 portál MZČR →
 </a>

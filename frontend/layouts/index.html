@@ -1,7 +1,8 @@
 {{/* Titulní stránka (PP-57).
 
-     Pět bloků: co portál je → kam dál po webu → dashboardy jako karty →
-     novinky → témata.
+     Bloky: co portál je → kam dál po webu → dashboardy jako karty (s tématy) →
+     novinky → akce (kalendář + seznam, od 15. 9. 2026 — samostatná stránka
+     /events/ se už negeneruje, viz partials/home-events.html).
 
      ⛔ Blok signálů tu BYL a je pryč. Mapa i přepínač teď žijí na
      /signals/, kde je kolem nich vysvětlení, jak se práh počítá a co
@@ -43,6 +44,7 @@
             "t" (cond $en "News"        "Novinky")
             "d" (cond $en "What changed on the portal" "Co se na portálu změnilo"))
       (dict "p" (.Site.GetPage "section" "events") "icon" "bi-calendar-event"
+            "href" (cond $en "#events" "#akce")
             "t" (cond $en "Events"      "Akce")
             "d" (cond $en "Talks, workshops and meetings" "Přednášky, workshopy a setkání"))
       (dict "p" (.Site.GetPage "section" "about") "icon" "bi-info-circle"
@@ -53,10 +55,12 @@
     {{/* ⚠️ `$it := .` PŘED `with`: uvnitř `with` se kontext přepne na stránku,
          takže .icon a .t z dlaždice by byly prázdné. Tiše — `with` na
          neexistujícím klíči nic nehlásí, jen nevykreslí. */}}
+    {{/* `href` přebíjí adresu stránky — Akce vlastní stránku nemají
+         (build.render: never, RelPermalink je prázdný) a vedou na kotvu níž. */}}
     {{ range $nav }}
     {{ $it := . }}
     {{ with $it.p }}
-    <a class="pp-home-navtile" href="{{ .RelPermalink }}">
+    <a class="pp-home-navtile" href="{{ $it.href | default .RelPermalink }}">
       <i class="bi {{ $it.icon }}" aria-hidden="true"></i>
       <span class="pp-home-navtile__t">{{ $it.t }}</span>
       <span class="pp-home-navtile__d">{{ $it.d }}</span>
@@ -92,10 +96,11 @@
          nulový (žádný nemá `date:` v hlavičce) a tohle by tiše vracelo pořadí
          podle ničeho.
 
-         ⚠️ Datum se na kartě záměrně NEVYPISUJE. Je to datum úpravy STRÁNKY, ne
-         čerstvost dat — grafy se plní z JSONu, který přegenerovává pipeline,
+         ⚠️ .Lastmod se na kartě záměrně NEVYPISUJE. Je to datum úpravy STRÁNKY,
+         ne čerstvost dat — grafy se plní z JSONu, který přegenerovává pipeline,
          takže „Aktualizováno 5. 9." vedle živého grafu by čtenáře nechalo
-         věřit, že data jsou z 5. 9. Pořadí to nese, tvrzení ne.
+         věřit, že data jsou z 5. 9. Pořadí to nese, tvrzení ne. Datum, které
+         karta ukazuje (od 15. 9. 2026), je čtené z dat přes update-stamp.html.
 
          ⚠️ Dnes to rozliší jen dvě položky: sedm z devíti dashboardů se
          naposledy změnilo jedním hromadným commitem, takže sdílejí datum a
@@ -157,6 +162,11 @@
   {{ end }}
   {{ end }}
 
+  {{/* ── 5. Akce ─────────────────────────────────────────────────────────── */}}
+  {{ partial "home-events.html" . }}
+
 </div>
+
+<script src="{{ "js/pp-events.js" | relURL }}" defer></script>
 
 {{ end }}

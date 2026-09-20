@@ -29,10 +29,6 @@ layout: about_navbar
 [fit.cvut.cz](https://fit.cvut.cz) — Fakulta informačních technologií ČVUT, spoluautorské pracoviště portálu.
 {{< /organization >}}
 
-{{< organization name="UJEP — Univerzita J. E. Purkyně v Ústí nad Labem" img="/images/UJEP.png" >}}
-[www.ujep.cz](https://www.ujep.cz) — spoluautorské pracoviště situačních reportů.
-{{< /organization >}}
-
 {{< organization name="Vojenský zdravotní ústav (VZÚ)" img="/images/VZU.png" >}}
 [zdravotnictvi.mo.gov.cz](https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav) — spolupráce na situačních reportech (ebola).
 {{< /organization >}}

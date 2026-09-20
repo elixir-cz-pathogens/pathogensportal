@@ -1,0 +1,42 @@
+{{/* Rozměr loga partnera tak, aby všechna loga zabírala zhruba STEJNOU PLOCHU.
+
+     Usage: {{ $s := partial "logo-box.html" (dict "src" "/images/VZU.png" "area" 4800 "hmax" 56 "wmax" 170) }}
+            → dict "w" "h" (px, celá čísla)
+
+     ⛔ Proč ne stejná výška nebo šířka: loga mají poměr stran od 0,8 (štít VZÚ)
+     do 6 (švýcarský program). Stejná výška (dřívější patička) dělá z úzkého loga
+     nudli a z širokého billboard; stejná šířka (dřívější stránka Partneři)
+     roztáhla štít VZÚ na ~250×320 px vedle ~250×50 px VŠCHT. Stejná plocha je
+     obvyklý kompromis; `hmax`/`wmax` brání tomu, aby úzké logo vyrostlo do
+     výšky a široké do šířky.
+
+     Poměr stran se čte ze souboru — PNG/JPG přes images.Config, SVG z viewBox.
+     ⚠️ Prázdný okraj v souboru se počítá jako logo. Proto mají soubory log
+     ořezané okraje (15. 9. 2026); nové logo ořízni stejně, jinak vyjde menší. */}}
+{{ $src  := .src }}
+{{ $path := printf "static%s" $src }}
+{{ $r    := 0.0 }}
+{{ if strings.HasSuffix (lower $src) ".svg" }}
+  {{ $m := findRESubmatch `viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)` (os.ReadFile $path) 1 }}
+  {{ if $m }}
+    {{ $vb := index $m 0 }}
+    {{ $r = div (float (index $vb 1)) (float (index $vb 2)) }}
+  {{ else }}
+    {{ errorf "logo-box: %q nemá viewBox, poměr stran nejde přečíst" $src }}
+  {{ end }}
+{{ else }}
+  {{ $c := images.Config $path }}
+  {{ $r = div (float $c.Width) (float $c.Height) }}
+{{ end }}
+
+{{ $w := 0.0 }}{{ $h := 0.0 }}
+{{ if gt $r 0.0 }}
+  {{ $hmax := float .hmax }}
+  {{ $wmax := float .wmax }}
+  {{ $h = math.Sqrt (div (float .area) $r) }}
+  {{ if gt $h $hmax }}{{ $h = $hmax }}{{ end }}
+  {{ $w = mul $h $r }}
+  {{ if gt $w $wmax }}{{ $w = $wmax }}{{ $h = div $w $r }}{{ end }}
+{{ end }}
+
+{{ return dict "w" (int (math.Round $w)) "h" (int (math.Round $h)) }}

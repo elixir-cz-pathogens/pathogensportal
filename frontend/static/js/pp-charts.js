@@ -650,7 +650,7 @@
       }
     }
 
-    loadChartData(src)
+    var done = loadChartData(src)
       .then(function (result) {
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
@@ -674,6 +674,7 @@
         toggle.textContent = open ? tr("Tabulka") : tr("Skrýt tabulku");
       });
     }
+    return done;
   }
 
   /* ---------------- Statistické dlaždice ---------------- */
@@ -686,7 +687,7 @@
   ];
 
   function renderStats(root) {
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var data = result.payload;
         var t = tokens();
@@ -728,7 +729,7 @@
     var svg = root.querySelector("svg");
     var tooltip = root.querySelector(".pp-tooltip");
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var data = result.payload;
         var regions = data.regions || {};
@@ -879,7 +880,7 @@
       }
     }
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         setOrigin(root, result.origin);
         draw(result.payload);
@@ -936,7 +937,7 @@
     var mapBox  = root.querySelector(".pp-map");
     if (!svg || !tbody || !mapBox) return;
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var all = (result.payload || {}).signals || [];
 
@@ -1122,17 +1123,50 @@
 
   /* ---------------- Start ---------------- */
 
+  /* Načítací vrstva přes celé okno (partials/page-loader.html). Zmizí, až
+     doběhnou VŠECHNA načítání na stránce — i ta neúspěšná: každý renderer má
+     vlastní .catch, který chybu vykreslí do své karty, takže jeho promise
+     skončí vždycky. Chyba jedné karty tak vrstvu nezasekne.
+
+     ⚠️ Vrstva se v CSS ukazuje až se zpožděním, aby při rychlém načtení
+     neblikla. Když ještě není vidět, zmizí hned; když vidět je, rozplyne se. */
+  function hidePageLoader() {
+    document.querySelectorAll("[data-pp-page-loader]").forEach(function (el) {
+      var opacity = parseFloat(getComputedStyle(el).opacity) || 0;
+      if (opacity < 0.05) { el.remove(); return; }
+      el.style.animation = "none";
+      el.style.opacity = String(opacity);
+      void el.offsetWidth;
+      el.style.transition = "opacity .2s ease-out";
+      el.style.opacity = "0";
+      setTimeout(function () { el.remove(); }, 220);
+    });
+    document.querySelectorAll("[data-pp-busy]").forEach(function (el) {
+      el.removeAttribute("aria-busy");
+    });
+  }
+
   function init() {
+    var pending = [];
+    function run(selector, render) {
+      document.querySelectorAll(selector).forEach(function (el) { pending.push(render(el)); });
+    }
     if (window.Chart) {
       Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
       Chart.defaults.font.size = 12;
       Chart.defaults.color = tokens().textSecondary;
-      document.querySelectorAll("[data-pp-chart]").forEach(renderChart);
+      run("[data-pp-chart]", renderChart);
     }
-    document.querySelectorAll("[data-pp-stats]").forEach(renderStats);
-    document.querySelectorAll("[data-pp-map]").forEach(renderMap);
-    document.querySelectorAll("[data-pp-signals]").forEach(renderSignals);
-    document.querySelectorAll("[data-pp-signalmap]").forEach(renderSignalMap);
+    run("[data-pp-stats]", renderStats);
+    run("[data-pp-map]", renderMap);
+    run("[data-pp-signals]", renderSignals);
+    run("[data-pp-signalmap]", renderSignalMap);
+
+    // Ekvivalent Promise.allSettled bez závislosti na něm: odmítnutí se spolkne
+    // tady, protože ho renderer už ohlásil ve své kartě.
+    Promise.all(pending.map(function (p) {
+      return Promise.resolve(p).catch(function () {});
+    })).then(hidePageLoader);
   }
 
   if (document.readyState === "loading") {

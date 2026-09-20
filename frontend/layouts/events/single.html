@@ -1,0 +1,46 @@
+{{/* Detail akce. Přebíjí šablonu motivu: ta formátovala data anglicky
+     („02 January 2006"), odkaz na kategorii neměla jazykový prefix a vykreslovala
+     vlastní <h1>, takže název akce stál na stránce dvakrát (h1 už kreslí banner
+     v partials/header.html).
+
+     Výpis akcí je na titulce (partials/home-events.html), samostatná stránka
+     /events/ se negeneruje. Drobečková navigace odsud vede na kotvu na titulce. */}}
+{{ define "main" }}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $dateFmt := cond $en "2 January 2006, 15:04" "2. 1. 2006, 15:04" }}
+
+{{ with .Params.start_date }}
+    <p><strong>{{ cond $en "Start" "Začátek" }}:</strong> {{ time.Format $dateFmt . }}</p>
+{{ end }}
+{{ with .Params.end_date }}
+    <p><strong>{{ cond $en "End" "Konec" }}:</strong> {{ time.Format $dateFmt . }}</p>
+{{ end }}
+{{ with .Params.location }}
+    <p><strong>{{ cond $en "Location" "Místo" }}:</strong> {{ . }}</p>
+{{ end }}
+{{ with .Params.organiser }}
+    <p><strong>{{ cond $en "Organiser" "Pořadatel" }}:</strong> {{ . }}</p>
+{{ end }}
+
+{{ with .Params.categories }}
+    <p><strong>{{ cond $en "Categories" "Kategorie" }}:</strong>
+        {{ range . }}
+        <a class="badge card-badge mb-1 text-white text-decoration-none" href="{{ (printf "/categories/%s/" (urlize .)) | relLangURL }}">{{ . | title }}</a>
+        {{ end }}
+    </p>
+{{ end }}
+{{ with .Params.description }}
+    <p class="mt-5"><strong>{{ cond $en "Description" "Popis" }}:</strong><br> {{ . }}</p>
+{{ end }}
+
+{{ with .Params.external_url }}
+    <p class="mt-5"><a href="{{ . }}" target="_blank" rel="noopener"><i class="bi bi-globe" aria-hidden="true"></i> {{ cond $en "Event website" "Web akce" }}</a></p>
+{{ end }}
+
+{{ with .Content }}
+<section id="content" class="mt-5">
+    {{ . }}
+</section>
+{{ end }}
+
+{{ end }}

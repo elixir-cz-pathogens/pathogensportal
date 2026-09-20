@@ -17,7 +17,10 @@
   {{ end }}
 
   <div data-pp-signals-body>
-    <div class="pp-skeleton pp-skeleton--spinner" style="height:160px">{{ partial "spinner.html" .Page }}</div>
+    {{/* ⛔ `--inflow`: tenhle skeleton nemá kolem sebe obal s position:relative
+         (na rozdíl od .pp-card__plot u grafů). Jako `absolute; inset:0` utekl
+         z karty a vykreslil se jako 160px pruh přes hlavičku stránky. */}}
+    <div class="pp-skeleton pp-skeleton--spinner pp-skeleton--inflow" style="height:160px">{{ partial "spinner.html" .Page }}</div>
   </div>
 
   <div class="pp-card__foot">

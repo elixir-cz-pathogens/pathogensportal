@@ -32,12 +32,30 @@
 
      Stránka bez `update_from` nevrací nic a `update_freq` z hlavičky se použije
      tak jak je. To je případ stránek, které žádné vlastní datum mít nemůžou:
-     Nextstrain a odpadní vody běží na cizím serveru, hantavirus je uzavřený
-     situační report. */}}
+     Nextstrain a odpadní vody běží na cizím serveru.
+
+     ── `data_as_of: "RRRR-MM-DD"` — JEN pro uzavřené reporty ─────────────────
+     Jediná výjimka z pravidla „datum se nepíše do hlavičky“. Platí pro stránku,
+     jejíž čísla jsou napsaná v textu a už se nikdy nezmění (hantavirus: WHO
+     ohnisko ukončila, závěrečný souhrn DON611 je k 2. 7. 2026). Tam datum
+     nezastará, protože nic, co by ho mělo posunout, už nepřijde.
+     ⛔ Nesmí se kombinovat s `update_from` — ruční datum by přebilo datum
+     z dat, a přesně tak hnije. Kombinace končí chybou buildu. */}}
 {{ $en   := eq .Site.Language.Lang "en" }}
 {{ $file := .Params.update_from }}
 {{ $read := .Params.update_read | default "stamp" }}
 {{ $out  := "" }}
+
+{{ if and $file .Params.data_as_of }}
+  {{ errorf "stránka %q má update_from i data_as_of — datum z dat a ruční datum se vylučují" .Title }}
+{{ end }}
+
+{{ with .Params.data_as_of }}
+  {{ $t := time.AsTime . }}
+  {{ $out = dict "text" (printf "%s %s"
+      (cond $en "Data as of" "Data k")
+      ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+{{ end }}
 
 {{ with $file }}
   {{ $path := printf "static/data/charts/%s" . }}

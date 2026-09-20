@@ -12,7 +12,11 @@
      anywhere else. */}}
 {{ if .Params.report }}<link rel="stylesheet" href="{{ "css/reports.css" | relURL }}">{{ end }}
 
-<div class="pp-viz">
+{{/* Vrstva přes celé okno, dokud se nenačtou data (15. 9. 2026). Na stránce bez
+     grafů zmizí dřív, než se stihne ukázat — viz page-loader.html. */}}
+{{ partial "page-loader.html" . }}
+
+<div class="pp-viz" aria-busy="true" data-pp-busy>
   <header class="pp-dash-header">
     {{/* The breadcrumb is rendered by the theme above the content — do not duplicate it.
 

@@ -6,11 +6,13 @@ image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiologie", "IMG AV ČR"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'
-update_freq: "Průběžně aktualizováno (aktivní vypuknutí)"
+# Uzavřený report: čísla níž jsou z konečného souhrnu WHO (DON611) k 2. 7. 2026
+# a už se nezmění. Jediný případ, kdy se datum píše sem — viz update-stamp.html.
+data_as_of: "2026-07-02"
 ---
 
 <a href="https://titan.img.cas.cz/hantavirus/" target="_blank" class="btn btn-primary mb-4">
-  Otevřít live situační report →
+  Otevřít závěrečný situační report →
 </a>
 
 ---
@@ -27,16 +29,16 @@ update_freq: "Průběžně aktualizováno (aktivní vypuknutí)"
 
 ### Vypuknutí 2026 — výletní loď MV Hondius
 
-V roce 2026 bylo identifikováno **komunitní šíření viru Andes** spojené s výletní lodí MV Hondius. K červnu 2026:
+V květnu 2026 byla u cestujících a posádky výletní lodi MV Hondius zjištěna nákaza **virem Andes**, včetně omezeného přenosu mezi lidmi na palubě. **WHO 2. července 2026 označila ohnisko za ukončené.** Konečný souhrn WHO k 2. červenci 2026 (DON611):
 
 | Ukazatel | Hodnota |
 |---|---|
 | Potvrzené případy | 12 |
 | Pravděpodobné případy | 1 |
 | Úmrtí | 3 |
-| Sledované kontakty | 600+ |
-| Zasažené země/území | 32 |
-| Rt (reprodukční číslo) | 0,7 (klesající trend) |
+| Kontakty, které dokončily sledování | 650+ (317 vysoce rizikových, ~336 nízkorizikových) |
+| Země/území se sledovanými kontakty | 33 |
+| Nové případy od 25. 5. 2026 | 0 |
 
 **Inkubační doba** viru Andes je 4–42 dní, doporučena je 42denní karanténa kontaktů.
 
@@ -56,11 +58,11 @@ Genomová data dostupná na: [Pathoplexus](https://pathoplexus.org) · [virologi
 
 ---
 
-### Kde sledovat vývoj
+### Kde najít podrobnosti
 
-- **[Situační report IMG AV ČR](https://titan.img.cas.cz/hantavirus/)** — průběžně aktualizovaný přehled v češtině
+- **[Situační report IMG AV ČR](https://titan.img.cas.cz/hantavirus/)** — závěrečný přehled v češtině (poslední aktualizace 10. 7. 2026)
 - [ECDC — Andes Virus Outbreak](https://www.ecdc.europa.eu) — epidemiologické hlášení EU
-- [WHO DON604](https://www.who.int) — Disease Outbreak News
+- [WHO DON611](https://www.who.int) — Disease Outbreak News, závěrečný souhrn
 - [CDC — Hantavirus](https://www.cdc.gov/hantavirus/) — klinická doporučení USA
 - [RIVM](https://www.rivm.nl) — holandský výstup (NL mělo více případů z MV Hondius)
 

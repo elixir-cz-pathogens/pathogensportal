@@ -1,0 +1,89 @@
+{{/* Akce na titulce — kalendář vlevo, seznam vpravo (15. 9. 2026).
+
+     Usage: {{ partial "home-events.html" . }}   (kontext = titulní stránka)
+
+     ⛔ Akce nemají vlastní stránku výpisu. /events/ se negeneruje
+     (content/cs|en/events/_index.md → build.render: never): v menu nebyla a sama
+     o sobě to byly dva nadpisy nad prázdnem. Detail jedné akce
+     (events/single.html) se generuje dál — sem na něj vedou odkazy.
+
+     ⛔ Co je „nadcházející" a co „proběhlé", rozhoduje pp-events.js až
+     V PROHLÍŽEČI, podle dnešního data. Web je statický a přestaví se jen při
+     nasazení; rozdělení v šabloně by nechalo akci „nadcházející" i týden poté,
+     co proběhla. Šablona proto vypisuje všechny akce jedním seznamem — to je
+     zároveň podoba bez JavaScriptu — a skript je roztřídí a nakreslí kalendář.
+
+     Kotva sekce je `#akce` / `#events`. Míří na ni dlaždice v navigaci titulky
+     a drobečková navigace detailu akce (partials/header.html) — mění-li se,
+     změň obojí. */}}
+{{ $en      := eq .Site.Language.Lang "en" }}
+{{ $anchor  := cond $en "events" "akce" }}
+{{ $dateFmt := cond $en "2 Jan 2006, 15:04" "2. 1. 2006, 15:04" }}
+{{ $events  := slice }}
+{{ with .Site.GetPage "section" "events" }}
+  {{ range sort .RegularPages ".Params.start_date" "desc" }}
+    {{ if .Params.start_date }}{{ $events = $events | append . }}{{ end }}
+  {{ end }}
+{{ end }}
+
+<section class="pp-home-events mb-5" id="{{ $anchor }}" aria-labelledby="pp-events-head"
+         data-pp-events
+         data-lang="{{ cond $en "en-GB" "cs-CZ" }}"
+         data-l-upcoming="{{ cond $en "Upcoming" "Nadcházející" }}"
+         data-l-past="{{ cond $en "Past" "Proběhlé" }}"
+         data-l-none-upcoming="{{ cond $en "No upcoming events." "Žádné nadcházející akce." }}"
+         data-l-state-upcoming="{{ cond $en "upcoming" "nadcházející" }}"
+         data-l-state-past="{{ cond $en "past" "proběhlá" }}">
+  <div class="pp-home-sec-head">
+    <h2 id="pp-events-head">{{ cond $en "Events" "Akce" }}</h2>
+  </div>
+
+  <div class="pp-home-events__grid">
+    {{/* `hidden`, dokud ho neukáže skript — bez JS by tu byla prázdná mřížka. */}}
+    <div class="pp-cal" data-pp-cal hidden>
+      <div class="pp-cal__head">
+        <button type="button" class="pp-cal__nav" data-pp-cal-prev aria-label="{{ cond $en "Previous month" "Předchozí měsíc" }}"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
+        <p class="pp-cal__title" data-pp-cal-title aria-live="polite"></p>
+        <button type="button" class="pp-cal__nav" data-pp-cal-next aria-label="{{ cond $en "Next month" "Další měsíc" }}"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+      </div>
+      {{/* ⛔ data-no-datatable: patička (partials/footer.html) pouští DataTables
+           na KAŽDOU tabulku bez tohohle atributu. Kalendář pak dostal
+           „Zobrazit 25 řádků", hledání, stránkování a řazení podle dnů v týdnu. */}}
+      <table class="pp-cal__grid" data-no-datatable>
+        <thead><tr data-pp-cal-weekdays></tr></thead>
+        <tbody data-pp-cal-body></tbody>
+      </table>
+      <div class="pp-cal__legend">
+        <span><span class="pp-cal__dot pp-cal__dot--upcoming" aria-hidden="true"></span>{{ cond $en "Upcoming event" "Nadcházející akce" }}</span>
+        <span><span class="pp-cal__dot pp-cal__dot--past" aria-hidden="true"></span>{{ cond $en "Past event" "Proběhlá akce" }}</span>
+      </div>
+    </div>
+
+    <div class="pp-events" data-pp-events-list>
+      {{ with $events }}
+      <ol class="pp-events__list">
+        {{ range $ev := . }}
+        {{ $start := $ev.Params.start_date }}
+        {{ $end   := $ev.Params.end_date | default $start }}
+        <li class="pp-event"
+            data-start="{{ time.Format "2006-01-02T15:04:05Z07:00" $start }}"
+            data-end="{{ time.Format "2006-01-02T15:04:05Z07:00" $end }}">
+          <a class="pp-event__link" href="{{ $ev.RelPermalink }}">
+            <span class="pp-event__date" aria-hidden="true">
+              <span class="pp-event__day">{{ time.Format "2" $start }}</span>
+              <span class="pp-event__mon">{{ time.Format "Jan" $start }}</span>
+            </span>
+            <span class="pp-event__body">
+              <span class="pp-event__title">{{ $ev.Title }}</span>
+              <span class="pp-event__meta">{{ time.Format $dateFmt $start }}{{ with $ev.Params.location }} · {{ . }}{{ end }}</span>
+            </span>
+          </a>
+        </li>
+        {{ end }}
+      </ol>
+      {{ else }}
+      <p class="pp-events__empty">{{ cond $en "No events are scheduled yet." "Zatím nejsou naplánované žádné akce." }}</p>
+      {{ end }}
+    </div>
+  </div>
+</section>

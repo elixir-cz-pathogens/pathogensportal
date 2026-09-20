@@ -1,0 +1,28 @@
+{{/* Načítací vrstva přes celé okno — průsvitné bílé plátno, které rozmaže
+     načítající se stránku, a uprostřed točící se emblém portálu.
+
+     Usage: {{ partial "page-loader.html" . }}   (kontext = stránka, kvůli jazyku)
+
+     Schová ji pp-charts.js (hidePageLoader), až doběhnou všechna načítání dat
+     na stránce. Obsah pod ní se mezitím normálně vykresluje — vrstva jen
+     překrývá, nic nezdržuje.
+
+     ⛔ Pojistka níž NESMÍ zmizet. Kdyby se pp-charts.js nenačetl nebo spadl
+     dřív, než vrstvu schová, zůstala by přes celou stránku navždy a stránka by
+     byla nepoužitelná. 15 s je víc než jakékoli rozumné načtení.
+
+     ⚠️ Emblém, ne celé logo — stejný důvod jako u spinner.html: nápis by se při
+     rotaci obracel vzhůru nohama. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-page-loader" data-pp-page-loader role="status">
+  <img class="pp-page-loader__mark" src="{{ "images/portal-mark.png" | relURL }}" alt=""
+       width="88" height="88" decoding="async">
+  <span class="visually-hidden">{{ cond $en "Loading data…" "Načítají se data…" }}</span>
+</div>
+<noscript><style>.pp-page-loader { display: none; }</style></noscript>
+<script>
+  setTimeout(function () {
+    document.querySelectorAll("[data-pp-page-loader]").forEach(function (el) { el.remove(); });
+    document.querySelectorAll("[data-pp-busy]").forEach(function (el) { el.removeAttribute("aria-busy"); });
+  }, 15000);
+</script>

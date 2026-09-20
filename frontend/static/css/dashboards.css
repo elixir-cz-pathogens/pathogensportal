@@ -866,6 +866,10 @@
   display: grid;
   place-items: center;
 }
+/* Skeleton v toku obsahu — pro místa, kde rodič NENÍ position:relative
+   (karta signálů). Jinak by se `inset: 0` vztáhl k nejbližšímu pozicovanému
+   předkovi, tedy klidně k celé stránce. */
+.pp-skeleton--inflow { position: relative; inset: auto; }
 .pp-spinner { display: grid; place-items: center; line-height: 0; }
 .pp-spinner__mark {
   width: 2.75rem; height: 2.75rem;
@@ -874,11 +878,38 @@
 }
 @keyframes pp-spin { to { transform: rotate(360deg); } }
 
+/* ── Načítací vrstva přes celé okno (partials/page-loader.html) ─────────────
+   Průsvitné plátno rozmaže stránku pod sebou, emblém se točí uprostřed OKNA,
+   ne uprostřed obsahu — proto `fixed`, ne `absolute`.
+
+   ⚠️ Objeví se až po 150 ms. Lokální JSON se načte dřív a vrstva by jen
+   problikla; takhle ji čtenář uvidí jen tehdy, když načítání opravdu trvá.
+   Tuhle pauzu počítá i hidePageLoader() v pp-charts.js.
+
+   Stojí mimo .pp-viz, takže tokeny --pp-* tu neplatí — barvy jsou vlastní. */
+.pp-page-loader {
+  position: fixed; inset: 0; z-index: 2000;
+  display: grid; place-items: center;
+  background: rgb(255 255 255 / .62);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  opacity: 0;
+  animation: pp-loader-in .2s ease-out .15s forwards;
+}
+.pp-page-loader__mark {
+  width: 5.5rem; height: 5.5rem;
+  animation: pp-spin 1.6s linear infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes pp-loader-in { to { opacity: 1; } }
+[data-bs-theme="dark"] .pp-page-loader { background: rgb(22 22 21 / .62); }
+
 /* ⛔ Pro čtenáře, kteří si vyžádali omezení pohybu, se znak nesmí točit. Zůstane
    viditelný a statický — informace „něco se děje“ je pak v textu pro odečítač,
    ne v pohybu. Stejné pravidlo už platí pro shimmer a pro přepínání mapy. */
 @media (prefers-reduced-motion: reduce) {
   .pp-spinner__mark { animation: none; opacity: .75; }
+  .pp-page-loader__mark { animation: none; opacity: .75; }
 }
 
 /* ── Chřipka: intenzita sezóny, trend a předpověď (PP-74) ───────────────────

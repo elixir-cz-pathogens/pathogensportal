@@ -29,10 +29,6 @@ The Czech national node of the European [ELIXIR](https://elixir-europe.org) infr
 [fit.cvut.cz](https://fit.cvut.cz) — Faculty of Information Technology, Czech Technical University in Prague; co-authoring institution.
 {{< /organization >}}
 
-{{< organization name="UJEP — Jan Evangelista Purkyně University in Ústí nad Labem" img="/images/UJEP.png" >}}
-[www.ujep.cz](https://www.ujep.cz) — co-authoring institution for the situation reports.
-{{< /organization >}}
-
 {{< organization name="Military Health Institute (VZÚ)" img="/images/VZU.png" >}}
 [zdravotnictvi.mo.gov.cz](https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav) — collaboration on situation reports (Ebola).
 {{< /organization >}}

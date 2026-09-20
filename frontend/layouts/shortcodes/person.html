@@ -1,0 +1,27 @@
+{{/* Jeden člověk na stránce Lidé — fotka vlevo, jméno a text vpravo.
+
+     Usage:
+       {{< person name="Mgr. Jan Pačes, Ph.D." photo="/images/people/paces.jpg" >}}
+       Text o člověku, **markdown** funguje.
+       {{< /person >}}
+
+     Bez `photo` se místo fotky ukáže kruh s iniciálami — `initials="JV"`.
+     Iniciály se zadávají ručně, ne odvozují ze jména: jména nesou tituly
+     („Bc.“, „Ph.D.“) a automat by z nich udělal „BJ“.
+
+     ⚠️ Fotky: čtverec, JPG, 400×400, BEZ EXIF (repo je veřejné a EXIF nese
+     model fotoaparátu a datum pořízení). Originály se do repa nedávají.
+
+     `alt` je prázdný záměrně — hned vedle stojí jméno, odečítač by ho četl dvakrát. */}}
+{{ $name := .Get "name" }}
+<section class="pp-person">
+  {{ with .Get "photo" }}
+  <img class="pp-person__photo" src="{{ . | relURL }}" alt="" width="400" height="400" loading="lazy">
+  {{ else }}
+  <span class="pp-person__photo pp-person__photo--initials" aria-hidden="true">{{ .Get "initials" }}</span>
+  {{ end }}
+  <div class="pp-person__body">
+    <h3>{{ $name }}</h3>
+    {{ .Inner | .Page.RenderString (dict "display" "block") }}
+  </div>
+</section>

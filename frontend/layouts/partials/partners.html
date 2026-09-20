@@ -14,6 +14,10 @@
      v tom druhém.
 
      Program švýcarsko-české spolupráce má oficiálně CZ a EN variantu loga.
+
+     ⛔ UJEP tu záměrně NENÍ (odebráno 15. 9. 2026). Spolupracuje jedna osoba,
+     ne instituce — logo by tvrdilo partnerství, které neexistuje. Její afiliace
+     zůstává u jména na stránce Lidé; to je tvrzení o člověku, ne o škole.
 */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 {{ $partners := slice
@@ -22,7 +26,6 @@
   (dict "img" "/images/SIB.png"          "url" "https://www.sib.swiss"    "name" "Swiss Institute of Bioinformatics")
   (dict "img" "/images/VSCHT.png"        "url" "https://www.vscht.cz"     "name" "VŠCHT Praha")
   (dict "img" "/images/FIT_CVUT.svg"     "url" "https://fit.cvut.cz"      "name" "FIT ČVUT v Praze")
-  (dict "img" "/images/UJEP.png"         "url" "https://www.ujep.cz"      "name" "Univerzita J. E. Purkyně v Ústí nad Labem")
   (dict "img" "/images/VZU.png"          "url" "https://zdravotnictvi.mo.gov.cz/vojensky-zdravotni-ustav" "name" "Vojenský zdravotní ústav")
   (dict "img" "/images/CESNET.svg"       "url" "https://www.cesnet.cz"    "name" "CESNET")
   (dict "img" (printf "/images/swiss-contribution-%s.png" (cond $en "en" "cz")) "url" "https://www.swiss-contribution.cz/" "name" (cond $en "Swiss-Czech Cooperation Programme" "Program švýcarsko-české spolupráce"))
@@ -31,9 +34,13 @@
 <div class="pp-partners">
   <p class="pp-partners__label">{{ cond $en "Partners and support" "Partneři a podpora" }}</p>
   <div class="pp-partners__grid">
+    {{/* Rozměry z logo-box.html: stejná plocha, ne stejná výška. Předávají se
+         jako CSS proměnné, aby je mobilní šířka mohla zmenšit jedním násobkem. */}}
     {{ range $partners }}
+    {{ $s := partialCached "logo-box.html" (dict "src" .img "area" 4800 "hmax" 56 "wmax" 170) .img "footer" }}
     <a href="{{ .url }}" target="_blank" rel="noopener" title="{{ .name }}" aria-label="{{ .name }}">
-      <img src="{{ .img | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy">
+      <img src="{{ .img | strings.TrimPrefix "/" | relURL }}" alt="{{ .name }}" loading="lazy"
+           width="{{ $s.w }}" height="{{ $s.h }}" style="--logo-w: {{ $s.w }}px; --logo-h: {{ $s.h }}px">
     </a>
     {{ end }}
   </div>

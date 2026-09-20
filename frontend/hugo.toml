@@ -89,14 +89,9 @@ enableGitInfo = true
     contentDir = "content/cs"
     # Menu jsou per-jazyk — globální [menus] by anglické verzi podstrčilo
     # české názvy položek.
-    # PP-52 — after following a link off the landing page there was no way back
-    # to it: the portal logo links home, but nothing in the tab row did. weight 0
-    # puts it first.
-    [[languages.cs.menus.main]]
-      identifier = "home"
-      name = "Domů"
-      pageRef = "/"
-      weight = 0
+    # ⛔ Položka „Domů" byla odebrána 15. 9. 2026 (rozhodnutí draesdom): cestu na
+    # titulku nese logo portálu, samostatná položka v menu byla navíc. Přidala ji
+    # PP-52 — nevracet ji bez nového rozhodnutí.
     [[languages.cs.menus.main]]
       identifier = "dashboards"
       name = "Dashboardy"
@@ -115,13 +110,9 @@ enableGitInfo = true
       name = "Novinky"
       pageRef = "/news"
       weight = 20
-    # Akce jsou z menu schované, dokud sekce nemá obsah — /events/ zůstává
-    # dostupné přes URL. Až bude první akce, stačí blok odkomentovat.
-    # [[languages.cs.menus.main]]
-    #   identifier = "events"
-    #   name = "Akce"
-    #   pageRef = "/events"
-    #   weight = 30
+    # ⛔ Akce v menu NEJSOU a nemají být: od 15. 9. 2026 žijí jako sekce na
+    # titulce (kalendář + seznam) a stránka /events/ se negeneruje
+    # (content/*/events/_index.md → build.render: never). Položka menu by vedla na 404.
 
   [languages.en]
     title = "Pathogen Portal CZ"
@@ -129,14 +120,8 @@ enableGitInfo = true
     label = "English"
     locale = "en-GB"
     contentDir = "content/en"
-    # PP-52 — after following a link off the landing page there was no way back
-    # to it: the portal logo links home, but nothing in the tab row did. weight 0
-    # puts it first.
-    [[languages.en.menus.main]]
-      identifier = "home"
-      name = "Home"
-      pageRef = "/"
-      weight = 0
+    # ⛔ The "Home" item was removed on 15 Sep 2026 (decision draesdom): the portal
+    # logo links home. It was added by PP-52 — do not restore it without a new decision.
     [[languages.en.menus.main]]
       identifier = "dashboards"
       name = "Dashboards"

@@ -37,12 +37,14 @@
 
 <h3><i class="bi bi-three-dots-vertical"></i> {{ i18n "newsAndHighlights" }} ({{ len $news }})</h3>
 <div class="container mt-3 mb-5">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-2">
+    {{/* Od 15. 9. 2026 i novinky táž karta — stará highlight.html tu byla
+         poslední, vedle nových karet dashboardů o řádek výš. */}}
+    <div class="pp-tilegrid pp-tilegrid--full">
         {{ range $news }}
-        {{ partial "highlight.html" . }}
+        {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}
         {{ end }}
     </div>
-    <hr>
+    <hr class="mt-4">
 </div>
 </div>
 {{ end }}
