@@ -129,7 +129,7 @@
       <div class="pp-home-topics__list">
       {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
       {{ if in $visible ($name | urlize) }}
-      <a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
+      <a class="pp-home-topic" href="{{ (printf "tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
       {{ end }}
       {{ end }}
       </div>

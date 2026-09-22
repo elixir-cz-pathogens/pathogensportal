@@ -82,7 +82,7 @@
   {{ with $p.Description }}<p class="pp-tile__desc">{{ . }}</p>{{ end }}
   {{ with $p.Params.tags }}
   <div class="pp-tile__tags">
-    {{ range . }}<a class="pp-home-topic" href="{{ (printf "/tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a>{{ end }}
+    {{ range . }}<a class="pp-home-topic" href="{{ (printf "tags/%s/" (urlize .)) | relLangURL }}">{{ . }}</a>{{ end }}
   </div>
   {{ end }}
   {{ end }}
