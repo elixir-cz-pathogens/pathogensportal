@@ -9,6 +9,16 @@
        Vzniká ze `data/sources.yaml`, takže nemůže zastarat vůči stránce, kterou
        čtou lidé — obojí čte tentýž soubor. */ -}}
 {{- $lang := .Site.Language.Lang -}}
+{{- /* Odtud se jednou za build vygeneruje i DCAT-AP-CZ katalog (/dcat/…).
+       Partial nic nevypisuje, jen zapisuje soubory.
+
+       ⛔ Jen ve VÝCHOZÍM jazyce, a poznává se podle domovské stránky: ta má
+       „/“ jen v něm (`defaultContentLanguageInSubdir = false`), ostatní mají
+       „/en/“. Beze zkoušky by partial běžel v obou jazycích, oba by zapsaly
+       tytéž soubory a ten druhý by vyhrál — katalog by pak odkazoval na IRI
+       s „/en/“, která nikam nevedou. Katalog je pro portál jeden a jazyky
+       nese uvnitř hodnot. */ -}}
+{{- if eq .Site.Home.RelPermalink "/" -}}{{- partial "dcat-publish.html" . -}}{{- end -}}
 {{- $sources := slice -}}
 {{- range hugo.Data.sources -}}
   {{- $src := . -}}

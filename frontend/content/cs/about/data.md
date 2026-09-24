@@ -49,6 +49,18 @@ zdroje vydavatele, licenci, pokrytí, podrobnost, frekvenci aktualizace a hlavn�
 [schema.org/Dataset](https://schema.org/Dataset) v JSON-LD přímo v hlavičce stránky, takže
 vyhledávače a další nástroje poznají, nad jakou datovou sadou stránka stojí, bez čtení textu.
 
+### Katalog podle DCAT-AP-CZ
+
+Data, která **vznikla zpracováním na portálu**, popisuje i katalog podle otevřené formální normy
+[Rozhraní katalogů otevřených dat](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/):
+[`/dcat/katalog.jsonld`](/dcat/katalog.jsonld). Odkazuje na čtyři datové sady — prahy intenzity
+chřipkové sezóny, signály detekce anomálií, týdenní záchyty respiračních virů a odvozené incidence
+infekčních nemocí.
+
+Přebíraná data v tomto katalogu **nejsou**. Publikovali je jejich původci (ÚZIS, SZÚ, MZČR, ČSÚ,
+WHO, ECDC) a najdete je v [Národním katalogu otevřených dat](https://data.gov.cz); portál na ně
+odkazuje v přehledu výš.
+
 ## Nahlásit chybu {#nahlasit-chybu}
 
 Našli jste číslo, které nesedí se zdrojem, rozbitý graf nebo nejasnou formulaci?
