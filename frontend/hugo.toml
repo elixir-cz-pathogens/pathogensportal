@@ -26,6 +26,20 @@ enableGitInfo = true
 [frontmatter]
   lastmod = ['lastmod', 'date', ':git', ':default']
 
+# Strojově čitelný katalog zdrojů — /about/data/sources.json vedle stránky pro lidi.
+# Vydává celý data/sources.yaml včetně pole `limits` (co z dat NEJDE vyčíst), které
+# se do schema.org nevejde a přitom je pro každého konzumenta dat to podstatné.
+# Zapíná se v hlavičce stránky katalogu přes `outputs`, ne globálně — jinak by Hugo
+# vyrobilo sources.json ke každé stránce webu.
+[outputFormats]
+  [outputFormats.sources]
+    mediaType = "application/json"
+    baseName = "sources"
+    isPlainText = true
+    # Nesmí se hlásit jako alternativa stránky: `<link rel=alternate>` v hlavičce
+    # by čtečkám nabízel katalog jako jinou podobu téhož dokumentu, kterou není.
+    notAlternative = true
+
 [params]
   mail = "hpaces@img.cas.cz"
   # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)

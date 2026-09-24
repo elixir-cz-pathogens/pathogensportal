@@ -6,6 +6,8 @@ menu:
     name: Data and citation
     weight: 4
 layout: about_navbar
+# Vedle stránky pro lidi i strojový katalog: /about/data/sources.json
+outputs: ["html", "sources"]
 ---
 
 ## Data and citation
@@ -41,6 +43,12 @@ shown on each dashboard under "Updated".
 The files are **processed data for charts**, not raw data — aggregation, per-population
 adjustment and series selection are already applied. Series labels inside the files are in
 Czech. For your own analysis, go to the original source.
+
+**This catalogue** is machine-readable too: [`sources.json`](sources.json) gives each source's
+publisher, licence, coverage, granularity, update frequency and — above all — the `limits`
+field, which states what the data **cannot** tell you. Individual dashboards additionally carry
+[schema.org/Dataset](https://schema.org/Dataset) as JSON-LD in the page head, so search engines
+and other tools can tell which dataset a page is built on without parsing its text.
 
 ## Report an error {#report-an-error}
 

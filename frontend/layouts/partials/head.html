@@ -13,6 +13,10 @@
     {{ template "_internal/opengraph.html" . }}
     {{ template "_internal/twitter_cards.html" . }}
 
+    {{/* schema.org/Dataset pro stránky postavené nad datovou sadou — viz partial.
+         Stránka, která v data/sources.yaml není uvedená, nevydá nic. */}}
+    {{ partial "dataset-jsonld.html" . }}
+
     {{- $manifest := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
     <link rel="manifest" href="{{ $manifest.RelPermalink }}">
     <link rel="icon" href="{{ .Site.Params.BookFavicon | default "favicon.ico" | relURL }}" >

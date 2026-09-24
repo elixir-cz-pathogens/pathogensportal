@@ -1,7 +1,14 @@
 {{/* Jak čerstvý je dashboard — přečtené z DAT, ne opsané do hlavičky.
 
      Usage: {{ $u := partial "update-stamp.html" $page }}
-            {{ with $u }}{{ .text }}{{ end }}
+            {{ with $u }}{{ .text }}{{ end }}   — pro čtenáře
+            {{ with $u }}{{ .iso }}{{ end }}    — pro stroje (dateModified v JSON-LD)
+
+     `.iso` je totéž datum ve strojovém tvaru. Je tu proto, aby strukturovaná
+     data na stránce nečetla datum vlastní cestou — jedna logika, dva výstupy.
+     U `month` a `year` zůstává zkrácené („2025-12“, „2025“), protože doplnit
+     den by předstíralo přesnost, kterou ta data nemají; schema.org i ISO 8601
+     takové datum berou.
 
      Hlavička říká DVĚ věci a obě jsou povinné:
        update_from: "flu_weekly.json"   — ze kterého souboru
@@ -54,7 +61,7 @@
   {{ $t := time.AsTime . }}
   {{ $out = dict "text" (printf "%s %s"
       (cond $en "Data as of" "Data k")
-      ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+      ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) "iso" ($t.Format "2006-01-02") }}
 {{ end }}
 
 {{ with $file }}
@@ -70,12 +77,12 @@
         {{ $t := time.AsTime $j.generated_at }}
         {{ $out = dict "text" (printf "%s: %s"
             (cond $en "Updated" "Aktualizace")
-            ($t.Format (cond $en "2 Jan 2006, 15:04 MST" "2. 1. 2006, 15:04 MST"))) }}
+            ($t.Format (cond $en "2 Jan 2006, 15:04 MST" "2. 1. 2006, 15:04 MST"))) "iso" ($t.Format "2006-01-02") }}
       {{ else if $j.posledni_datum }}
         {{ $t := time.AsTime $j.posledni_datum }}
         {{ $out = dict "text" (printf "%s %s"
             (cond $en "Data through" "Data k")
-            ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+            ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) "iso" ($t.Format "2006-01-02") }}
       {{ else }}
         {{ errorf "update_read \"stamp\": %q nemá generated_at ani posledni_datum (stránka %q)" $path $.Title }}
       {{ end }}
@@ -89,7 +96,7 @@
       {{ $t := time.AsTime $end }}
       {{ $out = dict "text" (printf "%s %s"
           (cond $en "Data through" "Data k")
-          ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) }}
+          ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) "iso" ($t.Format "2006-01-02") }}
 
     {{/* ── „KT 36/26“ → neděle 36. ISO týdne 2026 ───────────────────────── */}}
     {{ else if eq $read "week" }}
@@ -108,7 +115,7 @@
       {{ $out = dict "text" (printf "%s %s (%s)"
           (cond $en "Data through" "Data k")
           ($sunday.Format (cond $en "2 Jan 2006" "2. 1. 2006"))
-          (cond $en (printf "week %d/%d" $ww $yy) $lastLabel)) }}
+          (cond $en (printf "week %d/%d" $ww $yy) $lastLabel)) "iso" ($sunday.Format "2006-01-02") }}
 
     {{/* ── „2025-12“ ────────────────────────────────────────────────────── */}}
     {{ else if eq $read "month" }}
@@ -116,16 +123,17 @@
       {{ if not $labels }}{{ errorf "update_read \"month\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
       {{ $l := index $labels (sub (len $labels) 1) }}
       {{ $p := split $l "-" }}
+      {{/* ISO zůstává měsíční („2025-12“) — den se nedoplňuje, viz varování výš. */}}
       {{ $out = dict "text" (printf "%s %s/%s"
-          (cond $en "Data through" "Data k") (index $p 1) (index $p 0)) }}
+          (cond $en "Data through" "Data k") (index $p 1) (index $p 0)) "iso" $l }}
 
     {{/* ── „2025“ ───────────────────────────────────────────────────────── */}}
     {{ else if eq $read "year" }}
       {{ $labels := $j.labels }}
       {{ if not $labels }}{{ errorf "update_read \"year\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
+      {{ $last := index $labels (sub (len $labels) 1) }}
       {{ $out = dict "text" (printf "%s %s"
-          (cond $en "Data for" "Data za rok")
-          (index $labels (sub (len $labels) 1))) }}
+          (cond $en "Data for" "Data za rok") $last) "iso" $last }}
 
     {{ else }}
       {{ errorf "update_read: neznámá hodnota %q (stránka %q)" $read $.Title }}

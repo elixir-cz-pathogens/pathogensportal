@@ -6,6 +6,8 @@ menu:
     name: Data a citace
     weight: 4
 layout: about_navbar
+# Vedle stránky pro lidi i strojový katalog: /about/data/sources.json
+outputs: ["html", "sources"]
 ---
 
 ## Data a citace
@@ -40,6 +42,12 @@ je u dashboardu v řádku „Aktualizace".
 
 Soubory jsou **zpracovaná data pro grafy**, ne surová data — agregace, přepočty na obyvatele
 a výběr řad už v nich jsou. Pro vlastní analýzu sáhněte po původním zdroji.
+
+Strojově je k dispozici i **tenhle katalog**: [`sources.json`](sources.json) nese u každého
+zdroje vydavatele, licenci, pokrytí, podrobnost, frekvenci aktualizace a hlavně pole `limits`
+— větu o tom, co z dat vyčíst **nejde**. Jednotlivé dashboardy navíc nesou
+[schema.org/Dataset](https://schema.org/Dataset) v JSON-LD přímo v hlavičce stránky, takže
+vyhledávače a další nástroje poznají, nad jakou datovou sadou stránka stojí, bez čtení textu.
 
 ## Nahlásit chybu {#nahlasit-chybu}
 

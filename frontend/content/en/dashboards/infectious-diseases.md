@@ -5,7 +5,7 @@ description: "Overview of notified infectious diseases in the Czech Republic 201
 image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infectious diseases", "surveillance", "ÚZIS", "regions", "Czech Republic"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
 update_from: "isin_monthly_trend.json"
 update_read: "month"
 ---
@@ -64,7 +64,7 @@ The distribution of notified cases by age group over the whole observation perio
 ### Notes on the data
 
 - The data comes from **ISIN** (Infectious Diseases Information System), mandatory notification under Act No. 258/2000 Coll.
-- Publisher: **ÚZIS CZ / Ministry of Health** — licensed CC BY 4.0
+- Publisher: **ÚZIS CZ / Ministry of Health** — [free access](https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/) licence
 - Database: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (~272,000 records, 2018–2025)
 - Columns: year, month, region (NUTS3), diagnosis (ICD-10), age group, sex, EWS flag, case count
 - Case counts are aggregated (not individual patient records)
@@ -72,6 +72,6 @@ The distribution of notified cases by age group over the whole observation perio
 
 <p class="stat-source">
   Source: <a href="https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·
-  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> ·
+  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">free access</a> ·
   Category: mandatory notification of infectious diseases · Years: 2018–2025
 </p>

@@ -6,7 +6,7 @@ image: "/images/cards/id-sti.webp"
 update_from: "isin_group_sti.json"
 update_read: "year"
 tags: ["infectious diseases", "ÚZIS", "ISIN", "STI"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
 build:
   list: never
   render: always
@@ -46,5 +46,5 @@ together, as each source has its own notification rules.
   Source: <a href="https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data" target="_blank">ÚZIS CZ — Register of Sexually Transmitted Diseases (open data)</a> ·
   <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·
   denominators <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a> ·
-  Licence: free access / <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">free access</a>
 </p>

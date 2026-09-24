@@ -45,5 +45,5 @@ obojí — dohromady se sečíst nedají, každý zdroj má jiná pravidla hlá�
   Zdroj: <a href="https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data" target="_blank">ÚZIS ČR — Registr pohlavních nemocí (otevřená data)</a> ·
   <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
   jmenovatele <a href="https://csu.gov.cz" target="_blank">ČSÚ</a> ·
-  Licence: volný přístup / <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">volný přístup</a>
 </p>
