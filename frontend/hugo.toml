@@ -26,8 +26,35 @@ enableGitInfo = true
 [frontmatter]
   lastmod = ['lastmod', 'date', ':git', ':default']
 
+# JSON-LD není mezi vestavěnými typy Hugo — bez téhle definice by Hugo neumělo
+# určit typ obsahu souborů DCAT katalogu (layouts/partials/dcat-publish.html).
+[mediaTypes]
+  [mediaTypes."application/ld+json"]
+    suffixes = ["jsonld"]
+
+# Dva strojové výstupy stránky „Data a citace“. Zapínají se v její hlavičce přes
+# `outputs`, ne globálně — jinak by je Hugo vyrobilo ke každé stránce webu.
+[outputFormats]
+  # Katalog zdrojů pro čtenáře i stroje — /about/data/sources.json. Vydává celý
+  # data/sources.yaml včetně pole `limits` (co z dat NEJDE vyčíst), které se do
+  # schema.org ani DCAT nevejde a přitom je pro konzumenta dat to podstatné.
+  [outputFormats.sources]
+    mediaType = "application/json"
+    baseName = "sources"
+    isPlainText = true
+    # Nesmí se hlásit jako alternativa stránky: `<link rel=alternate>` v hlavičce
+    # by čtečkám nabízel katalog jako jinou podobu téhož dokumentu, kterou není.
+    notAlternative = true
+
 [params]
   mail = "hpaces@img.cas.cz"
+  # ⚠️ Před registrací katalogu v NKOD sem patří IRI poskytovatele z registru
+  # práv a povinností, ve tvaru
+  #   https://rpp-opendata.egon.gov.cz/odrpp/zdroj/orgán-veřejné-moci/<IČO>
+  # Dokud je prázdné, katalog se vygeneruje jako obyčejný DCAT (použitelný sám
+  # o sobě), ale sklizeň do NKOD ho odmítne — `poskytovatel` je povinný.
+  [params.dcat]
+    publisher = ""
   # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)
   # Jmeno souboru nese datum verze schválně: Discord a spol. cachují náhledy
   # podle URL obrázku a neumí je obnovit — při změně obrázku soubor přejmenuj.

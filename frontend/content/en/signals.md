@@ -14,7 +14,7 @@ description: "Automated screening of 1,200+ notified infectious disease time ser
 image: "/images/cards/signals.svg"
 highlight: true
 tags: ["anomaly detection", "surveillance", "early warning", "ÚZIS", "statistics"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
 # The date of the last run comes from generated_at in this JSON, not from here.
 update_from: "anomaly_signals.json"
 update_read: "stamp"

@@ -6,7 +6,7 @@ image: "/images/cards/id-skin.svg"
 update_from: "isin_group_skin_contact.json"
 update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "kožní infekce"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
 build:
   list: never
   render: always
@@ -20,5 +20,5 @@ Nákazy šířící se přímým kontaktem s kůží: svrab, erysipel (růže) a
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
-  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">volný přístup</a>
 </p>

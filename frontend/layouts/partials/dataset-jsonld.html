@@ -1,0 +1,128 @@
+{{/* Strukturovaná data stránky — schema.org/Dataset v JSON-LD.
+
+     Usage: {{ partial "dataset-jsonld.html" . }}   (z head.html, pro každou stránku)
+
+     Proč: stránka dashboardu dosud stroji neřekla nic než `<title>` a OpenGraph
+     tagy. Že za ní stojí konkrétní datová sada ÚZIS, pod jakou licencí, jak
+     čerstvá a kde leží její strojově čitelná podoba, se dalo zjistit jen
+     přečtením textu. Katalog na stránce „Data a citace“ tohle vydává pro celý
+     portál najednou (shortcode data-catalogue), ale u jednotlivých dashboardů,
+     kam lidé i crawlery chodí přímo, nebylo nic.
+
+     Co se vydá:
+       Dataset     dashboard sám — má jméno, popis, licenci a hlavně
+                   `distribution`: ty chart JSONy, ze kterých kreslí grafy.
+                   To je skutečný strojově čitelný soubor na veřejné URL.
+       isBasedOn   zdrojové datové sady z data/sources.yaml (ÚZIS, SZÚ, …)
+       dateModified z partialu update-stamp — TOTÉŽ datum, které vidí čtenář.
+                   Ne vlastní cestou: dvě různá data na jedné stránce jsou horší
+                   než žádné.
+
+     Stránka, která není v žádném `pages:` v sources.yaml, nevydá nic. Tím se
+     samo vynechá všechno, co datová sada není (O portálu, novinky, události)
+     i stránka katalogu, která má vlastní DataCatalog a nemá se zdvojovat.
+
+     ⚠️ Tvrdí se jen to, co víme. Licence dashboardu se NEUVÁDÍ — vznikl
+     kombinací zdrojů s různými podmínkami (ÚZIS „volný přístup“, WHO neuvedena)
+     a vyrobit z toho jednu licenci by znamenalo si ji vymyslet. Licence sedí
+     u každého zdroje v `isBasedOn`, kam patří. */}}
+
+{{ $page := . }}
+{{ $lang := .Site.Language.Lang }}
+
+{{/* Cesta bez jazykové předpony. `pages:` v sources.yaml je psané jednou, v
+     českém tvaru (`/dashboards/…`), zatímco anglická stránka má RelPermalink
+     `/en/dashboards/…`. Bez tohohle oříznutí by strukturovaná data dostala jen
+     česká polovina webu — a nikdo by si toho nevšiml, protože chybějící
+     JSON-LD nic nerozbije. Předponu bere `.Site.Home.RelPermalink`, která je
+     „/“ pro výchozí jazyk a „/en/“ pro ten druhý. */}}
+{{ $path := strings.TrimSuffix "/" (printf "/%s" (strings.TrimPrefix .Site.Home.RelPermalink .RelPermalink)) }}
+
+{{/* Zdroje, které tuhle stránku napájejí. `pages` v sources.yaml je psané bez
+     koncového lomítka i s ním — srovnáváme oříznuté tvary, ať na tom nezáleží. */}}
+{{ $sources := slice }}
+{{ range hugo.Data.sources }}
+  {{/* `$` míří na kontext celé šablony (stránku), ne na položku tohohle range —
+       zdroj si proto musíme podržet v proměnné. */}}
+  {{ $src := . }}
+  {{ range .pages }}
+    {{ if eq (strings.TrimSuffix "/" .) $path }}
+      {{ $sources = $sources | append $src }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ with $sources }}
+  {{/* Chart JSONy použité na stránce — vytažené z jejího zdrojového textu, ne
+       vypsané ručně, aby seznam nezastaral při přidání grafu. `update_from`
+       se přidá zvlášť: hlavní graf stránky nemusí být citovaný přes `src=`. */}}
+  {{ $files := slice }}
+  {{ range findRE `/data/charts/[a-z0-9_]+\.json` $page.RawContent }}
+    {{ $files = $files | append . }}
+  {{ end }}
+  {{ with $page.Params.update_from }}
+    {{ $files = $files | append (printf "/data/charts/%s" .) }}
+  {{ end }}
+
+  {{ $distribution := slice }}
+  {{ range uniq $files }}
+    {{/* Jen soubory, které na webu opravdu leží — nefunkční odkaz na data je
+         horší než žádný, protože vypadá jako slib. */}}
+    {{ if os.FileExists (printf "static%s" .) }}
+      {{ $distribution = $distribution | append (dict
+          "@type" "DataDownload"
+          "contentUrl" (absURL (strings.TrimPrefix "/" .))
+          "encodingFormat" "application/json") }}
+    {{ end }}
+  {{ end }}
+
+  {{/* ⛔ Bez vlastních strojově čitelných dat se Dataset nevydává. Tři stránky
+       (dvě Nextstrain, odpadní vody) jen odkazují na cizí dashboardy — data
+       z nich nepřebíráme a nemáme je čím doložit. Označit je za datovou sadu
+       by crawleru slíbilo soubor, který neexistuje. */}}
+  {{ if $distribution }}
+
+  {{ $based := slice }}
+  {{ range $sources }}
+    {{ $d := dict
+        "@type" "Dataset"
+        "name" (index .name $lang | default .name.cs)
+        "url" .url
+        "creator" (dict "@type" "Organization" "name" .publisher) }}
+    {{ with .licence.url }}{{ $d = merge $d (dict "license" .) }}{{ end }}
+    {{ with .download }}
+      {{ $d = merge $d (dict "distribution" (dict
+          "@type" "DataDownload" "contentUrl" . "encodingFormat" "text/csv")) }}
+    {{ end }}
+    {{ $based = $based | append $d }}
+  {{ end }}
+
+  {{ $data := dict
+      "@context" "https://schema.org"
+      "@type" "Dataset"
+      "name" $page.Title
+      "description" ($page.Param "description")
+      "url" $page.Permalink
+      "inLanguage" $lang
+      "isAccessibleForFree" true
+      "publisher" (dict "@type" "Organization" "name" $page.Site.Title "url" (absURL "/"))
+      "isBasedOn" $based
+      "distribution" $distribution }}
+
+  {{ with $page.Params.tags }}{{ $data = merge $data (dict "keywords" .) }}{{ end }}
+
+  {{/* Datum z téhož místa, odkud ho bere razítko pod grafy. */}}
+  {{ $stamp := partial "update-stamp.html" $page }}
+  {{ with $stamp }}
+    {{ with .iso }}{{ $data = merge $data (dict "dateModified" .) }}{{ end }}
+  {{ end }}
+
+  {{/* Území, kterého se data týkají — u všech našich zdrojů Česko. */}}
+  {{ $data = merge $data (dict "spatialCoverage" (dict
+      "@type" "Place"
+      "name" (cond (eq $lang "en") "Czechia" "Česko")
+      "identifier" "https://www.geonames.org/3077311/")) }}
+
+  <script type="application/ld+json">{{ $data | jsonify | safeJS }}</script>
+  {{ end }}
+{{ end }}

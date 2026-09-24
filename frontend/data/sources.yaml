@@ -24,7 +24,17 @@
   limits:
     cs: "Neobsahuje COVID-19, tuberkulózu, syfilis, kapavku ani HIV — mají vlastní registry. Od července 2025 přichází část případů novým kanálem hlášení (EWS), řady proto nejsou přes tento zlom přímo srovnatelné."
     en: "Does not include COVID-19, tuberculosis, syphilis, gonorrhoea or HIV — these have their own registers. Since July 2025 some cases arrive through a new reporting channel (EWS), so series are not directly comparable across that break."
-  pages: ["/dashboards/infectious-diseases", "/signals"]
+  # Sedm tematických stránek běží nad toutéž sadou (grafy isin_group_*) a v
+  # katalogu chyběly — čtenáři na nich neviděli odkaz na zdroj a strukturovaná
+  # data stránky se kvůli tomu negenerovala vůbec.
+  pages: ["/dashboards/infectious-diseases", "/signals",
+          "/dashboards/infectious-diseases-childhood",
+          "/dashboards/infectious-diseases-gastro",
+          "/dashboards/infectious-diseases-hepatitis",
+          "/dashboards/infectious-diseases-rare",
+          "/dashboards/infectious-diseases-skin",
+          "/dashboards/infectious-diseases-vector",
+          "/dashboards/infectious-diseases-other"]
 
 - id: uzis-rpn
   name: { cs: "Registr pohlavních nemocí", en: "Register of Sexually Transmitted Diseases" }

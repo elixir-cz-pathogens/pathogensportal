@@ -6,6 +6,8 @@ menu:
     name: Data and citation
     weight: 4
 layout: about_navbar
+# Vedle stránky pro lidi i strojový katalog: /about/data/sources.json
+outputs: ["html", "sources"]
 ---
 
 ## Data and citation
@@ -41,6 +43,25 @@ shown on each dashboard under "Updated".
 The files are **processed data for charts**, not raw data — aggregation, per-population
 adjustment and series selection are already applied. Series labels inside the files are in
 Czech. For your own analysis, go to the original source.
+
+**This catalogue** is machine-readable too: [`sources.json`](sources.json) gives each source's
+publisher, licence, coverage, granularity, update frequency and — above all — the `limits`
+field, which states what the data **cannot** tell you. Individual dashboards additionally carry
+[schema.org/Dataset](https://schema.org/Dataset) as JSON-LD in the page head, so search engines
+and other tools can tell which dataset a page is built on without parsing its text.
+
+### DCAT-AP-CZ catalogue
+
+Data **produced by processing on the portal** are also described by a catalogue following the Czech
+open formal standard for data catalogue interfaces:
+[`/dcat/katalog.jsonld`](/dcat/katalog.jsonld). It points to four datasets — influenza season
+intensity thresholds, anomaly detection signals, weekly respiratory virus detections and derived
+infectious disease incidence.
+
+Data taken over from elsewhere are **not** in this catalogue. Their originators (ÚZIS, SZÚ, the
+Ministry of Health, the Czech Statistical Office, WHO, ECDC) publish them, and they can be found in
+the [Czech National Open Data Catalogue](https://data.gov.cz); the portal links to them in the
+overview above.
 
 ## Report an error {#report-an-error}
 

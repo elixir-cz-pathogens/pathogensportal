@@ -6,6 +6,8 @@ menu:
     name: Data a citace
     weight: 4
 layout: about_navbar
+# Vedle stránky pro lidi i strojový katalog: /about/data/sources.json
+outputs: ["html", "sources"]
 ---
 
 ## Data a citace
@@ -40,6 +42,24 @@ je u dashboardu v řádku „Aktualizace".
 
 Soubory jsou **zpracovaná data pro grafy**, ne surová data — agregace, přepočty na obyvatele
 a výběr řad už v nich jsou. Pro vlastní analýzu sáhněte po původním zdroji.
+
+Strojově je k dispozici i **tenhle katalog**: [`sources.json`](sources.json) nese u každého
+zdroje vydavatele, licenci, pokrytí, podrobnost, frekvenci aktualizace a hlavně pole `limits`
+— větu o tom, co z dat vyčíst **nejde**. Jednotlivé dashboardy navíc nesou
+[schema.org/Dataset](https://schema.org/Dataset) v JSON-LD přímo v hlavičce stránky, takže
+vyhledávače a další nástroje poznají, nad jakou datovou sadou stránka stojí, bez čtení textu.
+
+### Katalog podle DCAT-AP-CZ
+
+Data, která **vznikla zpracováním na portálu**, popisuje i katalog podle otevřené formální normy
+[Rozhraní katalogů otevřených dat](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/):
+[`/dcat/katalog.jsonld`](/dcat/katalog.jsonld). Odkazuje na čtyři datové sady — prahy intenzity
+chřipkové sezóny, signály detekce anomálií, týdenní záchyty respiračních virů a odvozené incidence
+infekčních nemocí.
+
+Přebíraná data v tomto katalogu **nejsou**. Publikovali je jejich původci (ÚZIS, SZÚ, MZČR, ČSÚ,
+WHO, ECDC) a najdete je v [Národním katalogu otevřených dat](https://data.gov.cz); portál na ně
+odkazuje v přehledu výš.
 
 ## Nahlásit chybu {#nahlasit-chybu}
 

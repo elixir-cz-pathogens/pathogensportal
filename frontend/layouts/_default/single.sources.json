@@ -1,0 +1,63 @@
+{{- /* Strojově čitelný katalog zdrojů — /about/data/sources.json
+
+       Proč vedle JSON-LD na téže stránce: schema.org/DataCatalog umí jméno,
+       licenci a odkaz ke stažení, ale nemá kam dát `limits` — větu „co z těchhle
+       dat NEJDE vyčíst“. Přitom právě ta rozhoduje, jestli konzument (člověk
+       i model) z dat vyvodí nesmysl. Tenhle výstup proto vydává katalog tak, jak
+       je vedený, se všemi poli a v obou jazycích.
+
+       Vzniká ze `data/sources.yaml`, takže nemůže zastarat vůči stránce, kterou
+       čtou lidé — obojí čte tentýž soubor. */ -}}
+{{- $lang := .Site.Language.Lang -}}
+{{- /* Odtud se jednou za build vygeneruje i DCAT-AP-CZ katalog (/dcat/…).
+       Partial nic nevypisuje, jen zapisuje soubory.
+
+       ⛔ Jen ve VÝCHOZÍM jazyce, a poznává se podle domovské stránky: ta má
+       „/“ jen v něm (`defaultContentLanguageInSubdir = false`), ostatní mají
+       „/en/“. Beze zkoušky by partial běžel v obou jazycích, oba by zapsaly
+       tytéž soubory a ten druhý by vyhrál — katalog by pak odkazoval na IRI
+       s „/en/“, která nikam nevedou. Katalog je pro portál jeden a jazyky
+       nese uvnitř hodnot. */ -}}
+{{- if eq .Site.Home.RelPermalink "/" -}}{{- partial "dcat-publish.html" . -}}{{- end -}}
+{{- $sources := slice -}}
+{{- range hugo.Data.sources -}}
+  {{- $src := . -}}
+  {{- /* Odkazy na dashboardy jen tam, kde stránka existuje — zdroj smí být
+         v katalogu dřív než jeho dashboard. */ -}}
+  {{- $pages := slice -}}
+  {{- range .pages -}}
+    {{- with site.GetPage . -}}
+      {{- $pages = $pages | append (dict "title" .Title "url" .Permalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* `coverage` a `format` jsou v katalogu psané jednou jako prostý text
+         („2000–2025“), jindy jako dvojice cs/en. `cond` se tu použít nedá —
+         vyhodnocuje obě větve, takže by `index` spadl na řetězci. */ -}}
+  {{- $coverage := $src.coverage -}}
+  {{- if reflect.IsMap $src.coverage }}{{ $coverage = index $src.coverage $lang | default $src.coverage.cs }}{{ end -}}
+  {{- $format := $src.format -}}
+  {{- if reflect.IsMap $src.format }}{{ $format = index $src.format $lang | default $src.format.cs }}{{ end -}}
+  {{- $rec := dict
+      "id" $src.id
+      "name" (index $src.name $lang | default $src.name.cs)
+      "publisher" $src.publisher
+      "landing_page" $src.url
+      "licence" $src.licence
+      "coverage" $coverage
+      "granularity" (index $src.grain $lang | default $src.grain.cs)
+      "update_frequency" (index $src.frequency $lang | default $src.frequency.cs)
+      "format" $format
+      "limits" (index $src.limits $lang | default $src.limits.cs)
+      "used_on" $pages -}}
+  {{- with $src.download }}{{ $rec = merge $rec (dict "download_url" .) }}{{ end -}}
+  {{- $sources = $sources | append $rec -}}
+{{- end -}}
+{{- dict
+    "portal" (dict "name" .Site.Title "url" (absURL "/") "catalogue" .Permalink)
+    "language" $lang
+    "generated_at" (now.Format "2006-01-02T15:04:05Z07:00")
+    "note" (cond (eq $lang "en")
+      "The portal collects no primary data; it republishes open data from public institutions. Read `limits` before drawing conclusions — it says what the data cannot tell you."
+      "Portál nesbírá žádná primární data, přebírá otevřená data veřejných institucí. Před vyvozováním závěrů si přečtěte `limits` — říká, co z dat vyčíst nejde.")
+    "sources" $sources
+  | jsonify (dict "indent" "  ") -}}

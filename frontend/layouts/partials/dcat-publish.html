@@ -1,0 +1,124 @@
+{{- /* DCAT-AP-CZ katalog otevřených dat — /dcat/katalog.jsonld + soubory sad.
+
+       Usage: {{ partial "dcat-publish.html" . }}  (jednou za build, viz níž)
+       Nic nevypisuje, jen zapisuje soubory do public/.
+
+       Co to je: strojový katalog podle otevřené formální normy „Rozhraní
+       katalogů otevřených dat“ (ofn.gov.cz). Je to tentýž druh popisu jako
+       schema.org/Dataset v hlavičkách dashboardů, jen slovníkem, kterému
+       rozumí Národní katalog otevřených dat (NKOD) a evropský data.europa.eu.
+
+       Volá se z layoutu strojového katalogu zdrojů (single.sources.json), a to
+       jen ve výchozím jazyce. Je to spouštěč, ne výstup té stránky: soubory se
+       zapisují přes resources.Publish na pevné cesty, takže URL katalogu nezávisí
+       na tom, kde na webu leží stránka, která generování spustila. Kdyby se
+       „Data a citace“ přesunula, registrované URL v NKOD zůstane platné.
+
+       Souborová varianta rozhraní, tedy bez SPARQL endpointu:
+         /dcat/katalog.jsonld            index — ukazuje na URL jednotlivých sad
+         /dcat/datova-sada/<id>.jsonld   kompletní záznam sady i s distribucemi
+       Sklízeč začne u katalogu a projde odkazy; proto musí mít každá sada
+       vlastní IRI a vlastní dokument, ne být vnořená v indexu.
+
+       ⛔ Katalog popisuje JEN data, která portál sám vyrábí (data/dcat.yaml).
+       Přebrané sady v NKOD publikoval jejich původce a zdvojovat je pod naší
+       hlavičkou by tvrdilo, že jsme původce, kterým nejsme.
+
+       ⚠️ Před registrací v NKOD je nutné doplnit `params.dcat.publisher` —
+       IRI orgánu v registru práv a povinností. Bez něj se katalog vygeneruje
+       (jako obyčejný DCAT, použitelný i mimo NKOD), ale sklizeň ho odmítne,
+       protože `poskytovatel` je povinná vlastnost. Registrace sama je úkon
+       z datové schránky, ne věc tohohle repozitáře.
+
+       Katalog je pro portál jeden a vícejazyčnost nese uvnitř hodnot
+       (`{"cs": …, "en": …}`), ne zdvojením dokumentů. */ -}}
+{{- $cfg := .Site.Params.dcat | default dict -}}
+{{- $base := .Site.Home.Permalink | strings.TrimSuffix "/" -}}
+
+{{- /* ── Sdílené části ─────────────────────────────────────────────────── */ -}}
+{{- $kontakt := dict "typ" "Organizace" "jméno" (dict "cs" .Site.Title "en" .Site.Title)
+      "e-mail" (printf "mailto:%s" (.Site.Params.mail | default "")) -}}
+
+{{- /* Podmínky užití mají v DCAT-AP-CZ čtyři nezávislé osy, ne jednu licenci.
+       Portál své zpracování vydává pod CC BY 4.0 (viz stránka Data a citace);
+       samotné agregáty nejsou chráněnou databází a neobsahují osobní údaje,
+       protože jde o součty, ne o záznamy pacientů. */ -}}
+{{- $podminky := dict
+      "typ" "Specifikace podmínek užití"
+      "autorské_dílo" "https://creativecommons.org/licenses/by/4.0/"
+      "autor" (dict "cs" .Site.Title "en" .Site.Title)
+      "databáze_jako_autorské_dílo" "https://data.gov.cz/podmínky-užití/není-autorskoprávně-chráněnou-databází/"
+      "databáze_chráněná_zvláštními_právy" "https://data.gov.cz/podmínky-užití/není-chráněna-zvláštním-právem-pořizovatele-databáze/"
+      "osobní_údaje" "https://data.gov.cz/podmínky-užití/neobsahuje-osobní-údaje/" -}}
+
+{{- $datasetIRIs := slice -}}
+
+{{- range hugo.Data.dcat -}}
+  {{- $ds := . -}}
+  {{- $iri := printf "%s/dcat/datova-sada/%s.jsonld" $base $ds.id -}}
+  {{- $datasetIRIs = $datasetIRIs | append $iri -}}
+
+  {{- /* Distribuce jen pro soubory, které na webu opravdu leží. */ -}}
+  {{- $distribuce := slice -}}
+  {{- range $ds.soubory -}}
+    {{- if os.FileExists (printf "static%s" .) -}}
+      {{- $distribuce = $distribuce | append (dict
+          "typ" (slice "Distribuce")
+          "iri" (printf "%s/dcat/datova-sada/%s.jsonld#distribuce-%s" $base $ds.id (path.BaseName .))
+          "název" (dict "cs" (path.BaseName .) "en" (path.BaseName .))
+          "formát" "http://publications.europa.eu/resource/authority/file-type/JSON"
+          "typ_média" "http://www.iana.org/assignments/media-types/application/json"
+          "přístupové_url" (printf "%s%s" $base .)
+          "soubor_ke_stažení" (printf "%s%s" $base .)
+          "podmínky_užití" $podminky) -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- /* Dokumentace = stránka na portálu, kde jsou data vyložená pro člověka. */ -}}
+  {{- $dokumentace := printf "%s/about/data/" $base -}}
+  {{- range $ds.stranky -}}
+    {{- with site.GetPage . -}}{{- $dokumentace = .Permalink -}}{{- end -}}
+  {{- end -}}
+
+  {{- $rec := dict
+      "@context" "https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/kontexty/rozhraní-katalogů-otevřených-dat.jsonld"
+      "iri" $iri
+      "typ" "Datová sada"
+      "název" $ds.nazev
+      "popis" $ds.popis
+      "klíčové_slovo" $ds.klicova_slova
+      "téma" (slice "http://publications.europa.eu/resource/authority/data-theme/HEAL")
+      "koncept_euroVoc" (slice "http://eurovoc.europa.eu/1759" "http://eurovoc.europa.eu/5894")
+      "periodicita_aktualizace" (printf "http://publications.europa.eu/resource/authority/frequency/%s" $ds.periodicita)
+      "prvek_rúian" (slice "https://linked.cuzk.cz/resource/ruian/stat/1")
+      "kontaktní_bod" $kontakt
+      "dokumentace" $dokumentace
+      "distribuce" $distribuce -}}
+
+  {{- with $ds.cas_od -}}
+    {{- $rec = merge $rec (dict "časové_pokrytí" (dict "typ" "Časový interval" "začátek" .)) -}}
+  {{- end -}}
+  {{- with $cfg.publisher -}}{{- $rec = merge $rec (dict "poskytovatel" .) -}}{{- end -}}
+
+  {{- /* ⛔ Přiřazení do $_ je nutné. `.Publish` vrací hodnotu a volání bez
+         přiřazení ji vypíše do výstupu jako „<nil>“ — čtyři sady tak do
+         katalogu vepsaly čtyři <nil> před první složenou závorku a JSON
+         přestal být JSONem. */ -}}
+  {{- $f := printf "dcat/datova-sada/%s.jsonld" $ds.id -}}
+  {{- $_ := (resources.FromString $f ($rec | jsonify (dict "indent" "  "))).Publish -}}
+{{- end -}}
+
+{{- /* ── Index katalogu — to, co se registruje do NKOD ──────────────────── */ -}}
+{{- $katalog := dict
+    "@context" "https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/kontexty/rozhraní-katalogů-otevřených-dat.jsonld"
+    "iri" (printf "%s/dcat/katalog.jsonld" $base)
+    "typ" "Katalog"
+    "název" (dict "cs" "Pathogen Portal CZ — otevřená data" "en" "Pathogen Portal CZ — open data")
+    "popis" (dict
+      "cs" "Datové sady, které vznikly zpracováním na Pathogen Portalu CZ: prahy intenzity chřipkové sezóny, signály detekce anomálií, strojově čitelné týdenní záchyty respiračních virů a odvozené incidence infekčních nemocí. Data přebíraná od ÚZIS, SZÚ, MZČR, ČSÚ, WHO a ECDC v tomto katalogu nejsou — publikují je jejich původci."
+      "en" "Datasets produced by processing on Pathogen Portal CZ: influenza season intensity thresholds, anomaly detection signals, machine-readable weekly respiratory virus detections and derived infectious disease incidence. Data taken over from ÚZIS, SZÚ, the Ministry of Health, the Czech Statistical Office, WHO and ECDC are not in this catalogue — their originators publish them.")
+    "domovská_stránka" (printf "%s/about/data/" $base)
+    "kontaktní_bod" $kontakt
+    "datová_sada" $datasetIRIs -}}
+{{- with $cfg.publisher -}}{{- $katalog = merge $katalog (dict "poskytovatel" .) -}}{{- end -}}
+{{- $_ := (resources.FromString "dcat/katalog.jsonld" ($katalog | jsonify (dict "indent" "  "))).Publish -}}

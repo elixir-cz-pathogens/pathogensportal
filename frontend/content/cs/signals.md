@@ -14,7 +14,7 @@ description: "Automatické vyhledávání překročení očekávané hladiny v 1
 image: "/images/cards/signals.svg"
 highlight: true
 tags: ["detekce anomálií", "surveillance", "včasné varování", "ÚZIS", "statistika"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
 # Datum posledního běhu se bere z generated_at v tomhle JSON, ne odsud.
 update_from: "anomaly_signals.json"
 update_read: "stamp"
