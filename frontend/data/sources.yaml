@@ -76,8 +76,8 @@
   grain: { cs: "den; podle sady věk, kraj, stav očkování", en: "day; by dataset age, region, vaccination status" }
   frequency: { cs: "denně", en: "daily" }
   limits:
-    cs: "Testovací strategie se v čase měnila, takže počty případů z různých období nejsou srovnatelné. Část sad je archivní."
-    en: "Testing strategy changed over time, so case counts from different periods are not comparable. Some datasets are archival."
+    cs: "Testovací strategie se v čase měnila, takže počty případů z různých období nejsou srovnatelné. Část sad je archivní. Od poloviny srpna 2026 se hlásí jen desítky PCR testů týdně; většina pozitivních případů pochází z antigenních testů."
+    en: "Testing strategy changed over time, so case counts from different periods are not comparable. Some datasets are archival. Since mid-August 2026 only tens of PCR tests a week are reported; most positive cases come from antigen tests."
   pages: ["/dashboards/covid19-surveillance", "/dashboards/covid-demographics"]
 
 - id: szu-respiratory
@@ -104,9 +104,9 @@
   grain: { cs: "týden; u ILI/ARI i věková skupina", en: "week; ILI/ARI also by age group" }
   frequency: { cs: "týdně; mimo sezónu se zpožděním", en: "weekly; delayed out of season" }
   limits:
-    cs: "ILI a ARI jsou klinické diagnózy od části ordinací, ne laboratorně potvrzená chřipka. Pokrytá populace se mění (v sezóně 2025/26 skokově). Přes léto se nehlásí."
-    en: "ILI and ARI are clinical diagnoses from a subset of practices, not laboratory-confirmed influenza. The covered population changes (abruptly in 2025/26). Not reported over the summer."
-  pages: ["/dashboards/influenza-intensity"]
+    cs: "ILI a ARI jsou klinické diagnózy od části ordinací, ne laboratorně potvrzená chřipka. Pokrytá populace se mění (v sezóně 2025/26 skokově). Přes léto se nehlásí. Počet laboratorně vyšetřených vzorků je srovnatelný až od sezóny 2021/22."
+    en: "ILI and ARI are clinical diagnoses from a subset of practices, not laboratory-confirmed influenza. The covered population changes (abruptly in 2025/26). Not reported over the summer. The number of laboratory specimens tested is comparable only from the 2021/22 season on."
+  pages: ["/dashboards/influenza-intensity", "/dashboards/influenza-surveillance"]
 
 - id: ecdc-erviss
   name: { cs: "ERVISS — evropská respirační surveillance", en: "ERVISS — European respiratory surveillance" }
@@ -119,9 +119,9 @@
   grain: { cs: "týden × ukazatel × věková skupina", en: "week × indicator × age group" }
   frequency: { cs: "týdně", en: "weekly" }
   limits:
-    cs: "Tatáž česká hlášení jako WHO FluID, jen čerstvější. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení."
-    en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays."
-  pages: ["/dashboards/influenza-intensity"]
+    cs: "Tatáž česká hlášení jako WHO FluID, jen čerstvější. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení. Počet vzorků vyšetřených na SARS-CoV-2 od týdne 34/2026 znamená něco jiného a na dřívější řadu nenavazuje."
+    en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays. The number of specimens tested for SARS-CoV-2 changes its meaning in week 34/2026 and does not continue the earlier series."
+  pages: ["/dashboards/influenza-intensity", "/dashboards/influenza-surveillance", "/dashboards/covid19-surveillance"]
 
 - id: ecdc-respicast
   name: { cs: "RespiCast — předpovědi ILI a ARI", en: "RespiCast — ILI and ARI forecasts" }

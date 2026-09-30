@@ -5,7 +5,7 @@ description: "Virological surveillance of influenza and respiratory viruses in t
 image: "/images/cards/flu.webp"
 highlight: true
 tags: ["influenza", "RSV", "surveillance", "NIPH", "Czech Republic"]
-data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">NIPH — National Reference Laboratory for Influenza</a>'
+data_source: '<a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">NIPH — National Reference Laboratory for Influenza</a> · positivity: <a href="https://www.who.int/tools/flunet" target="_blank">WHO FluNet</a>, <a href="https://erviss.org/" target="_blank">ECDC ERVISS</a>'
 update_from: "flu_weekly.json"
 update_read: "week"
 ---
@@ -27,6 +27,24 @@ Laboratory detections by calendar week, from the NRL's weekly PDF reports —
 updated every week, including over the summer.
 
 {{< chart id="fluWeekly" src="/data/charts/flu_weekly.json" type="line" title="Weekly detections — season 2025/26" height="340" note="Absolute counts of laboratory detections per calendar week, whole country. Influenza A includes the H1N1pdm and H3N2 subtypes." >}}
+
+---
+
+### Positivity of laboratory specimens
+
+Detection counts grow with the amount of testing — and testing keeps growing: about
+16,000 specimens in the 2021/22 season, over 65,000 in 2024/25. Counts therefore cannot
+tell whether this season was stronger than the last one. **Positivity** — the share of
+positive specimens among those tested — cancels the testing volume out, so seasons can be
+compared.
+
+{{< chart id="fluPositivitySeasons" src="/data/charts/flu_positivity_seasons.json" type="line" title="Influenza positivity by week of the season" height="360" note="Share of specimens positive for influenza among those tested in the laboratory (non-sentinel system), in percent; each line is one season, the X axis runs from week 40 to week 20. Seasons from 2021/22 — before that, a few hundred hand-picked specimens were tested and the percentages are not comparable. Weeks with fewer than 30 specimens are not shown." >}}
+
+The weekly series shows the three main respiratory viruses side by side, each with its
+own number of specimens tested. Hover over a point to see how many specimens the
+percentage comes from.
+
+{{< chart id="fluPositivityWeekly" src="/data/charts/flu_positivity_weekly.json" type="line" title="Weekly positivity — influenza, RSV, SARS-CoV-2" height="340" note="Share of positive specimens among those tested, in percent, whole country, ECDC ERVISS data. The series starts in week 1/2025, since when ERVISS continuously reports the number of specimens tested for RSV. SARS-CoV-2 ends in week 33/2026: from the following week a different number of tested specimens is reported and the figures do not continue the series. The last 2–3 weeks are missing until the laboratories report their results." >}}
 
 ---
 

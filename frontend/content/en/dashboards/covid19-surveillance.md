@@ -5,7 +5,7 @@ description: "The SARS-CoV-2 epidemiological situation in the Czech Republic —
 image: "/images/cards/covid.webp"
 highlight: true
 tags: ["SARS-CoV-2", "hospitalisation", "vaccination", "surveillance", "Czech MoH", "Czech Republic"]
-data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">Czech Ministry of Health — Disease Update</a>'
+data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">Czech Ministry of Health — Disease Update</a> · <a href="https://erviss.org/" target="_blank">ECDC ERVISS</a>'
 # The date comes from posledni_datum in this JSON, not from here.
 update_from: "covid_summary.json"
 update_read: "stamp"
@@ -27,7 +27,12 @@ update_read: "stamp"
 
 {{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalisations — patient status (weekly maximum)" height="380"  note="Absolute counts of patients hospitalised at the same time (weekly maximum of the daily census), whole country." >}}
 
-{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="PCR test positivity (%)" height="280"  note="Percentage share: positive detections / all PCR tests performed in the given week." >}}
+{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="COVID-19 test positivity (%)" height="300"  note="Share of positive results among tests performed per calendar week, separately for PCR and antigen tests — each test type has its own denominator. Since mid-August 2026 only tens of PCR tests a week are reported, so PCR positivity fluctuates; weeks with fewer than 30 tests are not shown." >}}
+
+Positivity in the laboratory surveillance of respiratory viruses according to the ECDC —
+SARS-CoV-2 next to influenza and RSV, each virus with its own number of specimens tested.
+
+{{< chart id="covidPositivityErviss" src="/data/charts/flu_positivity_weekly.json" type="line" title="Weekly positivity — SARS-CoV-2, influenza, RSV" height="320" note="Share of positive specimens among those tested, in percent, whole country, ECDC ERVISS data. SARS-CoV-2 ends in week 33/2026: from the following week ERVISS reports a different number of tested specimens (the same as for influenza) and the figures do not continue the series." >}}
 
 {{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7-day incidence per 100,000 inhabitants" height="280"  note="Population-adjusted: new cases over the last 7 days per 100,000 population." >}}
 
@@ -41,7 +46,8 @@ The data is downloaded from the **Czech Ministry of Health open data** (API v2) 
 |---|---|---|
 | New cases, deaths | [Ministry of Health — persons](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
 | Hospitalisations | [Ministry of Health — hospitalisations](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
-| PCR testing | [Ministry of Health — tests](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
+| PCR and antigen tests | [Ministry of Health — tests](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
+| Positivity in laboratory surveillance | [ECDC ERVISS](https://erviss.org/) | weekly |
 | Genomic surveillance | [COG-CZ / virus.img.cas.cz](https://virus.img.cas.cz/) | continuous |
 
 <p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH Open Data API v2</a> · Licence: Czech open data</p>
