@@ -38,6 +38,15 @@
     "UPV (plicní ventilace)": "Mechanical ventilation",
     "ECMO": "ECMO",
     "PCR pozitivita (%)": "PCR positivity (%)",
+    "PCR testy": "PCR tests",
+    "Antigenní testy": "Antigen tests",
+    "Chřipka": "Influenza",
+    "Kalendářní týden": "Calendar week",
+    "% pozitivních vzorků": "% positive specimens",
+    "% pozitivních testů": "% positive tests",
+    " z ": " of ",
+    " vzorků": " specimens",
+    " testů": " tests",
     "7denní incidence / 100 000": "7-day incidence / 100,000",
     "Hospitalizační míra (%)": "Hospitalisation rate (%)",
     "Smrtnost (CFR %)": "Case fatality (CFR %)",
@@ -126,6 +135,15 @@
   function localizePayload(payload) {
     if (!EN || !payload) return payload;
     (payload.datasets || []).forEach(function (d) { d.label = tr(d.label); });
+    // Počty za pozitivitou jsou klíčované názvem řady — překládají se spolu s ním.
+    ["tests", "detections"].forEach(function (key) {
+      var byLabel = payload[key];
+      if (!byLabel || typeof byLabel !== "object") return;
+      payload[key] = Object.keys(byLabel).reduce(function (out, label) {
+        out[tr(label)] = byLabel[label];
+        return out;
+      }, {});
+    });
     if (payload.x_title) payload.x_title = tr(payload.x_title);
     if (payload.x_unit) payload.x_unit = tr(payload.x_unit);
     if (payload.unit) payload.unit = tr(payload.unit);
@@ -439,6 +457,20 @@
     }
   }
 
+  /**
+   * Pozitivita v tooltipu: „12,3 % (123 z 1 000 vzorků)“. Procento z 10 a
+   * z 10 000 vzorků vypadá na ose stejně — počty za ním ukazují, jak moc mu věřit.
+   * JSON bez `tests`/`detections` (všechny ostatní grafy) tooltip nemění.
+   */
+  function positivityDetail(payload, item) {
+    if (!payload || !payload.tests || !payload.detections) return "";
+    var tests = (payload.tests[item.dataset.label] || [])[item.dataIndex];
+    var found = (payload.detections[item.dataset.label] || [])[item.dataIndex];
+    if (typeof tests !== "number" || typeof found !== "number") return "";
+    var noun = /test/.test(payload.unit || "") ? tr(" testů") : tr(" vzorků");
+    return " % (" + fmt(found) + tr(" z ") + fmt(tests) + noun + ")";
+  }
+
   function baseOptions(t, datasets, chartType, payload) {
     var multi = datasets.length > 1;
     // Číselná osa X: vzdálenost na ose odpovídá hodnotě, ne pořadí popisku.
@@ -494,7 +526,7 @@
                 }
               : undefined,
             label: function (item) {
-              return " " + item.dataset.label + ": " + fmt(item.parsed.y);
+              return " " + item.dataset.label + ": " + fmt(item.parsed.y) + positivityDetail(payload, item);
             }
           }
         },
