@@ -234,6 +234,83 @@
   background: var(--pp-series-3);
 }
 
+/* ---------- Series picker above the chart (PP-85) ----------
+   Replaces the Chart.js legend. A switched-on series has a filled swatch in its
+   chart colour; a switched-off one an empty outline and muted text. */
+
+.pp-series {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.pp-series__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  max-width: 100%;
+  background: transparent;
+  border: 1px solid var(--pp-border);
+  border-radius: 999px;
+  color: var(--pp-text-secondary);
+  font-size: 0.75rem;
+  line-height: 1.3;
+  padding: 0.2rem 0.65rem 0.2rem 0.5rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.pp-series__swatch {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--pp-series-color, transparent);
+  box-shadow: inset 0 0 0 1px var(--pp-border-strong);
+}
+
+.pp-series__item[aria-pressed="true"] {
+  border-color: var(--pp-border-strong);
+  color: var(--pp-text);
+}
+
+.pp-series__item[aria-pressed="true"] .pp-series__swatch {
+  box-shadow: none;
+}
+
+.pp-series__item[aria-pressed="false"] {
+  color: var(--pp-text-muted);
+  border-style: dashed;
+}
+
+.pp-series__item:hover:not(:disabled) {
+  border-color: var(--pp-text-muted);
+  color: var(--pp-text);
+}
+
+.pp-series__item:focus-visible,
+.pp-series__reset:focus-visible {
+  outline: 2px solid var(--pp-series-1);
+  outline-offset: 2px;
+}
+
+/* A ninth series: no colour left in the palette */
+.pp-series__item:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+
+.pp-series__reset:disabled {
+  display: none;
+}
+
+.pp-series__hint {
+  font-size: 0.72rem;
+  color: var(--pp-text-muted);
+}
+
 /* ---------- Table alternative to the chart ---------- */
 
 .pp-table-wrap {
