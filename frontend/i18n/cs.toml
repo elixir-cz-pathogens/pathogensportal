@@ -1,7 +1,7 @@
-# Přepisy českých řetězců theme (Hugo slučuje site-level i18n přes theme).
-# Theme překlad je strojový („Řídicí panely“ = palubní desky) a jeden klíč má
-# špatnou velikost písmene: index.html volá `i18n "dashboards"`, slovník theme
-# zná jen [Dashboards] — nadpis sekce na homepage se proto renderoval prázdný.
+# Overrides of the theme's Czech strings (Hugo merges site-level i18n over the
+# theme). The theme translation is machine-made, and one key has the wrong case:
+# index.html calls `i18n "dashboards"` while the theme dictionary only has
+# [Dashboards], so the home-page section heading would render empty.
 
 [dashboards]
 other = "Dashboardy"

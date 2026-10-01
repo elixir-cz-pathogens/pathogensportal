@@ -1,21 +1,20 @@
-{{/* Štítek původu dat (PP-57).
+{{/* Data origin badge (PP-57).
 
-     Použití:  {{ partial "origin-badge.html" (dict "page" . "size" "sm") }}
+     Usage:  {{ partial "origin-badge.html" (dict "page" . "size" "sm") }}
 
-     ⛔ Původ je UZAVŘENÝ ČÍSELNÍK ve frontmatteru (`origin:`), ne text odvozený
-     z `data_source`. Odvozovat ho nejde: `hantavirus-mhondius` i ebola stránky
-     mají v `data_source` doslova stejnou citaci „Jan Pačes & Michaela Liegertová
-     — IMG AV ČR", a přitom jsou to různé kategorie. Právě tu dvojici je potřeba
-     rozlišit nejvíc.
+     Origin is a CLOSED CODE LIST in front matter (`origin:`), not text derived
+     from `data_source`. It cannot be derived: pages in different categories
+     can carry exactly the same citation in `data_source`, and those are the
+     cases that most need distinguishing.
 
-     ⚠️ TENHLE štítek nese barvu i slovo zároveň, a proto zůstává na stránce
-     dashboardu a v legendě. Karty ve výpisech od 8. 9. 2026 ukazují jen barevný
-     rámeček — vysvětlení je v legendě na /dashboards/. Je to vědomý ústupek
-     vzhledu: samotná barva je pro barvoslepé čtenáře nečitelná, proto karta
-     nese původ aspoň v `title` a ve skrytém textu pro odečítač.
+     THIS badge carries both colour and a word, which is why it stays on the
+     dashboard page and in the legend. Cards in lists show only a coloured
+     border, explained in the legend on /dashboards/. Colour alone is unreadable
+     for colour-blind readers, so the card also carries origin in `title` and
+     in hidden screen-reader text.
 
-     Stránka bez `origin:` nevykreslí nic. To je záměr: raději žádné tvrzení než
-     tvrzení nastavené omylem.
+     A page without `origin:` renders nothing. This is intentional: no claim is
+     better than a claim set by mistake.
 */}}
 {{ $p := .page }}
 {{ $size := .size | default "" }}

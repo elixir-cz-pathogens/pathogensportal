@@ -1,11 +1,12 @@
-{{/* Katalog datových zdrojů — z data/sources.yaml.
+{{/* Data source catalogue — from data/sources.yaml.
 
      Usage: {{< data-catalogue >}}
 
-     Pro lidi karta na zdroj (co to je, licence, pokrytí, co z dat NEJDE vyčíst,
-     kde na portálu se používá), pro stroje schema.org/DataCatalog v JSON-LD.
-     Odkaz na dashboard se vykreslí jen tehdy, když stránka existuje — zdroj tak
-     může být v katalogu dřív než jeho dashboard a build kvůli tomu nespadne.
+     For people, a card per source (what it is, licence, coverage, what the data
+     CANNOT tell you, where on the portal it is used); for machines,
+     schema.org/DataCatalog in JSON-LD. A dashboard link is rendered only when
+     the page exists — so a source can be in the catalogue before its dashboard
+     without breaking the build.
 */}}
 {{ $lang := .Site.Language.Lang }}
 {{ $en := eq $lang "en" }}

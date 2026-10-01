@@ -1,19 +1,20 @@
-{{/* Chřipka — intenzita sezóny (MEM), trend a předpověď nad ILI a ARI.
+{{/* Influenza — season intensity (MEM), trend and forecast for ILI and ARI.
 
-     Usage: {{< flu part="status" >}}   stav: intenzita, trend, výhled + stupnice
+     Usage: {{< flu part="status" >}}   status: intensity, trend, outlook + scale
             {{< flu part="chart" indicator="ili" title="…" subtitle="…" note="…" controls="true" >}}
-            {{< flu part="outlook" >}}  aktuální předpověď na čtyři týdny
-            {{< flu part="replay" >}}   předpověď vydaná v přehrávaném týdnu
-            {{< flu part="seasons" >}}  jak dopadly minulé sezóny
+            {{< flu part="outlook" >}}  current four-week forecast
+            {{< flu part="replay" >}}   forecast issued in the replayed week
+            {{< flu part="seasons" >}}  how past seasons turned out
             {{< flu part="backtest" >}} {{< flu part="evaluation" >}} {{< flu part="excluded" >}}
-                                        tabulky do panelů metodiky
+                                        tables for the methodology panels
 
-     Šablona vydává jen kostru; obsah doplní /js/pp-flu.js z jednoho souboru
-     flu_mem.json (pathogensportal-db, compute_mem.py). Všechny části na stránce
-     sdílejí zvolenou sezónu a týden — ovládání je u grafu s controls="true".
+     The template only emits the skeleton; content is filled in by /js/pp-flu.js
+     from a single file, flu_mem.json (pathogensportal-db, compute_mem.py). All
+     parts on a page share the selected season and week — the controls are on
+     the chart with controls="true".
 
-     Karta grafu se `{{ .Inner }}` umí zabalit panel metodiky: patří vizuálně
-     ke grafu, ne pod něj.
+     The chart card can wrap a methodology panel via `{{ .Inner }}`: it belongs
+     visually to the chart, not below it.
 */}}
 {{ $part := .Get "part" }}
 {{ $src  := .Get "src" | default "/data/charts/flu_mem.json" }}

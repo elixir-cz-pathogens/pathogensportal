@@ -2,50 +2,33 @@ name: "Deploy: Staging (dev)"
 
 # Enabled by the repo variable DEPLOY_STAGING_ENABLED == 'true'.
 # Requires:
-#   1) secret: STAGING_SSH_KEY   (the github-deploy private key FOR THE STAGING MACHINE)
+#   1) secret: STAGING_SSH_KEY   (the github-deploy private key for the staging machine)
 #   2) vars:   STAGING_HOST      (FQDN of the staging machine, e.g. pathogens-dev.vm.cesnet.cz)
-#              STAGING_PATH      (DocumentRoot on the staging machine)
+#              STAGING_PATH      (rsync target, see below)
+#              STAGING_SSH_HOST_KEY (the server's pinned ssh-ed25519 host key)
 #              DEPLOY_USER       (the account used for rsync, typically github-deploy)
 #              DEPLOY_STAGING_ENABLED=true
 # Deploy = test -> build Hugo from the `dev` branch -> rsync the static output to staging.
 #
-# ⚠️ THE ENABLE FLAG IS PER ENVIRONMENT — it used to be a single DEPLOY_ENABLED
-#    shared with deploy-production.yml. That meant switching staging on ALSO armed
-#    production: the next push to `main` would have deployed to the live site with
-#    nobody having decided that. Production is governed by rule #1 (never touched
-#    without the administrator's approval), so it cannot hang off a flag someone
-#    flips to test staging. Split on 17 Aug 2026 — do not merge them back, for the
-#    same reason the hosts and keys are already separate.
+# The enable flag is per environment (DEPLOY_PRODUCTION_ENABLED is separate), so
+# enabling staging can never arm a production deploy as a side effect.
 #
-# ⚠️ Staging and production DELIBERATELY have separate hosts and separate keys (they used
-#    to share DEPLOY_HOST and DEPLOY_SSH_KEY). With two machines, a shared host would mean
-#    a push to `dev` deploys to production; a shared key would turn a compromised staging
-#    into access to production. Do not merge them back.
+# Staging and production have separate hosts and separate keys. A shared host
+# would mean a push to `dev` deploys to production; a shared key would turn a
+# compromised staging machine into access to production. Do not merge them.
 
 on:
   push:
     branches: [dev]
 
-# ⛔ WITHOUT THIS, TWO DEPLOYS RACE.
-# ⚠️ Updated 1 Sep 2026 (A2). It used to be worse: the transfer went `rsync
-# --delete` straight into the directory Apache serves, so two runs interleaved one
-# run's deletes with the other's writes and BOTH reported success. Release
-# directories fixed that half — concurrent runs now write to SEPARATE directories
-# and no visitor ever sees a half-state.
+# Serializes deploys. Concurrent runs write to separate release directories, but
+# the final symlink flip would race: the last run to finish wins, which is not
+# necessarily the newest commit. `dev` has more than one pusher (people and the
+# data pipeline's machine commits), so this is a real case.
 #
-# The race that remains is the flip: two runs both point `current` at their own
-# release, and the LAST one to finish wins — which is not necessarily the newest
-# commit. Staging would then serve an older build while reporting the newer one
-# deployed, and there is still no step that would notice.
-#
-# It stopped being hypothetical on 31 Aug 2026, when the data pipeline became a
-# SECOND pusher to `dev` alongside the people: its machine commit can land seconds
-# after a human push, and its own rebase-retry loop can push twice by itself.
-#
-# `cancel-in-progress: false` is the deliberate half. A deploy that is already
-# rsyncing must be allowed to FINISH — cancelling it mid-transfer is precisely the
-# half-written docroot this guard exists to prevent. GitHub still cancels older
-# *queued* runs, so the newest commit is the one that lands, which is what we want.
+# `cancel-in-progress: false` is deliberate: a deploy that is already rsyncing
+# must be allowed to finish. GitHub still cancels older queued runs, so the
+# newest commit is the one that lands.
 concurrency:
   group: deploy-staging
   cancel-in-progress: false
@@ -66,9 +49,9 @@ jobs:
     if: ${{ vars.DEPLOY_STAGING_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     env:
-      # The hostname is NOT a secret (it is also in hugo.toml) — deliberately `vars`,
-      # not `secrets`: a masked value would break both baseURL in the log and any
-      # debugging of ssh-keyscan.
+      # The hostname is not a secret (it is also in hugo.toml), so it is a `vars`
+      # value: a masked secret would hide baseURL in the log and hinder debugging
+      # of the SSH connection.
       STAGING_HOST: ${{ vars.STAGING_HOST }}
     steps:
       - name: Check deploy target is configured
@@ -95,8 +78,8 @@ jobs:
 
       - uses: peaceiris/actions-hugo@v3
         with:
-          # Pinned, not `latest`: 0.164 silently changed the content security
-          # policy and broke the build. A build should not change under us.
+          # Pinned, not `latest`, so the build does not change when a new Hugo
+          # release appears.
           hugo-version: '0.164.0'
           extended: true
 
@@ -112,57 +95,47 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.STAGING_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          # ⛔ NOT ssh-keyscan. A keyscan trusts whatever answers, on every run —
-          # trust-on-first-use with no first use, so a machine-in-the-middle gets
-          # the site (and, with --delete, gets to decide what the site is). The
-          # key is public data, so it is a VARIABLE, not a secret, and can be
-          # checked against ansible/known_hosts in the -priv repo.
+          # The host key is pinned rather than fetched with ssh-keyscan, which
+          # trusts whatever answers on every run. With --delete, an impostor host
+          # would not just receive the site, it would decide what the site becomes.
+          # The key is public data, so it is a variable, not a secret.
           test -n "${{ vars.STAGING_SSH_HOST_KEY }}" || {
             echo "::error::Missing repo variable STAGING_SSH_HOST_KEY (value: the server's ssh-ed25519 line, see -priv ansible/known_hosts)."; exit 1; }
           printf '%s %s\n' "$STAGING_HOST" "${{ vars.STAGING_SSH_HOST_KEY }}" > ~/.ssh/known_hosts
-          # MIND -a: it implies -p/-g/-t, i.e. transferring permissions, groups and times.
-          # The target directory on the server is owned by `app`; the deploy account is
-          # only a member of the `app` group — the kernel will not let it chmod someone
-          # else's directory and rsync exits with code 23, even though the files transfer.
-          # Verified in the lab on 19 Jul 2026.
+          # No -a: it implies -p/-g/-t (permissions, groups, times). The target
+          # directory is owned by `app` and the deploy account is only a member of
+          # the `app` group, so it cannot chmod the directory and rsync would exit
+          # with code 23 even though the files transfer.
           # Permissions are handled by setgid on the target directory (2775); rsync must
           # not transfer them.
           # StrictHostKeyChecking=yes is explicit: with the key pinned above there
-          # is nothing to ask about, and a mismatch must stop the deploy, not
-          # prompt into a void.
+          # is nothing to ask about, and a mismatch must stop the deploy.
           #
-          # ⚠️ STAGING_PATH is `/` because the server pins this key to a forced
-          # rrsync command (users_deploy_restrict_rsync). rrsync prefixes a
-          # leading-slash path with its restricted directory, so `/` here means
-          # /opt/pathogensportal/frontend/public there. The real path lives in the
-          # -priv inventory; changing one without the other breaks the deploy.
-          # ── Release directories + a symlink flip (A2) ─────────────────────
+          # STAGING_PATH is `/` because the server pins this key to a forced
+          # rrsync command. rrsync prefixes a leading-slash path with its
+          # restricted directory, so `/` here means the jail root on the server.
+          # The real path is set in the server configuration; changing one
+          # without the other breaks the deploy.
           #
-          # Deploys used to rsync --delete straight INTO the live DocumentRoot:
-          # for the length of every deploy the site was a half-state, and a build
-          # that emitted a truncated tree DELETED real pages.
+          # ── Release directories + a symlink flip ─────────────────────────
           #
-          # Now each deploy lands in its own directory and a symlink is moved, so
-          # visitors only ever see a complete tree, and a rollback is `ln -sfn` on
-          # the server — seconds, no CI, no reviewer.
-          #
-          # ⛔ COUPLED TO THE SERVER. The rrsync jail is the deploy area, so these
-          #    paths are relative to it (*_PATH stays "/"). Changing one without
-          #    the other breaks the deploy — the jail moved in -priv's `users` role.
+          # Each deploy lands in its own directory and a symlink is then moved, so
+          # visitors only ever see a complete tree, a truncated build cannot delete
+          # live pages, and a rollback is `ln -sfn` on the server.
           REL="releases/${GITHUB_SHA}"
 
-          # 1. the built site into its OWN directory. --delete is scoped to that
+          # 1. the built site into its own directory. --delete is scoped to that
           #    directory, so it can never touch other releases or the symlink.
           rsync -rlvz --delete --no-perms --no-owner --no-group --omit-dir-times \
             -e "ssh -o StrictHostKeyChecking=yes" \
             frontend/public/ \
             "${{ vars.DEPLOY_USER }}@${STAGING_HOST}:${{ vars.STAGING_PATH }}${REL}/"
 
-          # 2. the flip. rsync sends a SYMLINK (-l), which is why no second
+          # 2. the flip. rsync sends a symlink (-l), which is why no second
           #    credential is needed: rrsync passes symlinks through untouched
           #    (--munge-links is off), so the same write-only key that uploaded the
           #    release can point `current` at it.
-          # ⛔ NO --delete here: at the jail root it would delete every release.
+          # No --delete here: at the jail root it would delete every release.
           mkdir -p .flip && ln -sfn "$REL" .flip/current
           rsync -rlvz --no-perms --no-owner --no-group --omit-dir-times \
             -e "ssh -o StrictHostKeyChecking=yes" \

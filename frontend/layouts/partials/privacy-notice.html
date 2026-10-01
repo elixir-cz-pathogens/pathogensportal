@@ -1,21 +1,21 @@
-{{/* Upozornění na zpracování dat při první návštěvě (PP-55).
+{{/* Data-processing notice on the first visit (PP-55).
 
-     Proužek dole + rozkliknutelné okno s podrobnostmi. Text je v
-     `data/privacy.yaml`, aby se dal upravovat bez sahání na šablonu a aby šly
-     obě jazykové verze porovnat vedle sebe.
+     A bottom banner + an expandable dialog with details. The text is in
+     `data/privacy.yaml`, so it can be edited without touching the template and
+     both language versions can be compared side by side.
 
-     ⛔ NENÍ to cookie lišta a nesmí se v ni proměnit. Nežádá o souhlas, protože
-     souhlas se tu nevyžaduje: nic sledovacího se do zařízení neukládá. Jen
-     informuje — proto „Rozumím", ne „Souhlasím", a proto tu není žádné
-     „Odmítnout": nebylo by co odmítnout, a tlačítko, které nic nedělá, je horší
-     než žádné.
+     This is NOT a cookie banner and must not become one. It does not ask for
+     consent because none is required: nothing tracking is stored on the device.
+     It only informs — hence "Rozumím" (I understand), not "Souhlasím" (I agree),
+     and no "Reject" button: there would be nothing to reject, and a button that
+     does nothing is worse than none.
 
-     ⚠️ Zavření SE ukládá — jedna položka v localStorage, jinak by se proužek
-     objevoval při každé návštěvě. To je uložení do zařízení, a text v okně to
-     přiznává vlastní sekcí. Oznámení, které v prvním odstavci tvrdí, že nic
-     neukládá, a přitom ukládá, je horší než žádné.
+     Dismissal IS stored — one localStorage entry, otherwise the banner would
+     appear on every visit. That is storage on the device, and the dialog text
+     discloses it in its own section. A notice that claims to store nothing
+     while storing something is worse than none.
 
-     `<dialog>` je nativní prvek — žádná knihovna, což respektuje otevřené PP-7.
+     `<dialog>` is a native element — no library, which respects the open PP-7.
 */}}
 {{ $lang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
 {{ $t := index .Site.Data.privacy $lang }}
@@ -30,16 +30,17 @@
 </div>
 
 <dialog class="pp-privacy-dialog" id="pp-privacy-dialog" aria-labelledby="pp-privacy-h">
-  {{/* ⚠️ Obě jazykové verze se vykreslují do stránky, jedna skrytá. Přepínač
-       v hlavičce jen prohodí, která je vidět.
+  {{/* Both language versions are rendered into the page, one hidden. The switch
+       in the header only swaps which is visible.
 
-       Proč takhle a ne odkazem na druhou jazykovou verzi webu: čtenář, který si
-       chce přečíst, co o něm sbíráme, nemá kvůli tomu opouštět stránku, na které
-       je — přišel by o rozečtený obsah. Text má dohromady pod 2 kB, takže to
-       nestojí za nic; kdyby rostl, patří to za `fetch`.
+       Why not link to the other language version of the site: a reader who
+       wants to know what is collected should not have to leave the page they
+       are on and lose their place. The text is under 2 kB in total; if it grew,
+       it should move behind a `fetch`.
 
-       ⛔ Výchozí je jazyk STRÁNKY, ne prohlížeče. Kdo čte českou verzi portálu,
-       dostane české znění; přepínač je nabídka, ne domněnka o tom, kdo je. */}}
+       The default is the PAGE language, not the browser's. A reader of the
+       Czech version gets the Czech text; the switch is an offer, not an
+       assumption about the reader. */}}
   {{ $pageLang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
   {{ $other := cond (eq $pageLang "en") "cs" "en" }}
   <article>
@@ -68,24 +69,23 @@
 <script>
 (function () {
   var KEY = "pp-privacy-seen";
-  /* ⚠️ `safeJS` je tu nutné. Bez něj Hugo výstup `jsonify` zaescapuje jako HTML
-     a do stránky se vypíše ŘETĚZEC "{\"cs\":…}" místo objektu — `TITLES[lang]`
-     pak vrací undefined a nadpis okna se při přepnutí jazyka nezmění. Syntakticky
-     je to přitom v pořádku, takže `node --check` mlčí. */
+  /* `safeJS` is required. Without it Hugo escapes the `jsonify` output as HTML
+     and the page gets the STRING "{\"cs\":…}" instead of an object, so
+     `TITLES[lang]` is undefined and the dialog title does not switch language.
+     The result is still valid syntax, so `node --check` does not catch it. */
   var TITLES = {{ dict "cs" (index .Site.Data.privacy "cs").title "en" (index .Site.Data.privacy "en").title | jsonify | safeJS }};
   var bar = document.getElementById("pp-privacy-bar");
   var dlg = document.getElementById("pp-privacy-dialog");
   if (!bar || !dlg) return;
 
-  /* ⚠️ localStorage může vyhodit výjimku, ne jen vrátit null — v privátním okně
-     některých prohlížečů a při zakázaných datech webu. Bez try/catch by tady
-     skript spadl a proužek by se neukázal NIKDY, což je přesně opačná chyba,
-     než jakou by si člověk představil. */
+  /* localStorage can throw, not just return null — in private windows of some
+     browsers and when site data is blocked. Without try/catch the script would
+     fail here and the banner would never be shown. */
   function seen() {
     try { return localStorage.getItem(KEY) === "1"; } catch (e) { return false; }
   }
   function remember() {
-    try { localStorage.setItem(KEY, "1"); } catch (e) { /* zůstane při každé návštěvě */ }
+    try { localStorage.setItem(KEY, "1"); } catch (e) { /* banner shows again on every visit */ }
   }
 
   if (!seen()) bar.hidden = false;
@@ -100,9 +100,9 @@
   }
   document.getElementById("pp-privacy-more").addEventListener("click", openDialog);
 
-  /* Přepnutí jazyka uvnitř okna — jen prohodí, která z obou verzí je vidět.
-     Mění i nadpis a popisek tlačítka, jinak by okno hlásilo jeden jazyk
-     a obsahovalo druhý. */
+  /* Language switch inside the dialog — swaps which of the two versions is visible.
+     Also updates the title and the button label, otherwise the dialog would
+     announce one language and contain the other. */
   var langBtn = document.getElementById("pp-privacy-lang");
   if (langBtn) {
     langBtn.addEventListener("click", function () {
@@ -120,11 +120,11 @@
   }
   document.getElementById("pp-privacy-close").addEventListener("click", function () { dlg.close(); });
 
-  /* Odkaz v patičce — informace musí zůstat dostupná i po zavření proužku. */
+  /* Footer link — the information must stay reachable after the banner is closed. */
   var footerLink = document.getElementById("pp-privacy-footer-link");
   if (footerLink) footerLink.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
 
-  /* Kliknutí mimo obsah zavře. `<dialog>` sám tohle nedělá. */
+  /* Clicking outside the content closes the dialog; `<dialog>` does not do this itself. */
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
 })();
 </script>

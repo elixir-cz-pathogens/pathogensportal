@@ -25,7 +25,7 @@ def test_health_reports_the_database_as_unavailable(monkeypatch):
     monkeypatch.setattr(db, "ping", boom)
     r = client.get("/health")
 
-    # ⛔ Still 200. The service is healthy without the database by design —
+    # Still 200. The service is healthy without the database by design —
     # /api/charts answers 503 and the frontend falls back to the static JSON.
     # Returning 503 here would make an orchestrator restart a process that is
     # working as intended, and the restart would not bring the database back.

@@ -1,9 +1,9 @@
-{{/* Zvýrazněné sdělení nad obsahem stránky (typicky hodnocení rizika).
+{{/* Highlighted message above the page content (typically a risk assessment).
 
-     Usage: {{< callout tone="info" >}}Text sdělení.{{< /callout >}}
+     Usage: {{< callout tone="info" >}}Message text.{{< /callout >}}
 
-     `tone`: info (výchozí) | warning | critical — mění jen barvu pruhu vlevo.
-     Barvy jsou stavové tokeny, ne barvy datových řad; nepoužívat pro grafy.
+     `tone`: info (default) | warning | critical — changes only the left bar colour.
+     Colours are status tokens, not data-series colours; do not use them for charts.
 */}}
 {{ $tone := .Get "tone" | default "info" }}
 <div class="pp-callout pp-callout--{{ $tone }}">

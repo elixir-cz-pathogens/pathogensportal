@@ -1,21 +1,20 @@
-{{/* Původ dat — jedno místo, kde žijí popisky, ikony a vysvětlení.
+{{/* Data origin — the one place where labels, icons and explanations live.
 
      Usage: {{ $m := partial "origin-meta.html" $page }}
             {{ if $m }}{{ $m.key }} {{ $m.label }} {{ $m.title }} {{ $m.icon }}{{ end }}
 
-     Vrací nic (nil) pro stránku bez `origin:`. To je záměr: raději žádné tvrzení
-     než tvrzení nastavené omylem.
+     Returns nothing (nil) for a page without `origin:`. This is intentional:
+     no claim is better than a claim set by mistake.
 
-     ⛔ Existuje proto, že tytéž tři kategorie teď vykreslují TŘI různá místa —
-     barevný rámeček karty, štítek na stránce dashboardu a legenda na
-     /dashboards/. Kdyby si každé drželo vlastní text, rozejdou se a legenda
-     začne vysvětlovat barvy, které už nikde nejsou.
+     It exists because the same three categories are rendered in THREE places —
+     the card border, the badge on the dashboard page and the legend on
+     /dashboards/. If each kept its own text they would drift, and the legend
+     would explain colours that no longer exist anywhere.
 
-     ⛔ Původ je UZAVŘENÝ ČÍSELNÍK ve frontmatteru, ne text odvozený
-     z `data_source`. Odvozovat ho nejde: `hantavirus-mhondius` i ebola stránky
-     mají v `data_source` doslova stejnou citaci „Jan Pačes & Michaela Liegertová
-     — IMG AV ČR", a přitom jsou to různé kategorie. Právě tu dvojici je potřeba
-     rozlišit nejvíc.
+     Origin is a CLOSED CODE LIST in front matter, not text derived from
+     `data_source`. It cannot be derived: pages in different categories can
+     carry exactly the same citation in `data_source`, and those are the cases
+     that most need distinguishing.
 */}}
 {{ $o := .Params.origin }}
 {{ $en := eq .Site.Language.Lang "en" }}

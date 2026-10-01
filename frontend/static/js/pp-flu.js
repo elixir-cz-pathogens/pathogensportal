@@ -1,17 +1,17 @@
-/* Chřipka — intenzita sezóny (MEM), trend a předpověď nad ILI a ARI.
+/* Influenza: season intensity (MEM), trend and forecast for ILI and ARI.
  *
- * Všechny části stránky ({{< flu part="…" >}}) čtou JEDEN soubor flu_mem.json
- * z pathogensportal-db (compute_mem.py) a sdílejí zvolenou sezónu a týden.
- * Výpočty se tu nedělají — prahy, trend, pravděpodobnosti i vyhodnocení
- * předpovědí přicházejí hotové. Skript jen kreslí a skládá věty.
+ * All page parts ({{< flu part="…" >}}) read the single flu_mem.json file
+ * from pathogensportal-db (compute_mem.py) and share the selected season and week.
+ * No computation happens here: thresholds, trend, probabilities and forecast
+ * evaluation arrive precomputed. The script only draws charts and composes sentences.
  *
- * JEDINÁ věc počítaná v prohlížeči je „vůči dnešku“ u aktuálního výhledu:
- * JSON se generuje s během pipeline, ale popisek „tento týden“ má sedět i ve
- * dnech, kdy pipeline neběží.
+ * The only value computed in the browser is "relative to today" for the current
+ * outlook: the JSON is generated when the pipeline runs, but the "this week"
+ * label must stay correct on days when the pipeline does not run.
  *
- * BARVY jdou z tokenů v dashboards.css (--pp-band-*, --pp-fan). Pásma intenzity
- * jsou JEDEN odstín od světlé po tmavou: intenzita je velikost, ne kategorie,
- * a stavové barvy (zelená/oranžová/červená) jsou vyhrazené Signálům.
+ * Colours come from tokens in dashboards.css (--pp-band-*, --pp-fan). Intensity
+ * bands use a single hue from light to dark: intensity is a magnitude, not a
+ * category, and the status colours (green/orange/red) are reserved for Signals.
  */
 (function (window, document) {
   "use strict";
@@ -128,7 +128,7 @@
     return String(text).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; });
   }
 
-  /* ---------------- Stav sdílený všemi částmi ---------------- */
+  /* ---------------- State shared by all parts ---------------- */
 
   var D, ILI, ARI, W, T, season, k;
   var charts = {};
@@ -149,12 +149,12 @@
     return hit;
   }
 
-  /* ---------------- Kalendářní týdny ---------------- */
+  /* ---------------- Calendar weeks ---------------- */
 
   function startYear(s) { return parseInt(s.slice(0, 4), 10); }
   function weekYear(s, i) { return W[i] >= 40 ? startYear(s) : startYear(s) + 1; }
   function isoKey(s, i) { return weekYear(s, i) + "-W" + ("0" + W[i]).slice(-2); }
-  /** Pondělí ISO týdne: týden 1 je ten, do kterého padne 4. leden. */
+  /** Monday of an ISO week: week 1 is the week containing 4 January. */
   function monday(year, week) {
     var jan4 = new Date(Date.UTC(year, 0, 4));
     return new Date(Date.UTC(year, 0, 4 - ((jan4.getUTCDay() + 6) % 7) + (week - 1) * 7));
@@ -177,7 +177,7 @@
     for (var i = 0; i < W.length; i++) if (isoKey(s, i) === key) return i;
     return -1;
   }
-  /** Vůči dnešku podle hodin prohlížeče — viz hlavička souboru. */
+  /** Relative to today, by the browser clock (see the file header). */
   function relativeWeek(key) {
     var now = new Date();
     var today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
@@ -189,7 +189,7 @@
     return fill(L.rel[4], { n: -n });
   }
 
-  /* ---------------- Čtení dat ---------------- */
+  /* ---------------- Data access ---------------- */
 
   function forecastAt(ind, s, i) {
     return (ind.forecast && ind.forecast.by_last_observed_week[isoKey(s, i)]) || null;
@@ -205,14 +205,14 @@
     return { phase: "after", value: v[i], level: levels()[0], duration: last - first + 1 };
   }
 
-  /** Poslední týden sezóny, za který jsou data (běžící sezóna končí dřív než osa). */
+  /** Last season week with data (a running season ends before the axis does). */
   function lastWeekIdx(s) {
     return ILI.history[s].reduce(function (last, x, i) { return x !== null ? i : last; }, -1);
   }
 
-  /* Uzavřené sezóny s úplnými daty + běžící sezóna — ta VŽDY, i když v sezónním
-     okně (týdny 40–20) ještě nemá jediný bod. Kdo hledá „letošek“, musí ho najít;
-     prázdný graf s vysvětlením je lepší než sezóna, která ve výběru chybí. */
+  /* Closed seasons with complete data plus the running season, which is always
+     included even before it has a point in the season window (weeks 40–20).
+     An empty chart with an explanation is better than a season missing from the list. */
   function selectableSeasons() {
     return Object.keys(ILI.history).filter(function (s) {
       function complete(v) { return v && v.every(function (x) { return x !== null; }); }
@@ -221,20 +221,20 @@
     });
   }
   function isRunning(s) { return s === ILI.current.season; }
-  /** Předpověď platná pro zobrazený bod: u běžící sezóny poslední vydaná, jinak historická. */
+  /** Forecast valid for the displayed point: the latest issued one for the running season, otherwise the historical one. */
   function forecastShown(ind) {
     if (isRunning(season)) return (ind.forecast && ind.forecast.latest) || null;
     return k >= 0 ? forecastAt(ind, season, k) : null;
   }
 
-  /* ---------------- Graf ---------------- */
+  /* ---------------- Chart ---------------- */
 
   function fanDatasets(ind) {
     var fc = forecastShown(ind), v = ind.history[season];
     if (!fc) return [];
     function series(field) {
       var a = W.map(function () { return null; });
-      if (k >= 0) a[k] = v[k];                       // vějíř vyrůstá z posledního známého bodu
+      if (k >= 0) a[k] = v[k];                       // the fan starts from the last known point
       fc.weeks.forEach(function (w) { var i = keyToIdx(season, w.week); if (i > k) a[i] = w[field]; });
       return a;
     }
@@ -245,8 +245,8 @@
     }
     return band("q025", "q975").concat(band("q250", "q750"), [{
       label: "forecast", ppForecast: true, data: series("q500"), borderColor: token("--pp-text", "#0b0b0b"),
-      /* Před začátkem sezóny padne do osy jediný týden předpovědi (40) — samotná
-         čára z jednoho bodu není vidět, proto tečka. */
+      /* Before the season starts only one forecast week (40) falls on the axis;
+         a line from a single point is invisible, hence a dot. */
       borderWidth: 2, borderDash: [5, 4], pointRadius: k < 0 ? 4 : 0, pointHoverRadius: 4,
       pointBackgroundColor: token("--pp-text", "#0b0b0b"), tension: 0.25, order: 1
     }]);
@@ -270,8 +270,8 @@
     }].concat(fanDatasets(ind), past);
   }
 
-  /* Pásma se kreslí PŘED datovými řadami vlastním pluginem — bez další knihovny.
-     Kreslí se jen tam, kde to data unesou (intensity_reliable): u ARI ne. */
+  /* Bands are drawn before the data series by a custom plugin, with no extra library.
+     They are drawn only where the data support it (intensity_reliable), i.e. not for ARI. */
   function bandsPlugin(ind) {
     return {
       id: "ppFluBands",
@@ -367,7 +367,7 @@
             filter: function (item) {
               var d = item.dataset;
               if (!(d.ppCurrent || d.ppForecast) || item.parsed.y === null) return false;
-              return !((d.ppActual || d.ppForecast) && item.dataIndex === k);   // bod k patří plné čáře
+              return !((d.ppActual || d.ppForecast) && item.dataIndex === k);   // point k belongs to the solid line
             },
             callbacks: {
               title: function (items) { return items.length ? weekFull(season, items[0].dataIndex) : ""; },
@@ -390,7 +390,7 @@
     charts[key] = new window.Chart(root.querySelector("canvas"), config);
   }
 
-  /* ---------------- Části stránky ---------------- */
+  /* ---------------- Page parts ---------------- */
 
   function roots(part) { return Array.prototype.slice.call(document.querySelectorAll('[data-pp-flu="' + part + '"]')); }
   function field(root, name) { return root.querySelector('[data-f="' + name + '"]'); }
@@ -399,9 +399,8 @@
   }
   function probBar(p) { return '<span class="pp-flu-pbar"><i style="width:' + Math.round(100 * p) + '%"></i></span> ' + pct(p); }
 
-  /* Horní blok říká, jak je to TEĎ — poslední hlášený týden, ať je přehrávání
-     u grafu kdekoli. (Dřív sledoval posuvník a stránka tak nahoře ukazovala
-     loňský listopad jako aktuální stav.) */
+  /* The top block shows the current state (the last reported week), regardless of
+     where the chart playback is. */
   function renderStatus() {
     roots("status").forEach(function (root) {
       var cur = ILI.current, running = cur.season, inWindow = lastWeekIdx(running) >= 0;
@@ -442,8 +441,8 @@
     });
   }
 
-  /* Řádek u grafu: co platilo v PŘEHRÁVANÉM týdnu. U běžící sezóny je zbytečný —
-     totéž říká horní blok. */
+  /* Line under the chart: what applied in the week being played back. Redundant for
+     the running season, where the top block says the same. */
   function replayLine() {
     if (isRunning(season) || k < 0) return "";
     var st = phase(season, k), tr = trendAt(ILI, season, k), fc = forecastAt(ILI, season, k);
@@ -486,14 +485,14 @@
       });
     }
 
-    /* Pozor: panel metodiky je vnořený v kartě a má vlastní [data-f="table"] —
-       týdenní tabulka grafu má proto jiné jméno pole. */
+    /* The methodology panel is nested in the card and has its own [data-f="table"],
+       so the chart's weekly table uses a different field name. */
     var table = field(root, "weekTable");
     if (table) {
       table.innerHTML = '<table class="pp-table"><thead><tr><th>' + L.colWeek + '</th><th class="l">' + L.colRange + "</th><th>"
         + L.colIliT + '</th><th class="l">' + L.colBandName + "</th><th>" + L.colAriT + "</th></tr></thead><tbody>"
         + ILI.history[season].map(function (x, i) {
-          if (x === null) return "";                 // běžící sezóna: budoucí týdny do tabulky nepatří
+          if (x === null) return "";                 // running season: future weeks do not belong in the table
           return "<tr><td>" + W[i] + "/" + weekYear(season, i) + '</td><td class="l">' + weekRange(season, i) + "</td><td>" + fmt(x)
             + '</td><td class="l">' + levelOf(x).name + "</td><td>" + fmt(ARI.history[season][i], 0) + "</td></tr>";
         }).join("") + "</tbody></table>";
@@ -584,8 +583,8 @@
       }).join("") + "</tbody>";
     });
 
-    /* Čísla v textu panelů metodiky — <span data-pp-flu-val="ili.validation.sensitivity"></span>.
-       Berou se z dat, ne z textu stránky: po přepočtu pipeline nesmí text tvrdit něco jiného. */
+    /* Numbers in the methodology panel text: <span data-pp-flu-val="ili.validation.sensitivity"></span>.
+       Taken from the data, not the page text, so the text stays correct after the pipeline recomputes. */
     Array.prototype.forEach.call(document.querySelectorAll("[data-pp-flu-val]"), function (el) {
       var value = el.getAttribute("data-pp-flu-val").split(".").reduce(function (o, key) { return o && o[key]; }, D.indicators);
       if (value === undefined || value === null) return;
@@ -611,7 +610,7 @@
   function syncSlider(slider) {
     slider.max = Math.max(0, lastWeekIdx(season));
     slider.value = Math.max(0, k);
-    slider.disabled = k < 0;                             // běžící sezóna bez dat: není co přehrávat
+    slider.disabled = k < 0;                             // running season without data: nothing to play back
   }
 
   function wireControls() {
@@ -624,7 +623,7 @@
         select.value = season;
         select.addEventListener("change", function () {
           season = select.value;
-          k = lastWeekIdx(season);                       // celá sezóna; u běžící poslední hlášený týden (−1 = ještě žádný)
+          k = lastWeekIdx(season);                       // whole season; for the running season the last reported week (−1 = none yet)
           syncSlider(slider);
           roots("chart").forEach(drawChart); renderMoving();
         });
@@ -656,9 +655,9 @@
 
   function start(data) {
     D = data; ILI = D.indicators.ili; ARI = D.indicators.ari; W = D.season_weeks; T = ILI.thresholds;
-    /* Horní blok je vždy „teď“. GRAF ukazuje běžící sezónu, jakmile má v sezónním
-       okně první bod; do té doby poslední uzavřenou sezónu celou (běžící jde vybrat,
-       jen je zatím prázdná — a říká proč). */
+    /* The top block always shows "now". The chart shows the running season once it has
+       its first point in the season window; until then the last closed season in full
+       (the running season can still be selected; it is empty and says why). */
     var running = ILI.current.season;
     if (ILI.history[running] && lastWeekIdx(running) >= 0) {
       season = running;
@@ -688,7 +687,7 @@
       });
   }
 
-  // Přebarvení při přepnutí motivu — stejný signál jako v pp-charts.js.
+  // Recolour on theme switch, using the same signal as pp-charts.js.
   new MutationObserver(function () {
     if (D && window.Chart) roots("chart").forEach(drawChart);
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });

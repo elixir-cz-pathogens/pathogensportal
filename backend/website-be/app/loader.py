@@ -6,8 +6,8 @@ pathogensportal-db submodule (`CHARTS_DIR`, mounted as
 
     external sources --scrapers--> CSV --generate_json.py--> chart JSON --loader--> Postgres
 
-The CSV -> JSON step stays in the submodule, because a colleague owns it; this
-loader picks up only from his output and does not reach into someone else's repo.
+The CSV -> JSON step stays in the submodule, which owns it; this loader only
+reads that output and does not depend on the submodule's internals.
 
 Usage:
 

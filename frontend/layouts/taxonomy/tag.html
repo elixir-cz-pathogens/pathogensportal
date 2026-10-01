@@ -1,22 +1,22 @@
-{{/* Stránka tagu. Přebíjí šablonu motivu kvůli jedinému slovu — `Type` místo
-     `Section` u bloku dashboardů.
+{{/* Tag page. Overrides the theme template for a single word — `Type` instead
+     of `Section` for the dashboard block.
 
-     ⛔ Motiv vypisoval `where .Data.Pages "Section" "dashboards"`. Když se
-     8. 9. 2026 Signály přestěhovaly z /dashboards/signals/ na /signals/, přestaly
-     do té sekce patřit a ze VŠECH svých stránek tagů zmizely — přitom tag
-     „detekce anomálií" na ně na titulce dál odkazoval. Prázdná stránka za
-     odkazem, který se tváří funkčně; přesně ta past, kterou hlídá PP-43/PP-51.
+     The theme used `where .Data.Pages "Section" "dashboards"`, which drops pages
+     outside the dashboards section (e.g. /signals/) from their tag pages while
+     the tag links still point there — an empty page behind a working-looking
+     link, the same trap as PP-43/PP-51.
 
-     `Type` je správný klíč, protože Signály `type: dashboards` v hlavičce už
-     mají (drží jim layout kvůli pp-charts.js). Hugo u stránek bez `type`
-     dosazuje sekci, takže se pro obsah sekce dashboards nic nemění.
+     `Type` is the right key because such pages already set `type: dashboards`
+     in front matter (it keeps their layout for pp-charts.js). Hugo uses the
+     section as the type for pages without `type`, so nothing changes for
+     content of the dashboards section.
 */}}
 {{ define "main" }}
-{{/* ⛔ .pp-viz není dekorace — na něm jsou definované VŠECHNY barevné
-     tokeny (dashboards.css). Bez tohohle obalu se `var(--pp-surface-raised)`
-     ani `var(--pp-border)` nevyhodnotí, karta ztratí pozadí i okraj a vypadá
-     jako by se styly nenačetly. Barvy původu to nepostihlo, ty jsou na :root,
-     takže rámeček zůstal vidět a chyba se tvářila jako „málo kontrastní“. */}}
+{{/* .pp-viz is not decorative — it defines ALL colour tokens (dashboards.css).
+     Without this wrapper `var(--pp-surface-raised)` and `var(--pp-border)` do
+     not resolve and the card loses its background and border. Origin colours
+     live on :root, so the border stays visible and the problem looks like low
+     contrast rather than a missing stylesheet. */}}
 <div class="pp-viz">
 
 {{ .Content }}
@@ -26,7 +26,7 @@
 
 <h3><i class="bi bi-three-dots-vertical"></i> {{ i18n "dataDashboards" }} ({{ len $dash }})</h3>
 <div class="container mt-3 mb-5">
-    {{/* Táž mřížka a táž karta jako na titulce a na /dashboards/. */}}
+    {{/* The same grid and card as on the home page and /dashboards/. */}}
     <div class="pp-tilegrid pp-tilegrid--full">
         {{ range $dash }}
         {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}
@@ -37,8 +37,7 @@
 
 <h3><i class="bi bi-three-dots-vertical"></i> {{ i18n "newsAndHighlights" }} ({{ len $news }})</h3>
 <div class="container mt-3 mb-5">
-    {{/* Od 15. 9. 2026 i novinky táž karta — stará highlight.html tu byla
-         poslední, vedle nových karet dashboardů o řádek výš. */}}
+    {{/* News items use the same card as dashboards. */}}
     <div class="pp-tilegrid pp-tilegrid--full">
         {{ range $news }}
         {{ partial "dashboard-tile.html" (dict "page" . "full" true) }}

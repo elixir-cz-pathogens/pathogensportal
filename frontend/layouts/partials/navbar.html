@@ -1,27 +1,24 @@
 <!-- MAIN CONTENT -->
 
 <!-- Top navigation bar with logo and menu beside the logo -->
-{{/* ⛔ Bez `navbar-expand-*`. Do 9. 9. 2026 ho tenhle navbar potřeboval kvůli
-     pruhu s „O portálu", který v něm seděl v `collapse` bez `id`. Ten pruh je
-     pryč — „O portálu" je teď v rozklikávacím menu — takže tady není co
-     rozbalovat, a hlavně: bez `navbar-expand-lg` Bootstrap přestane nad `lg`
-     skrývat `.navbar-toggler`, takže tlačítko drží samo a nemusí ho zachraňovat
-     výjimka v CSS. */}}
+{{/* No `navbar-expand-*` needed here: there is nothing in this navbar to
+     collapse, and without `navbar-expand-lg` Bootstrap does not hide
+     `.navbar-toggler` above `lg`, so the button stays visible without a CSS
+     exception. */}}
 <nav class="navbar navbar-light bg-white pb-0">
     <div class="container">
-        {{/* ⛔ V hlavičce je JEN logo portálu. Loga partnerů odsud odešla 9. 9. 2026:
-             ELIXIR, ÚMG, VZÚ a Program švýcarsko-české spolupráce stály vedle
-             názvu na každé stránce a přebíjely to, na čem je čtenář.
+        {{/* Only the portal logo is in the header; partner logos are not repeated
+             on every page next to the title.
 
-             ⚠️ Poděkování se tím NEZTRATILO a ztratit se nesmí. Všech devět
-             partnerů včetně švýcarského programu vykresluje partners.html
-             z patičky, tedy také na každé stránce — u dotačního loga je viditelné
-             uvedení podmínka, ne zdvořilost. Kdo by rušil i patičku, musí to
-             nejdřív ověřit u poskytovatele.
+             The acknowledgement must not be lost: all partners including the
+             Swiss programme are rendered by partners.html from the footer, i.e.
+             also on every page — for the grant logo, visible acknowledgement is
+             a condition, not a courtesy. Removing the footer logos requires
+             checking with the funder first.
 
-             ⚠️ `params.logo` v hugo.toml tím ztratilo v NAŠÍ šabloně odběratele.
-             Nechává se: šablona motivu ho pořád čte, a patička si logo ELIXIRu
-             bere vlastní cestou. */}}
+             `params.logo` in hugo.toml is no longer used by this template. It is
+             kept: the theme templates still read it, and the footer takes the
+             ELIXIR logo by its own path. */}}
         <!-- Logo -->
         <div class="d-flex navbar-brand">
             <a href="{{ relURL .Site.BaseURL }}">
@@ -29,18 +26,15 @@
             </a>
         </div>
 
-        {{/* ⛔ Přepínač jazyků MIMO všechny `collapse`, takže je vidět na každé
-             šířce obrazovky.
+        {{/* Language switcher OUTSIDE every `collapse`, so it is visible at every
+             screen width. Inside the top `<div class="collapse navbar-collapse">`
+             (which has no id, while the hamburger targets `#navbarCollapseBottom`)
+             it could not be opened on mobile at all.
 
-             Předtím byl jako ikona zeměkoule uvnitř horního
-             `<div class="collapse navbar-collapse">`, který NEMÁ id a hamburger
-             cílí na `#navbarCollapseBottom` — na mobilu ho tedy nešlo otevřít
-             vůbec. Na desktopu byl schovaný v dropdownu, který se musí rozkliknout.
-
-             Odkazuje na PŘEKLAD AKTUÁLNÍ STRÁNKY, když existuje; jinak na domovskou
-             stránku druhého jazyka. Motiv odkazoval vždycky na domovskou. */}}
-        {{/* Přepínač jazyků a tlačítko menu jsou jedna skupina vpravo v hlavičce,
-             na místě, kde do 9. 9. 2026 stálo „O portálu". */}}
+             Links to the TRANSLATION OF THE CURRENT PAGE when one exists;
+             otherwise to the home page of the other language. */}}
+        {{/* The language switcher and the menu button form one group on the right
+             of the header. */}}
         <div class="d-flex align-items-center ms-auto gap-2">
 
         {{ if hugo.IsMultilingual }}
@@ -71,24 +65,21 @@
 </nav>
 <!-- ENDS HERE - Top navigation bar with logo and menu beside the logo -->
 
-{{/* Menu pro VŠECHNY šířky, otevírá se hamburgerem výše.
-     ⛔ Bez `navbar-expand-*` schválně: s `navbar-expand-lg` se na desktopu
-     rozbalí samo a sedí roztažené pod hlavičkou, což je přesně to, co odsud
-     mělo zmizet. */}}
+{{/* Menu for ALL widths, opened by the hamburger above.
+     Deliberately without `navbar-expand-*`: with `navbar-expand-lg` it would
+     expand by itself on desktop and sit spread out under the header. */}}
 <nav class="navbar navbar-light pt-0 pb-1">
     <div class="container">
         <div class="collapse navbar-collapse" id="navbarCollapseBottom">
 
-            {{/* ⛔ navbar_top (O portálu, GitHub) se vykresluje i tady, protože
-                 nahoře sedí v `<div class="collapse navbar-collapse">` BEZ id —
-                 a hamburger cílí na #navbarCollapseBottom. Pod šířkou lg se na
-                 „O portálu" nedalo dostat vůbec. Stejná past jako u přepínače
-                 jazyků, který proto sedí mimo všechny collapse.
+            {{/* navbar_top (About, GitHub) is rendered here too, because at the top it
+                 sits in a `<div class="collapse navbar-collapse">` WITHOUT an id,
+                 while the hamburger targets #navbarCollapseBottom — below `lg`
+                 "About" would be unreachable. Same trap as the language
+                 switcher, which is therefore outside every collapse.
 
-                 ⛔ `d-lg-none` odsud zmizelo 9. 9. 2026 spolu s pruhem vpravo
-                 v hlavičce, kde „O portálu" stávalo. Ta třída tu byla proto, aby
-                 položka nebyla na desktopu dvakrát — druhý výskyt už neexistuje,
-                 takže s ní by „O portálu" nad `lg` zmizelo úplně. */}}
+                 No `d-lg-none` here: this is the only place the item is rendered,
+                 so hiding it above `lg` would remove "About" entirely. */}}
             <div>
                 {{ range .Site.Menus.navbar_top }}
                 <div class="main_menu_item pb-1"><a href="{{ .URL }}">{{ .Name }}</a></div>
@@ -98,11 +89,9 @@
             <!-- Top nav list i.e. About, Contact, Language, etc -->
             <hr>
 
-            {{/* ⛔ Tenhle blok NESMÍ mít `d-lg-none`. Měl ho, dokud existovala
-                 vodorovná lišta pro desktop — po jejím odstranění 9. 9. 2026 by
-                 hamburger nad `lg` otevíral PRÁZDNÉ menu. Chyceno vykreslením
-                 otevřeného stavu, ne čtením kódu: zavřené menu vypadá správně
-                 v obou případech. */}}
+            {{/* This block must NOT have `d-lg-none`: there is no separate desktop menu
+                 bar, so the hamburger above `lg` would open an EMPTY menu. The
+                 closed menu looks correct either way — check the open state. */}}
             <div>
                 {{ $events := .Site.GetPage "section" "dashboards" }}
                 {{ if $events }}
@@ -113,7 +102,7 @@
                     <div class="collapse main_menu_item_sub ps-4" id="dashboards">
                         <a class="d-block" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
                         {{ range $events.RegularPages }}
-                        {{- /* Položky vedoucí ven z portálu nesou ikonu externího odkazu. */ -}}
+                        {{- /* Items leading outside the portal carry an external-link icon. */ -}}
                         <a class="d-block" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
                         {{ end }}
                     </div>
@@ -148,11 +137,11 @@
                         {{ i18n "topics" }} <i class="bi bi-caret-down-fill small"></i>
                     </a>
                     <div class="collapse main_menu_item_sub ps-4" id="topics">
-                        {{/* Jen tagy s obsahem — tagy skrytých podstránek (build:
-                             list: never) by vedly na prázdné stránky. */}}
-                        {{- /* Jen tagy přiřazené viditelné stránce: site.RegularPages respektuje
-     build: list: never, mapa .Site.Taxonomies nikoli — tagy skrytých
-     podstránek by vedly na prázdné stránky tagů. */ -}}
+                        {{/* Only tags with content — tags of hidden subpages (build:
+                             list: never) would lead to empty pages. */}}
+                        {{- /* Only tags assigned to a visible page: site.RegularPages respects
+     build: list: never, the .Site.Taxonomies map does not — tags of hidden
+     subpages would lead to empty tag pages. */ -}}
 {{- $visible := slice -}}
 {{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
 {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
@@ -170,19 +159,13 @@
 </nav>
 <!-- ENDS HERE - Expandable top navigation menu, controlled by above defined hamburger button -->
 
-{{/* ⛔ Tady stávala vodorovná lišta menu — `d-none d-lg-block`, tedy druhé
-     vykreslení TÝCHŽ položek jen pro desktop. Odstraněna 9. 9. 2026: menu se
-     má rozkliknout, ne sedět roztažené pod hlavičkou.
+{{/* There is no separate horizontal desktop menu bar: the site has ONE menu
+     for all widths — `#navbarCollapseBottom` above. That is why its `<nav>` has
+     no `navbar-expand-lg`: with it the menu would expand by itself on desktop.
 
-     Od té doby má web JEDNO menu pro všechny šířky — `#navbarCollapseBottom`
-     výše. Proto z jeho `<nav>` zmizelo `navbar-expand-lg`: s ním se na
-     desktopu rozbalilo samo a schování by nic neřešilo.
-
-     ⚠️ Hamburger je v horním `<nav>`, které si `navbar-expand-lg` PONECHALO —
-     bez něj by se sbalil i pruh s „O portálu", který nemá `id` a nešlo by ho
-     ničím otevřít. Bootstrap ale v takovém navbaru tlačítko nad `lg` skrývá,
-     takže ho custom.css musí zobrazit zpátky (`.navbar-toggler`). Ty dva kusy
-     drží pohromadě: kdo vrátí `navbar-expand-lg` dolů nebo to pravidlo v CSS
-     smaže, zůstane bez menu.
-
-     Vrátit vodorovnou lištu = tenhle soubor v git historii před 9. 9. 2026. */}}
+     The hamburger is in the top `<nav>`, which KEEPS `navbar-expand-lg` —
+     without it the "About" strip, which has no `id`, would collapse too and
+     nothing could open it. Bootstrap hides the button above `lg` in such a
+     navbar, so custom.css has to show it again (`.navbar-toggler`). The two
+     belong together: restoring `navbar-expand-lg` below or deleting that CSS
+     rule leaves the site without a menu. */}}

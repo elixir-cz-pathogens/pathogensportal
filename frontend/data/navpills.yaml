@@ -1,10 +1,8 @@
-# Navigační „pilulky“ dashboardových skupin — JEDINÝ zdroj pravdy.
-# Dřív byl tenhle seznam vkopírovaný v každé stránce skupiny zvlášť (11 kopií),
-# takže přidání stránky znamenalo editovat všechny — a kopie se rozcházely
-# (stránka Signály se do žádné nepropsala). Renderuje shortcode nav-pills:
+# Navigation pills for the dashboard groups — the single source of truth.
+# Rendered by the nav-pills shortcode:
 #   {{< nav-pills group="infekcni-nemoci" active="gastro" >}}
-# URL jsou bez jazykového prefixu — shortcode je žene přes relLangURL, takže
-# tatáž definice slouží české i anglické verzi.
+# URLs carry no language prefix — the shortcode passes them through relLangURL,
+# so one definition serves both the Czech and the English version.
 
 infekcni-nemoci:
   aria:

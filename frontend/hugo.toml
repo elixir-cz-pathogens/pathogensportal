@@ -5,59 +5,60 @@ defaultContentLanguage = "cs"
 defaultContentLanguageInSubdir = false
 enableRobotsTXT = true
 
-# ⛔ Zdroj .Lastmod, podle kterého titulka řadí karty. Bez tohohle je .Lastmod
-# u VŠECH dashboardů nulový — žádný nemá v hlavičce `date:` — a řazení „podle
-# data úpravy" by vracelo pořadí podle ničeho, které vypadá, že funguje.
+# Source of .Lastmod, which the home page uses to order cards. Without it
+# .Lastmod is zero for every dashboard (none has `date:` in its front matter),
+# and ordering by modification date would silently return an arbitrary order.
 #
-# ⚠️ Vyžaduje PLNOU historii při buildu. Oba deploye mají `fetch-depth: 0`;
-# preview workflow ho dostalo dopsané ve stejné změně. Na mělkém klonu dostane
-# každý soubor datum jediného commitu a pořadí se tiše sesype do jednoho data.
+# Requires FULL history at build time: the deploy and preview workflows use
+# `fetch-depth: 0`. On a shallow clone every file gets the date of the single
+# commit and the ordering collapses to one date.
 enableGitInfo = true
 
-# ⛔ `lastmod` a `date` z hlavičky PŘED gitem. Výchozí pořadí Hugo dává :git
-# první, jenže datum z gitu tady neznamená „kdy se obsah změnil": squash-merge
-# PR #62 (7. 9. 2026) sáhl na 123 souborů najednou, takže osm z devíti
-# dashboardů má identické datum, a datová pipeline commituje do content/
-# sama (123 commitů od 1. 9., 7 z nich do dashboardů). Řazení podle gitu proto
-# míchá „úpravu textu" s „proběhl robot".
+# Front matter `lastmod` and `date` take precedence over git. Hugo puts :git
+# first by default, but here the git date does not mean "content changed":
+# bulk merges touch many files at once, and the data pipeline commits into
+# content/ itself, so git dates mix text edits with automated runs.
 #
-# S tímhle pořadím stačí do hlavičky dashboardu dopsat `date:` a ten výsledek
-# přebije. Git zůstává jako záchranná síť pro stránky bez data.
+# With this order, adding `date:` to a dashboard's front matter overrides the
+# result. Git remains the fallback for pages without a date.
 [frontmatter]
   lastmod = ['lastmod', 'date', ':git', ':default']
 
-# JSON-LD není mezi vestavěnými typy Hugo — bez téhle definice by Hugo neumělo
-# určit typ obsahu souborů DCAT katalogu (layouts/partials/dcat-publish.html).
+# JSON-LD is not a built-in Hugo media type — without this definition Hugo
+# could not determine the content type of the DCAT catalogue files
+# (layouts/partials/dcat-publish.html).
 [mediaTypes]
   [mediaTypes."application/ld+json"]
     suffixes = ["jsonld"]
 
-# Dva strojové výstupy stránky „Data a citace“. Zapínají se v její hlavičce přes
-# `outputs`, ne globálně — jinak by je Hugo vyrobilo ke každé stránce webu.
+# Two machine-readable outputs of the "Data and citation" page. They are enabled
+# in that page's front matter via `outputs`, not globally — otherwise Hugo would
+# generate them for every page on the site.
 [outputFormats]
-  # Katalog zdrojů pro čtenáře i stroje — /about/data/sources.json. Vydává celý
-  # data/sources.yaml včetně pole `limits` (co z dat NEJDE vyčíst), které se do
-  # schema.org ani DCAT nevejde a přitom je pro konzumenta dat to podstatné.
+  # Source catalogue for readers and machines — /about/data/sources.json. Emits
+  # the whole of data/sources.yaml including `limits` (what the data CANNOT tell
+  # you), which fits neither schema.org nor DCAT but matters most to data users.
   [outputFormats.sources]
     mediaType = "application/json"
     baseName = "sources"
     isPlainText = true
-    # Nesmí se hlásit jako alternativa stránky: `<link rel=alternate>` v hlavičce
-    # by čtečkám nabízel katalog jako jinou podobu téhož dokumentu, kterou není.
+    # Must not be announced as an alternate of the page: `<link rel=alternate>`
+    # would present the catalogue as another form of the same document, which it is not.
     notAlternative = true
 
 [params]
   mail = "hpaces@img.cas.cz"
-  # ⚠️ Před registrací katalogu v NKOD sem patří IRI poskytovatele z registru
-  # práv a povinností, ve tvaru
+  # Before registering the catalogue in NKOD (National Open Data Catalogue),
+  # set this to the publisher IRI from the Register of Rights and Obligations:
   #   https://rpp-opendata.egon.gov.cz/odrpp/zdroj/orgán-veřejné-moci/<IČO>
-  # Dokud je prázdné, katalog se vygeneruje jako obyčejný DCAT (použitelný sám
-  # o sobě), ale sklizeň do NKOD ho odmítne — `poskytovatel` je povinný.
+  # While empty, the catalogue is still generated as plain DCAT (usable on its
+  # own), but NKOD harvesting rejects it — `poskytovatel` is mandatory.
   [params.dcat]
     publisher = ""
-  # Výchozí náhledový obrázek pro sdílení (og:image / twitter:image)
-  # Jmeno souboru nese datum verze schválně: Discord a spol. cachují náhledy
-  # podle URL obrázku a neumí je obnovit — při změně obrázku soubor přejmenuj.
+  # Default preview image for sharing (og:image / twitter:image).
+  # The file name carries a version date on purpose: Discord and similar services
+  # cache previews by image URL and cannot refresh them — rename the file when
+  # the image changes.
   images = ["/images/og-card-2026-09.png"]
   homepage = "https://pathogens.vm.cesnet.cz"
   logo = "/images/elixir_logo.png"
@@ -73,40 +74,35 @@ enableGitInfo = true
   # which is the correct state for a local build and for any environment where
   # this has not been decided.
   #
-  # ⛔ The id is created in the Umami UI (SSH tunnel, it is not public) and is not
-  # a secret — it appears in the page source of every visitor. What IS sensitive
-  # is the Umami login, which is not here and never should be.
+  # The id is created in the Umami UI (reached via SSH tunnel, not public) and is
+  # not a secret — it appears in the page source for every visitor. The Umami
+  # login is sensitive and must never be stored here.
   [params.analytics]
     # Same-origin path served by the Apache /stats/ proxy. A third-party host
     # here would be blocked by ad blockers and would defeat the point.
     script_url = "/stats/script.js"
 
     # ── One id per machine, keyed by the host it belongs to ──────────────────
-    # Each machine runs its OWN Umami with its own database, so an id is only
+    # Each machine runs its own Umami with its own database, so an id is only
     # meaningful on the machine that issued it. The build picks the entry
     # matching the host it is building for — `baseURL` comes from STAGING_HOST /
     # PRODUCTION_HOST at deploy time — and emits nothing when there is no match.
     #
-    # ⛔ This is why the file does NOT differ between `dev` and `main`. Keeping a
-    # single id here and deleting it on the way to main would be a rule enforced
-    # by a comment; this is enforced by the build. A host with no entry (a local
-    # build, a PR preview, a new machine) ships no tracker rather than a wrong one.
+    # This keeps the file identical on `dev` and `main`, enforced by the build
+    # rather than by convention. A host with no entry (a local build, a PR
+    # preview, a new machine) ships no tracker rather than a wrong one; sending
+    # production traffic to the staging id would produce plausible but wrong
+    # numbers.
     #
-    # ⚠️ Sending production's visitors to staging's id would produce numbers that
-    # exist and are wrong — worse than no numbers. That is the failure this shape
-    # prevents.
-    #
-    # ⛔ Must stay the LAST thing in [params.analytics]: a TOML sub-table header
-    # swallows every key after it, so a plain key added below would land in here.
+    # Must stay the LAST entry in [params.analytics]: a TOML sub-table header
+    # captures every key after it, so a plain key added below would land in here.
     [params.analytics.hosts]
       "pathogens-dev.vm.cesnet.cz" = "d1dc6fc0-e043-4089-b4f5-ebdad26e9f88"
       "pathogens.vm.cesnet.cz" = "368bbdc4-e019-4134-add7-d6b5a1bd6e9f"
 
-# ⛔ Menu entries use `pageRef`, never `url`. A menu entry's `url` is emitted
-# verbatim and Hugo does NOT prefix it with the language, even inside
-# [languages.en] — so the English navbar linked to the Czech /news/. Measured on a
-# real build; `main` already carries this fix and dev did not, so this also removes
-# a guaranteed conflict at the next release merge.
+# Menu entries use `pageRef`, never `url`. A menu entry's `url` is emitted
+# verbatim and Hugo does not prefix it with the language, even inside
+# [languages.en], so English menu links would point to Czech pages.
 [languages]
   [languages.cs]
     title = "Pathogen Portal CZ"
@@ -114,19 +110,16 @@ enableGitInfo = true
     label = "Čeština"
     locale = "cs-CZ"
     contentDir = "content/cs"
-    # Menu jsou per-jazyk — globální [menus] by anglické verzi podstrčilo
-    # české názvy položek.
-    # ⛔ Položka „Domů" byla odebrána 15. 9. 2026 (rozhodnutí draesdom): cestu na
-    # titulku nese logo portálu, samostatná položka v menu byla navíc. Přidala ji
-    # PP-52 — nevracet ji bez nového rozhodnutí.
+    # Menus are defined per language — a global [menus] would give the English
+    # version Czech item names.
+    # There is no "Home" item: the portal logo links to the home page.
     [[languages.cs.menus.main]]
       identifier = "dashboards"
       name = "Dashboardy"
       pageRef = "/dashboards"
       weight = 10
-    # ⛔ Signály musí být v menu. Stránka odešla ze sekce dashboardů a od
-    # 9. 9. 2026 na ni nevede ani dlaždice z titulky — tohle je jediná
-    # navigační cesta, kterou má.
+    # Signals must stay in the menu: the page is not part of the dashboards
+    # section and has no home-page tile, so this is its only navigation path.
     [[languages.cs.menus.main]]
       identifier = "signals"
       name = "Signály"
@@ -137,9 +130,9 @@ enableGitInfo = true
       name = "Novinky"
       pageRef = "/news"
       weight = 20
-    # ⛔ Akce v menu NEJSOU a nemají být: od 15. 9. 2026 žijí jako sekce na
-    # titulce (kalendář + seznam) a stránka /events/ se negeneruje
-    # (content/*/events/_index.md → build.render: never). Položka menu by vedla na 404.
+    # Events are intentionally not in the menu: they are a section of the home
+    # page (calendar + list) and /events/ is not rendered
+    # (content/*/events/_index.md → build.render: never), so an item would 404.
 
   [languages.en]
     title = "Pathogen Portal CZ"
@@ -147,16 +140,14 @@ enableGitInfo = true
     label = "English"
     locale = "en-GB"
     contentDir = "content/en"
-    # ⛔ The "Home" item was removed on 15 Sep 2026 (decision draesdom): the portal
-    # logo links home. It was added by PP-52 — do not restore it without a new decision.
+    # There is no "Home" item: the portal logo links to the home page.
     [[languages.en.menus.main]]
       identifier = "dashboards"
       name = "Dashboards"
       pageRef = "/dashboards"
       weight = 10
-    # ⛔ Signály musí být v menu. Stránka odešla ze sekce dashboardů a od
-    # 9. 9. 2026 na ni nevede ani dlaždice z titulky — tohle je jediná
-    # navigační cesta, kterou má.
+    # Signals must stay in the menu: the page is not part of the dashboards
+    # section and has no home-page tile, so this is its only navigation path.
     [[languages.en.menus.main]]
       identifier = "signals"
       name = "Signals"

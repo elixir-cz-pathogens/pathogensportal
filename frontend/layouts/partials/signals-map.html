@@ -1,25 +1,24 @@
-{{/* Signály: tabulka diagnóz jako přepínač + mapa vybrané diagnózy.
+{{/* Signals: a list of diagnoses as a selector + a map of the selected diagnosis.
 
-     Použití:
+     Usage:
        {{ partial "signals-map.html" (dict "ctx" . "src" "…" "limit" 10) }}
 
-     `limit` 0 nebo nevyplněno = všechny diagnózy.
+     `limit` 0 or unset = all diagnoses.
 
-     Model: mapa NEUKAZUJE počet signálů, ale JEDNU vybranou diagnózu — kraje se
-     obarví podle síly jejího signálu, kraje bez signálu zůstanou bílé. Tabulka
-     vlevo je zároveň výpis i přepínač; ve výchozím stavu je vybraný nejsilnější
-     signál.
+     Model: the map does NOT show the number of signals but ONE selected
+     diagnosis — regions are coloured by its signal strength, regions without a
+     signal stay white. The list on the left is both a listing and a selector;
+     by default the strongest signal is selected.
 
-     Seznam se staví ZDE, při buildu, takže bez JS je vidět celý výpis (mapa se
-     bez JS neobarví — je to jedna z mála věcí na webu, kde by šlo o skutečnou
-     ztrátu, proto ten seznam).
+     The list is built HERE, at build time, so without JS the full listing is
+     visible (the map is not coloured without JS — one of the few places on the
+     site where that would be a real loss, hence the list).
 
-     ⛔ Stavěl se dřív v layouts/index.html a předával se sem hotový jako `rows`.
-     Shortcode `signals-map` ho ale předat neuměl, takže volání z obsahu
-     vykreslilo prázdný přepínač — pp-charts.js seznam nestaví, jen čte hotové
-     [data-dg] prvky. Proto je ta logika tady: jedno místo, obě volání.
+     The logic lives here rather than in the caller so that both the shortcode
+     and the templates get the same list — pp-charts.js does not build the list,
+     it only reads the prebuilt [data-dg] elements.
 
-     ⛔ Vyžaduje /js/pp-charts.js.
+     Requires /js/pp-charts.js.
 */}}
 {{ $ctx      := .ctx }}
 {{ $src      := .src | default "/data/charts/anomaly_signals.json" }}
@@ -27,12 +26,11 @@
 {{ $limit    := int (.limit | default 0) }}
 {{ $en       := eq $ctx.Site.Language.Lang "en" }}
 
-{{/* ⛔ Seskupuje se podle KÓDU MKN-10 (`diagnoza`), ne podle českého názvu.
-     Název je volný text z ÚZIS a je to jediná věc, která se dá přejmenovat;
-     kód je klíč.
+{{/* Grouped by ICD-10 CODE (`diagnoza`), not by Czech name. The name is free
+     text from ÚZIS and can be renamed; the code is the key.
 
-     ⚠️ Řádky s kraj_kod = "CZ" se do počtu krajů NEPOČÍTAJÍ — jsou to
-     celostátní řady počítané zvlášť, ne součet krajů. */}}
+     Rows with kraj_kod = "CZ" are NOT counted as regions — they are national
+     series computed separately, not a sum of regions. */}}
 {{ $rows := "" }}
 {{ $path := printf "static%s" $src }}
 {{ if fileExists $path }}
@@ -46,9 +44,9 @@
     {{ $byDg = merge $byDg (dict $k (dict "code" $k "name" $cur.name "max" $max)) }}
   {{ end }}
 
-  {{/* ⛔ Seřazeno podle SÍLY, ne podle kódu. `range` nad mapou jde v pořadí
-       klíčů, takže seznam začínal na A02 — zatímco mapa se otevírá na
-       nejsilnějším signálu. Dva různé „první řádky" na jedné kartě. */}}
+  {{/* Sorted by STRENGTH, not by code. `range` over a map iterates in key order,
+       which would start the list at A02 while the map opens on the strongest
+       signal — two different "first rows" on one card. */}}
   {{ $list := slice }}
   {{ range $code, $g := $byDg }}{{ $list = $list | append $g }}{{ end }}
   {{ $list = sort $list "max" "desc" }}
@@ -60,8 +58,9 @@
   {{ end }}
 {{ end }}
 
-{{/* Bez dat se nevykreslí nic. Prázdný přepínač vedle prázdné mapy vypadá jako
-     rozbitá stránka, kdežto chybějící blok jako blok, který zrovna nemá co říct. */}}
+{{/* Without data nothing is rendered. An empty selector next to an empty map
+     looks like a broken page, whereas a missing block looks like a block with
+     nothing to say. */}}
 {{ if $rows }}
 
 <figure class="pp-card pp-signalmap" data-pp-signalmap data-src="{{ $src }}">
@@ -70,20 +69,20 @@
   {{ end }}
 
   <div class="pp-signalmap__grid">
-    {{/* ── Seznam = výpis i přepínač ───────────────────────────────────── */}}
+    {{/* ── List = listing and selector ────────────────────────────────── */}}
     <div class="pp-signalmap__listcol">
-      {{/* ⛔ Seznam, ne tabulka. Sloupce s počtem krajů a silou jsou pryč —
-           tatáž čísla jsou v mapě u konkrétního kraje, kde mají kontext. Zbylo
-           jedno pole, a jeden sloupec není tabulka.
+      {{/* A list, not a table. Region count and strength are shown on the map for
+           the specific region, where they have context. One remaining field in
+           one column is not a table.
 
-           `<button>` místo klikacího řádku: roli, ovládání klávesnicí i chování
-           na Enter a mezerník dostaneme od prohlížeče a nemusíme je dopisovat.
+           `<button>` instead of a clickable row: the role, keyboard handling and
+           Enter/Space behaviour come from the browser for free.
 
-           ⚠️ Pořadí nese informaci — nejsilnější signál je první a je vybraný. */}}
+           The order carries information — the strongest signal is first and selected. */}}
       <ul class="pp-signalmap__list" data-pp-signalmap-rows>{{ $rows | safeHTML }}</ul>
     </div>
 
-    {{/* ── Mapa vybrané diagnózy ──────────────────────────────────────── */}}
+    {{/* ── Map of the selected diagnosis ─────────────────────────────── */}}
     <div class="pp-signalmap__mapcol">
       <p class="pp-signalmap__selected" data-pp-signalmap-title>&nbsp;</p>
       <div class="pp-map">

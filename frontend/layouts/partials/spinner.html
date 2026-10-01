@@ -1,17 +1,18 @@
-{{/* Ukazatel načítání — emblém portálu, který se otáčí.
+{{/* Loading indicator — the portal emblem, spinning.
 
-     Usage: {{ partial "spinner.html" . }}   (kontext = stránka, kvůli jazyku)
+     Usage: {{ partial "spinner.html" . }}   (context = page, for the language)
 
-     ⛔ Patří DOVNITŘ .pp-skeleton. pp-charts.js po načtení dat volá
-     skeleton.remove(), takže se spinner uklidí sám a v JS není potřeba měnit
-     ani řádek. Umístěný vedle skeletonu by po načtení zůstal viset.
+     Belongs INSIDE .pp-skeleton. pp-charts.js calls skeleton.remove() after the
+     data loads, so the spinner is cleaned up with it and no JS change is
+     needed. Placed next to the skeleton it would stay behind after loading.
 
-     ⚠️ Emblém, ne celé logo. portal.png obsahuje i nápis „PATHOGENS“, který by
-     se při rotaci obracel vzhůru nohama. portal-mark.png je jen ten kruhový
-     znak — je kulatý, takže se točí kolem svého středu a nehází sebou.
+     The emblem, not the full logo. portal.png includes the "PATHOGENS"
+     lettering, which would turn upside down while rotating. portal-mark.png is
+     just the round mark — it spins around its centre without wobbling.
 
-     ⚠️ alt="" a text pro odečítač zvlášť: „Pathogens Portal“ přečtené dokola
-     u načítání neříká nic. role="status" oznámí změnu, až obsah dorazí. */}}
+     alt="" and separate screen-reader text: "Pathogens Portal" read repeatedly
+     while loading says nothing. role="status" announces the change when
+     content arrives. */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 <span class="pp-spinner" role="status">
   <img class="pp-spinner__mark" src="{{ "images/portal-mark.png" | relURL }}" alt=""

@@ -1,18 +1,19 @@
-{{/* Jeden člověk na stránce Lidé — fotka vlevo, jméno a text vpravo.
+{{/* One person on the People page — photo on the left, name and text on the right.
 
      Usage:
-       {{< person name="Mgr. Jan Pačes, Ph.D." photo="/images/people/paces.jpg" >}}
-       Text o člověku, **markdown** funguje.
+       {{< person name="Name Surname" photo="/images/people/surname.jpg" >}}
+       Text about the person, **markdown** works.
        {{< /person >}}
 
-     Bez `photo` se místo fotky ukáže kruh s iniciálami — `initials="JV"`.
-     Iniciály se zadávají ručně, ne odvozují ze jména: jména nesou tituly
-     („Bc.“, „Ph.D.“) a automat by z nich udělal „BJ“.
+     Without `photo` a circle with initials is shown instead — `initials="AB"`.
+     Initials are given by hand, not derived from the name: names carry titles
+     ("Bc.", "Ph.D.") that automatic derivation would pick up.
 
-     ⚠️ Fotky: čtverec, JPG, 400×400, BEZ EXIF (repo je veřejné a EXIF nese
-     model fotoaparátu a datum pořízení). Originály se do repa nedávají.
+     Photos: square, JPG, 400×400, WITHOUT EXIF (the repository is public and
+     EXIF carries the camera model and capture date). Originals are not committed.
 
-     `alt` je prázdný záměrně — hned vedle stojí jméno, odečítač by ho četl dvakrát. */}}
+     `alt` is empty on purpose — the name is right next to it, a screen reader
+     would read it twice. */}}
 {{ $name := .Get "name" }}
 <section class="pp-person">
   {{ with .Get "photo" }}

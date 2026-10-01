@@ -1,17 +1,17 @@
-/* Omez velikost hlavního loga portálu v navbar */
+/* Limit the size of the main portal logo in the navbar */
 .navbar .navbar-brand .portal-logo {
   height: 65px !important;
   max-height: 65px !important;
   width: auto !important;
 }
 
-/* ELIXIR logo v patičce/headeru */
+/* ELIXIR logo in the footer/header */
 .elixir-logo {
   height: 48px;
   width: auto;
 }
 
-/* Afiliace — loga organizací v about/affiliations */
+/* Affiliations: organisation logos in about/affiliations */
 .organization-logo {
   max-height: 80px;
   max-width: 200px;
@@ -19,13 +19,13 @@
   object-fit: contain;
 }
 
-/* ── Štítek původu dat (PP-57) ──────────────────────────────────────────────
-   Tokeny jsou v duchu dashboards.css, ale musí platit i mimo `.pp-viz` — štítek
-   se vykresluje na kartách i na titulce, které ten wrapper nemají.
+/* ── Data origin label (PP-57) ──────────────────────────────────────────────
+   Tokens follow dashboards.css but must also apply outside `.pp-viz`: the label
+   is rendered on cards and on the home page, which lack that wrapper.
 
-   ⛔ Záměrně NEPOUŽÍVÁ červenou ani oranžovou. Ty jsou v tomhle projektu
-   vyhrazené pro stav (--pp-status-warn / --pp-status-alert), a „zpracováno AI"
-   není varování — je to informace o původu. Fialová se s ničím nepere. */
+   Deliberately uses neither red nor orange. Those are reserved for status in this
+   project (--pp-status-warn / --pp-status-alert), and "processed by AI" is not a
+   warning but provenance information. Purple does not clash with anything. */
 :root {
   --pp-origin-aggregated: #2a78d6;
   --pp-origin-aggregated-bg: #eaf2fd;
@@ -34,15 +34,14 @@
   --pp-origin-ai: #5b46bd;
   --pp-origin-ai-bg: #eeebfa;
 }
-/* ⛔ Spínač je [data-bs-theme="dark"], NE prefers-color-scheme. Zbytek webu
-   (dashboards.css, tokeny --pp-surface a spol.) se přepíná tímhle atributem,
-   takže tenhle blok na prefers-color-scheme obarvoval štítky natmavo podle
-   NASTAVENÍ OS, zatímco stránka kolem nich zůstala světlá — tmavé ostrůvky na
-   bílé. Dva spínače pro jednu věc nejsou volba, jsou chyba.
+/* The switch is [data-bs-theme="dark"], not prefers-color-scheme. The rest of
+   the site (dashboards.css, the --pp-surface tokens etc.) switches on this
+   attribute; using prefers-color-scheme here would darken the labels according
+   to the OS setting while the surrounding page stayed light.
 
-   ⚠️ data-bs-theme dnes nikdo nenastavuje (pp-charts.js ho jen pozoruje), takže
-   tenhle blok je zatím neaktivní. To je záměr: web je světlý, dokud někdo tmavý
-   režim vědomě nezapne, a pak se přepne CELÝ. */
+   data-bs-theme is currently not set by anything (pp-charts.js only observes it),
+   so this block is inactive for now. This is intentional: the site stays light
+   until dark mode is enabled deliberately, and then it switches as a whole. */
 [data-bs-theme="dark"] {
   --pp-origin-aggregated: #7fb4f0;
   --pp-origin-aggregated-bg: #16283d;
@@ -71,7 +70,7 @@
 .pp-origin-badge--own        { color: var(--pp-origin-own);        background: var(--pp-origin-own-bg); }
 .pp-origin-badge--ai-assisted{ color: var(--pp-origin-ai);         background: var(--pp-origin-ai-bg); }
 
-/* Legenda nad seznamem dashboardů */
+/* Legend above the dashboard list */
 .pp-origin-legend {
   display: flex;
   flex-wrap: wrap;
@@ -85,16 +84,16 @@
 }
 .pp-origin-legend__item { display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
 
-/* ── Titulní stránka (PP-57) ─────────────────────────────────────────────── */
+/* ── Home page (PP-57) ───────────────────────────────────────────────────── */
 .pp-home-lead { font-size: 1.05rem; max-width: 62ch; color: #52514e; }
 .pp-home-sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
 .pp-home-sec-head h2 { margin: 0 0 .25rem; font-size: 1.35rem; }
 .pp-home-more { white-space: nowrap; font-size: .9rem; text-decoration: none; }
 .pp-home-sub { color: var(--pp-text-muted); font-size: .875rem; margin: 0 0 .75rem; }
 
-/* Signály */
+/* Signals */
 
-/* Novinky */
+/* News */
 .pp-home-news-list { display: grid; gap: .4rem; }
 .pp-home-news-item {
   display: grid; grid-template-columns: 7.5rem 1fr; gap: .25rem .85rem; align-items: baseline;
@@ -106,7 +105,7 @@
 .pp-home-news-item__title { font-weight: 600; }
 .pp-home-news-item__desc { grid-column: 2; color: var(--pp-text-secondary); font-size: .85rem; }
 
-/* Akce — kalendář vlevo, seznam vpravo (partials/home-events.html) */
+/* Events: calendar on the left, list on the right (partials/home-events.html) */
 .pp-home-events__grid {
   display: grid; grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
   gap: 1.25rem; align-items: start; margin-top: .5rem;
@@ -131,12 +130,12 @@
   font-size: .85rem; line-height: 1; color: var(--pp-text);
 }
 .pp-cal__day.is-out { opacity: .4; }
-/* ⚠️ Dnešek NENÍ obroučka — ta patří proběhlé akci a obě vypadaly stejně.
-   Dnešek je tučné podtržené číslo, takže jde zkombinovat s oběma stavy akce. */
+/* Today is not shown as a ring; that marks a past event. Today is a bold
+   underlined number, so it combines with either event state. */
 .pp-cal__day.is-today { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
-/* ⛔ Stav akce nese TVAR, ne jen barva: nadcházející = plné kolečko,
-   proběhlá = obrys. Barvoslepý čtenář je rozliší taky; legenda pod kalendářem
-   ukazuje oba tvary. */
+/* Event state is carried by shape, not only colour: upcoming = filled dot,
+   past = outline. Colour-blind readers can tell them apart too; the legend
+   below the calendar shows both shapes. */
 .pp-cal__day.has-upcoming { background: var(--pp-series-1); color: var(--pp-surface-raised); font-weight: 600; cursor: pointer; }
 .pp-cal__day.has-past { box-shadow: inset 0 0 0 2px var(--pp-text-muted); color: var(--pp-text-secondary); cursor: pointer; }
 button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid var(--pp-series-1); outline-offset: 1px; }
@@ -172,7 +171,7 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   .pp-cal { max-width: 22rem; }
 }
 
-/* Rejstřík */
+/* Index filter */
 .pp-home-filter {
   display: flex; align-items: center; gap: .5rem; margin: .25rem 0 .85rem;
   padding: .45rem .75rem; border: 1px solid #e2e1dc; border-radius: 999px; background: #fff; max-width: 30rem;
@@ -186,7 +185,7 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   .pp-home-news-item__desc { grid-column: 1; }
 }
 
-/* ── Přepínač jazyků (vždy viditelný) ────────────────────────────────────── */
+/* ── Language switcher (always visible) ──────────────────────────────────── */
 .pp-langswitch { display: inline-flex; align-items: center; gap: 2px; }
 .pp-langswitch__item {
   display: inline-block; padding: .15rem .5rem; border-radius: 6px;
@@ -196,7 +195,7 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-langswitch__item:hover { background: #f2f1ee; color: #0b0b0b; }
 .pp-langswitch__item.is-active { background: #e6f0e9; color: #1b6b4a; border-color: #bcdccb; cursor: default; }
 
-/* ── Pruh partnerů v patičce ─────────────────────────────────────────────── */
+/* ── Partner strip in the footer ─────────────────────────────────────────── */
 .pp-partners { border-top: 1px solid #e2e1dc; margin-top: 1.25rem; padding-top: 1rem; }
 .pp-partners__label {
   text-align: center; font-size: .72rem; text-transform: uppercase;
@@ -207,29 +206,28 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   gap: 1.25rem 2rem;
 }
 .pp-partners__grid img {
-  /* Rozměry počítá partials/logo-box.html (stejná plocha pro všechna loga).
-     `--logo-scale` je jediný knoflík pro menší obrazovky. */
+  /* Dimensions are computed by partials/logo-box.html (same area for all logos).
+     `--logo-scale` is the only control for smaller screens. */
   width: calc(var(--logo-w, 110px) * var(--logo-scale, 1));
   height: calc(var(--logo-h, 44px) * var(--logo-scale, 1));
   object-fit: contain;
-  /* Loga jsou od devíti různých organizací a v devíti různých barvách. Odbarvení
-     v klidu a plná barva při najetí drží patičku klidnou, aniž by kohokoli
-     schovávalo. */
+  /* The logos come from nine organisations in nine different colours. Greyscale
+     at rest and full colour on hover keep the footer calm without hiding anyone. */
   filter: grayscale(1); opacity: .75; transition: filter .15s, opacity .15s;
 }
 .pp-partners__grid a:hover img, .pp-partners__grid a:focus-visible img { filter: none; opacity: 1; }
 @media (max-width: 576px) { .pp-partners__grid { gap: 1rem 1.25rem; --logo-scale: .78; } }
-/* Logo na stránce Partneři — rozměr z logo-box.html, sloupec ho jen může zmenšit.
-   ⚠️ Zarovnané doleva, ne na střed: loga mají různou šířku, takže vycentrovaná
-   začínala každé jinde a sloupec pod sebou dělal cik-cak. */
+/* Logo on the Partners page: size from logo-box.html; the column may only shrink it.
+   Left-aligned, not centred: logos differ in width, so centred logos started at
+   different positions and the column zigzagged. */
 .pp-org-logo { display: block; width: 100%; text-align: left; }
 .pp-org-logo img { max-width: 100%; height: auto; }
 
-/* ── Dashboardy + boční panel Témata ─────────────────────────────────────
-   Témata sedí VEDLE karet, ne v samostatném pásu pod novinkami: obojí
-   vede na dashboard, jen jinou osou — karty podle nemoci, témata napříč
-   nemocemi (kraje, surveillance, ÚZIS). Odtržené na konec stránky se
-   čtou jako patička. */
+/* ── Dashboards + Topics side panel ──────────────────────────────────────
+   Topics sit next to the cards, not in a separate strip below the news: both
+   lead to dashboards, along different axes (cards by disease, topics across
+   diseases: regions, surveillance, ÚZIS). At the end of the page they would
+   read as a footer. */
 .pp-home-dash-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
@@ -259,21 +257,21 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   color: var(--pp-text-secondary);
   transition: background-color .15s, border-color .15s, color .15s;
 }
-/* ⛔ Neutrální, ne modrá. Tenhle hover měl přesně hodnoty
-   --pp-origin-aggregated / -bg, tedy barvu, která na téže stránce znamená
-   „Veřejný zdroj" — a její legenda visí pár řádků nad pásem témat. Téma není
-   původ dat; půjčovat si barvu, která už nese význam, mate. Barvy původu
-   a stavu jsou v tomhle projektu vyhrazené (viz komentář u :root výš). */
+/* Neutral, not blue. Blue would match --pp-origin-aggregated / -bg, a colour that
+   on the same page means "Public source", with its legend just above the topics
+   strip. A topic is not a data origin, and borrowing a colour that already
+   carries meaning is confusing. Origin and status colours are reserved in this
+   project (see the comment at :root above). */
 .pp-home-topic:hover, .pp-home-topic:focus-visible {
   background: var(--pp-surface); border-color: var(--pp-border-strong); color: var(--pp-text);
 }
 @media (max-width: 860px) {
-  /* Sticky v jednosloupcovém rozvržení jen poskakuje. */
+  /* Sticky only jumps around in a single-column layout. */
   .pp-home-topics { position: static; }
   .pp-home-dash-grid { grid-template-columns: 1fr; }
 }
 
-/* ── Upozornění o zpracování dat (PP-55) ─────────────────────────────────── */
+/* ── Data processing notice (PP-55) ──────────────────────────────────────── */
 .pp-privacy {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 1080;
   display: flex; flex-wrap: wrap; align-items: center; justify-content: center;
@@ -328,15 +326,14 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 .pp-privacy-dialog__lang:hover { background: #f2f1ee; color: #0b0b0b; }
 
-/* ── Titulka: navigace po webu ────────────────────────────────────────────
-   Dlaždice, ne odkazy v řádku: rozhodnutí „kam dál" je hlavní věc, kterou
-   titulka řeší, a zaslouží si plochu, na kterou se dá trefit prstem.
+/* ── Home page: site navigation ───────────────────────────────────────────
+   Tiles, not inline links: choosing where to go next is the main job of the
+   home page, and it deserves targets that are easy to hit with a finger.
 
-   ⛔ Barvy z tokenů --pp-* (definuje dashboards.css na .pp-viz), ne natvrdo.
-   Původní verze měla natvrdo #fff a k tomu vlastní @media prefers-color-scheme,
-   která pozadí ztmavila, ALE BARVU TEXTU NECHALA — z karet se na tmavém OS
-   staly černé boxy s tmavým písmem. Tokeny přepínají povrch i text zároveň,
-   takže se to rozejít nemůže. */
+   Colours come from the --pp-* tokens (defined by dashboards.css on .pp-viz),
+   not hard-coded values. A hard-coded #fff with its own prefers-color-scheme
+   override would darken the background but not the text; tokens switch surface
+   and text together. */
 .pp-home-nav {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
@@ -357,18 +354,16 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-home-navtile__t { font-weight: 600; }
 .pp-home-navtile__d { font-size: .8rem; color: var(--pp-text-muted); line-height: 1.35; }
 
-/* ── Karta dashboardu — titulka i /dashboards/ ────────────────────────────
-   ⛔ JEDNA podoba pro obě místa. Dřív měl každý výpis vlastní: titulka tuhle
-   dlaždici, /dashboards/ bootstrapovou kartu z motivu s natvrdo modrým
-   pruhem. Značkování je společné v dashboard-tile.html.
-   ⚠️ Poměr stran obrázku je zafixovaný (400×220 jako zdrojová SVG). Bez toho
-   mřížka poskakuje, jak se obrázky donačítají, a u karet různé výšky se
-   rozjedou i řádky pod nimi. */
+/* ── Dashboard card: home page and /dashboards/ ───────────────────────────
+   One design for both places; the markup is shared in dashboard-tile.html.
+   The image aspect ratio is fixed (400×220, as the source SVGs). Without it the
+   grid jumps as images load, and cards of different heights misalign the rows
+   below them. */
 .pp-tilegrid {
   list-style: none; padding: 0; margin: .75rem 0 0;
-  /* 10rem = 15rem / 1.5. Obrázek se zmenší sám (drží aspect-ratio), text ne —
-     proto jsou písmo i odsazení níž zmenšené ve stejném poměru. Jinak by na
-     menší kartě text vyrostl vůči obrázku a karta by přestala být obrázková. */
+  /* 10rem = 15rem / 1.5. The image scales by itself (it keeps aspect-ratio), text
+     does not, so font size and padding below are reduced in the same ratio.
+     Otherwise text would grow relative to the image on a smaller card. */
   display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
   gap: .6rem;
 }
@@ -389,20 +384,20 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   font-size: .88rem;
   padding: .45rem .5rem .2rem;
 }
-/* Obrázek, který není ilustrace karty (logo u novinky) — celý, ne ořezaný.
-   Bílé pozadí, protože loga partnerů bílé pozadí sama mají. */
+/* An image that is not a card illustration (a logo on a news item): shown whole,
+   not cropped. White background, because partner logos have white backgrounds. */
 .pp-tile__img--contain { object-fit: contain; padding: .6rem; background: #fff; }
-/* Datum aktualizace — druhý řádek UVNITŘ názvu, aby sdílel jeho podbarvení.
-   Menší a tlumené: je to údaj o názvu, ne druhý název. */
+/* Update date: a second line inside the title so it shares its background.
+   Smaller and muted: it describes the title, it is not a second title. */
 .pp-tile__stamp {
   display: block; margin-top: .2rem;
   font-weight: 400; font-size: .72rem; line-height: 1.3;
   color: var(--pp-text-secondary);
 }
 
-/* ── Stránka Lidé (shortcode person) ─────────────────────────────────────
-   ⚠️ Stránky „O portálu“ nejsou uvnitř .pp-viz, takže tokeny --pp-* tu
-   neplatí — proto proměnné Bootstrapu, které přepíná i tmavý motiv. */
+/* ── People page (person shortcode) ──────────────────────────────────────
+   The About pages are not inside .pp-viz, so the --pp-* tokens do not apply
+   here; hence the Bootstrap variables, which the dark theme also switches. */
 .pp-person { display: flex; gap: 1.25rem; align-items: flex-start; padding: 1.25rem 0; }
 .pp-person + .pp-person { border-top: 1px solid var(--bs-border-color); }
 .pp-person__photo {
@@ -422,41 +417,41 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   .pp-person__photo--initials { font-size: 1.3rem; }
 }
 
-/* ── Karta bez popisu a tagů (titulka) ────────────────────────────────────
-   Karta je položka mřížky, takže se natáhne do výšky nejvyšší karty v řádku.
-   Odkaz uvnitř se ale netáhl s ní, takže u jednořádkového názvu zůstal pod
-   barevným pruhem bílý zbytek do dna — a protože délka názvů se liší, byl
-   u každé karty jinak vysoký.
+/* ── Card without description and tags (home page) ────────────────────────
+   The card is a grid item, so it stretches to the height of the tallest card in
+   the row. The link inside does not stretch with it, which would leave a white
+   area of varying height below the coloured strip for one-line titles.
 
-   Řeší to název: doroste na dno a vezme si tu výšku i s podbarvením. Text
-   zůstává nahoře, hned pod obrázkem, takže názvy drží společnou linku napříč
-   řádkem — kdyby se vycentroval, každý by seděl jinde.
+   The title fixes this: it grows to the bottom and takes that height with its
+   background. The text stays at the top, right below the image, so titles share
+   a common line across the row; centred, each would sit elsewhere.
 
-   ⚠️ Neřeš to přes `align-items: start` na mřížce. Bílý pruh zmizí taky, ale
-   karty přestanou mít společné dno a řádek se roztřepí. */
+   Do not solve this with `align-items: start` on the grid. The white area goes
+   away too, but cards lose their common bottom edge and the row becomes ragged. */
 .pp-tile--compact .pp-tile__link { flex: 1 1 auto; display: flex; flex-direction: column; }
 .pp-tile--compact .pp-tile__title { flex: 1 1 auto; }
-/* Spodní linka pruhu tu nemá co oddělovat — sedla by si na 2px rámeček karty
-   a dno by vypadalo trojnásobně silné. */
+/* The strip's bottom border has nothing to separate here; it would sit on the
+   card's 2px border and the bottom edge would look three times as thick. */
 .pp-tile--compact.pp-origin-edge .pp-tile__title { border-bottom: 0; }
 
 
-/* ── Značka „obrázek vygenerovala AI" ─────────────────────────────────────
-   V rohu náhledu, ne vypálená v obrázku: generátory kreslí text nespolehlivě,
-   vypálenou značku nejde opravit bez přegenerování a odečítač obrazovky ji
-   nepřečte. Tahle je na všech obrázcích stejná a zmizí s výměnou souboru.
+/* ── "Image generated by AI" badge ────────────────────────────────────────
+   In the corner of the preview, not burned into the image: generators draw text
+   unreliably, a burned-in badge cannot be fixed without regenerating, and screen
+   readers cannot read it. This one is identical on all images and goes away when
+   the file is replaced.
 
-   ⚠️ Mluví o OBRÁZKU. Štítek původu vedle mluví o DATECH — jsou to dvě různá
-   tvrzení a nesmí splynout, proto tahle značka záměrně nepoužívá fialovou
-   --pp-origin-ai. */
+   It refers to the image. The origin label next to it refers to the data; these
+   are two different claims and must not merge, so this badge deliberately does
+   not use the purple --pp-origin-ai. */
 .pp-tile__imgwrap { position: relative; display: block; }
 .pp-ai-mark {
   position: absolute; right: .3rem; bottom: .3rem;
   display: inline-flex; align-items: center; gap: .2rem;
   padding: .05rem .3rem;
   border-radius: 999px;
-  /* Vlastní tmavý podklad, ne token: leží na OBRÁZKU, jehož barvu neznáme,
-     takže kontrast musí zajistit sama a v obou motivech stejně. */
+  /* Own dark backdrop, not a token: it sits on an image of unknown colour, so it
+     must ensure contrast itself, equally in both themes. */
   background: rgb(11 11 11 / .62);
   color: #fff;
   font-size: .62rem; font-weight: 600; letter-spacing: .02em;
@@ -466,15 +461,14 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 .pp-ai-mark i { font-size: .66rem; }
 
-/* ── Značka „odkaz vede ven" ──────────────────────────────────────────────
-   Do rohu náhledu, ne pod název. Slovo „externí" pod názvem přebíjelo název
-   samotný; tohle je stejný symbol, jaký na odkaz ven používá kdeco, takže
-   nepotřebuje popisek — jen musí být vidět. Pro odečítač je němá, text nese
-   .visually-hidden uvnitř odkazu.
+/* ── "External link" badge ────────────────────────────────────────────────
+   In the corner of the preview, not under the title: the word "external" under
+   the title competed with the title itself. This is the common external-link
+   symbol, so it needs no caption, only visibility. It is hidden from screen
+   readers; the text is carried by .visually-hidden inside the link.
 
-   Podklad je stejný jako u značky AI a ze stejného důvodu: leží na fotce,
-   jejíž barvu neznáme, takže kontrast musí zajistit sama a v obou motivech
-   stejně. */
+   The backdrop matches the AI badge for the same reason: it sits on a photo of
+   unknown colour, so it must ensure contrast itself, equally in both themes. */
 .pp-ext-mark {
   position: absolute; right: .3rem; top: .3rem;
   display: inline-flex; align-items: center; justify-content: center;
@@ -487,44 +481,42 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   pointer-events: none;
 }
 
-/* ── Původ dat jako barva rámečku karty ───────────────────────────────────
-   Nahrazuje slovní štítek na kartách ve výpisech (8. 9. 2026).
+/* ── Data origin as card border colour ────────────────────────────────────
+   Replaces the text label on cards in listings.
 
-   ⛔ Barva tu stojí SAMA, což je vědomý ústupek vzhledu a má svou cenu:
-   barvoslepý čtenář z ní nepozná nic a odečítač obrazovky barvu nečte vůbec.
-   Proto karta nese původ i v `title` a ve skrytém textu, a proto je na
-   /dashboards/ legenda. Kdyby ta legenda zmizela, rámečky přestanou cokoli
-   znamenat — nerozbijí se, jen zůstanou dekorací.
+   Colour stands alone here, a deliberate trade-off: colour-blind readers cannot
+   tell anything from it and screen readers do not read colour at all. Hence the
+   card also carries the origin in `title` and in hidden text, and /dashboards/
+   has a legend. Without the legend the borders would carry no meaning and become
+   mere decoration.
 
-   ⚠️ Musí být ZA pravidly motivu: .bg-dashboard má natvrdo modrý okraj
-   #295986. custom.css se načítá po theme.css, takže při stejné specifičnosti
-   vyhrává tohle. Kdyby se pořadí načítání změnilo, rámečky tiše zmodrají. */
-/* Každá kategorie si nastaví svou trojici; pravidla níž pak sahají jen na
-   --edge / --edge-bg / --edge-glow a nemusí se opakovat třikrát.
-   ⚠️ --edge-glow je RGB TROJICE bez obalu, ne barva: jde do rgb(… / alfa),
-   protože záře potřebuje průhlednost, kterou hotový hex nedá. */
+   Must come after the theme rules: .bg-dashboard has a hard-coded blue border
+   #295986. custom.css loads after theme.css, so at equal specificity this wins.
+   If the load order changed, the borders would silently turn blue. */
+/* Each category sets its own triplet; the rules below only use
+   --edge / --edge-bg / --edge-glow and need not be repeated three times.
+   --edge-glow is a bare RGB triplet, not a colour: it goes into rgb(… / alpha),
+   because the glow needs transparency that a finished hex value cannot give. */
 .pp-origin-edge--aggregated  { --edge: var(--pp-origin-aggregated); --edge-bg: var(--pp-origin-aggregated-bg); --edge-glow: 42 120 214; }
 .pp-origin-edge--own         { --edge: var(--pp-origin-own);        --edge-bg: var(--pp-origin-own-bg);        --edge-glow: 27 122 84; }
 .pp-origin-edge--ai-assisted { --edge: var(--pp-origin-ai);         --edge-bg: var(--pp-origin-ai-bg);         --edge-glow: 91 70 189; }
 
 .pp-origin-edge {
   border-style: solid; border-width: 2px; border-color: var(--edge);
-  /* Neonová záře „za rámečkem". Dvě vrstvy: těsný prstenec hned u okraje, který
-     dělá tu sytost, a krátký rozostřený nádech kolem. Jedna široká vrstva byla
-     slabá a rozpitá zároveň — světlo se rozprostřelo do plochy, místo aby
-     drželo u hrany.
+  /* Neon glow "behind the border". Two layers: a tight ring right at the edge
+     that provides the saturation, and a short blurred haze around it. A single
+     wide layer is both weak and diffuse.
 
-     ⚠️ Rozostření se 9. 9. 2026 stáhlo z 9px na 5px (hover ze 14 na 8). Sytost
-     šla nahoru, ne dolů: užší záře při stejné alfě vypadá slabší, protože jí
-     ubyde plocha. Kdo bude hodnoty ladit dál, musí hýbat OBOJÍM — a taky
-     vzorkem v legendě, který je miniaturou téhle karty. */
+     A narrower glow at the same alpha looks weaker because it covers less area,
+     so when tuning, adjust blur and alpha together, and also the legend swatch,
+     which is a miniature of this card. */
   box-shadow:
     0 0 0 2px rgb(var(--edge-glow) / .38),
     0 0 5px 0 rgb(var(--edge-glow) / .78);
 }
-/* ⛔ Hover nesmí barvu původu přebít — je to informace, ne dekorace. Zesílí se
-   jen záře. Předchozí verze tu nastavovala `border-color: inherit`, takže při
-   najetí barva původu na okamžik zmizela. */
+/* Hover must not override the origin colour; it is information, not decoration.
+   Only the glow is strengthened. (`border-color: inherit` here would make the
+   origin colour disappear on hover.) */
 .pp-tile.pp-origin-edge:hover {
   border-color: var(--edge);
   box-shadow:
@@ -532,28 +524,28 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
     0 0 8px 0 rgb(var(--edge-glow) / 1);
 }
 
-/* Podbarvení názvu — samotný 2px rámeček se v mřížce ztrácel. Barva je táž jako
-   rámeček, jen tlumená, takže obojí čte jako jedna informace, ne jako dvě. */
+/* Title background: the 2px border alone gets lost in the grid. Same colour as
+   the border, only muted, so both read as one piece of information, not two. */
 .pp-origin-edge .pp-tile__title {
   background: var(--edge-bg);
   border-bottom: 1px solid var(--edge);
   padding: .5rem .6rem;
 }
 
-/* ⚠️ Tmavý motiv se v tomhle projektu spíná [data-bs-theme="dark"], NE podle
-   nastavení systému. Na tmavém podkladu potřebuje záře světlejší hodnoty. */
+/* Dark theme in this project is switched by [data-bs-theme="dark"], not by the
+   system setting. On a dark background the glow needs lighter values. */
 [data-bs-theme="dark"] .pp-origin-edge--aggregated  { --edge-glow: 127 180 240; }
 [data-bs-theme="dark"] .pp-origin-edge--own         { --edge-glow: 108 201 161; }
 [data-bs-theme="dark"] .pp-origin-edge--ai-assisted { --edge-glow: 180 164 243; }
 
-/* Kdo si vyžádal omezení pohybu, nepřijde o barvu — mizí jen změna při najetí. */
+/* Readers who requested reduced motion keep the colour; only the hover change is removed. */
 @media (prefers-reduced-motion: reduce) {
   .pp-tile.pp-origin-edge:hover {
     box-shadow: 0 0 0 2px rgb(var(--edge-glow) / .38), 0 0 5px 0 rgb(var(--edge-glow) / .78);
   }
 }
 
-/* ── Legenda k barvám — JEN na /dashboards/ ──────────────────────────────── */
+/* ── Colour legend, only on /dashboards/ ─────────────────────────────────── */
 .pp-origin-legend--page {
   border: 1px solid var(--pp-border);
   border-radius: 10px;
@@ -570,24 +562,23 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-origin-legend--page .pp-origin-legend__item {
   display: flex; align-items: flex-start; gap: .6rem; font-size: .88rem;
 }
-/* ⚠️ Vzorek je MINIATURA KARTY, ne barevný čtvereček. Čtverec s okrajem
-   a zaoblenými rohy je tvar zaškrtávacího políčka — čtenář ho četl jako ovládací
-   prvek, ne jako ukázku. Proto na šířku, v poměru karty, a s pruhem dole, který
-   zastupuje podbarvený název.
+/* The swatch is a miniature card, not a coloured square. A square with a border
+   and rounded corners looks like a checkbox and reads as a control, not a sample.
+   Hence landscape, in the card's ratio, with a bottom strip standing in for the
+   tinted title.
 
-   Bere rámeček, podbarvení i záři z týchž proměnných --edge*, takže se s kartou
-   nemůže rozejít.
-   ⛔ Barvu si musí nastavit sám — nese jen modifikátor `--aggregated`, ne
-   základní třídu `.pp-origin-edge`, kde border-color a záře žijí. */
+   It takes border, tint and glow from the same --edge* variables, so it cannot
+   drift from the card.
+   It must set its colour itself: it carries only the `--aggregated` modifier,
+   not the base class `.pp-origin-edge` where border-color and glow live. */
 .pp-origin-legend__swatch {
   flex: 0 0 auto;
   width: 3.25rem; height: 2.1rem;
   border-radius: 4px; border-style: solid; border-width: 2px;
   border-color: var(--edge);
-  /* ⛔ Spodní pruh v PLNÉ barvě, ne v bledém podbarvení karty. První pokus měl
-     obojí skoro bílé a vzorek pak vypadal jako prázdné vstupní pole — přesně to
-     zaškrtávátko, kvůli kterému se to předělávalo. Plný pruh dělá z obrysu
-     miniaturu karty. */
+  /* Bottom strip in full colour, not the card's pale tint. With both nearly
+     white the swatch would look like an empty input field (the checkbox look
+     again). The full strip turns the outline into a card miniature. */
   background: linear-gradient(
     to bottom,
     var(--pp-grid) 0 58%,
@@ -600,10 +591,10 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 .pp-origin-legend__desc { display: block; color: var(--pp-text-secondary); line-height: 1.4; }
 
-/* Plná varianta (/dashboards/, stránky tagů) — s popisem a tagy.
-   ⚠️ Širší sloupec než na titulce, a je to nutnost, ne nedůslednost: do 10rem
-   karty se nevešel ani jeden z popisů (měřeno: 66 znaků se vejde, popisy mají
-   114–158). Vzhled karty je týž, jen dostane místo na text. */
+/* Full variant (/dashboards/, tag pages), with description and tags.
+   The column is wider than on the home page out of necessity: none of the
+   descriptions fit a 10rem card (66 characters fit; descriptions are 114–158).
+   The card design is the same, it just gets room for text. */
 .pp-tilegrid--full { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
 .pp-tile__desc {
   margin: .3rem 0 0; padding: 0 .6rem;
@@ -613,20 +604,15 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-tile__desc + .pp-tile__tags { padding-top: .45rem; }
 .pp-tile > :last-child { margin-bottom: 0; }
 
-/* ── Hamburger na všech šířkách ────────────────────────────────────────────
-   Od 9. 9. 2026 má web jedno menu pro všechny šířky: vodorovná lišta pod
-   hlavičkou je pryč a `#navbarCollapseBottom` se otevírá tlačítkem.
-
-   ⏳ Výjimka `.navbar-expand-lg .navbar-toggler { display: inline-block }` tu
-   stála jediný den. Byla potřeba, dokud horní navbar musel mít
-   `navbar-expand-lg` kvůli pruhu s „O portálu". Ten pruh je pryč, navbar už
-   expand nemá, a Bootstrap tlačítko sám neskrývá — pravidlo se tím stalo
-   zbytečným a je smazané, ne ponechané „pro jistotu". */
+/* ── Hamburger menu at all widths ──────────────────────────────────────────
+   The site uses one menu for all widths: `#navbarCollapseBottom` opens with
+   the toggler button. The navbar has no `navbar-expand-*` class, so Bootstrap
+   never hides the toggler and no display override is needed. */
 .navbar-toggler:focus-visible { outline: 2px solid var(--pp-origin-aggregated, #2a78d6); outline-offset: 2px; }
 
-/* ── Katalog datových zdrojů (PP-77) — stránka O portálu → Data a citace ───
-   Mimo dashboardy, proto barvy z Bootstrapu (--bs-*), ne z tokenů .pp-viz:
-   ty tady nejsou definované a tmavý režim by zůstal bez barev. */
+/* ── Data source catalogue (PP-77): About → Data and citation ──────────────
+   Outside dashboards, so colours come from Bootstrap (--bs-*), not from the
+   .pp-viz tokens: those are not defined here and dark mode would lack colours. */
 .pp-catalogue {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 420px), 1fr));

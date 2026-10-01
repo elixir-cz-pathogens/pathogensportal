@@ -1,12 +1,12 @@
-/* Akce na titulce: roztřídění na nadcházející/proběhlé a měsíční kalendář.
+/* Home page events: split into upcoming/past and a monthly calendar.
  *
- * Značkování vypisuje partials/home-events.html — všechny akce jedním seznamem.
- * Tenhle skript je roztřídí PODLE DNEŠNÍHO DATA V PROHLÍŽEČI (web je statický,
- * rozdělení při buildu by zastarávalo) a nakreslí kalendář s vyznačenými dny.
+ * partials/home-events.html renders all events as a single list. This script
+ * sorts them by today's date in the browser (the site is static, so a split at
+ * build time would go stale) and draws a calendar with the event days marked.
  *
- * ⚠️ Akce je „nadcházející", dokud neskončila — probíhající akce sem patří taky.
- * ⚠️ Nadcházející a proběhlé se v kalendáři liší TVAREM (plné kolečko × obrys),
- *    ne jen barvou, a stav je i v aria-label dne.
+ * An event counts as upcoming until it has ended, so ongoing events are included.
+ * Upcoming and past events differ by shape in the calendar (filled dot vs.
+ * outline), not only by colour, and the state is also in the day's aria-label.
  */
 (function (document) {
   "use strict";
@@ -15,8 +15,8 @@
   if (!root) return;
 
   var lang = root.getAttribute("data-lang") || "cs-CZ";
-  var PAST_VISIBLE = 3;       // kolik proběhlých akcí je vidět bez výběru v kalendáři
-  var MAX_SPAN_DAYS = 60;     // pojistka proti překlepu v end_date (rok místo měsíce)
+  var PAST_VISIBLE = 3;       // past events visible without a calendar selection
+  var MAX_SPAN_DAYS = 60;     // guard against an end_date typo (e.g. wrong year)
 
   function L(key) { return root.getAttribute("data-l-" + key) || ""; }
   function pad(n) { return (n < 10 ? "0" : "") + n; }
@@ -27,7 +27,7 @@
   var now = new Date();
   var todayKey = dayKey(now);
 
-  /* ---------------- Data ze značkování ---------------- */
+  /* ---------------- Data from markup ---------------- */
 
   var events = Array.prototype.slice.call(root.querySelectorAll(".pp-event")).map(function (li) {
     var start = new Date(li.getAttribute("data-start"));
@@ -53,7 +53,7 @@
     }
   });
 
-  /* ---------------- Seznam: nadcházející a proběhlé ---------------- */
+  /* ---------------- List: upcoming and past ---------------- */
 
   var listHost = root.querySelector("[data-pp-events-list]");
 
@@ -95,7 +95,7 @@
     if (past.length) listHost.appendChild(group(L("past"), past, "", PAST_VISIBLE));
   }
 
-  /* ---------------- Kalendář ---------------- */
+  /* ---------------- Calendar ---------------- */
 
   var cal = root.querySelector("[data-pp-cal]");
   var titleEl = root.querySelector("[data-pp-cal-title]");
@@ -108,7 +108,7 @@
   var weekdayShort = new Intl.DateTimeFormat(lang, { weekday: "short" });
   var weekdayLong = new Intl.DateTimeFormat(lang, { weekday: "long" });
 
-  // Týden začíná pondělím (cs-CZ i en-GB). 1. 1. 2024 bylo pondělí.
+  // Weeks start on Monday (cs-CZ and en-GB). 1 Jan 2024 was a Monday.
   for (var w = 0; w < 7; w++) {
     var ref = new Date(2024, 0, 1 + w);
     var th = document.createElement("th");
@@ -127,7 +127,7 @@
     events.forEach(function (ev) {
       var on = chosen.indexOf(ev) !== -1;
       ev.li.classList.toggle("is-selected", on);
-      // Proběhlá akce za limitem je skrytá; vybraná v kalendáři se musí ukázat.
+      // Past events beyond the limit are hidden; one selected in the calendar must be shown.
       if (ev.li.hasAttribute("data-pp-overflow")) ev.li.hidden = !on;
     });
     if (chosen.length) {

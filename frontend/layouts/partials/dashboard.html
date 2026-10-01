@@ -1,10 +1,10 @@
-{{/* Obal pro bootstrapové výpisy motivu (stránky tagů, jeho vlastní list.html).
+{{/* Wrapper for the theme's Bootstrap lists (tag pages, its own list.html).
 
-     ⛔ Tenhle partial volají šablony motivu uvnitř `row row-cols-*`, takže musí
-     vracet `col`. Naše vlastní výpisy (titulka, /dashboards/) používají CSS grid
-     a sahají rovnou na dashboard-tile.html — obal by v mřížce překážel.
+     This partial is called by theme templates inside `row row-cols-*`, so it
+     must return a `col`. Our own lists (home page, /dashboards/) use CSS grid
+     and call dashboard-tile.html directly — the wrapper would get in the way.
 
-     Vzhled karty samotné je v dashboard-tile.html, pro všechny stejný. */}}
+     The card itself is in dashboard-tile.html, identical everywhere. */}}
 <div class="col p-2">
   {{ partial "dashboard-tile.html" (dict "page" .Page "full" true) }}
 </div>

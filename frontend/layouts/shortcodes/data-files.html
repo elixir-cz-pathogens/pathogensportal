@@ -1,10 +1,11 @@
-{{/* Seznam strojově čitelných souborů, ze kterých portál kreslí grafy.
+{{/* List of the machine-readable files the portal draws charts from.
 
      Usage: {{< data-files >}}
 
-     Čte se z disku při buildu (static/data/charts), ne z ručního seznamu: výpis
-     adresáře je na serveru záměrně vypnutý, takže bez téhle stránky by o souborech
-     nikdo nevěděl — a ruční seznam by zastaral s prvním novým grafem.
+     Read from disk at build time (static/data/charts), not from a manual list:
+     directory listing is deliberately disabled on the server, so without this
+     page nobody would know about the files — and a manual list would go stale
+     with the first new chart.
 */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 <div class="pp-datafiles">

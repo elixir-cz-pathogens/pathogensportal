@@ -1,53 +1,54 @@
-{{/* Jak čerstvý je dashboard — přečtené z DAT, ne opsané do hlavičky.
+{{/* How fresh the dashboard is — read from the DATA, not copied into front matter.
 
      Usage: {{ $u := partial "update-stamp.html" $page }}
-            {{ with $u }}{{ .text }}{{ end }}   — pro čtenáře
-            {{ with $u }}{{ .iso }}{{ end }}    — pro stroje (dateModified v JSON-LD)
+            {{ with $u }}{{ .text }}{{ end }}   — for readers
+            {{ with $u }}{{ .iso }}{{ end }}    — for machines (dateModified in JSON-LD)
 
-     `.iso` je totéž datum ve strojovém tvaru. Je tu proto, aby strukturovaná
-     data na stránce nečetla datum vlastní cestou — jedna logika, dva výstupy.
-     U `month` a `year` zůstává zkrácené („2025-12“, „2025“), protože doplnit
-     den by předstíralo přesnost, kterou ta data nemají; schema.org i ISO 8601
-     takové datum berou.
+     `.iso` is the same date in machine form, so the structured data does not
+     compute the date separately — one logic, two outputs. For `month` and
+     `year` it stays truncated ("2025-12", "2025"), because adding a day would
+     fake a precision the data does not have; schema.org and ISO 8601 both
+     accept such dates.
 
-     Hlavička říká DVĚ věci a obě jsou povinné:
-       update_from: "flu_weekly.json"   — ze kterého souboru
-       update_read: "week"              — jak se v něm má datum číst
+     Front matter states TWO things, both required:
+       update_from: "flu_weekly.json"   — which file
+       update_read: "week"              — how to read the date in it
 
-     ⛔ `update_read` NENÍ zbytečná duplicita a nesmí se „zjednodušit" na hádání
-     podle obsahu. Poslední popisek řady je u `flu_weekly` období („KT 36/26"),
-     ale u `covid_by_age` věková kategorie („80+“) a u `flu_regional_overview`
-     název kraje („Liberecký“). Automat, který bere poslední popisek, by na
-     třetině dashboardů napsal jako datum aktualizace věk nebo kraj — a vypadalo
-     by to jako platný údaj.
+     `update_read` is NOT redundant and must not be "simplified" into guessing
+     from content. The last series label is a period for `flu_weekly`
+     ("KT 36/26"), but an age group for `covid_by_age` ("80+") and a region
+     name for `flu_regional_overview` ("Liberecký"). Taking the last label
+     automatically would show an age or a region as the update date on a third
+     of the dashboards — and it would look valid.
 
-     ── Hodnoty `update_read` ────────────────────────────────────────────────
-     stamp       (výchozí) `generated_at` = kdy běžela pipeline; jinak
-                 `posledni_datum` = po které datum sahají data
-     period-end  `obdobi` ve tvaru „A – B“, bere se B
-     week        poslední popisek „KT WW/RR“ → neděle toho ISO týdne
-     month       poslední popisek „RRRR-MM“
-     year        poslední popisek „RRRR“
+     ── `update_read` values ─────────────────────────────────────────────────
+     stamp       (default) `generated_at` = when the pipeline ran; otherwise
+                 `posledni_datum` = the last date the data covers
+     period-end  `obdobi` in the form "A – B", B is used
+     week        last label "KT WW/YY" → Sunday of that ISO week
+     month       last label "YYYY-MM"
+     year        last label "YYYY"
 
-     ⛔ Dvě různá tvrzení, dva různé popisky, a nesmí splynout. `generated_at`
-     říká KDY BĚŽELA PIPELINE, všechno ostatní říká PO KTERÉ OBDOBÍ SAHAJÍ DATA.
-     Běh 9. 9. může přinést čísla k 8. 9.; jeden popisek pro obojí by čtenáři
-     tvrdil, že má v ruce den, který v souboru není.
+     Two different statements with two different labels, and they must not be
+     merged. `generated_at` says WHEN THE PIPELINE RAN; everything else says
+     WHAT PERIOD THE DATA COVERS. A run on one day may bring figures up to the
+     previous day; a single label for both would claim a day not in the file.
 
-     ⚠️ Měsíc a rok se NEPŘEVÁDÍ na den. ISIN po skupinách je roční řada —
-     „31. 12. 2025“ by předstíralo denní přesnost, kterou ta data nemají.
+     Month and year are NOT converted to a day. ISIN by groups is an annual
+     series — "31. 12. 2025" would fake daily precision the data does not have.
 
-     Stránka bez `update_from` nevrací nic a `update_freq` z hlavičky se použije
-     tak jak je. To je případ stránek, které žádné vlastní datum mít nemůžou:
-     Nextstrain a odpadní vody běží na cizím serveru.
+     A page without `update_from` returns nothing and the front matter
+     `update_freq` is used as is. That applies to pages that cannot have their
+     own date: Nextstrain and wastewater run on external servers.
 
-     ── `data_as_of: "RRRR-MM-DD"` — JEN pro uzavřené reporty ─────────────────
-     Jediná výjimka z pravidla „datum se nepíše do hlavičky“. Platí pro stránku,
-     jejíž čísla jsou napsaná v textu a už se nikdy nezmění (hantavirus: WHO
-     ohnisko ukončila, závěrečný souhrn DON611 je k 2. 7. 2026). Tam datum
-     nezastará, protože nic, co by ho mělo posunout, už nepřijde.
-     ⛔ Nesmí se kombinovat s `update_from` — ruční datum by přebilo datum
-     z dat, a přesně tak hnije. Kombinace končí chybou buildu. */}}
+     ── `data_as_of: "YYYY-MM-DD"` — ONLY for closed reports ──────────────────
+     The single exception to "no dates in front matter". It applies to a page
+     whose figures are written in the text and will never change (e.g. an
+     outbreak declared over, with a final summary). The date cannot go stale
+     because nothing that would move it will arrive.
+     It must not be combined with `update_from` — a manual date would override
+     the data date, which is exactly how dates go stale. The combination fails
+     the build. */}}
 {{ $en   := eq .Site.Language.Lang "en" }}
 {{ $file := .Params.update_from }}
 {{ $read := .Params.update_read | default "stamp" }}
@@ -71,7 +72,7 @@
   {{ else }}
     {{ $j := os.ReadFile $path | transform.Unmarshal }}
 
-    {{/* ── kdy běžela pipeline / po které datum sahají data ─────────────── */}}
+    {{/* ── when the pipeline ran / last date the data covers ──────────── */}}
     {{ if eq $read "stamp" }}
       {{ if $j.generated_at }}
         {{ $t := time.AsTime $j.generated_at }}
@@ -87,18 +88,18 @@
         {{ errorf "update_read \"stamp\": %q nemá generated_at ani posledni_datum (stránka %q)" $path $.Title }}
       {{ end }}
 
-    {{/* ── „2021-01-01 – 2026-09-08“ → konec období ─────────────────────── */}}
+    {{/* ── "2021-01-01 – 2026-09-08" → end of period ───────────────────── */}}
     {{ else if eq $read "period-end" }}
       {{ $o := $j.obdobi }}
       {{ if not $o }}{{ errorf "update_read \"period-end\": %q nemá pole obdobi (stránka %q)" $path $.Title }}{{ end }}
-      {{/* Pomlčka je EN DASH s mezerami, tak ji generátor píše. */}}
+      {{/* The dash is an EN DASH with spaces, as the generator writes it. */}}
       {{ $end := trim (index (last 1 (split $o "–")) 0) " " }}
       {{ $t := time.AsTime $end }}
       {{ $out = dict "text" (printf "%s %s"
           (cond $en "Data through" "Data k")
           ($t.Format (cond $en "2 Jan 2006" "2. 1. 2006"))) "iso" ($t.Format "2006-01-02") }}
 
-    {{/* ── „KT 36/26“ → neděle 36. ISO týdne 2026 ───────────────────────── */}}
+    {{/* ── "KT 36/26" → Sunday of ISO week 36 of 2026 ──────────────────── */}}
     {{ else if eq $read "week" }}
       {{ $labels := $j.labels }}
       {{ if not $labels }}{{ errorf "update_read \"week\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
@@ -106,9 +107,9 @@
       {{ $ww := index (split (index (last 1 (split $lastLabel " ")) 0) "/") 0 | int }}
       {{ $yy := index (split (index (last 1 (split $lastLabel " ")) 0) "/") 1 | int }}
       {{ $year := add 2000 $yy }}
-      {{/* 4. leden leží VŽDY v 1. ISO týdnu — odtud se počítá všechno ostatní.
-           Den v týdnu se čte přes Format "Mon", protože .Weekday v šabloně
-           vrací jméno, ne číslo, se kterým by šlo počítat. */}}
+      {{/* 4 January ALWAYS falls in ISO week 1 — everything else is computed from it.
+           The weekday is read via Format "Mon", because .Weekday in a template
+           returns a name, not a number that can be used in arithmetic. */}}
       {{ $jan4 := time.AsTime (printf "%d-01-04T00:00:00Z" $year) }}
       {{ $off := index (dict "Mon" 0 "Tue" 1 "Wed" 2 "Thu" 3 "Fri" 4 "Sat" 5 "Sun" 6) ($jan4.Format "Mon") }}
       {{ $sunday := $jan4.AddDate 0 0 (add (mul (sub $ww 1) 7) (sub 6 $off)) }}
@@ -117,17 +118,17 @@
           ($sunday.Format (cond $en "2 Jan 2006" "2. 1. 2006"))
           (cond $en (printf "week %d/%d" $ww $yy) $lastLabel)) "iso" ($sunday.Format "2006-01-02") }}
 
-    {{/* ── „2025-12“ ────────────────────────────────────────────────────── */}}
+    {{/* ── "2025-12" ────────────────────────────────────────────────────── */}}
     {{ else if eq $read "month" }}
       {{ $labels := $j.labels }}
       {{ if not $labels }}{{ errorf "update_read \"month\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}
       {{ $l := index $labels (sub (len $labels) 1) }}
       {{ $p := split $l "-" }}
-      {{/* ISO zůstává měsíční („2025-12“) — den se nedoplňuje, viz varování výš. */}}
+      {{/* ISO stays monthly ("2025-12") — no day is added, see the note above. */}}
       {{ $out = dict "text" (printf "%s %s/%s"
           (cond $en "Data through" "Data k") (index $p 1) (index $p 0)) "iso" $l }}
 
-    {{/* ── „2025“ ───────────────────────────────────────────────────────── */}}
+    {{/* ── "2025" ───────────────────────────────────────────────────────── */}}
     {{ else if eq $read "year" }}
       {{ $labels := $j.labels }}
       {{ if not $labels }}{{ errorf "update_read \"year\": %q nemá labels (stránka %q)" $path $.Title }}{{ end }}

@@ -1,38 +1,38 @@
-{{- /* Strojově čitelný katalog zdrojů — /about/data/sources.json
+{{- /* Machine-readable source catalogue — /about/data/sources.json
 
-       Proč vedle JSON-LD na téže stránce: schema.org/DataCatalog umí jméno,
-       licenci a odkaz ke stažení, ale nemá kam dát `limits` — větu „co z těchhle
-       dat NEJDE vyčíst“. Přitom právě ta rozhoduje, jestli konzument (člověk
-       i model) z dat vyvodí nesmysl. Tenhle výstup proto vydává katalog tak, jak
-       je vedený, se všemi poli a v obou jazycích.
+       Why in addition to the JSON-LD on the same page: schema.org/DataCatalog
+       covers name, licence and download link, but has no place for `limits` —
+       "what this data CANNOT tell you". That is exactly what decides whether a
+       consumer (human or model) draws wrong conclusions. This output therefore
+       emits the catalogue as maintained, with all fields and in both languages.
 
-       Vzniká ze `data/sources.yaml`, takže nemůže zastarat vůči stránce, kterou
-       čtou lidé — obojí čte tentýž soubor. */ -}}
+       Built from `data/sources.yaml`, so it cannot drift from the page people
+       read — both read the same file. */ -}}
 {{- $lang := .Site.Language.Lang -}}
-{{- /* Odtud se jednou za build vygeneruje i DCAT-AP-CZ katalog (/dcat/…).
-       Partial nic nevypisuje, jen zapisuje soubory.
+{{- /* The DCAT-AP-CZ catalogue (/dcat/…) is also generated from here, once per
+       build. The partial prints nothing; it only writes files.
 
-       ⛔ Jen ve VÝCHOZÍM jazyce, a poznává se podle domovské stránky: ta má
-       „/“ jen v něm (`defaultContentLanguageInSubdir = false`), ostatní mají
-       „/en/“. Beze zkoušky by partial běžel v obou jazycích, oba by zapsaly
-       tytéž soubory a ten druhý by vyhrál — katalog by pak odkazoval na IRI
-       s „/en/“, která nikam nevedou. Katalog je pro portál jeden a jazyky
-       nese uvnitř hodnot. */ -}}
+       Default language ONLY, detected via the home page: only the default
+       language has "/" (`defaultContentLanguageInSubdir = false`), the others
+       have "/en/". Without the check the partial would run in both languages,
+       both would write the same files and the second would win — the catalogue
+       would then reference "/en/" IRIs that resolve nowhere. There is one
+       catalogue for the portal; languages are carried inside the values. */ -}}
 {{- if eq .Site.Home.RelPermalink "/" -}}{{- partial "dcat-publish.html" . -}}{{- end -}}
 {{- $sources := slice -}}
 {{- range hugo.Data.sources -}}
   {{- $src := . -}}
-  {{- /* Odkazy na dashboardy jen tam, kde stránka existuje — zdroj smí být
-         v katalogu dřív než jeho dashboard. */ -}}
+  {{- /* Dashboard links only where the page exists — a source may be in the
+         catalogue before its dashboard. */ -}}
   {{- $pages := slice -}}
   {{- range .pages -}}
     {{- with site.GetPage . -}}
       {{- $pages = $pages | append (dict "title" .Title "url" .Permalink) -}}
     {{- end -}}
   {{- end -}}
-  {{- /* `coverage` a `format` jsou v katalogu psané jednou jako prostý text
-         („2000–2025“), jindy jako dvojice cs/en. `cond` se tu použít nedá —
-         vyhodnocuje obě větve, takže by `index` spadl na řetězci. */ -}}
+  {{- /* `coverage` and `format` are sometimes plain text ("2000–2025") and
+         sometimes a cs/en pair. `cond` cannot be used here — it evaluates
+         both branches, so `index` would fail on a string. */ -}}
   {{- $coverage := $src.coverage -}}
   {{- if reflect.IsMap $src.coverage }}{{ $coverage = index $src.coverage $lang | default $src.coverage.cs }}{{ end -}}
   {{- $format := $src.format -}}

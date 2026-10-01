@@ -68,14 +68,14 @@
 
   </div>
 
-  {{/* Trvalý odkaz na podrobnosti — proužek se zavře, informace musí zůstat
-       dosažitelná. Otevírá totéž okno; JS je v privacy-notice.html. */}}
+  {{/* Permanent link to the details — the banner can be closed, the information
+       must stay reachable. Opens the same dialog; the JS is in privacy-notice.html. */}}
   {{ $pl := cond (eq .Site.Language.Lang "en") "en" "cs" }}
   <div class="d-flex justify-content-center small mt-2">
     <a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index .Site.Data.privacy $pl).title }}</a>
   </div>
 
-  {{/* Všichni partneři a sponzoři, na každé stránce webu. */}}
+  {{/* All partners and sponsors, on every page of the site. */}}
   {{ partial "partners.html" . }}
 
   <div class="d-flex justify-content-center small mt-2">
@@ -98,12 +98,10 @@
   document.addEventListener("DOMContentLoaded", function() {
     // `order: []` is essential: DataTables' default behaviour is to sort by the
     // first column ascending, which in curated tables destroys the order the
-    // author chose — the "Major events" timeline sorted as text ("10. 7." before
-    // "5. 5.") and the most important source ended up in the middle.
-    // ⛔ `table` bralo VŠECHNY tabulky na stránce, včetně těch, které si řídí
-    // vlastní skript. Tabulka signálů na titulce je zároveň přepínač mapy —
-    // DataTables ji stránkoval po 25 řádcích a klik na řádek pak mohl vybrat
-    // něco jiného, než na co uživatel klikl.
+    // author chose (e.g. a timeline sorted as text).
+    // The selector excludes tables marked data-no-datatable — tables driven by
+    // their own script (e.g. the events calendar) must not be
+    // paginated or re-sorted.
     new DataTable('table:not([data-no-datatable])', {
       order: [],
       pageLength: 25,

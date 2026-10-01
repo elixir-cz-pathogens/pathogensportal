@@ -1,18 +1,18 @@
-{{/* Načítací vrstva přes celé okno — průsvitné bílé plátno, které rozmaže
-     načítající se stránku, a uprostřed točící se emblém portálu.
+{{/* Full-window loading overlay — a translucent white layer that blurs the
+     loading page, with the portal emblem spinning in the middle.
 
-     Usage: {{ partial "page-loader.html" . }}   (kontext = stránka, kvůli jazyku)
+     Usage: {{ partial "page-loader.html" . }}   (context = page, for the language)
 
-     Schová ji pp-charts.js (hidePageLoader), až doběhnou všechna načítání dat
-     na stránce. Obsah pod ní se mezitím normálně vykresluje — vrstva jen
-     překrývá, nic nezdržuje.
+     Hidden by pp-charts.js (hidePageLoader) once all data loads on the page
+     have finished. The content below renders normally in the meantime — the
+     layer only covers it, it does not delay anything.
 
-     ⛔ Pojistka níž NESMÍ zmizet. Kdyby se pp-charts.js nenačetl nebo spadl
-     dřív, než vrstvu schová, zůstala by přes celou stránku navždy a stránka by
-     byla nepoužitelná. 15 s je víc než jakékoli rozumné načtení.
+     The fallback timeout below must NOT be removed. If pp-charts.js failed to
+     load or crashed before hiding the layer, it would cover the page forever
+     and make it unusable. 15 s is longer than any reasonable load.
 
-     ⚠️ Emblém, ne celé logo — stejný důvod jako u spinner.html: nápis by se při
-     rotaci obracel vzhůru nohama. */}}
+     The emblem, not the full logo — same reason as in spinner.html: the
+     lettering would turn upside down while rotating. */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 <div class="pp-page-loader" data-pp-page-loader role="status">
   <img class="pp-page-loader__mark" src="{{ "images/portal-mark.png" | relURL }}" alt=""

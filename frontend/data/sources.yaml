@@ -1,15 +1,16 @@
-# Katalog datových zdrojů portálu — jediné místo, kde je popsané, odkud co bereme.
+# Catalogue of the portal's data sources — the one place that records where
+# each dataset comes from.
 #
-# Čte ho shortcode {{< data-catalogue >}} (stránka O portálu → Data a citace):
-# vykreslí z něj přehled pro lidi a schema.org/DataCatalog (JSON-LD) pro stroje.
+# Read by the {{< data-catalogue >}} shortcode (About → Data and citation page):
+# it renders a human-readable overview and schema.org/DataCatalog (JSON-LD).
 #
-# Pravidla:
-#   - `licence.name` psát tak, jak ji uvádí ZDROJ. Když ji zdroj neuvádí, napsat to
-#     ("neuvedena") — domyšlená licence je horší než přiznaná mezera.
-#   - `pages` jsou cesty stránek, kde se zdroj používá. Shortcode odkáže jen na ty,
-#     které existují, takže sem může přijít zdroj dřív než jeho dashboard.
-#   - `limits` = co z dat NEJDE vyčíst. Povinné pole, ne ozdoba.
-#   - Pořadí = pořadí na stránce: nejdřív česká surveillance, pak kontext.
+# Rules:
+#   - Write `licence.name` as the SOURCE states it. If the source states none,
+#     say so ("neuvedena") — an assumed licence is worse than an admitted gap.
+#   - `pages` are paths of the pages that use the source. The shortcode links
+#     only to pages that exist, so a source may be added before its dashboard.
+#   - `limits` = what the data CANNOT tell you. Required, not decorative.
+#   - Order = order on the page: Czech surveillance first, then context.
 
 - id: uzis-isin
   name: { cs: "Infekční nemoci v ČR (ISIN)", en: "Infectious diseases in Czechia (ISIN)" }
@@ -24,9 +25,8 @@
   limits:
     cs: "Neobsahuje COVID-19, tuberkulózu, syfilis, kapavku ani HIV — mají vlastní registry. Od července 2025 přichází část případů novým kanálem hlášení (EWS), řady proto nejsou přes tento zlom přímo srovnatelné."
     en: "Does not include COVID-19, tuberculosis, syphilis, gonorrhoea or HIV — these have their own registers. Since July 2025 some cases arrive through a new reporting channel (EWS), so series are not directly comparable across that break."
-  # Sedm tematických stránek běží nad toutéž sadou (grafy isin_group_*) a v
-  # katalogu chyběly — čtenáři na nich neviděli odkaz na zdroj a strukturovaná
-  # data stránky se kvůli tomu negenerovala vůbec.
+  # The seven topic pages all use this dataset (isin_group_* charts); listing
+  # them here gives them a source link and page-level structured data.
   pages: ["/dashboards/infectious-diseases", "/signals",
           "/dashboards/infectious-diseases-childhood",
           "/dashboards/infectious-diseases-gastro",

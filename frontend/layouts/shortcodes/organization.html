@@ -1,9 +1,9 @@
-{{/* Přebíjí shortcode motivu (themes/…/shortcodes/organization.html) JEN kvůli
-     velikosti loga. Motiv roztahoval logo na celou šířku sloupce, takže úzký
-     štít VZÚ byl na stránce Partneři vysoký přes 300 px. Rozměr teď počítá
-     partials/logo-box.html — stejně jako v patičce, jen ve větším měřítku.
+{{/* Overrides the theme shortcode (themes/…/shortcodes/organization.html) ONLY for
+     the logo size. The theme stretched the logo to the full column width, so a
+     narrow logo became very tall. The size is now computed by
+     partials/logo-box.html — as in the footer, just at a larger scale.
 
-     `alt` je prázdný záměrně: jméno organizace stojí hned vedle. */}}
+     `alt` is empty on purpose: the organization name is right next to it. */}}
 {{ $img := .Get "img" }}
 {{ $s := partialCached "logo-box.html" (dict "src" $img "area" 12000 "hmax" 85 "wmax" 210) $img "affiliations" }}
 <div class="row">

@@ -1,16 +1,16 @@
-{{/* Výpis dashboardů. Přebíjí šablonu motivu jen kvůli legendě.
+{{/* Dashboard list. Overrides the theme template only to add the legend.
 
-     ⛔ Legenda je JEN tady. Karty ve výpisech nesou původ dat barvou rámečku,
-     a barva bez vysvětlení je nedešifrovatelná — tohle je to jediné místo, kde
-     se čtenář dozví, co která znamená. Když tenhle blok zmizí, rámečky se
-     nerozbijí, jen přestanou cokoli znamenat.
+     The legend exists ONLY here. Cards in lists show data origin by border
+     colour, and colour without explanation is meaningless — this is the one
+     place where the reader learns what each colour means. Removing this block
+     breaks nothing visibly; the borders just stop meaning anything.
 */}}
 {{ define "main" }}
-{{/* ⛔ .pp-viz není dekorace — na něm jsou definované VŠECHNY barevné
-     tokeny (dashboards.css). Bez tohohle obalu se `var(--pp-surface-raised)`
-     ani `var(--pp-border)` nevyhodnotí, karta ztratí pozadí i okraj a vypadá
-     jako by se styly nenačetly. Barvy původu to nepostihlo, ty jsou na :root,
-     takže rámeček zůstal vidět a chyba se tvářila jako „málo kontrastní“. */}}
+{{/* .pp-viz is not decorative — it defines ALL colour tokens (dashboards.css).
+     Without this wrapper `var(--pp-surface-raised)` and `var(--pp-border)` do
+     not resolve and the card loses its background and border. Origin colours
+     live on :root, so the border stays visible and the problem looks like low
+     contrast rather than a missing stylesheet. */}}
 <div class="pp-viz">
 {{ $en := eq .Site.Language.Lang "en" }}
 
@@ -18,9 +18,9 @@
     {{ .Content }}
 </div>
 
-{{/* ⛔ Táž mřížka jako na titulce, ne bootstrapová řada. Jediný rozdíl proti
-     titulce je `full` — popis a tagy. Kdyby se lišilo cokoli dalšího, patří to
-     do dashboard-tile.html jako přepínač, ne sem. */}}
+{{/* The same grid as on the home page, not a Bootstrap row. The only difference
+     from the home page is `full` — description and tags. Any further difference
+     belongs in dashboard-tile.html as a switch, not here. */}}
 <div class="pp-tilegrid pp-tilegrid--full mb-3">
     {{ $paginatedPages := .Paginate (.Data.Pages) 9 }}
     {{ range $paginatedPages.Pages }}
@@ -31,10 +31,9 @@
     {{ template "_internal/pagination.html" . }}
 </div>
 
-{{/* Popisky se berou z origin-meta.html, ať legenda a rámečky nemůžou tvrdit
-     každý něco jiného. Prochází se pevný číselník, ne stránky — legenda má být
-     úplná i ve chvíli, kdy zrovna na téhle straně stránkování některá kategorie
-     není. */}}
+{{/* Labels come from origin-meta.html so the legend and the borders cannot
+     disagree. It iterates a fixed code list, not pages — the legend must be
+     complete even when a category is absent from the current pagination page. */}}
 <aside class="pp-origin-legend pp-origin-legend--page mt-4" aria-labelledby="pp-legend-head">
   <h2 id="pp-legend-head" class="pp-origin-legend__head">{{ cond $en "What the card border colour means" "Co znamená barva rámečku karty" }}</h2>
   <p class="pp-origin-legend__lead">{{ cond $en "Every dashboard says where its data comes from." "U každého dashboardu je vidět, odkud jsou jeho data." }}</p>

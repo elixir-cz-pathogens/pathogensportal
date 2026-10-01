@@ -1,23 +1,23 @@
-{{/* Loga spolupracovníků a sponzorů — na KAŽDÉ stránce webu.
+{{/* Logos of collaborators and sponsors — on EVERY page of the site.
 
-     Vykresluje se z patičky, takže platí pro celý web včetně dashboardů, tagů
-     a chybové stránky.
+     Rendered from the footer, so it applies to the whole site including
+     dashboards, tags and the error page.
 
-     ⛔ Od 9. 9. 2026 je to JEDINÉ místo, kde loga na webu jsou — v hlavičce
-     stávala čtyři a byla odstraněna. Tenhle partial tedy nese i povinné uvedení
-     poskytovatele dotace; není to dekorace patičky.
+     This is the ONLY place logos appear on the site, so this partial also
+     carries the mandatory acknowledgement of the grant provider; it is not
+     footer decoration.
 
-     ⛔ Jediný zdroj pravdy o tom, kdo jsou partneři, je stránka
-     content/<jazyk>/about/affiliations.md. Jména, odkazy i loga níž jsou převzaté
-     odtamtud — když se změní tam, musí se změnit i tady. Rozejít se ty dva
-     seznamy nesmí: partner uvedený jen na jednom místě vypadá jako chyba
-     v tom druhém.
+     The single source of truth about who the partners are is the page
+     content/<lang>/about/affiliations.md. Names, links and logos below are
+     taken from there — when it changes, this must change too. The two lists
+     must not diverge: a partner listed in only one place looks like an error
+     in the other.
 
-     Program švýcarsko-české spolupráce má oficiálně CZ a EN variantu loga.
+     The Swiss-Czech cooperation programme officially has CZ and EN logo variants.
 
-     ⛔ UJEP tu záměrně NENÍ (odebráno 15. 9. 2026). Spolupracuje jedna osoba,
-     ne instituce — logo by tvrdilo partnerství, které neexistuje. Její afiliace
-     zůstává u jména na stránce Lidé; to je tvrzení o člověku, ne o škole.
+     Only institutional partners are listed. An individual collaborator's
+     affiliation stays next to their name on the People page; a logo would
+     claim an institutional partnership.
 */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 {{ $partners := slice
@@ -34,8 +34,8 @@
 <div class="pp-partners">
   <p class="pp-partners__label">{{ cond $en "Partners and support" "Partneři a podpora" }}</p>
   <div class="pp-partners__grid">
-    {{/* Rozměry z logo-box.html: stejná plocha, ne stejná výška. Předávají se
-         jako CSS proměnné, aby je mobilní šířka mohla zmenšit jedním násobkem. */}}
+    {{/* Dimensions from logo-box.html: equal area, not equal height. Passed as
+         CSS variables so the mobile width can scale them with one factor. */}}
     {{ range $partners }}
     {{ $s := partialCached "logo-box.html" (dict "src" .img "area" 4800 "hmax" 56 "wmax" 170) .img "footer" }}
     <a href="{{ .url }}" target="_blank" rel="noopener" title="{{ .name }}" aria-label="{{ .name }}">

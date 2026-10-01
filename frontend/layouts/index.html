@@ -1,16 +1,15 @@
-{{/* Titulní stránka (PP-57).
+{{/* Home page (PP-57).
 
-     Bloky: co portál je → kam dál po webu → dashboardy jako karty (s tématy) →
-     novinky → akce (kalendář + seznam, od 15. 9. 2026 — samostatná stránka
-     /events/ se už negeneruje, viz partials/home-events.html).
+     Blocks: what the portal is → where to go next → dashboards as cards (with
+     topics) → news → events (calendar + list; a standalone /events/ page is not
+     generated, see partials/home-events.html).
 
-     ⛔ Blok signálů tu BYL a je pryč. Mapa i přepínač teď žijí na
-     /signals/, kde je kolem nich vysvětlení, jak se práh počítá a co
-     signál neznamená. Na titulce visely bez toho kontextu a titulka kvůli nim
-     začínala nejtechničtějším, co portál má. Zůstal odkaz v navigaci.
+     There is no signals block here on purpose. The map and selector live on
+     /signals/, together with the explanation of how the threshold is computed
+     and what a signal does not mean. A navigation link remains.
 
-     ⛔ Nahrazuje šablonu motivu, která ukazovala náhled dashboardů, náhled
-     novinek, prázdný blok Akce a oblak tagů.
+     Replaces the theme template, which showed dashboard and news previews, an
+     empty Events block and a tag cloud.
 */}}
 {{ define "main" }}
 
@@ -18,20 +17,20 @@
 
 <div class="pp-viz">
 
-  {{/* ── 1. Co portál je ───────────────────────────────────────────────── */}}
-  {{/* ⚠️ Bez nadpisu se jménem portálu — ten je hned nad tímhle v banneru
-       (partials/header.html) a objevoval se tak na titulce dvakrát. */}}
+  {{/* ── 1. What the portal is ────────────────────────────────────────── */}}
+  {{/* No heading with the portal name — it is already in the banner directly
+       above (partials/header.html). */}}
   <section class="pp-home-intro mb-4">
     {{ with .Content }}<div class="pp-home-lead">{{ . }}</div>{{ end }}
   </section>
 
-  {{/* ── 2. Navigace po webu ───────────────────────────────────────────────
-       Odkazy se berou přes .Site.GetPage, ne natvrdo — RelPermalink je pak
-       jazykově správný sám od sebe. Stejná past jako `url` místo `pageRef`
-       v menu (PP-52) a natvrdo psané /tags/ (PP-51): natvrdo psaná cesta se
-       tváří funkčně a v druhém jazyce vede jinam.
+  {{/* ── 2. Site navigation ───────────────────────────────────────────────
+       Links are resolved via .Site.GetPage, not hardcoded, so RelPermalink is
+       language-correct on its own. Same trap as `url` instead of `pageRef` in
+       menus (PP-52) and hardcoded /tags/ (PP-51): a hardcoded path looks fine
+       and leads elsewhere in the other language.
 
-       Dlaždice, u které se cíl nenajde, se přeskočí — lepší než odkaz na 404. */}}
+       A tile whose target is not found is skipped — better than a 404 link. */}}
   {{ $signals := .Site.GetPage "/signals" }}
   {{ $nav := slice
       (dict "p" (.Site.GetPage "section" "dashboards") "icon" "bi-grid-1x2-fill"
@@ -52,11 +51,11 @@
             "d" (cond $en "Who runs it, where the data comes from" "Kdo ho dělá a odkud jsou data"))
   }}
   <nav class="pp-home-nav mb-5" aria-label="{{ cond $en "Sections of this site" "Sekce webu" }}">
-    {{/* ⚠️ `$it := .` PŘED `with`: uvnitř `with` se kontext přepne na stránku,
-         takže .icon a .t z dlaždice by byly prázdné. Tiše — `with` na
-         neexistujícím klíči nic nehlásí, jen nevykreslí. */}}
-    {{/* `href` přebíjí adresu stránky — Akce vlastní stránku nemají
-         (build.render: never, RelPermalink je prázdný) a vedou na kotvu níž. */}}
+    {{/* `$it := .` BEFORE `with`: inside `with` the context switches to the page,
+         so the tile's .icon and .t would be empty. Silently — `with` on a
+         missing key reports nothing, it just does not render. */}}
+    {{/* `href` overrides the page URL — Events have no page of their own
+         (build.render: never, empty RelPermalink) and link to the anchor below. */}}
     {{ range $nav }}
     {{ $it := . }}
     {{ with $it.p }}
@@ -69,18 +68,18 @@
     {{ end }}
   </nav>
 
-  {{/* ── 3. Dashboardy jako karty ──────────────────────────────────────────
-       ⛔ Karty, ne textový seznam. Rozhodnutí „otevřu tohle?" padá podle toho,
-       o čem dashboard je; obrázek to řekne dřív než řádek textu.
+  {{/* ── 3. Dashboards as cards ────────────────────────────────────────────
+       Cards, not a text list: whether to open a dashboard depends on what it is
+       about, and an image conveys that faster than a line of text.
 
-       Filtr zůstává — jde o rejstřík, ne o fulltext. Statický web by na hledání
-       potřeboval klientský JS index (Pagefind/Fuse/lunr), což naráží na otevřené
-       PP-7 (vendorované knihovny). Filtrovaný seznam reaguje okamžitě, bez JS
-       zobrazí prostě všechno a nemá problém prázdného výsledku.
+       The filter stays — it is an index, not full-text search. A static site
+       would need a client-side JS index (Pagefind/Fuse/lunr) for search, which
+       conflicts with the open PP-7 (vendored libraries). A filtered list reacts
+       instantly, shows everything without JS and has no empty-result problem.
 
-       ⚠️ Vypisují se jen dashboardy, které nejsou schované pod
-       `build: list: never` — podstránky rozcestníků (ebola, infekční nemoci)
-       sem nepatří, jinak by tu byl každý hub dvakrát. */}}
+       Only dashboards not hidden by `build: list: never` are listed — hub
+       subpages (Ebola, infectious diseases) do not belong here, otherwise each
+       hub would appear twice. */}}
   {{ $dash := .Site.GetPage "section" "dashboards" }}
   {{ with $dash }}
   <section class="pp-home-cards mb-5">
@@ -91,21 +90,19 @@
 
     <div class="pp-home-dash-grid">
     <div class="pp-home-dash-main">
-    {{/* ⛔ Řadí se podle .Lastmod, což je díky enableGitInfo datum posledního
-         commitu nad souborem. Bez toho přepínače je .Lastmod u VŠECH dashboardů
-         nulový (žádný nemá `date:` v hlavičce) a tohle by tiše vracelo pořadí
-         podle ničeho.
+    {{/* Ordered by .Lastmod, which with enableGitInfo is the date of the last
+         commit touching the file. Without that setting .Lastmod is zero for
+         every dashboard (none has `date:` in front matter) and this would
+         silently return an arbitrary order.
 
-         ⚠️ .Lastmod se na kartě záměrně NEVYPISUJE. Je to datum úpravy STRÁNKY,
-         ne čerstvost dat — grafy se plní z JSONu, který přegenerovává pipeline,
-         takže „Aktualizováno 5. 9." vedle živého grafu by čtenáře nechalo
-         věřit, že data jsou z 5. 9. Pořadí to nese, tvrzení ne. Datum, které
-         karta ukazuje (od 15. 9. 2026), je čtené z dat přes update-stamp.html.
+         .Lastmod is deliberately NOT displayed on the card. It is the PAGE
+         modification date, not data freshness — charts are filled from JSON
+         regenerated by the pipeline, so showing it next to a live chart would
+         mislead readers about how current the data is. The date the card shows
+         is read from the data via update-stamp.html.
 
-         ⚠️ Dnes to rozliší jen dvě položky: sedm z devíti dashboardů se
-         naposledy změnilo jedním hromadným commitem, takže sdílejí datum a
-         jejich vzájemné pořadí je libovolné. Rozejde se, jak se budou upravovat
-         po jednom. */}}
+         Pages last changed in the same commit share a date, so their relative
+         order is arbitrary. */}}
     <div class="pp-tilegrid">
       {{ range first 6 .Pages.ByLastmod.Reverse }}
       {{ partial "dashboard-tile.html" (dict "page" . "full" false) }}
@@ -123,8 +120,8 @@
   {{- end -}}
     <aside class="pp-home-topics" aria-labelledby="pp-topics-head">
       <h3 id="pp-topics-head">{{ cond $en "Topics" "Témata" }}</h3>
-      {{/* ⚠️ Říká, že se jde JINAM. Chipy sedí vedle filtru, který filtruje na
-           místě — bez tohohle rozlišení vypadají jako druhá sada filtrů. */}}
+      {{/* Indicates navigation ELSEWHERE. The chips sit next to a filter that works
+           in place — without this distinction they look like a second set of filters. */}}
       <p class="pp-home-topics__lead">{{ cond $en "Jump across diseases" "Napříč nemocemi" }}</p>
       <div class="pp-home-topics__list">
       {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
@@ -139,7 +136,7 @@
   </section>
   {{ end }}
 
-  {{/* ── 4. Novinky ────────────────────────────────────────────────────── */}}
+  {{/* ── 4. News ──────────────────────────────────────────────────────── */}}
   {{ $news := .Site.GetPage "section" "news" }}
   {{ with $news }}
   {{ $items := first 3 .RegularPages }}
@@ -162,7 +159,7 @@
   {{ end }}
   {{ end }}
 
-  {{/* ── 5. Akce ─────────────────────────────────────────────────────────── */}}
+  {{/* ── 5. Events ──────────────────────────────────────────────────────── */}}
   {{ partial "home-events.html" . }}
 
 </div>

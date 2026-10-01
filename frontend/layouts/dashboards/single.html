@@ -12,33 +12,31 @@
      anywhere else. */}}
 {{ if .Params.report }}<link rel="stylesheet" href="{{ "css/reports.css" | relURL }}">{{ end }}
 
-{{/* Vrstva přes celé okno, dokud se nenačtou data (15. 9. 2026). Na stránce bez
-     grafů zmizí dřív, než se stihne ukázat — viz page-loader.html. */}}
+{{/* Full-window overlay shown until data has loaded. On a page without charts
+     it disappears before it becomes visible — see page-loader.html. */}}
 {{ partial "page-loader.html" . }}
 
 <div class="pp-viz" aria-busy="true" data-pp-busy>
   <header class="pp-dash-header">
     {{/* The breadcrumb is rendered by the theme above the content — do not duplicate it.
 
-         ⚠️ No <h1> here either: the banner in partials/header.html already renders
-         .Title as the page's h1, so this one printed every dashboard's name twice —
-         once in the green header band, once immediately below it. Same bug the
-         home page had. */}}
+         No <h1> here either: the banner in partials/header.html already renders
+         .Title as the page's h1. */}}
     {{ with .Description }}<p class="pp-dash-lead">{{ . }}</p>{{ end }}
 
     <div class="pp-meta">
-      {{/* Původ dat (PP-57) — první v řadě metadat. U `ai-assisted` je to
-           tvrzení o integritě, ne ozdoba: `data_source` u těch stránek uvádí
-           jména dvou lidí a samo o sobě neřekne, že text psal stroj. */}}
+      {{/* Data origin (PP-57) — first in the metadata row. For `ai-assisted` this is
+           an integrity statement, not decoration: `data_source` on those pages
+           names people and does not by itself say the text was machine-written. */}}
       {{ with partial "origin-badge.html" (dict "page" .) }}
       <span class="pp-meta__item">{{ . }}</span>
       {{ end }}
       {{ with .Params.data_source }}
       <span class="pp-meta__item"><i class="bi bi-database" aria-hidden="true"></i> {{ cond $en "Source" "Zdroj" }}: {{ . | safeHTML }}</span>
       {{ end }}
-      {{/* Jak čerstvý dashboard je. Celá logika i její zdůvodnění jsou
-           v update-stamp.html; sem patří jen vykreslení. `update_freq` je
-           záložní slovní údaj pro stránky, které vlastní datum mít nemůžou. */}}
+      {{/* How fresh the dashboard is. The logic and its rationale live in
+           update-stamp.html; only rendering belongs here. `update_freq` is a
+           textual fallback for pages that cannot have their own date. */}}
       {{ $u := partial "update-stamp.html" . }}
       {{ if $u }}
       <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ $u.text }}</span>
@@ -81,6 +79,6 @@
   window.PP_API_BASE = {{ .Site.Params.apibase | default "" }};
 </script>
 <script src="{{ "js/pp-charts.js" | relURL }}"></script>
-{{/* Stránky s chřipkovou intenzitou mají vlastní skript — jinde se nenačítá. */}}
+{{/* Pages with influenza intensity have their own script — it is not loaded elsewhere. */}}
 {{ if .HasShortcode "flu" }}<script src="{{ "js/pp-flu.js" | relURL }}"></script>{{ end }}
 {{ end }}

@@ -1,18 +1,17 @@
-{{/* Rozměr loga partnera tak, aby všechna loga zabírala zhruba STEJNOU PLOCHU.
+{{/* Partner logo size such that all logos occupy roughly the SAME AREA.
 
      Usage: {{ $s := partial "logo-box.html" (dict "src" "/images/VZU.png" "area" 4800 "hmax" 56 "wmax" 170) }}
-            → dict "w" "h" (px, celá čísla)
+            → dict "w" "h" (px, integers)
 
-     ⛔ Proč ne stejná výška nebo šířka: loga mají poměr stran od 0,8 (štít VZÚ)
-     do 6 (švýcarský program). Stejná výška (dřívější patička) dělá z úzkého loga
-     nudli a z širokého billboard; stejná šířka (dřívější stránka Partneři)
-     roztáhla štít VZÚ na ~250×320 px vedle ~250×50 px VŠCHT. Stejná plocha je
-     obvyklý kompromis; `hmax`/`wmax` brání tomu, aby úzké logo vyrostlo do
-     výšky a široké do šířky.
+     Why not equal height or width: logo aspect ratios range from 0.8 (the VZÚ
+     shield) to 6 (the Swiss programme). Equal height turns a narrow logo into
+     a sliver and a wide one into a billboard; equal width blows up a narrow
+     shield next to a wide logo. Equal area is the usual compromise;
+     `hmax`/`wmax` stop a narrow logo from growing too tall and a wide one too wide.
 
-     Poměr stran se čte ze souboru — PNG/JPG přes images.Config, SVG z viewBox.
-     ⚠️ Prázdný okraj v souboru se počítá jako logo. Proto mají soubory log
-     ořezané okraje (15. 9. 2026); nové logo ořízni stejně, jinak vyjde menší. */}}
+     The aspect ratio is read from the file — PNG/JPG via images.Config, SVG
+     from viewBox. Empty margin in the file counts as logo, so logo files are
+     cropped to their content; crop new logos the same way or they come out smaller. */}}
 {{ $src  := .src }}
 {{ $path := printf "static%s" $src }}
 {{ $r    := 0.0 }}

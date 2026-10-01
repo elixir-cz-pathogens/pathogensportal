@@ -1,13 +1,13 @@
-/* Vizuální systém dashboardů — Pathogen Portal CZ
+/* Dashboard visual system — Pathogen Portal CZ
  *
- * Jediné místo, kde se definují barvy grafů a povrchů. `pp-charts.js` si je
- * čte přes getComputedStyle, takže Chart.js a HTML kolem něj kreslí ze stejných
- * hodnot a přebarvení znamená změnu jen tady.
+ * The only place where chart and surface colours are defined. `pp-charts.js`
+ * reads them via getComputedStyle, so Chart.js and the surrounding HTML draw
+ * from the same values and recolouring means a change only here.
  *
- * Datová paleta je validovaná na odlišitelnost při barvosleposti (CVD ΔE ≥ 8
- * u sousedních dvojic) — pořadí slotů 1–8 je součástí té validace, není
- * kosmetické. Nepřehazovat a nedoplňovat další hue: devátá řada se skládá do
- * „Ostatní" (viz PP_MAX_SERIES v pp-charts.js).
+ * The data palette is validated for colour-vision-deficiency distinguishability
+ * (CVD ΔE ≥ 8 for adjacent pairs); the order of slots 1–8 is part of that
+ * validation, not cosmetic. Do not reorder them or add hues: a ninth series is
+ * folded into "Ostatní" (see PP_MAX_SERIES in pp-charts.js).
  */
 
 .pp-viz {
@@ -16,31 +16,31 @@
   --pp-surface: #fcfcfb;
   --pp-surface-raised: #ffffff;
   --pp-border: #e2e1dc;
-  /* Okraj při najetí — jediný odstín mezi --pp-border a --pp-text-muted.
-     Byl na pěti místech v custom.css natvrdo; jako token přežije i tmavý režim. */
+  /* Hover border: a single shade between --pp-border and --pp-text-muted.
+     As a token it also works in dark mode. */
   --pp-border-strong: #c9c8c1;
   --pp-grid: #ebeae6;
   --pp-text: #0b0b0b;
   --pp-text-secondary: #52514e;
   --pp-text-muted: #77766f;
 
-  --pp-series-1: #2a78d6; /* modrá */
-  --pp-series-2: #eb6834; /* oranžová */
-  --pp-series-3: #1baf7a; /* akvamarín */
-  --pp-series-4: #eda100; /* žlutá */
-  --pp-series-5: #e87ba4; /* purpurová */
-  --pp-series-6: #008300; /* zelená */
-  --pp-series-7: #4a3aa7; /* fialová */
-  --pp-series-8: #e34948; /* červená */
-  --pp-series-rest: #8b8a83; /* „Ostatní" — vždy neutrální šedá */
+  --pp-series-1: #2a78d6; /* blue */
+  --pp-series-2: #eb6834; /* orange */
+  --pp-series-3: #1baf7a; /* aquamarine */
+  --pp-series-4: #eda100; /* yellow */
+  --pp-series-5: #e87ba4; /* magenta */
+  --pp-series-6: #008300; /* green */
+  --pp-series-7: #4a3aa7; /* purple */
+  --pp-series-8: #e34948; /* red */
+  --pp-series-rest: #8b8a83; /* "Ostatní" (Other): always neutral grey */
 
-  /* Stavové barvy jsou VYHRAZENÉ — nikdy je nepoužívat jako barvu datové řady
-     a naopak. Nesou význam „v pořádku / pozor / vážné", ne identitu série. */
+  /* Status colours are reserved: never use them as a data series colour, and
+     vice versa. They mean "OK / caution / serious", not series identity. */
   --pp-status-ok: #237047;
   --pp-status-warn: #b06a00;
   --pp-status-alert: #b3322f;
 
-  /* Sekvenční rampa (mapa krajů): jeden odstín, světlá -> tmavá */
+  /* Sequential ramp (region map): one hue, light -> dark */
   --pp-seq-low: #cde2fb;
   --pp-seq-high: #104281;
 
@@ -60,7 +60,7 @@
   --pp-text-secondary: #c3c2b7;
   --pp-text-muted: #9d9c93;
 
-  /* Stejných osm odstínů, nakrokovaných pro tmavý povrch — ne převrácení. */
+  /* The same eight hues, re-stepped for a dark surface, not inverted. */
   --pp-series-1: #3987e5;
   --pp-series-2: #d95926;
   --pp-series-3: #199e70;
@@ -81,7 +81,7 @@
   --pp-shadow: none;
 }
 
-/* ---------- Hlavička dashboardu ---------- */
+/* ---------- Dashboard header ---------- */
 
 .pp-dash-header {
   border-bottom: 1px solid var(--pp-border);
@@ -145,7 +145,7 @@
   background: var(--pp-surface);
 }
 
-/* ---------- Karta grafu ---------- */
+/* ---------- Chart card ---------- */
 
 .pp-card {
   background: var(--pp-surface-raised);
@@ -194,7 +194,7 @@
   color: var(--pp-text-muted);
 }
 
-/* Tlačítko „Tabulka" — nenápadné, ale skutečné tlačítko (fokus, klávesnice) */
+/* "Tabulka" (Table) button: unobtrusive, but a real button (focus, keyboard) */
 .pp-btn {
   background: transparent;
   border: 1px solid var(--pp-border);
@@ -215,7 +215,7 @@
   outline-offset: 2px;
 }
 
-/* Původ dat — statický snímek vs. živé API */
+/* Data origin: static snapshot vs. live API */
 .pp-origin {
   display: inline-flex;
   align-items: center;
@@ -234,7 +234,7 @@
   background: var(--pp-series-3);
 }
 
-/* ---------- Tabulková alternativa ke grafu ---------- */
+/* ---------- Table alternative to the chart ---------- */
 
 .pp-table-wrap {
   display: none;
@@ -277,7 +277,7 @@
   border-bottom: 1px solid var(--pp-border);
 }
 
-/* Identita řady i v tabulce — barevná tečka vedle textu, ne barevný text */
+/* Series identity in the table too: a coloured dot next to the text, not coloured text */
 .pp-swatch {
   display: inline-block;
   width: 8px;
@@ -287,7 +287,7 @@
   vertical-align: baseline;
 }
 
-/* ---------- Statistické dlaždice ---------- */
+/* ---------- Stat tiles ---------- */
 
 .pp-stats {
   display: grid;
@@ -330,7 +330,7 @@
   margin-top: 0.25rem;
 }
 
-/* ---------- Stavy načítání a chyby ---------- */
+/* ---------- Loading and error states ---------- */
 
 .pp-skeleton {
   position: absolute;
@@ -351,7 +351,7 @@
   min-height: 92px;
 }
 
-/* Obsah dashboardu (text z markdownu) mezi kartami */
+/* Dashboard content (markdown text) between cards */
 .pp-dash-body > p,
 .pp-dash-body > ul,
 .pp-dash-body > ol {
@@ -398,7 +398,7 @@
   background: var(--pp-surface);
 }
 
-/* ---------- Mapa krajů ---------- */
+/* ---------- Region map ---------- */
 
 .pp-map {
   max-width: 680px;
@@ -445,7 +445,7 @@
   background: linear-gradient(to right, var(--pp-seq-low), var(--pp-seq-high));
 }
 
-/* Sdílený tooltip mapy — Chart.js si kreslí vlastní */
+/* Shared map tooltip (Chart.js draws its own) */
 .pp-tooltip {
   display: none;
   position: absolute;
@@ -459,9 +459,9 @@
   pointer-events: none;
 }
 
-/* ---------- Situační reporty ---------- */
+/* ---------- Situation reports ---------- */
 
-/* Sub-navigace mezi sekcemi reportu */
+/* Sub-navigation between report sections */
 .pp-section-nav {
   display: flex;
   flex-wrap: wrap;
@@ -490,7 +490,7 @@
   color: #fff;
 }
 
-/* Zvýrazněné sdělení */
+/* Highlighted message */
 .pp-callout {
   border: 1px solid var(--pp-border);
   border-left: 3px solid var(--pp-callout-accent, var(--pp-series-1));
@@ -513,7 +513,7 @@
   --pp-callout-accent: var(--pp-series-8);
 }
 
-/* Klíčové údaje: hodnota + vysvětlení */
+/* Key figures: value + explanation */
 .pp-facts {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -546,7 +546,7 @@
   margin-bottom: 0;
 }
 
-/* Rozcestník na další sekce */
+/* Links to other sections */
 .pp-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -630,7 +630,7 @@
   }
 }
 
-/* Tabulky z markdownu (render hook) */
+/* Markdown tables (render hook) */
 .pp-table-scroll {
   overflow-x: auto;
   margin: 0 0 1.75rem;
@@ -662,7 +662,7 @@
   border-bottom: 0;
 }
 
-/* ---------- Tisk a forced-colors ---------- */
+/* ---------- Print and forced-colors ---------- */
 
 @media print {
   .pp-btn {
@@ -673,16 +673,16 @@
   }
 }
 
-/* Poznámka pod grafem: co přesně čísla znamenají (absolutní vs. přepočet…) */
+/* Note under the chart: what exactly the numbers mean (absolute vs. per-capita…) */
 .pp-note {
   margin: 6px 14px 0;
   font-size: 0.8rem;
   color: var(--pp-text-muted, #77766f);
 }
 
-/* ── Signály: nový kanál hlášení EWS (PP-75) ────────────────────────────────
-   Nerozhodnutelné signály jsou v tabulce pod vlastním nadpisem a ztlumené:
-   čtenář je má vidět, ale nesmí je číst jako potvrzená překročení. */
+/* ── Signals: new EWS reporting channel (PP-75) ─────────────────────────────
+   Undecidable signals are listed under their own heading and muted: readers
+   should see them, but must not read them as confirmed exceedances. */
 .pp-table tr.pp-signals-divider th {
   text-align: left;
   position: static;
@@ -703,8 +703,9 @@
   font-weight: 400;
 }
 
-/* ── Mapa signálů (PP-57) ──────────────────────────────────────────────────
-   Mapa vlevo, hraniční hodnoty vpravo. Panel drží ČR, dokud se nenajede na kraj. */
+/* ── Signal map (PP-57) ────────────────────────────────────────────────────
+   Map on the left, threshold values on the right. The panel shows the whole
+   country until a region is hovered. */
 .pp-signalmap__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
@@ -717,8 +718,8 @@
   border-radius: var(--pp-radius);
   background: var(--pp-surface-raised);
   padding: .85rem 1rem;
-  /* Panel se mění při najetí na kraj. Bez pevné minimální výšky by se pod myší
-     poskakovalo rozvržení celé karty. */
+  /* The panel changes on region hover. Without a fixed minimum height the
+     layout of the whole card would jump under the pointer. */
   min-height: 16rem;
 }
 .pp-signalmap__panelhead {
@@ -741,10 +742,10 @@
   .pp-signalmap__panel { min-height: 0; }
 }
 
-/* Přepínací varianta: tabulka vlevo, mapa jedné diagnózy vpravo. */
+/* Selector variant: table on the left, map of one diagnosis on the right. */
 
-/* Krátké bliknutí po přepnutí — potvrdí, že klik něco udělal, i když se změní
-   část stránky, na kterou se uživatel zrovna nedívá (mapa vpravo). */
+/* Brief flash after switching: confirms the click did something even when the
+   changed part of the page (the map on the right) is not where the user is looking. */
 @keyframes pp-signal-flash {
   from { background-color: var(--pp-seq-high); }
   to   { background-color: var(--pp-seq-low); }
@@ -768,36 +769,35 @@
 }
 .pp-map .pp-tooltip { line-height: 1.35; }
 
-/* ⛔ Obrysy krajů na mapě signálů.
-   Obecné `.pp-map path` má `stroke: var(--pp-surface-raised)`, tedy BÍLOU — na
-   plné choropletě to funguje jako oddělovač vyplněných krajů, ale tady je většina
-   mapy bílá a bílý obrys na bílé výplni je neviditelný. Vypadalo to, že Česko
-   tvoří jen ty kraje, které mají signál.
-   Mapa musí být čitelná jako mapa i tehdy, když v ní není ani jeden signál. */
+/* Region outlines on the signal map.
+   The generic `.pp-map path` uses `stroke: var(--pp-surface-raised)`, i.e. white.
+   On a filled choropleth that separates the regions, but here most of the map is
+   white and a white outline on a white fill is invisible.
+   The map must read as a map even when it has no signals at all. */
 .pp-signalmap .pp-map path[data-region] {
   stroke: var(--pp-text-muted);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 .pp-signalmap .pp-map path[data-region].is-clickable {
-  /* Kraj se signálem: tmavší obrys, ať vystoupí z bílého okolí. */
+  /* Region with a signal: darker outline so it stands out from the white surroundings. */
   stroke: var(--pp-text);
   stroke-width: 1.25;
 }
 
-/* ── Čistota mapy signálů ─────────────────────────────────────────────────── */
+/* ── Signal map clarity ────────────────────────────────────────────────────── */
 
-/* Názvy krajů jen v tooltipu, ne přímo v mapě. Čtrnáct popisků přes republiku
-   dělá z mapy text; identita kraje je potřeba až ve chvíli, kdy se na něj člověk
-   ptá — a tehdy ji dodá tooltip.
-   ⛔ Skryto jen tady. Choropleta incidence na /dashboards/infectious-diseases/
-   používá totéž SVG a popisky tam nesou hlavní informaci. */
+/* Region names only in the tooltip, not on the map. Fourteen labels across the
+   country turn the map into text; a region's identity is needed only when someone
+   asks about it, and the tooltip provides it then.
+   Hidden only here. The incidence choropleth on /dashboards/infectious-diseases/
+   uses the same SVG, and its labels carry the main information there. */
 .pp-signalmap .pp-map [data-region-label] { display: none; }
 
-/* ⛔ Výchozí fokusový rámeček prohlížeče kreslí kolem SVG cesty OBDÉLNÍK podle
-   její bounding boxu — přes půl republiky, černý, přes sousední kraje.
-   `outline: none` samo o sobě by ale rozbilo ovládání klávesnicí, takže se
-   nahrazuje zvýrazněním samotného kraje: silnější tah a jemné ztmavení. */
+/* The browser's default focus ring draws a rectangle around the SVG path's
+   bounding box, covering half the country and the neighbouring regions.
+   `outline: none` alone would break keyboard navigation, so it is replaced by
+   highlighting the region itself: a stronger stroke and slight darkening. */
 .pp-signalmap .pp-map [data-region]:focus,
 .pp-signalmap .pp-map [data-region]:focus-visible { outline: none; }
 .pp-signalmap .pp-map [data-region].is-clickable:focus-visible {
@@ -807,12 +807,11 @@
 }
 
 
-/* ── Přepínač diagnóz: seznam, ne tabulka ────────────────────────────────── */
-/* ⛔ Bez rolování. `max-height` + `overflow-y: auto` znamenalo, že část z deseti
-   položek byla schovaná za posuvníkem — u přepínače, kde pořadí nese informaci
-   (nejsilnější signál první), je skrytá polovina to nejhorší možné místo, kam
-   něco schovat. Deset položek se vejde celé; kdyby jich mělo být víc, patří to
-   na stránku Signály, ne pod posuvník. */
+/* ── Diagnosis selector: a list, not a table ───────────────────────────────── */
+/* No scrolling. With `max-height` + `overflow-y: auto` some of the ten items
+   would be hidden behind a scrollbar; in a selector where order carries
+   information (strongest signal first) that is the worst place to hide anything.
+   Ten items fit; more would belong on the Signals page, not behind a scrollbar. */
 .pp-signalmap__list {
   list-style: none; margin: 0; padding: .35rem;
   display: grid; gap: 2px;
@@ -826,9 +825,9 @@
   border: 1px solid transparent; border-radius: 8px;
   background: transparent; color: inherit;
   font: inherit; font-size: .88rem; line-height: 1.35;
-  /* Názvy diagnóz z MKN jsou dlouhé („Streptokok a stafylokok jako příčina
-     nemoci zařazené do jiných kapitol"). Zalomí se; `anywhere` řeší i případ,
-     kdy je jedno slovo delší než sloupec. */
+  /* ICD-10 diagnosis names can be long (e.g. "streptococcus and staphylococcus
+     as the cause of diseases classified elsewhere"). They wrap; `anywhere` also
+     handles a single word longer than the column. */
   white-space: normal;
   overflow-wrap: anywhere;
   cursor: pointer;
@@ -853,22 +852,22 @@
   .pp-signalmap__item.is-flash { animation: none; }
 }
 
-/* ── Ukazatel načítání ────────────────────────────────────────────────────
-   Emblém portálu v rotaci. Sedí uvnitř .pp-skeleton, takže ho odstraní tentýž
-   kód, který uklízí skeleton.
+/* ── Loading indicator ────────────────────────────────────────────────────
+   The portal emblem, rotating. It sits inside .pp-skeleton, so the code that
+   removes the skeleton removes it too.
 
-   ⛔ Skeleton pod spinnerem NESMÍ zároveň probleskovat. Dvě soupeřící animace
-   na jednom místě jsou neklid, ne informace — proto ten modifikátor shimmer
-   vypíná a nechává jen klidnou plochu, na které se točí znak. */
+   The skeleton under the spinner must not shimmer at the same time. Two competing
+   animations in one place are noise, not information, so this modifier turns the
+   shimmer off and leaves a calm surface for the emblem to spin on. */
 .pp-skeleton--spinner {
   animation: none;
   background: var(--pp-grid);
   display: grid;
   place-items: center;
 }
-/* Skeleton v toku obsahu — pro místa, kde rodič NENÍ position:relative
-   (karta signálů). Jinak by se `inset: 0` vztáhl k nejbližšímu pozicovanému
-   předkovi, tedy klidně k celé stránce. */
+/* In-flow skeleton for places where the parent is not position:relative
+   (signal card). Otherwise `inset: 0` would resolve against the nearest
+   positioned ancestor, possibly the whole page. */
 .pp-skeleton--inflow { position: relative; inset: auto; }
 .pp-spinner { display: grid; place-items: center; line-height: 0; }
 .pp-spinner__mark {
@@ -878,15 +877,15 @@
 }
 @keyframes pp-spin { to { transform: rotate(360deg); } }
 
-/* ── Načítací vrstva přes celé okno (partials/page-loader.html) ─────────────
-   Průsvitné plátno rozmaže stránku pod sebou, emblém se točí uprostřed OKNA,
-   ne uprostřed obsahu — proto `fixed`, ne `absolute`.
+/* ── Full-window loading overlay (partials/page-loader.html) ────────────────
+   A translucent layer blurs the page beneath it; the emblem spins in the centre
+   of the window, not of the content, hence `fixed`, not `absolute`.
 
-   ⚠️ Objeví se až po 150 ms. Lokální JSON se načte dřív a vrstva by jen
-   problikla; takhle ji čtenář uvidí jen tehdy, když načítání opravdu trvá.
-   Tuhle pauzu počítá i hidePageLoader() v pp-charts.js.
+   It appears only after 150 ms. Local JSON loads faster and the overlay would
+   only flash; this way readers see it only when loading actually takes time.
+   hidePageLoader() in pp-charts.js accounts for this delay.
 
-   Stojí mimo .pp-viz, takže tokeny --pp-* tu neplatí — barvy jsou vlastní. */
+   It sits outside .pp-viz, so the --pp-* tokens do not apply; colours are its own. */
 .pp-page-loader {
   position: fixed; inset: 0; z-index: 2000;
   display: grid; place-items: center;
@@ -904,18 +903,19 @@
 @keyframes pp-loader-in { to { opacity: 1; } }
 [data-bs-theme="dark"] .pp-page-loader { background: rgb(22 22 21 / .62); }
 
-/* ⛔ Pro čtenáře, kteří si vyžádali omezení pohybu, se znak nesmí točit. Zůstane
-   viditelný a statický — informace „něco se děje“ je pak v textu pro odečítač,
-   ne v pohybu. Stejné pravidlo už platí pro shimmer a pro přepínání mapy. */
+/* For readers who requested reduced motion the emblem must not spin. It stays
+   visible and static; the "something is happening" information is then in the
+   screen-reader text, not in motion. The same rule applies to the shimmer and to
+   map switching. */
 @media (prefers-reduced-motion: reduce) {
   .pp-spinner__mark { animation: none; opacity: .75; }
   .pp-page-loader__mark { animation: none; opacity: .75; }
 }
 
-/* ── Chřipka: intenzita sezóny, trend a předpověď (PP-74) ───────────────────
-   Pásma intenzity jsou JEDEN odstín od světlé po tmavou — intenzita je velikost,
-   ne kategorie. Stavové barvy (--pp-status-*) sem nepatří: zelená/oranžová/
-   červená nese na portálu význam „v pořádku / pozor / vážné“ u Signálů. */
+/* ── Influenza: season intensity, trend and forecast (PP-74) ────────────────
+   Intensity bands use a single hue from light to dark: intensity is a magnitude,
+   not a category. Status colours (--pp-status-*) do not belong here: green/orange/
+   red mean "OK / caution / serious" for Signals on this portal. */
 .pp-viz {
   --pp-band-1: #e6f0fd;
   --pp-band-2: #c3dcfa;
@@ -1012,7 +1012,7 @@
   border: 1px solid var(--pp-border);
 }
 
-/* Aktuální pásmo se pozná tvarem (vyšší pruh, silný rámeček), ne jen barvou. */
+/* The current band is identified by shape (taller bar, strong border), not only by colour. */
 .pp-flu-meter__seg[data-on="true"] .pp-flu-meter__bar {
   height: 16px;
   margin-top: -3px;
@@ -1126,7 +1126,7 @@
 
 .pp-flu-lede:empty { display: none; }
 
-/* .pp-table zarovnává čísla doprava; textové sloupce si o levou stranu řeknou. */
+/* .pp-table right-aligns numbers; text columns opt into left alignment. */
 .pp-table th.l,
 .pp-table td.l { text-align: left; }
 
@@ -1164,7 +1164,7 @@
   vertical-align: -1px;
 }
 
-/* ── Panel metodiky ({{< method >}}) — stejný na všech dashboardech ───────── */
+/* ── Methodology panel ({{< method >}}): the same on all dashboards ────────── */
 .pp-method {
   border: 1px solid var(--pp-border);
   border-radius: var(--pp-radius);
@@ -1282,7 +1282,7 @@
   .pp-flu-status__level { font-size: 1.8rem; }
 }
 
-/* Chřipka: řádek „přehrávaný týden“ a vysvětlení prázdné běžící sezóny */
+/* Influenza: "played-back week" line and the explanation of an empty running season */
 .pp-flu-replay {
   margin: 0 0 8px;
   padding: 6px 10px;

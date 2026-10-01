@@ -1,16 +1,16 @@
-# Text upozornění o zpracování dat (PP-55).
+# Text of the data-processing notice (PP-55).
 #
-# Proč v datovém souboru a ne v šabloně: je to text, který bude někdo upravovat
-# bez toho, aby sahal na Hugo šablonu — a proto, aby se česká a anglická verze
-# daly porovnat vedle sebe, ne hledat mezi `cond` výrazy.
+# Kept in a data file rather than in the template so it can be edited without
+# touching Hugo templates, and so the Czech and English versions can be compared
+# side by side.
 #
-# ⛔ Když se tenhle text mění, musí se měnit i to, co portál doopravdy dělá.
-# Oznámení, které tvrdí něco jiného než realita, je horší než žádné.
+# When this text changes, what the portal actually does must match it. A notice
+# that describes something other than reality is worse than none.
 #
-# ⚠️ Zkráceno 7. 9. 2026 na DVĚ sekce: co sbíráme a jaká máte práva. Zmínka
-# o položce v localStorage zůstala uvnitř první sekce — proužek se po zavření
-# musí „pamatovat", že už byl viděn, a oznámení, které mlčí o jediné věci, kterou
-# do zařízení ukládáme, by bylo nepřesné právě v tom bodě, na který se lidé ptají.
+# The notice has two sections: what is collected and what rights visitors have.
+# The localStorage entry is mentioned in the first section — the banner has to
+# remember that it was dismissed, and a notice silent about the only thing
+# stored on the device would be inaccurate on exactly the point people ask about.
 cs:
   banner: >-
     Portál si o návštěvě ukládá provozní záznam (IP adresa, čas, stránka)

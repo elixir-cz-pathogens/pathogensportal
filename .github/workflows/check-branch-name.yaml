@@ -1,7 +1,7 @@
 name: "CHECK: Branch Naming"
 
-# Source branch name check — ONLY on PRs into `main`.
-# Valid:  (feature|bugfix|docs|content)/<PREFIX>-<number>_description  |  starting with <IGNORE_PREFIX>  |  dev
+# Source branch name check — only on PRs into `main`.
+# Valid:  (feature|bugfix|docs)/<PREFIX>-<number>_description  |  content/...  |  starting with <IGNORE_PREFIX>  |  dev
 on:
   pull_request:
     branches: [main]

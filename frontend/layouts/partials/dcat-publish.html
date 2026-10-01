@@ -1,48 +1,49 @@
-{{- /* DCAT-AP-CZ katalog otevřených dat — /dcat/katalog.jsonld + soubory sad.
+{{- /* DCAT-AP-CZ open data catalogue — /dcat/katalog.jsonld + dataset files.
 
-       Usage: {{ partial "dcat-publish.html" . }}  (jednou za build, viz níž)
-       Nic nevypisuje, jen zapisuje soubory do public/.
+       Usage: {{ partial "dcat-publish.html" . }}  (once per build, see below)
+       Prints nothing; only writes files to public/.
 
-       Co to je: strojový katalog podle otevřené formální normy „Rozhraní
-       katalogů otevřených dat“ (ofn.gov.cz). Je to tentýž druh popisu jako
-       schema.org/Dataset v hlavičkách dashboardů, jen slovníkem, kterému
-       rozumí Národní katalog otevřených dat (NKOD) a evropský data.europa.eu.
+       What it is: a machine-readable catalogue following the Czech open formal
+       standard "Open data catalogue interface" (ofn.gov.cz). The same kind of
+       description as the schema.org/Dataset in dashboard heads, but in the
+       vocabulary understood by the National Open Data Catalogue (NKOD) and the
+       European data.europa.eu.
 
-       Volá se z layoutu strojového katalogu zdrojů (single.sources.json), a to
-       jen ve výchozím jazyce. Je to spouštěč, ne výstup té stránky: soubory se
-       zapisují přes resources.Publish na pevné cesty, takže URL katalogu nezávisí
-       na tom, kde na webu leží stránka, která generování spustila. Kdyby se
-       „Data a citace“ přesunula, registrované URL v NKOD zůstane platné.
+       Called from the source-catalogue layout (single.sources.json), in the
+       default language only. It is a trigger, not that page's output: files are
+       written via resources.Publish to fixed paths, so the catalogue URL does
+       not depend on where the triggering page lives. If "Data and citation"
+       moves, the URL registered in NKOD stays valid.
 
-       Souborová varianta rozhraní, tedy bez SPARQL endpointu:
-         /dcat/katalog.jsonld            index — ukazuje na URL jednotlivých sad
-         /dcat/datova-sada/<id>.jsonld   kompletní záznam sady i s distribucemi
-       Sklízeč začne u katalogu a projde odkazy; proto musí mít každá sada
-       vlastní IRI a vlastní dokument, ne být vnořená v indexu.
+       File-based variant of the interface, i.e. without a SPARQL endpoint:
+         /dcat/katalog.jsonld            index — points to each dataset URL
+         /dcat/datova-sada/<id>.jsonld   full dataset record with distributions
+       The harvester starts at the catalogue and follows links, so each dataset
+       needs its own IRI and its own document rather than being nested in the index.
 
-       ⛔ Katalog popisuje JEN data, která portál sám vyrábí (data/dcat.yaml).
-       Přebrané sady v NKOD publikoval jejich původce a zdvojovat je pod naší
-       hlavičkou by tvrdilo, že jsme původce, kterým nejsme.
+       The catalogue describes ONLY data the portal itself produces
+       (data/dcat.yaml). Republished datasets are already in NKOD from their
+       originators; duplicating them would claim an origin we do not have.
 
-       ⚠️ Před registrací v NKOD je nutné doplnit `params.dcat.publisher` —
-       IRI orgánu v registru práv a povinností. Bez něj se katalog vygeneruje
-       (jako obyčejný DCAT, použitelný i mimo NKOD), ale sklizeň ho odmítne,
-       protože `poskytovatel` je povinná vlastnost. Registrace sama je úkon
-       z datové schránky, ne věc tohohle repozitáře.
+       Before registering in NKOD, `params.dcat.publisher` must be set — the
+       body's IRI in the Register of Rights and Obligations. Without it the
+       catalogue is still generated (as plain DCAT, usable outside NKOD), but
+       harvesting rejects it because `poskytovatel` is mandatory. Registration
+       itself is done via the data box, not in this repository.
 
-       Katalog je pro portál jeden a vícejazyčnost nese uvnitř hodnot
-       (`{"cs": …, "en": …}`), ne zdvojením dokumentů. */ -}}
+       There is one catalogue for the portal; multilinguality is carried inside
+       the values (`{"cs": …, "en": …}`), not by duplicating documents. */ -}}
 {{- $cfg := .Site.Params.dcat | default dict -}}
 {{- $base := .Site.Home.Permalink | strings.TrimSuffix "/" -}}
 
-{{- /* ── Sdílené části ─────────────────────────────────────────────────── */ -}}
+{{- /* ── Shared parts ──────────────────────────────────────────────────── */ -}}
 {{- $kontakt := dict "typ" "Organizace" "jméno" (dict "cs" .Site.Title "en" .Site.Title)
       "e-mail" (printf "mailto:%s" (.Site.Params.mail | default "")) -}}
 
-{{- /* Podmínky užití mají v DCAT-AP-CZ čtyři nezávislé osy, ne jednu licenci.
-       Portál své zpracování vydává pod CC BY 4.0 (viz stránka Data a citace);
-       samotné agregáty nejsou chráněnou databází a neobsahují osobní údaje,
-       protože jde o součty, ne o záznamy pacientů. */ -}}
+{{- /* Terms of use in DCAT-AP-CZ have four independent axes, not one licence.
+       The portal publishes its processing under CC BY 4.0 (see the Data and
+       citation page); the aggregates themselves are not a protected database
+       and contain no personal data, since they are totals, not patient records. */ -}}
 {{- $podminky := dict
       "typ" "Specifikace podmínek užití"
       "autorské_dílo" "https://creativecommons.org/licenses/by/4.0/"
@@ -58,7 +59,7 @@
   {{- $iri := printf "%s/dcat/datova-sada/%s.jsonld" $base $ds.id -}}
   {{- $datasetIRIs = $datasetIRIs | append $iri -}}
 
-  {{- /* Distribuce jen pro soubory, které na webu opravdu leží. */ -}}
+  {{- /* Distributions only for files that actually exist on the site. */ -}}
   {{- $distribuce := slice -}}
   {{- range $ds.soubory -}}
     {{- if os.FileExists (printf "static%s" .) -}}
@@ -74,7 +75,7 @@
     {{- end -}}
   {{- end -}}
 
-  {{- /* Dokumentace = stránka na portálu, kde jsou data vyložená pro člověka. */ -}}
+  {{- /* Documentation = the portal page where the data is explained for people. */ -}}
   {{- $dokumentace := printf "%s/about/data/" $base -}}
   {{- range $ds.stranky -}}
     {{- with site.GetPage . -}}{{- $dokumentace = .Permalink -}}{{- end -}}
@@ -100,15 +101,14 @@
   {{- end -}}
   {{- with $cfg.publisher -}}{{- $rec = merge $rec (dict "poskytovatel" .) -}}{{- end -}}
 
-  {{- /* ⛔ Přiřazení do $_ je nutné. `.Publish` vrací hodnotu a volání bez
-         přiřazení ji vypíše do výstupu jako „<nil>“ — čtyři sady tak do
-         katalogu vepsaly čtyři <nil> před první složenou závorku a JSON
-         přestal být JSONem. */ -}}
+  {{- /* Assigning to $_ is required. `.Publish` returns a value, and a call
+         without assignment prints it into the output as "<nil>", which breaks
+         the JSON. */ -}}
   {{- $f := printf "dcat/datova-sada/%s.jsonld" $ds.id -}}
   {{- $_ := (resources.FromString $f ($rec | jsonify (dict "indent" "  "))).Publish -}}
 {{- end -}}
 
-{{- /* ── Index katalogu — to, co se registruje do NKOD ──────────────────── */ -}}
+{{- /* ── Catalogue index — the document registered in NKOD ─────────────── */ -}}
 {{- $katalog := dict
     "@context" "https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/kontexty/rozhraní-katalogů-otevřených-dat.jsonld"
     "iri" (printf "%s/dcat/katalog.jsonld" $base)

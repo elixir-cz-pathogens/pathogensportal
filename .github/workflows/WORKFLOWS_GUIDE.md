@@ -1,137 +1,145 @@
 # Workflow guide (GitHub Actions)
 
-An overview of every workflow in `.github/workflows/` and what it does. The style is adopted from the
-EFSA project.
+An overview of every workflow in `.github/workflows/` and what it does.
 
-## Repo variables
+## Repo variables and secrets
 
-Settings → Secrets and variables → Actions → Variables
+Settings → Secrets and variables → Actions
 
 | Variable | Purpose | Value |
 |---|---|---|
 | `PROJECT_PREFIX` | prefix for issues/branches/commits | `PP` |
 | `IGNORE_PREFIX` | the escape hatch for changes without an issue | `no-issue` |
-| `UPSTREAM_URL` | the upstream whose commits are **not validated** | `https://github.com/jirkavlasak/pathogensportal.git` |
-| `DEPLOY_STAGING_ENABLED` | switch for the **staging** deploy only | `true` since 17 Aug 2026 |
-| `DEPLOY_PRODUCTION_ENABLED` | switch for the **production** deploy only | `true` since 17 Aug 2026 — production autodeploys on every push to `main`; rule #1 still applies to the machine |
+| `UPSTREAM_URL` | the upstream repository whose commits are **not validated** | e.g. `https://github.com/<upstream-owner>/pathogensportal.git` |
+| `DEPLOY_STAGING_ENABLED` | switch for the **staging** deploy only | `true` |
+| `DEPLOY_PRODUCTION_ENABLED` | switch for the **production** deploy only | `true` — production deploys on every push to `main` |
 | `STAGING_HOST` | FQDN of the staging machine | `pathogens-dev.vm.cesnet.cz` |
-| `STAGING_PATH` | rsync target on staging | **`/`** — and that is correct: the deploy key is jailed to a forced `rrsync`, which prefixes a leading-slash path with its own restricted directory |
+| `STAGING_PATH` | rsync target on staging | `/` (see "Deploy workflows") |
+| `STAGING_SSH_HOST_KEY` | pinned SSH host key of staging | the server's `ssh-ed25519` line |
 | `PRODUCTION_HOST` | FQDN of production | `pathogens.vm.cesnet.cz` |
-| `PRODUCTION_PATH` | rsync target in production | `/opt/pathogensportal/frontend/public` — ⛔ **must become `/` in the same window as the next production Ansible run**, which applies the rrsync jail (armed 31 Aug 2026) |
+| `PRODUCTION_PATH` | rsync target in production | `/` (see "Deploy workflows") |
+| `PRODUCTION_SSH_HOST_KEY` | pinned SSH host key of production | the server's `ssh-ed25519` line |
 | `DEPLOY_USER` | the account used for rsync | `github-deploy` |
+| `CONTENT_REVIEWER` | GitHub account requested as reviewer on content PRs | optional |
+| `CONTENT_AUTHOR` | if set, previews run only for content PRs opened by this account | optional |
 
-> ⚠️ **Variables and secrets do not travel with a repository transfer.** When this repo moves to the
-> GitHub organization, everything in this table has to be set again on the org repo. The one that matters
-> most is `UPSTREAM_URL` — without it, `commit-message-check` fails on every upstream sync.
+Secrets: `STAGING_SSH_KEY` and `PRODUCTION_SSH_KEY` (separate deploy key pairs, one per machine).
+
+**Note:** variables and secrets do not travel with a repository transfer. After moving the repository
+they have to be set again; without `UPSTREAM_URL`, `commit-message-check` fails on every upstream sync.
 
 ## Branch model
 
 - **`dev`** — the sandbox. **Push straight here, no PR, no checks.**
-- **`main`** — production. Protected. Changed **only through a PR from `dev`**, where the checks must pass.
+- **`main`** — production. Protected. Changed **only through a PR**, where the checks must pass and one
+  approving review is required.
 
 The checks (`CHECK:` and `CI:`) run **only on PRs into `main`** — that is where the gate is. Commit freely
-into `dev`; CI polices the commit convention at the `dev → main` PR (it checks every commit in `main..HEAD`).
+into `dev`; CI checks the commit convention at the `dev → main` PR (every commit in `main..HEAD`).
 
 ## Workflow overview
 
-⚠️ **Rows below re-read against the files on 9 Sep 2026.** Five workflows were missing from this table
-and both deploy rows said "disabled", which stopped being true on 17 Aug 2026 — the sections further down
-this file have not had the same pass and may still describe an older repo.
-
-| File | Category | Trigger | Blocks merge? |
+| File | Category | Trigger | Required check? |
 |---|---|---|---|
-| `check-commit-message.yaml` | Validation | PR → `main` | ✅ yes |
-| `hugo-build.yml` | CI | PR → `main` | ✅ yes |
-| `backend-tests.yml` | CI | PR → `main` | ✅ yes — reports as **`backend-tests / pytest`**, and the name must match exactly |
-| `check-content-sanitizer.yaml` | Validation | PR → `main` | ✅ yes — no foreign markup in `content/` |
-| `check-no-content-regression.yaml` | Validation | PR → `main` | ⏳ not yet — must report on a real PR before it is made required |
-| `check-backend-integration.yaml` | CI | PR → `main` | ⚪ no |
-| `check-submodule-pin.yaml` | Validation | PR → `main` | ⚪ no |
-| `check-branch-name.yaml` | Validation | PR → `main` | ⚪ no (informational) |
-| `preview-content.yml` | Automation | content PR | — |
-| `auto-sync-main-to-dev.yaml` | Automation | push to `main` | — merges `main` back into `dev` after every release |
+| `check-commit-message.yaml` | Validation | PR → `main` | yes (`commit-message-check`) |
+| `hugo-build.yml` | CI | PR → `main` | yes (`hugo-build`) |
+| `backend-tests.yml` | CI | PR → `main` | yes (`backend-tests / pytest`) |
+| `check-content-sanitizer.yaml` | Validation | PR → `main` | yes (`content-sanitizer`) |
+| `check-no-content-regression.yaml` | Validation | PR → `main` | no |
+| `check-backend-integration.yaml` | CI | PR → `main` | no |
+| `check-submodule-pin.yaml` | Validation | PR → `main` | no |
+| `check-branch-name.yaml` | Validation | PR → `main` | no (informational) |
+| `_test-backend.yml` | CI (reusable) | called by other workflows | — |
+| `preview-content.yml` | Automation | PR from a `content/` branch | — |
+| `auto-sync-main-to-dev.yaml` | Automation | push to `main` | — merges `main` back into `dev` |
 | `auto-issue-prefix.yaml` | Automation | issue opened | — |
 | `auto-branch-issue-tracking.yaml` | Automation | push to `feature/**`,`bugfix/**`,`docs/**` | — |
 | `auto-pr-open-notify.yml` | Automation | PR opened | — |
 | `auto-pr-merged-notify.yaml` | Automation | PR merged | — |
-| `deploy-staging.yml` | Deploy | push to `dev` | ✅ **live since 17 Aug 2026** (`DEPLOY_STAGING_ENABLED`) |
-| `deploy-production.yml` | Deploy | push to `main` | ✅ **live since 17 Aug 2026** (`DEPLOY_PRODUCTION_ENABLED`) |
+| `release-data-candidate.yml` | Automation | manual (`workflow_dispatch`) | — |
+| `deploy-staging.yml` | Deploy | push to `dev` | — (`DEPLOY_STAGING_ENABLED`) |
+| `deploy-production.yml` | Deploy | push to `main` | — (`DEPLOY_PRODUCTION_ENABLED`) |
 
-**`check-no-content-regression.yaml`** compares the merge result with what `main` already serves and fails
-if a date or a version goes backwards — the Ebola version stamp, `posledni_datum`, `generated_at`. It
-exists because `main` receives content directly (Ebola deliveries, hotfixes) while `dev` runs ahead on
-everything else, so a release can silently revert published pages. Series *length* is reported, never
-enforced: `flu_weekly` resets every autumn. The logic is in
-`.github/scripts/check_no_content_regression.py` so it can be run against any two commits and shown to
-fail on a real regression.
+**A workflow file only acts on the branch it sits on.** A workflow that must run on a push to `main`, or
+on a PR from a branch cut from `main`, has to exist on `main`. This is why `auto-sync-main-to-dev.yaml`
+keeps `dev` aligned with `main`.
 
 ## Conventions
 
-**Commit:** `PP-<number>: message`  •  escape hatch: `no-issue: …`
+**Commit:** `PP-<number>: message`  •  escape hatch: `no-issue: …`  •  generated content: `content: …`
 ```
 PP-42: add wastewater dashboard endpoint
 no-issue: reformat readme
 ```
 
-**Branch:** `(feature|bugfix|docs)/PP-<number>_description`  •  escape hatch: `no-issue/...`
+**Branch:** `(feature|bugfix|docs)/PP-<number>_description`  •  `content/...`  •  escape hatch: `no-issue/...`
 ```
 feature/PP-42_wastewater-endpoint
 bugfix/PP-57_pcr-rounding
 docs/PP-60_readme
 ```
 
-## Validation workflows (these block merges into `main`)
+## Validation workflows
 
 ### `check-commit-message.yaml`
-Walks the commits in `main..HEAD` (excluding merge commits). Every subject must be `PP-<number>: …` or
-start with `no-issue`. Otherwise it fails.
+Walks the commits in `main..HEAD` (excluding merge commits). Every subject must be `PP-<number>: …`,
+`content: …`, or start with `no-issue`. Otherwise it fails.
 
-**An exemption for upstream.** Commits reachable from branches of the repo in `UPSTREAM_URL` are skipped —
-CI fetches upstream into `refs/remotes/upstream/*` and excludes them via `git log … --not`. Without this,
-the check would fail **on every sync** with `jirkavlasak/pathogensportal` (his messages don't meet our
-convention and cannot be rewritten — it would stop being a merge). When the variable is missing or the
-fetch fails, the check merely prints a warning and validates the whole range as before.
+**Upstream exemption.** Commits reachable from branches of the repository in `UPSTREAM_URL` are skipped —
+CI fetches upstream into `refs/remotes/upstream/*` and excludes them via `git log … --not`. Upstream
+messages do not follow this convention and cannot be rewritten without breaking the merge. When the
+variable is missing or the fetch fails, the check prints a warning and validates the whole range.
 
-⚠️ **Do the sync as a `merge`, not a `rebase`.** A rebase gives upstream commits new SHAs; CI then doesn't
-recognize them as upstream and the check fails on them.
+**Sync upstream with a `merge`, not a `rebase`.** A rebase gives upstream commits new SHAs; CI then does
+not recognize them as upstream and the check fails on them.
 
 ### `hugo-build.yml`
 Clones the repo with its submodules (the theme), installs Hugo extended and runs `hugo --minify` in
 `frontend/`. Verifies that the site builds.
 
 ### `backend-tests.yml`
-For each service under `backend/*/`, installs `requirements.txt` and runs `pytest`. Verifies the BE services.
+For each service under `backend/*/`, installs `requirements.txt` and runs `pytest`. The steps live in the
+reusable `_test-backend.yml`, which also gates both deploys, so the PR check and the deploy gate always
+run the same tests. It fails if it finds no tests at all.
 
-> ### ⛔ Its required-check name is `backend-tests / pytest`, NOT `backend-tests`
->
-> This job does not run the tests itself — it calls the reusable `_test-backend.yml`:
->
-> ```yaml
-> jobs:
->   backend-tests:
->     uses: ./.github/workflows/_test-backend.yml   # the job inside is called `pytest`
-> ```
->
-> **Whenever a job uses `uses:`, GitHub names the resulting check `<calling job> / <called job>`.**
-> So the check that appears on a PR is `backend-tests / pytest`.
->
-> Branch protection matches required checks by **exact string**. Listing `backend-tests` therefore
-> requires a check that nothing ever reports: it stays pending (yellow) forever and **every PR into
-> `main` is blocked permanently**, while the real test sits next to it, green. That is exactly what
-> happened between 23 Aug and 31 Aug 2026 and it surfaced only when PR #24 would not go green.
->
-> ⚠️ **The 23 Aug verification did not catch it** because it checked that `backend-tests` was *listed*
-> in the protection API — not that anything *reports* it. Same circular-verification trap as the `app`
-> role's setgid fix: **check the requirement (does the PR actually unblock?), not the remedy.**
->
-> If you ever rename a job, or wrap one in a reusable workflow, re-check
-> `/branches/main/protection/required_status_checks` against a real PR's check names.
+**Its required-check name is `backend-tests / pytest`, not `backend-tests`.** When a job uses `uses:`,
+GitHub names the resulting check `<calling job> / <called job>`:
+
+```yaml
+jobs:
+  backend-tests:
+    uses: ./.github/workflows/_test-backend.yml   # the job inside is called `pytest`
+```
+
+Branch protection matches required checks by exact string. A required check that nothing reports stays
+pending forever and blocks every PR into `main`. If you rename a job or wrap one in a reusable workflow,
+compare `/branches/main/protection/required_status_checks` with the check names on a real PR.
+
+### `check-content-sanitizer.yaml`
+Scans the whole `frontend/content/` tree for executable or navigational markup (`<script>`, `<iframe>`,
+event handlers, `javascript:` URLs, …). HTML in `content/` is rendered verbatim, and generated content PRs
+do not pass through `tools/ingest_report.py`, so this check enforces the same allowlist in CI.
+
+### `check-no-content-regression.yaml`
+Compares the merge result with what `main` already serves and fails if a date or a version goes
+backwards — the Ebola version stamp, `posledni_datum`, `generated_at`. Content can reach `main` directly
+(content PRs, hotfixes) while `dev` runs ahead on everything else, so a release could otherwise revert
+published pages. Series *length* is reported, never enforced: `flu_weekly` resets every autumn. The logic
+is in `.github/scripts/check_no_content_regression.py` so it can be run against any two commits locally.
+
+### `check-backend-integration.yaml`
+Runs the `website-be` integration tests against a real PostgreSQL service, using the schema from the
+`pathogensportal-db` submodule. Fails if no integration test actually ran.
+
+### `check-submodule-pin.yaml`
+Fails a PR that moves the `pathogensportal-db` pin to something that is not a clean release tag
+(`vX.Y.Z`), or moves it backwards. An unchanged pin only produces a warning.
 
 ### `check-branch-name.yaml`
 Checks the PR's source branch name. `dev` and `no-issue…` are skipped; otherwise it must match
-`(feature|bugfix|docs)/PP-<number>_description`. (Non-blocking — for `dev → main` it passes trivially.)
+`(feature|bugfix|docs)/PP-<number>_description` or `content/…`. Non-blocking.
 
-## Automations (non-blocking helpers)
+## Automations
 
 ### `auto-issue-prefix.yaml`
 After an issue is opened, renames the title to `PP-<number>: original title`.
@@ -141,72 +149,66 @@ After a push to a `feature/**`, `bugfix/**` or `docs/**` branch, posts a comment
 corresponding issue.
 
 ### `auto-pr-open-notify.yml` / `auto-pr-merged-notify.yaml`
-Comment into the issue (whose number comes from the PR title) when a PR is opened / merged.
+Comment into the issue (whose number comes from `PP-<number>` in the PR title) when a PR is opened /
+merged.
+
+### `auto-sync-main-to-dev.yaml`
+After every push to `main`, merges `main` back into `dev`. On a merge conflict it does not resolve
+anything; the run fails and `dev` has to be realigned by hand (`git checkout dev && git merge origin/main`).
+A red run means `dev` is behind `main`.
+
+### `preview-content.yml`
+For PRs from `content/` branches: builds the site and publishes a preview on the staging machine under
+`/preview/pr-<number>/`, posts (and updates) a comment with the link, and requests `CONTENT_REVIEWER` as
+reviewer. Content PRs are identified by branch name rather than by changed paths, because the
+`dev → main` release PR touches the same paths.
+
+### `release-data-candidate.yml`
+Started manually (confirm by typing `cut release`). Triggers the release data build on the dev server,
+which regenerates the data from the newest `pathogensportal-db` release and publishes it to the branch
+`no-issue/release-data` for a PR into `main`. Requires the `DEV_SSH_KEY` secret and the `DEV_HOST`
+variable (environment `release`).
 
 ## Deploy workflows
-
-Each is gated on **its own** variable — `DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED`. While a
-variable doesn't exist, that workflow's jobs are skipped, so a finished file can sit in the repo
-deploying nothing.
-
-> ### ⚠️ One flag used to arm both — split on 17 Aug 2026
-> Both workflows read the same `DEPLOY_ENABLED`. Turning staging on therefore **also armed production**,
-> and the next push to `main` would have deployed to the live site with nobody having decided that.
-> Production is governed by rule #1 — never touched without the administrator's approval — so it cannot
-> hang off a flag flipped to test staging. This was the last thing the two environments still shared;
-> hosts and keys had already been separated on 28 Jul. **Do not merge them back.**
 
 ### `deploy-staging.yml` / `deploy-production.yml`
 Unit tests → build with Hugo → `rsync` the static output over SSH to the target machine. Staging runs
 from `dev`, production from `main`.
 
+**Each is gated on its own variable** — `DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED` — so
+enabling staging can never arm a production deploy. While a variable is not `true`, that workflow's jobs
+are skipped.
+
 **Tests gate the deploy.** Both call `_test-backend.yml` and the deploy job `needs:` it, so a red test
-never reaches a machine. Staging matters here as much as production: reviewers judge the release from
-that site, and it must not be able to show them a build whose backend tests are failing.
+never reaches a machine.
 
-**`baseURL` is derived from `STAGING_HOST` / `PRODUCTION_HOST`**, not hardcoded. The machine name is thus
-in one place, and a DNS change (a different provider, an own domain) is a repo-variable change. The job's
-first step is a guard that stops the workflow with a comprehensible message when the variable is missing —
-otherwise you would get `baseURL "https:///"` and rsync to `user@`.
+**Separate hosts and separate keys.** `STAGING_HOST`/`PRODUCTION_HOST` (vars) and
+`STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY` (secrets). A shared host would let a push to `dev` deploy to
+production; a shared key would turn a compromised staging machine into access to production.
 
-> ### ⚠️ Staging and production have separate hosts and separate keys — do not merge them
-> Originally both workflows read the **same** `DEPLOY_HOST` and `DEPLOY_SSH_KEY`. That made sense while
-> staging was just a second vhost on the production VM. With staging on its own machine, they are two
-> distinct bugs:
-> - **a shared host** → a push to `dev` deploys to **production**,
-> - **a shared key** → compromising staging is immediate access to production.
->
-> Hence `STAGING_HOST`/`PRODUCTION_HOST` (vars) and `STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY` (secrets).
+**`baseURL` is derived from `*_HOST`**, not hardcoded, so the machine name lives in one place and a DNS
+change is a variable change. The first step stops the workflow with a clear message when a variable is
+missing. The hostname is a variable, not a secret: it is public (it is also in `hugo.toml`), and a masked
+value would make the build log unreadable.
 
-**Why the hostname is a `var` and not a `secret`:** it isn't a secret (it is also in `hugo.toml`), and as a
-secret it would be masked in the log — breaking both the readability of `baseURL` and any debugging of
-`ssh-keyscan`. The secret is **the private key alone**.
+**Host keys are pinned.** Each workflow writes `known_hosts` from `*_SSH_HOST_KEY` and connects with
+`StrictHostKeyChecking=yes`; `ssh-keyscan` would trust whatever host answers.
 
-**Staging — done 17 Aug 2026:** the `github-deploy` account exists on `pathogens-dev.vm.cesnet.cz`
-(created by the Ansible `users` role; member of `app` only, key restricted to
-`no-pty,no-agent-forwarding,no-port-forwarding,no-X11-forwarding,no-user-rc`, and a single sudoers line
-permitting nothing but a `website-be` container restart). `DEPLOY_USER`, `STAGING_HOST` and
-`STAGING_PATH` are set. Remaining: the `STAGING_SSH_KEY` secret, then `DEPLOY_STAGING_ENABLED=true`.
+**`*_PATH` is `/`.** On both machines the deploy key is restricted to a forced `rrsync` command, which
+prefixes a leading-slash path with its restricted directory. `/` therefore means the deploy area on the
+server. Changing the path and the server-side forced command is one change, server first; in between,
+deploys fail.
 
-**Production — live since 17 Aug 2026.** It uses a **separately generated** key pair (never staging's) and
-`DEPLOY_PRODUCTION_ENABLED=true`; rule #1 still governs the machine itself.
-
-⛔ **One coupling is still open.** `users_deploy_restrict_rsync` was armed to `true` in the prod inventory
-on 31 Aug 2026 but has NOT been applied — production's deploy key currently carries no forced command, so
-that key can run arbitrary commands as `github-deploy`. When the Ansible run lands, `PRODUCTION_PATH` must
-become `/` in the same window, **server first**:
-
-```bash
-gh variable set PRODUCTION_PATH --body "/" -R elixir-cz-pathogens/pathogensportal
-```
-
-Between the run and the variable change, production deploys are broken — so do not open that window with a
-release queued behind it.
+**Release directories and a symlink flip.** Each deploy uploads the build into `releases/<commit-sha>/`
+and then moves the `current` symlink to it, so visitors only ever see a complete tree and a rollback is a
+symlink change on the server. Staging deploys are serialized (`concurrency`) so an older run cannot
+finish last and win the flip.
 
 ## The typical working cycle
 
 1. Open an issue → the title is renamed automatically to `PP-123: …`.
 2. Create a branch `feature/PP-123_description` (or via *Create a branch* on the issue) → push → the linker
    comments into the issue.
-3. Commit as `PP-123: …`, merge into `dev` (directly, no PR).
-4. When `dev` is stable → PR `dev → main` → `commit-message` + `hugo-build` must pass → merge (squash/rebase).
+3. Commit as `PP-123: …`, merge into `dev` (directly, no PR). Staging deploys automatically.
+4. When `dev` is stable → PR `dev → main` → required checks and one approval → merge (rebase).
+   Production deploys automatically, and `auto-sync-main-to-dev.yaml` merges `main` back into `dev`.

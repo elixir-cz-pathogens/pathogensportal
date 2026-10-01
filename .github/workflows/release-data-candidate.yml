@@ -4,7 +4,8 @@ name: "AUTOMATION: Cut release data candidate"
 # newest -db RELEASE (not the dev branch), writes to no-issue/release-data, and
 # opens a PR for review before merging to main.
 #
-# This replaces the manual step: sudo systemctl start pathogensportal-datapipeline-release.service
+# This replaces the manual step on the dev server:
+#   sudo systemctl start pathogensportal-datapipeline-release.service
 #
 # Required:
 #   secret: DEV_SSH_KEY        (SSH key for the dev machine, same as pipeline-trigger)
@@ -69,6 +70,6 @@ jobs:
           echo "3. **IMPORTANT:** Recent infra changes that might affect the pipeline:"
           echo "   - Check `-priv` git log for changes to datapipeline role, deployed rules, etc."
           echo "   - If there were changes: open an issue in pathogensportal-db mentioning them"
-          echo "   - This prevents @jirkavlasak from working around already-fixed problems"
+          echo "   - This keeps the database maintainers from working around already-fixed problems"
           echo ""
           echo "**Merge when ready.**"

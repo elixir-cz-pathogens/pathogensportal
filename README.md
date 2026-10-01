@@ -26,14 +26,14 @@ deploy/              docker-compose (production + dev override) + .env.example
 ```
 
 The scrapers and DB schema live in a separate repo, **`pathogensportal-db`**, attached as a **git
-submodule** (`pathogensportal-db/`, pinned to a tag). Monitoring (Grafana) is in the private
-**`pathogensportal-priv`**.
+submodule** (`pathogensportal-db/`, pinned to a tag). Server provisioning and monitoring are managed in a
+separate private infrastructure repository.
 
 ## Theme template overrides
 
-The `hugo-pathogens-portal` theme is a git submodule (someone else's repo), so we don't edit it directly.
-Hugo can override any theme template with a file of the same name in our own `frontend/layouts/`. We use
-this for:
+The `hugo-pathogens-portal` theme is a git submodule (an external repository), so it is not edited directly.
+Hugo can override any theme template with a file of the same name in `frontend/layouts/`. This is used
+for:
 
 - `frontend/layouts/partials/head.html`, `footer.html` — loading local (not CDN) libraries, see below
 - `frontend/layouts/partials/navbar.html` — fixing the ELIXIR logo link (it should go to
@@ -79,14 +79,14 @@ itself (`app/db.py`) so it also works against a DB without `init.sql`.
 ### Chart appearance
 
 Chart colours, spacing and typography live in `frontend/static/css/dashboards.css` as CSS variables
-(`--pp-*`); `pp-charts.js` reads them from there and **ignores the colours written in the chart JSON** —
-otherwise the portal's appearance would be dictated by a generator in someone else's repo. The
+(`--pp-*`); `pp-charts.js` reads them from there and **ignores the colours written in the chart JSON**,
+so the portal's appearance does not depend on the generator in the `pathogensportal-db` submodule. The
 eight-colour data palette is validated for distinguishability under colour blindness, so don't reorder the
 slots; the ninth and further series collapse into a grey "Other" (they stay itemized in the table below
 the chart).
 
 Dark mode is prepared (a set of tokens under `[data-bs-theme="dark"]`) but only switches on once a theme
-toggle is added across the whole site — today nobody sets that attribute on `<html>`.
+toggle is added across the whole site — currently nothing sets that attribute on `<html>`.
 
 ## Local development
 
@@ -122,18 +122,18 @@ Secrets: copy `deploy/.env.example` to `deploy/.env` and fill it in (it is not c
 The theme's template originally loaded Bootstrap, Bootstrap Icons, DataTables, jQuery and Chart.js from
 external CDNs (`cdn.jsdelivr.net`, `cdn.datatables.net`, `code.jquery.com`). On networks that block or
 filter those domains (common on academic and corporate networks), the CSS/JS never loaded at all and the
-page rendered unstyled. The fix: all of those libraries are downloaded and hosted locally in
+page rendered unstyled. Therefore all of those libraries are hosted locally in
 `frontend/static/vendor/`, and the templates reference them by a **relative** path (`/vendor/...`), so
 they are always loaded from the same domain and the same protocol (http/https) as the rest of the page.
 
-**Important:** anything in `frontend/layouts/` (the template overrides) must reference our own assets by a
+**Important:** anything in `frontend/layouts/` (the template overrides) must reference the site's own assets by a
 relative path or through Hugo's `.RelPermalink`, never `.Permalink` (which generates an absolute URL from
 `baseURL`, i.e. hardcoded `https://`) — otherwise, when visited over `http://`, the browser attempts a
-CORS request elsewhere and fails on an untrusted certificate (which is exactly what happened with
-`theme.min...css`).
+CORS request elsewhere and fails on an untrusted certificate.
 
 ## Conventions and deployment
 
 Commit/branch conventions and workflows: see `CONTRIBUTING.md` and `.github/workflows/WORKFLOWS_GUIDE.md`.
-In production, Apache serves `frontend/public/` and acts as a reverse proxy in front of the BE services
-(TLS: Let's Encrypt).
+In production, Apache serves the static Hugo build (TLS: Let's Encrypt) and is the reverse proxy in front
+of the BE services. Pushes to `dev` deploy to staging and merges into `main` deploy to production
+automatically; see the deploy section of `WORKFLOWS_GUIDE.md`.

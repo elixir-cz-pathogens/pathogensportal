@@ -1,10 +1,11 @@
-{{/* Detail akce. Přebíjí šablonu motivu: ta formátovala data anglicky
-     („02 January 2006"), odkaz na kategorii neměla jazykový prefix a vykreslovala
-     vlastní <h1>, takže název akce stál na stránce dvakrát (h1 už kreslí banner
-     v partials/header.html).
+{{/* Event detail. Overrides the theme template, which formatted dates in
+     English ("02 January 2006"), linked the category without a language prefix
+     and rendered its own <h1>, duplicating the title already rendered by the
+     banner in partials/header.html.
 
-     Výpis akcí je na titulce (partials/home-events.html), samostatná stránka
-     /events/ se negeneruje. Drobečková navigace odsud vede na kotvu na titulce. */}}
+     The event list lives on the home page (partials/home-events.html); a
+     standalone /events/ page is not generated. The breadcrumb therefore links
+     to the anchor on the home page. */}}
 {{ define "main" }}
 {{ $en := eq .Site.Language.Lang "en" }}
 {{ $dateFmt := cond $en "2 January 2006, 15:04" "2. 1. 2006, 15:04" }}

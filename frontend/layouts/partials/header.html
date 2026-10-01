@@ -1,14 +1,13 @@
-{{/* Přepis motivu: banner s názvem stránky.
+{{/* Theme override: banner with the page title.
 
-     ⚠️ Motiv vykresloval `<h2 id="home-banner">` na KAŽDÉ stránce. Na titulce to
-     znamenalo, že se název portálu objevil dvakrát — jednou v banneru, jednou
-     jako nadpis obsahu — a zároveň neměla žádná stránka `<h1>` z banneru.
+     The theme rendered `<h2 id="home-banner">`, so no page had an `<h1>` from
+     the banner and the home page showed the portal name twice.
 
-     Banner je proto `<h1>` — je to nadpis stránky a každá stránka má mít právě
-     jeden. Dashboardy měly ten svůj název DVAKRÁT ze stejného důvodu jako titulka
-     (banner + vlastní `<h1>` v dashboards/single.html); ten druhý je odstraněný.
+     The banner is therefore an `<h1>` — it is the page heading, and every page
+     should have exactly one. Templates in this repository must not render a
+     second `<h1>` for the title.
 
-     Zbytek souboru je motiv beze změny.
+     The rest of the file is the theme unchanged.
 */}}
 <div class="header"
   style="background-image: linear-gradient(to bottom, rgba(55, 174, 148, 0.52), rgba(55, 174, 148, 0.73)), url('{{ "images/banner.jpg" | relURL }}');background-size: cover;background-position: center;">
@@ -21,10 +20,11 @@
   <div class="container">
     <ol class="breadcrumb">
       {{- range .Ancestors.Reverse }}
-        {{- /* Sekce, která se negeneruje, nemá adresu (RelPermalink je prázdný).
-               Akce (build.render: never) žijí na titulce, takže drobeček vede na
-               jejich kotvu tam — viz partials/home-events.html. Cokoli jiného bez
-               adresy zůstane textem; prázdné href by vedlo na tutéž stránku. */}}
+        {{- /* A section that is not rendered has no URL (empty RelPermalink).
+               Events (build.render: never) live on the home page, so the
+               breadcrumb links to their anchor there — see partials/home-events.html.
+               Anything else without a URL stays plain text; an empty href would
+               point to the same page. */}}
         {{- $href := .RelPermalink }}
         {{- if and (not $href) (eq .Section "events") }}
           {{- $href = printf "%s#%s" site.Home.RelPermalink (cond (eq site.Language.Lang "en") "events" "akce") }}

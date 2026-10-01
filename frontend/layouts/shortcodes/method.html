@@ -1,4 +1,4 @@
-{{/* Rozbalovací panel „jak to počítáme“ — stejný na všech dashboardech.
+{{/* Expandable "how we compute this" panel — the same on all dashboards.
 
      Usage: {{< method title="Jak se prahy počítají…" >}}
               {{< method-part title="Metoda" >}} markdown {{< /method-part >}}
@@ -7,9 +7,9 @@
               {{< method-part title="Omezení dat" >}} … {{< /method-part >}}
             {{< /method >}}
 
-     Nativní <details>, žádný JavaScript: funguje i tam, kde se skripty nenačtou,
-     a obsah je v HTML, takže ho najde vyhledávač i čtečka. `inside="true"` pro
-     panel uvnitř karty grafu (bez vlastního rámečku).
+     Native <details>, no JavaScript: works where scripts do not load, and the
+     content is in the HTML, so search engines and screen readers find it.
+     `inside="true"` for a panel inside a chart card (no frame of its own).
 */}}
 <details class="pp-method{{ if eq (.Get "inside") "true" }} pp-method--inside{{ end }}">
   <summary><span class="pp-method__sign" aria-hidden="true"></span>{{ .Get "title" }}</summary>

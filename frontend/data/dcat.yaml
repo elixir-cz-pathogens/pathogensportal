@@ -1,25 +1,25 @@
-# Datové sady, které portál sám VYRÁBÍ — podklad pro DCAT-AP-CZ katalog.
+# Datasets the portal itself PRODUCES — input for the DCAT-AP-CZ catalogue.
 #
-# ⛔ Nepatří sem nic, co jen přebíráme. ISIN, COVID data MZČR, ČSÚ ani WHO tady
-# být nesmí: v Národním katalogu otevřených dat je publikoval jejich původce
-# a zaregistrovat je znovu pod hlavičkou portálu by tvrdilo, že jsme původce,
-# kterým nejsme. Přebrané zdroje popisuje sources.yaml a odkazuje na ně katalog
-# pro lidi — tenhle soubor je o tom, co na portálu vzniklo.
+# Nothing that is only republished belongs here. ISIN, the Ministry of Health
+# COVID data, CZSO and WHO are already published in the National Open Data
+# Catalogue by their originators; registering them again under the portal would
+# claim an origin the portal does not have. Republished sources are described in
+# sources.yaml and linked from the human-readable catalogue.
 #
-# Kritérium pro zařazení: existovalo by to bez portálu? Když ne, patří to sem.
-# Prahy MEM pro ČR nikdo jiný nepočítá; týdenní záchyty virů existují jen jako
-# PDF, dokud je z nich nevytáhneme; incidence na 100 000 vznikne až spojením
-# ISIN s populací ČSÚ.
+# Inclusion criterion: would this exist without the portal? If not, it belongs
+# here. Nobody else computes MEM thresholds for the Czech Republic; weekly virus
+# detections exist only as PDFs until they are extracted; incidence per 100,000
+# exists only once ISIN is joined with CZSO population data.
 #
-# Formát vychází z OFN „Rozhraní katalogů otevřených dat“ (DCAT-AP-CZ), viz
-# layouts/_default/single.dcat.json. Hodnoty číselníků jsou IRI, ne text:
-#   téma            publications.europa.eu/…/data-theme/  (HEAL = zdraví)
-#   periodicita     publications.europa.eu/…/frequency/
-#   eurovoc         eurovoc.europa.eu/…  (1759 = nemoc, 5894 = veřejné zdraví)
+# The format follows the OFN "Open data catalogue interface" (DCAT-AP-CZ), see
+# layouts/partials/dcat-publish.html. Code-list values are IRIs, not text:
+#   theme           publications.europa.eu/…/data-theme/  (HEAL = health)
+#   frequency       publications.europa.eu/…/frequency/
+#   eurovoc         eurovoc.europa.eu/…  (1759 = disease, 5894 = public health)
 #
-# `soubory` jsou cesty k publikovaným JSON souborům; z každé vznikne jedna
-# distribuce. Soubor, který na webu není, se do katalogu nedostane — nabídnout
-# ke stažení něco, co neexistuje, je horší než sadu nenabídnout vůbec.
+# `soubory` are paths to published JSON files; each becomes one distribution.
+# A file that is not on the site is left out of the catalogue — offering a
+# download that does not exist is worse than not offering the dataset at all.
 
 - id: chripka-prahy-intenzity
   nazev:

@@ -1,21 +1,20 @@
-{{/* Akce na titulce — kalendář vlevo, seznam vpravo (15. 9. 2026).
+{{/* Events on the home page — calendar on the left, list on the right.
 
-     Usage: {{ partial "home-events.html" . }}   (kontext = titulní stránka)
+     Usage: {{ partial "home-events.html" . }}   (context = home page)
 
-     ⛔ Akce nemají vlastní stránku výpisu. /events/ se negeneruje
-     (content/cs|en/events/_index.md → build.render: never): v menu nebyla a sama
-     o sobě to byly dva nadpisy nad prázdnem. Detail jedné akce
-     (events/single.html) se generuje dál — sem na něj vedou odkazy.
+     Events have no list page of their own. /events/ is not generated
+     (content/cs|en/events/_index.md → build.render: never). The detail of a
+     single event (events/single.html) is still generated and linked from here.
 
-     ⛔ Co je „nadcházející" a co „proběhlé", rozhoduje pp-events.js až
-     V PROHLÍŽEČI, podle dnešního data. Web je statický a přestaví se jen při
-     nasazení; rozdělení v šabloně by nechalo akci „nadcházející" i týden poté,
-     co proběhla. Šablona proto vypisuje všechny akce jedním seznamem — to je
-     zároveň podoba bez JavaScriptu — a skript je roztřídí a nakreslí kalendář.
+     Whether an event is "upcoming" or "past" is decided by pp-events.js IN THE
+     BROWSER, from today's date. The site is static and rebuilt only on deploy;
+     splitting in the template would keep an event "upcoming" after it took
+     place. The template therefore lists all events in one list — which is also
+     the no-JavaScript version — and the script sorts them and draws the calendar.
 
-     Kotva sekce je `#akce` / `#events`. Míří na ni dlaždice v navigaci titulky
-     a drobečková navigace detailu akce (partials/header.html) — mění-li se,
-     změň obojí. */}}
+     The section anchor is `#akce` / `#events`. It is targeted by the home-page
+     navigation tile and by the event detail breadcrumb (partials/header.html) —
+     if it changes, change both. */}}
 {{ $en      := eq .Site.Language.Lang "en" }}
 {{ $anchor  := cond $en "events" "akce" }}
 {{ $dateFmt := cond $en "2 Jan 2006, 15:04" "2. 1. 2006, 15:04" }}
@@ -39,16 +38,16 @@
   </div>
 
   <div class="pp-home-events__grid">
-    {{/* `hidden`, dokud ho neukáže skript — bez JS by tu byla prázdná mřížka. */}}
+    {{/* `hidden` until the script shows it — without JS this would be an empty grid. */}}
     <div class="pp-cal" data-pp-cal hidden>
       <div class="pp-cal__head">
         <button type="button" class="pp-cal__nav" data-pp-cal-prev aria-label="{{ cond $en "Previous month" "Předchozí měsíc" }}"><i class="bi bi-chevron-left" aria-hidden="true"></i></button>
         <p class="pp-cal__title" data-pp-cal-title aria-live="polite"></p>
         <button type="button" class="pp-cal__nav" data-pp-cal-next aria-label="{{ cond $en "Next month" "Další měsíc" }}"><i class="bi bi-chevron-right" aria-hidden="true"></i></button>
       </div>
-      {{/* ⛔ data-no-datatable: patička (partials/footer.html) pouští DataTables
-           na KAŽDOU tabulku bez tohohle atributu. Kalendář pak dostal
-           „Zobrazit 25 řádků", hledání, stránkování a řazení podle dnů v týdnu. */}}
+      {{/* data-no-datatable: the footer (partials/footer.html) applies DataTables
+           to EVERY table without this attribute, which would add paging,
+           search and sorting to the calendar. */}}
       <table class="pp-cal__grid" data-no-datatable>
         <thead><tr data-pp-cal-weekdays></tr></thead>
         <tbody data-pp-cal-body></tbody>

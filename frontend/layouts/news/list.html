@@ -1,10 +1,10 @@
-{{/* Výpis novinek. Přebíjí šablonu motivu, která kreslila starou kartu
-     (partials/highlight.html). Od 15. 9. 2026 táž karta a táž mřížka jako
-     dashboardy — dashboard-tile.html pozná novinku podle sekce a místo
-     čerstvosti dat ukáže datum vydání.
+{{/* News list. Overrides the theme template, which used the old card
+     (partials/highlight.html). Uses the same card and grid as dashboards —
+     dashboard-tile.html recognises a news item by its section and shows the
+     publication date instead of data freshness.
 
-     ⛔ .pp-viz nese barevné tokeny karty; bez obalu karta ztratí pozadí
-     i okraj (viz dashboards/list.html). */}}
+     .pp-viz carries the card colour tokens; without the wrapper the card loses
+     its background and border (see dashboards/list.html). */}}
 {{ define "main" }}
 <div class="pp-viz">
 

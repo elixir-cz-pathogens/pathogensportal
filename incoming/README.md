@@ -3,9 +3,9 @@
 This is where **finished static reports from the generator** (AI with a human in the loop) land. The
 portal does not write them, it only processes and publishes them. So this folder is an *input*, not site content.
 
-> ⚠️ **Never put a delivery into `frontend/static/`.** Hugo publishes anything there verbatim as a file —
-> the delivery would be public the moment it was merged, unsanitized and outside the portal's layout.
-> The intermediate step through `incoming/` is the entire point of this arrangement.
+> **Warning:** never put a delivery into `frontend/static/`. Hugo publishes anything there verbatim as a
+> file — the delivery would be public the moment it was merged, unsanitized and outside the portal's
+> layout. The intermediate step through `incoming/` exists to prevent that.
 
 ## The delivery's path
 
@@ -18,7 +18,7 @@ incoming/<report>/         ──tools/ingest_report.py──>  frontend/content
 1. The generator creates the report folder and opens a **PR** into this repo.
 2. The ingest (manually for now, eventually in CI) turns it into portal pages and commits them into the same PR.
 3. A **subject-matter approver** checks the diff — for content, not technically — and merges.
-4. The deploy runs after the merge into `main`. *(Currently disabled, see `WORKFLOWS_GUIDE.md`.)*
+4. The production deploy runs automatically after the merge into `main` (see `.github/workflows/WORKFLOWS_GUIDE.md`).
 
 If nobody approves, the site simply stays on yesterday's version. Nothing breaks — but a forgotten PR means
 silent staleness, which is why it needs a reminder.
@@ -64,9 +64,9 @@ A delivery carries its own classes (`note ok`, `summary`, `alert`, `card`, `plai
 `frontend/static/css/reports.css` translates them into portal tokens. The generator's own stylesheet is not
 used and does not belong in `incoming/`.
 
-> **Whoever renames a class in the generator breaks that section's appearance.** The ingest reports it as
-> an unknown class and exits with code 1, but the fix goes into `reports.css`. Class names are therefore
-> part of the contract — change them by agreement, not in passing.
+> **Renaming a class in the generator breaks that section's appearance.** The ingest reports it as an
+> unknown class and exits with code 1, but the fix goes into `reports.css`. Class names are therefore part
+> of the contract — change them by agreement, not in passing.
 
 ## Running it
 
@@ -94,7 +94,7 @@ in the report that day. That is also what the approver reviews.
 
 ## What is here now
 
-`ebola/` is a **real delivery from 27 Jul 2026**, downloaded from `titan.img.cas.cz/ebola`
-(Jan Pačes & Michaela Liegertová, IMG AV ČR, CC BY 4.0). It serves both as the reference example of the
-contract and as the current input — the next delivery will replace it, and git will thereby hold a version
-history of the report.
+`ebola/` is a real delivery from 27 Jul 2026, downloaded from `titan.img.cas.cz/ebola`
+(Jan Pačes & Michaela Liegertová, IMG AV ČR, CC BY 4.0). It serves as the reference example of the
+contract. Current Ebola updates arrive as content PRs that write `frontend/content/` directly; those
+pages are checked by `check-content-sanitizer.yaml` instead of passing through the ingest.

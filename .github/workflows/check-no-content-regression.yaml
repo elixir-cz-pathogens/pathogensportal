@@ -2,63 +2,50 @@ name: "CHECK: No Content Regression"
 
 # Fails a PR into `main` that would REPLACE PUBLISHED CONTENT WITH OLDER CONTENT.
 #
-# WHY THIS EXISTS
+# Why this exists
 # ---------------
-# Found on 9 Sep 2026, while writing the change list for the next release. `main`
-# carried Ebola v84 (7 Sep data, 94 points); `dev` carried v83 (4 Sep, 91 points),
-# because Michaela's content PR #69 went straight into `main` and `dev` was never
-# realigned. A `dev` → `main` merge would have taken eight published pages and
-# seven chart files three days backwards.
+# Content can reach `main` directly (Ebola content PRs, hotfixes) while `dev` runs
+# ahead on everything else. If `dev` is not realigned, a `dev` -> `main` merge can
+# replace published pages and chart files with older versions. Nothing else
+# catches this: `hugo-build` builds older data without complaint,
+# `content-sanitizer` reads markup rather than dates, and in a large release diff
+# a single older number is easy to miss in review.
 #
-# Nothing would have stopped it. `hugo-build` builds older data perfectly happily,
-# `content-sanitizer` reads markup and not dates, and the reviewer sees a diff of
-# 127 files in which "94 → 91" is one number among thousands. This is exactly the
-# class of mistake CI is for: mechanical, invisible to review, and silent once
-# merged.
+# Why not simply "main must not be ahead of the branch"
+# -----------------------------------------------------
+#   Too strict: PRs into `main` do not only come from `dev`. A content PR is
+#   behind `main` as soon as any release lands, and would be blocked even though
+#   it harms nothing.
 #
-# WHY NOT SIMPLY "main must not be ahead of the branch"
-# ----------------------------------------------------
-# It was the first idea and it is wrong twice over.
+#   Too weak: being level with `main` proves nothing about the result. Resolving
+#   a merge conflict toward the older side leaves the branch up to date while
+#   still publishing older content.
 #
-#   Too strict: PRs into `main` do not only come from `dev`. A content PR cut from
-#   `dev` (which is how #69's siblings arrive) is behind `main` the moment any
-#   release lands, and would be blocked for a topology that harms nothing.
+# So the check reads the merge result (what this PR would put on production) and
+# compares its dates and versions against what production serves today. Topology
+# is reported for context only.
 #
-#   Too weak: being level with `main` proves nothing about the RESULT. Resolve the
-#   Ebola conflict toward v83 and the branch is perfectly up to date while still
-#   publishing older pages than the ones already live. That is the likelier
-#   mistake, because it happens while a human is staring at a conflict.
-#
-# So the check reads the MERGE RESULT — what this PR would actually put on
-# production — and compares its dates and versions against what production serves
-# today. Topology is reported for context and decides nothing.
-#
-# WHAT COUNTS AS A REGRESSION
+# What counts as a regression
 # ---------------------------
 # Only monotonic facts, so that a legitimate change cannot trip it:
 #   * `update_freq: … · v84 · …` on the Ebola pages — the generator's own version
 #   * `posledni_datum` in a chart file — how far the data reaches
 #   * `generated_at` in a chart file — when the pipeline ran
 #
-# ⛔ Series LENGTH is deliberately reported and not enforced. `flu_weekly` holds
-# one season and resets to a single point every autumn; a rule of "never shorter"
-# would fire every October on a correct file, and a check that cries wolf annually
-# is a check people learn to click past.
+# Series length is reported, not enforced. `flu_weekly` holds one season and
+# resets to a single point every autumn; a "never shorter" rule would fail every
+# October on a correct file.
 #
-# A real, intended rollback (bad data withdrawn) will fail here. That is the point
-# — it should take a deliberate act. `enforce_admins` is off on this repo, so an
-# admin can merge past it; the failure text says so rather than pretending the
-# check is a wall.
+# An intended rollback (bad data withdrawn) will fail here; that should take a
+# deliberate act. `enforce_admins` is off on this repo, so an admin can merge past
+# it, and the failure text says so.
 #
-# ⚠️ The job name is flat and calls no reusable workflow, so the status reported to
-# branch protection is exactly `no-content-regression`. A required check whose name
-# did not match what was reported blocked every PR into `main` for 8 days in Aug
-# 2026 (`backend-tests` vs `backend-tests / pytest`) — do not turn this into a
-# caller job.
+# The job name is flat and calls no reusable workflow, so the status reported to
+# branch protection is exactly `no-content-regression`. A caller job would report
+# as `<job> / <called job>` and no longer match the required check name.
 #
-# ⏳ Do NOT make this required until it has reported at least once on a real PR.
-# That is the same 8-day lesson: a required check that has never run is
-# indistinguishable from a check that is stuck.
+# Make this check required only after it has reported on a real PR: a required
+# check that has never run looks the same as one that is stuck.
 
 on:
   pull_request:
@@ -85,7 +72,7 @@ jobs:
       - name: Compare the merge result against what production serves
         run: |
           set -euo pipefail
-          # ⛔ Explicit refspec. `actions/checkout` configures remote.origin.fetch
+          # Explicit refspec. `actions/checkout` configures remote.origin.fetch
           # for the ref it checked out — for a PR that is the merge ref — so a bare
           # `git fetch origin main` can update FETCH_HEAD and leave `origin/main`
           # nonexistent. The script would then find no base for any file.

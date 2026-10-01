@@ -5,10 +5,10 @@ and nothing about whether our SQL is valid, whether the schema we assume matches
 the one `pathogensportal-db` ships, or whether `DISTINCT ON` really returns the
 freshest row. Those only break against a real server.
 
-⛔ Skipped unless `PP_TEST_DB=1`, so a developer without a database still gets a
+Skipped unless `PP_TEST_DB=1`, so a developer without a database still gets a
 green `pytest`. The CI job that provides the database sets it AND asserts that
 these tests actually ran — a skipped integration suite reports the same green as
-a passing one, and that is the failure mode this whole file exists to avoid.
+a passing one.
 
 The schema comes from `pathogensportal-db/db/init.sql` — the submodule owns it.
 Testing against a hand-written copy would only prove our copy agrees with itself.
@@ -83,9 +83,8 @@ def test_health_reports_the_database_as_ok():
 def test_schema_from_the_submodule_matches_what_charts_py_queries(clean):
     """The columns charts.py selects must exist in the submodule's schema.
 
-    ⚠️ This is the test that would have caught a silent drift: `db.py` carries its
-    own copy of the CREATE TABLE for standalone runs, and nothing forced the two
-    to agree.
+    This guards against silent drift: `db.py` carries its own copy of the
+    CREATE TABLE for standalone runs, and nothing else forces the two to agree.
     """
     _insert("covid_cases_weekly", "covid", {"labels": ["KT 1"]}, NOW)
     rows = charts.list_charts()
@@ -143,7 +142,7 @@ def test_api_charts_end_to_end(clean):
 @pytest.mark.integration
 def test_unreachable_database_gives_503_not_a_stack_trace(monkeypatch, clean):
     """The contract the frontend relies on: 503 → fall back to the static JSON."""
-    # ⚠️ `db.settings`, not `charts.settings` — charts.py never imports settings,
+    # `db.settings`, not `charts.settings` — charts.py never imports settings,
     # it goes through db.connect(). Patching the wrong module silently patches
     # nothing and the test would pass for the wrong reason.
     # Port 1 is privileged and closed: a real connection attempt that really fails.
