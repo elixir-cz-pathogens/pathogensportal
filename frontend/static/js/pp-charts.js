@@ -17,7 +17,7 @@
 
   var API_BASE = (window.PP_API_BASE || "").replace(/\/$/, "");
   var STATIC_DIR = "/data/charts/";
-  var MAX_SERIES = 8; // number of palette slots; the ninth series is folded into "Ostatní" (Other)
+  var MAX_SERIES = 8; // number of palette slots = most series shown at once
   var LOCALE = (document.documentElement.lang || "").indexOf("en") === 0 ? "en-GB" : "cs-CZ";
 
   /* ---------------- Localisation ----------------
@@ -67,7 +67,11 @@
     "Den od prvního hlášeného případu": "Day since first reported case",
     "den": "day",
     "Období": "Period",
-    "Ostatní": "Other",
+    "Řady v grafu": "Series in the chart",
+    "Zobrazit vše": "Show all",
+    "Výchozí výběr": "Default selection",
+    "Najednou lze zobrazit nejvýš": "At most",
+    "řad.": "series can be shown at once.",
     "Tabulka": "Table",
     "Skrýt tabulku": "Hide table",
     "Data grafu v tabulce": "Chart data as a table",
@@ -279,50 +283,52 @@
   }
 
   /**
-   * Above MAX_SERIES, the smallest series are summed into one grey "Ostatní" (Other).
+   * Palette slot of each series at first render (-1 = switched off). Up to
+   * MAX_SERIES every series is on; above that only the largest MAX_SERIES are.
    * No ninth colour is invented: the palette has eight validated slots and a ninth
-   * hue would break distinguishability for colour-vision deficiencies.
+   * hue would break distinguishability for colour-vision deficiencies. The reader
+   * switches the others on in the series picker (PP-85).
    *
-   * Size decides which series stay, but the original **order** is kept, so a slot
-   * (and therefore a colour) belongs to a specific series, not to its rank.
+   * Size decides which series start on, but slots follow the original **order**,
+   * so a colour belongs to a specific series, not to its rank.
    */
-  function foldExtraSeries(datasets) {
-    if (datasets.length <= MAX_SERIES) return datasets.slice();
-
-    var ranked = datasets.slice().sort(function (a, b) { return magnitude(b) - magnitude(a); });
-    var keep = new Set(ranked.slice(0, MAX_SERIES - 1));
-
-    var kept = [];
-    var folded = [];
-    datasets.forEach(function (dataset) {
-      (keep.has(dataset) ? kept : folded).push(dataset);
-    });
-
-    var length = Math.max.apply(null, folded.map(function (d) { return (d.data || []).length; }));
-    var summed = [];
-    for (var i = 0; i < length; i++) {
-      var total = 0;
-      var seen = false;
-      folded.forEach(function (d) {
-        var value = (d.data || [])[i];
-        if (typeof value === "number") { total += value; seen = true; }
-      });
-      summed.push(seen ? total : null);
+  function defaultSlots(datasets) {
+    var on = datasets.map(function (_d, i) { return i; });
+    if (datasets.length > MAX_SERIES) {
+      on = on.slice().sort(function (a, b) { return magnitude(datasets[b]) - magnitude(datasets[a]); })
+        .slice(0, MAX_SERIES);
     }
-
-    kept.push({
-      label: tr("Ostatní") + " (" + folded.length + ")",
-      data: summed,
-      type: folded[0] && folded[0].type,
-      ppRest: true
+    var slots = datasets.map(function () { return -1; });
+    var next = 0;
+    datasets.forEach(function (_d, i) {
+      if (on.indexOf(i) !== -1) slots[i] = next++;
     });
-    return kept;
+    return slots;
+  }
+
+  /**
+   * First and last label index where any switched-on series has a value. Line
+   * charts are trimmed to this range, so switching off the longest season or
+   * outbreak does not leave the rest squeezed against an empty stretch of axis.
+   */
+  function dataExtent(datasets) {
+    var first = Infinity;
+    var last = -1;
+    datasets.forEach(function (d) {
+      (d.data || []).forEach(function (value, i) {
+        if (yOf(value) === null) return;
+        if (i < first) first = i;
+        if (i > last) last = i;
+      });
+    });
+    return last < 0 ? null : { first: first, last: last };
   }
 
   /** Sets colours and widths per the mark specs; ignores colours from the payload. */
   function styleDatasets(datasets, t, chartType) {
     return datasets.map(function (dataset, index) {
-      var color = dataset.ppRest ? t.rest : t.series[index % t.series.length];
+      var slot = typeof dataset.ppSlot === "number" ? dataset.ppSlot : index;
+      var color = t.series[slot % t.series.length];
       var isBar = (dataset.type || chartType) === "bar";
       var styled = Object.assign({}, dataset, {
         borderColor: color,
@@ -473,7 +479,7 @@
   }
 
   function baseOptions(t, datasets, chartType, payload) {
-    var multi = datasets.length > 1;
+    var multi = ((payload && payload.datasets) || []).length > 1;
     // Numeric X axis: distance on the axis matches the value, not the label order.
     // Without it, a trajectory comparison draws day 0→4 as wide as 59→85
     // and the curve slopes, the one thing the chart is meant to show, mean nothing.
@@ -485,6 +491,11 @@
     var lineCount = datasets.filter(function (d) {
       return (d.type || chartType) !== "bar";
     }).length;
+    // Only line charts are trimmed: bar categories (age bands, regions) are not a
+    // time axis, and an empty category there is information, not padding.
+    var extent = chartType === "line" && !linearX && Array.isArray(payload.labels)
+      ? dataExtent(datasets)
+      : null;
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -497,21 +508,9 @@
         ? { mode: "nearest", axis: "x", intersect: false }
         : { mode: "index", intersect: false },
       plugins: {
-        // A single series needs no legend; the card title names it.
-        legend: multi
-          ? {
-              position: "top",
-              align: "start",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "rectRounded",
-                boxWidth: 8,
-                boxHeight: 8,
-                padding: 14,
-                color: t.textSecondary
-              }
-            }
-          : { display: false },
+        // The series picker above the plot is the legend; a single series needs
+        // none, the card title names it.
+        legend: { display: false },
         tooltip: {
           backgroundColor: t.text,
           titleColor: t.surface,
@@ -544,6 +543,9 @@
           // undefined type can leave Chart.js with numeric index tick labels.
           type: linearX ? "linear" : "category",
           bounds: linearX ? "data" : undefined,
+          // Category min/max are label indices.
+          min: extent ? extent.first : undefined,
+          max: extent ? extent.last : undefined,
           title: payload && payload.x_title
             ? { display: true, text: payload.x_title, color: t.textMuted, padding: { top: 6 } }
             : undefined,
@@ -583,17 +585,16 @@
   }
 
   /**
-   * The table is built from the **original** series, not the ones folded into
-   * "Ostatní": what the chart merges because of the eight palette slots stays itemised here.
+   * The table shows the same series as the chart: only those switched on in the
+   * series picker, each with its chart colour.
    */
-  function buildTable(payload, colorByLabel, t) {
-    var datasets = payload.datasets || [];
+  function buildTable(payload, datasets) {
     var head = ['<tr><th scope="col">' + escapeHtml(payload.x_title || tr("Období")) + "</th>"];
     datasets.forEach(function (d, i) {
       var label = d.label || "Řada " + (i + 1);
       head.push(
         '<th scope="col"><span class="pp-swatch" style="background:' +
-        (colorByLabel[label] || t.rest) + '"></span>' + escapeHtml(label) + "</th>"
+        d.ppColor + '"></span>' + escapeHtml(label) + "</th>"
       );
     });
     head.push("</tr>");
@@ -621,6 +622,9 @@
       });
     } else {
       rows = (payload.labels || []).map(function (label, row) {
+        // A period where none of the shown series has a value is left out.
+        var empty = datasets.every(function (d) { return yOf((d.data || [])[row]) === null; });
+        if (empty) return "";
         var cells = ['<tr><th scope="row">' + escapeHtml(String(label)) + "</th>"];
         datasets.forEach(function (d) {
           cells.push("<td>" + fmt((d.data || [])[row]) + "</td>");
@@ -658,38 +662,128 @@
     }
   }
 
+  /* ---------------- Series picker (PP-85) ----------------
+   * One toggle button per series above the plot; it replaces the Chart.js legend,
+   * which could hide a series too, but nobody found out it was clickable. Hidden
+   * series are left out of the chart data altogether, so both axes rescale to
+   * what is left. The selection lives only as long as the page.
+   */
+
+  /** Builds the picker into the card (before the plot) and returns its element. */
+  function seriesPicker(root, payload) {
+    var picker = document.createElement("div");
+    picker.className = "pp-series";
+    picker.setAttribute("role", "group");
+    picker.setAttribute("aria-label", tr("Řady v grafu"));
+    var html = (payload.datasets || []).map(function (d, i) {
+      return '<button type="button" class="pp-series__item" data-pp-series="' + i + '" aria-pressed="true">' +
+        '<span class="pp-series__swatch" aria-hidden="true"></span>' +
+        escapeHtml(String(d.label || "Řada " + (i + 1))) + "</button>";
+    });
+    if (payload.datasets.length > 2) {
+      html.push('<button type="button" class="pp-btn pp-series__reset" data-pp-series-reset>' +
+        tr(payload.datasets.length > MAX_SERIES ? "Výchozí výběr" : "Zobrazit vše") + "</button>");
+    }
+    if (payload.datasets.length > MAX_SERIES) {
+      html.push('<span class="pp-series__hint">' + tr("Najednou lze zobrazit nejvýš") + " " + MAX_SERIES +
+        " " + tr("řad.") + "</span>");
+    }
+    picker.innerHTML = html.join("");
+    var plot = root.querySelector(".pp-card__plot");
+    plot.parentNode.insertBefore(picker, plot);
+    return picker;
+  }
+
   function renderChart(root) {
     var canvas = root.querySelector("canvas");
     var src = root.dataset.src;
     var instance = null;
+    var slots = null;     // palette slot per series, -1 = switched off
+    var initial = null;
+    var picker = null;
 
-    function draw(payload) {
+    function shown(payload, t, chartType) {
+      var on = (payload.datasets || []).map(function (d, i) {
+        return slots[i] < 0 ? null : Object.assign({}, d, { ppSlot: slots[i] });
+      }).filter(Boolean);
+      return styleDatasets(on, t, chartType);
+    }
+
+    /** `rebuild` recreates the chart (theme change); otherwise it is updated in place. */
+    function draw(payload, rebuild) {
       var t = tokens();
       var chartType = root.dataset.type || "line";
-      var datasets = styleDatasets(foldExtraSeries(payload.datasets || []), t, chartType);
-      if (instance) instance.destroy();
-      instance = new Chart(canvas, {
-        type: chartType,
-        data: { labels: payload.labels, datasets: datasets },
-        options: baseOptions(t, datasets, chartType, payload),
-        plugins: [crosshair, endLabels]
-      });
+      var datasets = shown(payload, t, chartType);
+      var options = baseOptions(t, datasets, chartType, payload);
+      if (instance && !rebuild) {
+        instance.data.datasets = datasets;
+        instance.options = options;
+        instance.update();
+      } else {
+        if (instance) instance.destroy();
+        instance = new Chart(canvas, {
+          type: chartType,
+          data: { labels: payload.labels, datasets: datasets },
+          options: options,
+          plugins: [crosshair, endLabels]
+        });
+      }
 
       var tableWrap = root.querySelector(".pp-table-wrap");
-      if (tableWrap) {
-        var colorByLabel = {};
-        datasets.forEach(function (d) { colorByLabel[d.label] = d.ppColor; });
-        tableWrap.innerHTML = buildTable(payload, colorByLabel, t);
+      if (tableWrap) tableWrap.innerHTML = buildTable(payload, datasets);
+      if (picker) syncPicker(t);
+    }
+
+    function syncPicker(t) {
+      var count = slots.filter(function (s) { return s >= 0; }).length;
+      picker.querySelectorAll("[data-pp-series]").forEach(function (btn) {
+        var slot = slots[+btn.getAttribute("data-pp-series")];
+        var on = slot >= 0;
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.style.setProperty("--pp-series-color", on ? t.series[slot % t.series.length] : "transparent");
+        // A ninth series has no colour left in the palette.
+        btn.disabled = !on && count >= MAX_SERIES;
+      });
+      var reset = picker.querySelector("[data-pp-series-reset]");
+      if (reset) reset.disabled = slots.join() === initial.join();
+    }
+
+    function toggleSeries(payload, index) {
+      if (slots[index] >= 0) {
+        // The last series stays on: an empty chart says nothing.
+        if (slots.filter(function (s) { return s >= 0; }).length === 1) return;
+        slots[index] = -1;
+      } else {
+        var used = slots.filter(function (s) { return s >= 0; });
+        for (var free = 0; used.indexOf(free) !== -1; free++);
+        slots[index] = free;
       }
+      draw(payload);
     }
 
     var done = loadChartData(src)
       .then(function (result) {
+        var payload = result.payload;
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
         setOrigin(root, result.origin);
-        draw(result.payload);
-        onThemeChange(function () { draw(result.payload); });
+        initial = defaultSlots(payload.datasets || []);
+        slots = initial.slice();
+        if ((payload.datasets || []).length > 1) {
+          picker = seriesPicker(root, payload);
+          picker.addEventListener("click", function (event) {
+            var btn = event.target.closest("button");
+            if (!btn || btn.disabled) return;
+            if (btn.hasAttribute("data-pp-series-reset")) {
+              slots = initial.slice();
+              draw(payload);
+            } else {
+              toggleSeries(payload, +btn.getAttribute("data-pp-series"));
+            }
+          });
+        }
+        draw(payload, true);
+        onThemeChange(function () { draw(payload, true); });
       })
       .catch(function (err) {
         var skeleton = root.querySelector(".pp-skeleton");
