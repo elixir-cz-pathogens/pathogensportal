@@ -6,8 +6,8 @@ image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiologie", "IMG AV ČR"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'
-# Uzavřený report: čísla níž jsou z konečného souhrnu WHO (DON611) k 2. 7. 2026
-# a už se nezmění. Jediný případ, kdy se datum píše sem — viz update-stamp.html.
+# Closed report: the figures below are from the final WHO summary (DON611) as of
+# 2 Jul 2026 and will not change. The only case where a date goes here — see update-stamp.html.
 data_as_of: "2026-07-02"
 ---
 

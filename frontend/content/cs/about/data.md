@@ -6,7 +6,7 @@ menu:
     name: Data a citace
     weight: 4
 layout: about_navbar
-# Vedle stránky pro lidi i strojový katalog: /about/data/sources.json
+# Besides the human-readable page, also emit the machine-readable catalogue: /about/data/sources.json
 outputs: ["html", "sources"]
 ---
 

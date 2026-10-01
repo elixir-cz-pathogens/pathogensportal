@@ -6,7 +6,7 @@ image: "/images/cards/covid.webp"
 highlight: true
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "surveillance", "MZČR", "ČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz" target="_blank">MZČR — onemocnění aktuálně</a> · <a href="https://erviss.org/" target="_blank">ECDC ERVISS</a>'
-# Datum se bere z posledni_datum v tomhle JSON, ne odsud.
+# The date comes from posledni_datum in this JSON, not from here.
 update_from: "covid_summary.json"
 update_read: "stamp"
 ---

@@ -11,6 +11,3 @@ public_test/
 .claude/
 audit/
 .vscode/
-
-# Local assistant instructions (not part of the project)
-CLAUDE.md

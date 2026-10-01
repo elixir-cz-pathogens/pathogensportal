@@ -1,11 +1,10 @@
 ---
-# ⛔ NENÍ to dashboard, je to stránka s vlastní funkcionalitou (mapa +
-# přepínač diagnóz), a proto nežije v sekci dashboards. `type` ale zůstává
-# `dashboards`: JEN layouts/dashboards/single.html načítá /js/pp-charts.js,
-# bez kterého se mapa nikdy neobarví. Bez tohohle řádku se stránka přesune
-# a ztichne — vypadá hotově a nefunguje.
+# Not a dashboard: a page with its own functionality (map + diagnosis
+# selector), so it lives outside the dashboards section. `type` stays
+# `dashboards` because only layouts/dashboards/single.html loads
+# /js/pp-charts.js, without which the map is never coloured.
 type: dashboards
-# Stará adresa musí dál fungovat: odkazují na ni dvě publikované novinky.
+# Keep the old URL working: published news items link to it.
 aliases:
   - "/dashboards/signals/"
 title: "Signály — detekce anomálií"
@@ -15,7 +14,7 @@ image: "/images/cards/signals.svg"
 highlight: true
 tags: ["detekce anomálií", "surveillance", "včasné varování", "ÚZIS", "statistika"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
-# Datum posledního běhu se bere z generated_at v tomhle JSON, ne odsud.
+# The date of the last run comes from generated_at in this JSON, not from here.
 update_from: "anomaly_signals.json"
 update_read: "stamp"
 ---

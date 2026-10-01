@@ -1,11 +1,10 @@
 ---
-# ⛔ NENÍ to dashboard, je to stránka s vlastní funkcionalitou (mapa +
-# přepínač diagnóz), a proto nežije v sekci dashboards. `type` ale zůstává
-# `dashboards`: JEN layouts/dashboards/single.html načítá /js/pp-charts.js,
-# bez kterého se mapa nikdy neobarví. Bez tohohle řádku se stránka přesune
-# a ztichne — vypadá hotově a nefunguje.
+# Not a dashboard: a page with its own functionality (map + diagnosis
+# selector), so it lives outside the dashboards section. `type` stays
+# `dashboards` because only layouts/dashboards/single.html loads
+# /js/pp-charts.js, without which the map is never coloured.
 type: dashboards
-# Stará adresa musí dál fungovat: odkazují na ni dvě publikované novinky.
+# Keep the old URL working: published news items link to it.
 aliases:
   - "/dashboards/signals/"
 title: "Signals — anomaly detection"
