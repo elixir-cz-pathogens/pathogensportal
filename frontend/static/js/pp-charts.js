@@ -218,6 +218,11 @@
   /** A single API availability query per page; the result is a Set of keys (or empty). */
   function apiIndex() {
     if (apiIndexPromise) return apiIndexPromise;
+    // PR previews must render their own reviewed snapshot, not the shared staging DB.
+    if (/^\/preview\/pr-\d+\//.test(window.location.pathname)) {
+      apiIndexPromise = Promise.resolve(new Set());
+      return apiIndexPromise;
+    }
     apiIndexPromise = fetch(API_BASE + "/api/charts", { headers: { Accept: "application/json" } })
       .then(function (r) {
         if (!r.ok) throw new Error("HTTP " + r.status);
