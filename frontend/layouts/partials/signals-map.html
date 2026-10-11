@@ -38,7 +38,10 @@
   {{ $byDg := dict }}
   {{ range $all }}
     {{ $k := .diagnoza }}
-    {{ $cur := index $byDg $k | default (dict "code" $k "name" .diagnoza_nazev "max" 0.0) }}
+    {{/* diagnoza_nazev_en: pathogensportal-db PPDB-77; older data has Czech only */}}
+    {{ $name := .diagnoza_nazev }}
+    {{ if and $en .diagnoza_nazev_en }}{{ $name = .diagnoza_nazev_en }}{{ end }}
+    {{ $cur := index $byDg $k | default (dict "code" $k "name" $name "max" 0.0) }}
     {{ $max := $cur.max }}
     {{ if and (ne .kraj_kod "CZ") (gt .score $cur.max) }}{{ $max = .score }}{{ end }}
     {{ $byDg = merge $byDg (dict $k (dict "code" $k "name" $cur.name "max" $max)) }}

@@ -5,8 +5,8 @@ description: "Syphilis and gonorrhoea since 1994 (Register of Sexually Transmitt
 image: "/images/cards/id-sti.webp"
 update_from: "isin_group_sti.json"
 update_read: "year"
-tags: ["infectious diseases", "ÚZIS", "ISIN", "STI"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
+tags: ["infectious diseases", "ÚZIS", "ISIN", "STI", "syphilis", "gonorrhoea"]
+data_source: '<a href="https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data" target="_blank">ÚZIS CZ — Register of Sexually Transmitted Diseases</a> · <a href="https://datanzis.uzis.gov.cz" target="_blank">ISIN</a> · <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a>'
 build:
   list: never
   render: always
@@ -28,7 +28,7 @@ together, as each source has its own notification rules.
 
 {{< chart id="stiSex" src="/data/charts/sti_registry_sex.json" type="line" title="Syphilis and gonorrhoea combined — men and women per 100,000" height="340" note="Each sex adjusted with its own denominator (per 100,000 men or women). The gap between the sexes has widened since 2010; in women gonorrhoea is more often asymptomatic and therefore less often detected." >}}
 
-{{< chart id="stiAge" src="/data/charts/sti_registry_age.json" type="bar" title="Syphilis and gonorrhoea by age — total for the last five years" height="340" note="Absolute counts of notified cases over a five-year period, whole country. Age groups differ in width (the youngest and oldest are open-ended), so the bars cannot be read as risk per person. Age-group labels come from the source data and remain in Czech." >}}
+{{< chart id="stiAge" src="/data/charts/sti_registry_age.json" type="bar" title="Syphilis and gonorrhoea by age — total for the last five years" height="340" note="Absolute counts of notified cases over a five-year period, whole country. Age groups differ in width (the youngest and oldest are open-ended), so the bars cannot be read as risk per person." >}}
 
 {{< region-map id="stiMap" src="/data/charts/sti_registry_map.json" unit="cases per 100,000" title="Syphilis and gonorrhoea by region of residence — per 100,000 population" note="Notified cases in the latest year per 100,000 population of the region. The region is derived from the patient's district of residence; cases without residence in Czechia are not on the map. Prague stands out partly because specialised care and testing are concentrated there." >}}
 

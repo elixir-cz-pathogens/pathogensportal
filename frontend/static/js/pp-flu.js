@@ -162,6 +162,11 @@
   function keyMonday(key) { return monday(+key.slice(0, 4), +key.slice(6)); }
   function rangeOf(start) {
     var end = new Date(start.getTime() + 6 * 864e5);
+    if (EN) {   /* "29 Sep – 5 Oct 2026", "6–12 Oct 2026" */
+      var mon = function (x) { return x.toLocaleDateString(LOCALE, { month: "short", timeZone: "UTC" }); };
+      var first = start.getUTCMonth() === end.getUTCMonth() ? start.getUTCDate() : start.getUTCDate() + " " + mon(start);
+      return first + "–" + end.getUTCDate() + " " + mon(end) + " " + end.getUTCFullYear();
+    }
     function dm(x) { return x.getUTCDate() + ". " + (x.getUTCMonth() + 1) + "."; }
     var head = start.getUTCMonth() === end.getUTCMonth() ? start.getUTCDate() + "." : dm(start);
     return head + "–" + dm(end) + " " + end.getUTCFullYear();
@@ -578,8 +583,10 @@
 
     roots("excluded").forEach(function (root) {
       field(root, "lede").textContent = "";
-      field(root, "table").innerHTML = "<tbody>" + Object.keys(ILI.seasons_excluded).map(function (s) {
-        return '<tr><td>' + s + '</td><td class="l pp-flu-wrap">' + esc(ILI.seasons_excluded[s]) + "</td></tr>";
+      /* seasons_excluded_en comes from pathogensportal-db PPDB-77; older data has Czech only */
+      var excluded = (EN && ILI.seasons_excluded_en) || ILI.seasons_excluded;
+      field(root, "table").innerHTML = "<tbody>" + Object.keys(excluded).map(function (s) {
+        return '<tr><td>' + s + '</td><td class="l pp-flu-wrap">' + esc(excluded[s]) + "</td></tr>";
       }).join("") + "</tbody>";
     });
 

@@ -41,7 +41,7 @@
       high) computed with the Moving Epidemic Method (Vega et al. 2013, 2015 —
       the ECDC and WHO PISA standard) over the weekly ILI and ARI rate per
       100,000 population. The input is the Czech reporting to WHO FluID,
-      supplemented with fresher weeks from ECDC ERVISS. Ten valid seasons feed
+      supplemented with fresher weeks from ECDC ERVISS. The last ten valid seasons feed
       the estimate; excluded seasons are listed with the reason. The dataset
       also carries the trend over the last three weeks and an
       `intensity_reliable` flag stating whether the intensity bands are

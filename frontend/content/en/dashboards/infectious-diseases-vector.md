@@ -5,7 +5,7 @@ description: "Tick-borne encephalitis, Lyme borreliosis, animal bites, tularaemi
 image: "/images/cards/id-vector.svg"
 update_from: "isin_group_vector_animal.json"
 update_read: "year"
-tags: ["infectious diseases", "ÚZIS", "ISIN", "tick-borne"]
+tags: ["infectious diseases", "ÚZIS", "ISIN", "tick-borne", "zoonoses"]
 data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
 build:
   list: never

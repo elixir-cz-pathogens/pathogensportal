@@ -1,6 +1,7 @@
 ---
 title: "A new data layer and the Signals page"
 date: 2026-09-03
+translationKey: "news-pipeline-v020"
 description: "Data pipeline v0.2.0 brings incidence per 100,000 population, a regional map, fresh Ebola data — and automated anomaly detection across 1,200 notified disease series."
 highlight: true
 image: "/images/cards/signals.svg"

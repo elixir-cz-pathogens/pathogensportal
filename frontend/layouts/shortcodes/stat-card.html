@@ -14,5 +14,5 @@
     <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
     <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
   </div>
-  <p class="pp-stats-origin"><span class="pp-origin" data-pp-origin>načítám data…</span></p>
+  <p class="pp-stats-origin"><span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}načítám data…{{ end }}</span></p>
 </div>
