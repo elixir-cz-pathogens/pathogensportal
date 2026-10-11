@@ -6,7 +6,8 @@
      Source: Eurostat GISCO, NUTS_RG_03M_2021_4326. Coordinates use an
      equirectangular projection with a cos(50.3°) latitude correction,
      otherwise the map would be stretched. */}}
-    <svg viewBox="0 0 1000 573" role="img" aria-label="Mapa krajů České republiky">
+{{- $en := eq site.Language.Lang "en" }}
+    <svg viewBox="0 0 1000 573" role="img" aria-label="{{ if $en }}Map of the regions of the Czech Republic{{ else }}Mapa krajů České republiky{{ end }}">
       {{/* Actual region boundaries (NUTS3) from Eurostat GISCO, generated from
            NUTS_RG_03M_2021_4326. Coordinates: equirectangular projection with
            a cos(50.3°) latitude correction, otherwise the map would be stretched. */}}
@@ -26,18 +27,18 @@
       {{/* Prague last: it lies inside the Central Bohemian Region and would otherwise be painted over */}}
       <path data-region="CZ010" d="M 317.2 217.6 L 318.0 216.5 L 322.3 214.7 L 323.6 215.3 L 325.0 214.3 L 325.9 212.2 L 327.9 212.6 L 328.7 215.3 L 334.3 215.2 L 333.8 209.6 L 334.9 208.2 L 338.2 208.2 L 339.4 209.3 L 340.4 208.0 L 343.4 207.5 L 344.9 205.6 L 349.6 205.2 L 350.3 203.0 L 352.2 202.3 L 356.1 202.5 L 359.9 201.4 L 360.2 204.6 L 362.5 203.9 L 364.2 204.8 L 364.5 207.2 L 368.6 207.1 L 368.3 208.4 L 370.2 212.2 L 371.3 212.6 L 374.7 212.1 L 375.4 213.4 L 378.7 213.8 L 378.6 217.3 L 379.7 218.2 L 383.5 218.9 L 385.7 222.1 L 385.0 224.9 L 376.8 228.2 L 376.0 229.0 L 376.5 232.0 L 378.1 230.7 L 379.2 232.1 L 378.4 234.5 L 380.3 238.1 L 378.7 240.7 L 377.4 240.0 L 376.0 243.0 L 370.5 241.5 L 370.2 239.9 L 367.4 239.3 L 365.3 240.1 L 363.9 239.2 L 362.2 239.9 L 359.7 239.3 L 358.6 240.2 L 359.4 241.9 L 356.6 243.6 L 356.0 242.6 L 353.1 243.5 L 353.2 245.1 L 350.3 246.4 L 349.3 248.5 L 347.1 247.9 L 343.7 250.2 L 340.7 248.7 L 339.2 254.5 L 338.3 253.5 L 336.7 254.1 L 331.2 253.7 L 329.5 251.7 L 330.3 249.6 L 331.9 249.4 L 332.4 248.0 L 330.8 248.2 L 330.6 243.4 L 328.3 244.3 L 325.0 241.4 L 325.8 239.4 L 327.2 240.0 L 327.9 236.7 L 325.2 236.4 L 321.7 233.5 L 321.3 229.6 L 318.8 228.8 L 319.5 225.5 L 323.8 225.0 L 323.1 223.2 L 319.9 221.7 L 319.7 219.9 L 317.2 217.6 Z" />
 
-      <text data-region-label="CZ010" x="350" y="227" text-anchor="middle" font-size="13">Praha</text>
-      <text data-region-label="CZ020" x="322" y="186" text-anchor="middle" font-size="15">Stř. Čechy</text>
-      <text data-region-label="CZ031" x="345" y="450" text-anchor="middle" font-size="15">Jihočeský</text>
-      <text data-region-label="CZ032" x="167" y="334" text-anchor="middle" font-size="15">Plzeňský</text>
-      <text data-region-label="CZ041" x="97" y="202" text-anchor="middle" font-size="15">Karlovarský</text>
-      <text data-region-label="CZ042" x="258" y="120" text-anchor="middle" font-size="15">Ústecký</text>
-      <text data-region-label="CZ051" x="429" y="80" text-anchor="middle" font-size="15">Liberecký</text>
-      <text data-region-label="CZ052" x="557" y="154" text-anchor="middle" font-size="15">Král. Hradecký</text>
-      <text data-region-label="CZ053" x="605" y="264" text-anchor="middle" font-size="15">Pardubický</text>
-      <text data-region-label="CZ063" x="529" y="376" text-anchor="middle" font-size="15">Vysočina</text>
-      <text data-region-label="CZ064" x="671" y="453" text-anchor="middle" font-size="15">Jihomoravský</text>
-      <text data-region-label="CZ071" x="753" y="293" text-anchor="middle" font-size="15">Olomoucký</text>
-      <text data-region-label="CZ072" x="836" y="421" text-anchor="middle" font-size="15">Zlínský</text>
-      <text data-region-label="CZ080" x="870" y="283" text-anchor="middle" font-size="15">Moravskoslezský</text>
+      <text data-region-label="CZ010" x="350" y="227" text-anchor="middle" font-size="13">{{ if $en }}Prague{{ else }}Praha{{ end }}</text>
+      <text data-region-label="CZ020" x="322" y="186" text-anchor="middle" font-size="15">{{ if $en }}Central Bohemia{{ else }}Stř. Čechy{{ end }}</text>
+      <text data-region-label="CZ031" x="345" y="450" text-anchor="middle" font-size="15">{{ if $en }}South Bohemia{{ else }}Jihočeský{{ end }}</text>
+      <text data-region-label="CZ032" x="167" y="334" text-anchor="middle" font-size="15">{{ if $en }}Plzeň{{ else }}Plzeňský{{ end }}</text>
+      <text data-region-label="CZ041" x="97" y="202" text-anchor="middle" font-size="15">{{ if $en }}Karlovy Vary{{ else }}Karlovarský{{ end }}</text>
+      <text data-region-label="CZ042" x="258" y="120" text-anchor="middle" font-size="15">{{ if $en }}Ústí n. L.{{ else }}Ústecký{{ end }}</text>
+      <text data-region-label="CZ051" x="429" y="80" text-anchor="middle" font-size="15">{{ if $en }}Liberec{{ else }}Liberecký{{ end }}</text>
+      <text data-region-label="CZ052" x="557" y="154" text-anchor="middle" font-size="15">{{ if $en }}Hradec Králové{{ else }}Král. Hradecký{{ end }}</text>
+      <text data-region-label="CZ053" x="605" y="264" text-anchor="middle" font-size="15">{{ if $en }}Pardubice{{ else }}Pardubický{{ end }}</text>
+      <text data-region-label="CZ063" x="529" y="376" text-anchor="middle" font-size="15">{{ if $en }}Vysočina{{ else }}Vysočina{{ end }}</text>
+      <text data-region-label="CZ064" x="671" y="453" text-anchor="middle" font-size="15">{{ if $en }}South Moravia{{ else }}Jihomoravský{{ end }}</text>
+      <text data-region-label="CZ071" x="753" y="293" text-anchor="middle" font-size="15">{{ if $en }}Olomouc{{ else }}Olomoucký{{ end }}</text>
+      <text data-region-label="CZ072" x="836" y="421" text-anchor="middle" font-size="15">{{ if $en }}Zlín{{ else }}Zlínský{{ end }}</text>
+      <text data-region-label="CZ080" x="870" y="283" text-anchor="middle" font-size="15">{{ if $en }}Moravia-Silesia{{ else }}Moravskoslezský{{ end }}</text>
     </svg>

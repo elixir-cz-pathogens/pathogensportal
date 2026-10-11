@@ -89,7 +89,7 @@
         "@type" "Dataset"
         "name" (index .name $lang | default .name.cs)
         "url" .url
-        "creator" (dict "@type" "Organization" "name" .publisher) }}
+        "creator" (dict "@type" "Organization" "name" (partial "functions/lang-value.html" (dict "v" .publisher "lang" $lang))) }}
     {{ with .licence.url }}{{ $d = merge $d (dict "license" .) }}{{ end }}
     {{ with .download }}
       {{ $d = merge $d (dict "distribution" (dict

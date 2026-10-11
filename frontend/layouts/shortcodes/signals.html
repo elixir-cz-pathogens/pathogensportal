@@ -24,6 +24,6 @@
   </div>
 
   <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>načítám data…</span>
+    <span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}načítám data…{{ end }}</span>
   </div>
 </section>

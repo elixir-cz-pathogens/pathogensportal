@@ -92,8 +92,10 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
 - Colours come from CSS variables (`--pp-*`) in `static/css/dashboards.css`; colours in the JSON are
   ignored. The eight-colour palette is colour-blind safe — do not reorder it; series beyond eight are
   grouped into a grey "Other".
-- Data labels inside the JSON are Czech. A finite dictionary in `pp-charts.js` translates common ones
-  for the English site.
+- Data labels inside the JSON are Czech; pathogensportal-db (PPDB-77) adds English ones in `*_en` fields
+  (`labels_en`, `datasets[].label_en`, `x_title_en`, `unit_en`, `diagnoza_nazev_en`, …), which
+  `pp-charts.js`, `pp-flu.js` and `partials/signals-map.html` prefer on the English site. The
+  dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
 
 Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`,
 `stat-card`, `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,

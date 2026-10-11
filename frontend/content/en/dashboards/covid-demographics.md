@@ -74,5 +74,5 @@ structure, not vaccine failure. These aggregate data do not allow age adjustment
 
 <p class="stat-source">
   Source: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH open data</a> ·
-  period 3/2020–present (vaccination since 1/2021)
+  licence per the Ministry of Health terms · period 3/2020–present (vaccination since 1/2021)
 </p>

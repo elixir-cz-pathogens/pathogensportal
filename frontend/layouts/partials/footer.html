@@ -79,7 +79,11 @@
   {{ partial "partners.html" . }}
 
   <div class="d-flex justify-content-center small mt-2">
+    {{ if eq .Site.Language.Lang "en" }}
+    <small>The site runs on the <a href="https://gohugo.io" target="_blank">Hugo</a> generator with the <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> theme by the <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. The reference implementation of a national Pathogens Portal node is <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">here</a>.</small>
+    {{ else }}
     <small>Web běží na generátoru <a href="https://gohugo.io" target="_blank">Hugo</a> s motivem <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> od <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. Referenční implementace národního Pathogens Portal uzlu je <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">zde</a>.</small>
+    {{ end }}
   </div>
 </footer>
 
@@ -106,7 +110,15 @@
       order: [],
       pageLength: 25,
       lengthMenu: [10, 25, 50, 100],
-      language: {
+      language: {{ if eq .Site.Language.Lang "en" }}{
+        search: "Search:",
+        lengthMenu: "Show _MENU_ rows",
+        info: "_START_–_END_ of _TOTAL_ rows",
+        infoEmpty: "No rows",
+        infoFiltered: "(filtered from _MAX_ rows)",
+        zeroRecords: "Nothing found",
+        paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" }
+      }{{ else }}{
         search: "Hledat:",
         lengthMenu: "Zobrazit _MENU_ řádků",
         info: "_START_–_END_ z _TOTAL_ řádků",
@@ -114,7 +126,7 @@
         infoFiltered: "(filtrováno z _MAX_ řádků)",
         zeroRecords: "Nic nenalezeno",
         paginate: { first: "První", last: "Poslední", next: "Další", previous: "Předchozí" }
-      }
+      }{{ end }}
     })
   })
 </script>

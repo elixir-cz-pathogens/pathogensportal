@@ -41,8 +41,8 @@ shown on each dashboard under "Updated".
 {{< data-files >}}
 
 The files are **processed data for charts**, not raw data — aggregation, per-population
-adjustment and series selection are already applied. Series labels inside the files are in
-Czech. For your own analysis, go to the original source.
+adjustment and series selection are already applied. Labels inside the files are in Czech,
+with English versions in fields ending in `_en`. For your own analysis, go to the original source.
 
 **This catalogue** is machine-readable too: [`sources.json`](sources.json) gives each source's
 publisher, licence, coverage, granularity, update frequency and — above all — the `limits`
@@ -53,7 +53,8 @@ and other tools can tell which dataset a page is built on without parsing its te
 ### DCAT-AP-CZ catalogue
 
 Data **produced by processing on the portal** are also described by a catalogue following the Czech
-open formal standard for data catalogue interfaces:
+open formal standard
+[Open data catalogue interfaces](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/) (in Czech):
 [`/dcat/katalog.jsonld`](/dcat/katalog.jsonld). It points to four datasets — influenza season
 intensity thresholds, anomaly detection signals, weekly respiratory virus detections and derived
 infectious disease incidence.

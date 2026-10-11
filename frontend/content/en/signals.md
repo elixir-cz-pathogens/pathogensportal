@@ -29,8 +29,6 @@ count exceeded the threshold.
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Series above the expected level" >}}
 
-*Note: diagnosis and region names in the table come from the Czech source data.*
-
 ### How to read the table
 
 | Column | Meaning |
@@ -46,20 +44,6 @@ An example from the table: hepatitis A in the South Moravian region — usually
 beyond the threshold than ordinary fluctuation reaches (strength 19×) — chance
 practically cannot explain that.
 
-Two badges replace strength where a statistical model makes no sense:
-
-- **rare disease** — a disease with at most ~5 cases in the entire history
-  (diphtheria, yellow fever…). The threshold here is "more than an isolated case":
-  every cluster of 2+ cases is flagged.
-- **outside prior occurrence** — cases in a period where the disease previously
-  did not occur at all (no history for this part of the year). It may be a genuine
-  novelty or a change in reporting.
-
-What to look at first: **high strength together with high case counts** (an
-epidemic under way). A row with small counts and strength just above 1× may be
-chance — with 1,200 series scored, we expect a few such rows every month.
-
----
 
 ### The new reporting channel: why some signals "cannot be decided"
 
@@ -80,6 +64,21 @@ signals in two:
   thanks to new-channel cases. There may be a real rise behind them or merely a change in
   reporting, and the data cannot tell the two apart. On the map these regions are grey,
   not shaded by strength.
+
+Two badges replace strength where a statistical model makes no sense:
+
+- **rare disease** — a disease with at most ~5 cases in the entire history
+  (diphtheria, yellow fever…). The threshold here is "more than an isolated case":
+  every cluster of 2+ cases is flagged.
+- **outside prior occurrence** — cases in a period where the disease previously
+  did not occur at all (no history for this part of the year). It may be a genuine
+  novelty or a change in reporting.
+
+What to look at first: **high strength together with high case counts** (an
+epidemic under way). A row with small counts and strength just above 1× may be
+chance — with 1,200 series scored, we expect a few such rows every month.
+
+---
 
 ### What a signal means — and what it does not
 

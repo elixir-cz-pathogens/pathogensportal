@@ -1,6 +1,7 @@
 ---
 title: "Nová datová vrstva a stránka Signály"
 date: 2026-09-03
+translationKey: "news-pipeline-v020"
 description: "Datová pipeline v0.2.0 přináší incidenci na 100 000 obyvatel, mapu krajů, čerstvá ebola data — a automatickou detekci anomálií nad 1 200 řadami hlášených nemocí."
 highlight: true
 image: "/images/cards/signals.svg"

@@ -40,9 +40,9 @@
   {{- $rec := dict
       "id" $src.id
       "name" (index $src.name $lang | default $src.name.cs)
-      "publisher" $src.publisher
+      "publisher" (partial "functions/lang-value.html" (dict "v" $src.publisher "lang" $lang))
       "landing_page" $src.url
-      "licence" $src.licence
+      "licence" (merge $src.licence (dict "name" (partial "functions/lang-value.html" (dict "v" $src.licence.name "lang" $lang))))
       "coverage" $coverage
       "granularity" (index $src.grain $lang | default $src.grain.cs)
       "update_frequency" (index $src.frequency $lang | default $src.frequency.cs)

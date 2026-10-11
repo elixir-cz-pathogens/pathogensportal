@@ -56,8 +56,6 @@ is on the [Influenza — regional surveillance](/en/dashboards/influenza-regiona
 
 {{< chart id="fluResp" src="/data/charts/flu_respiratory_all.json" type="bar" title="Respiratory viruses — detections per season" height="420"  note="Absolute counts of laboratory detections of each virus per season, whole country." >}}
 
-*Note: series labels in the charts come from the Czech source data.*
-
 ---
 
 ### Surveillance background
