@@ -1,10 +1,5 @@
-{{/* Dashboard list. Overrides the theme template only to add the legend.
-
-     The legend exists ONLY here. Cards in lists show data origin by border
-     colour, and colour without explanation is meaningless — this is the one
-     place where the reader learns what each colour means. Removing this block
-     breaks nothing visibly; the borders just stop meaning anything.
-*/}}
+{{/* Dashboard list. Overrides the theme template to use the shared card grid
+     and to explain the AI-assisted icon on the cards. */}}
 {{ define "main" }}
 {{/* .pp-viz is not decorative — it defines ALL colour tokens (dashboards.css).
      Without this wrapper `var(--pp-surface-raised)` and `var(--pp-border)` do
@@ -31,27 +26,16 @@
     {{ template "_internal/pagination.html" . }}
 </div>
 
-{{/* Labels come from origin-meta.html so the legend and the borders cannot
-     disagree. It iterates a fixed code list, not pages — the legend must be
-     complete even when a category is absent from the current pagination page. */}}
-<aside class="pp-origin-legend pp-origin-legend--page mt-4" aria-labelledby="pp-legend-head">
-  <h2 id="pp-legend-head" class="pp-origin-legend__head">{{ cond $en "What the card border colour means" "Co znamená barva rámečku karty" }}</h2>
-  <p class="pp-origin-legend__lead">{{ cond $en "Every dashboard says where its data comes from." "U každého panelu je vidět, odkud jsou jeho data." }}</p>
-  <div class="pp-origin-legend__items">
-    {{ range slice "aggregated" "own" "ai-assisted" }}
-    {{ $m := partial "origin-meta.html" (dict "Params" (dict "origin" .) "Site" $.Site) }}
-    {{ with $m }}
-    <div class="pp-origin-legend__item">
-      <span class="pp-origin-legend__swatch pp-origin-edge--{{ .key }}" aria-hidden="true"></span>
-      <div>
-        <strong>{{ .label }}</strong>
-        <span class="pp-origin-legend__desc">{{ .title }}</span>
-      </div>
-    </div>
-    {{ end }}
-    {{ end }}
-  </div>
-</aside>
+{{/* Explains the one origin mark cards still carry. Shown only when this
+     page of the list has an AI-assisted card, so it never explains an icon
+     the reader cannot see. Text from origin-meta.html, like the badge. */}}
+{{ $ai := partial "origin-meta.html" (dict "Params" (dict "origin" "ai-assisted") "Site" .Site) }}
+{{ if where $paginatedPages.Pages "Params.origin" "ai-assisted" }}
+<p class="pp-ai-legend mt-4">
+  <span class="pp-ai-content-mark" aria-hidden="true"><i class="bi {{ $ai.icon }}"></i></span>
+  <span><strong>{{ $ai.label }}</strong> — {{ $ai.title }}</span>
+</p>
+{{ end }}
 
 </div>
 {{ end }}

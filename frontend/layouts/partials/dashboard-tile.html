@@ -16,20 +16,21 @@
      must stretch to its bottom. The card is a grid item and grows to the height
      of the tallest card in the row, which would otherwise leave an empty band.
 
-     Data origin is conveyed by border colour, not a badge. Colour alone carries
-     no information for colour-blind readers or screen readers, hence `title`
-     on the card and hidden text; the colours are explained in the legend on
-     /dashboards/.
+     Data origin is NOT shown on the card, except for AI-assisted content: a
+     robot icon in the top-right corner of the preview (the same icon as the
+     origin badge on the dashboard page, origin-meta.html). The other two
+     categories (public source / our data) are on the dashboard page itself.
+     Border colours used to carry all three; with dashboards split into ours
+     and external in the menu they said little, and nothing for colour-blind
+     readers.
 
-     An external link is marked ONLY by the icon in the preview corner. The icon
-     is a common "opens elsewhere" symbol, so nothing next to the title needs to
-     explain it — but it is silent for screen readers, hence `title` and hidden
-     text INSIDE the link, so it is read as part of it.
+     The robot icon is about the CONTENT. The "✦ AI" mark at the bottom right
+     (ai-image-mark.html) is about the ILLUSTRATION. Two different claims, so
+     two different marks in two corners; do not merge them.
 
-     This is not the same as the border colour. The colour says WHERE THE DATA
-     COMES FROM, not where the link goes: most dashboards are `aggregated` and
-     only a few of them are external. Removing the icon because "the colour
-     says it too" would leave nothing.
+     An external link is marked by the arrow icon in the same top-right corner.
+     Both corner icons are silent for screen readers; their text is carried by
+     .visually-hidden inside the link, so it is read as part of it.
 
      The date under the title is the SAME statement as in the dashboard detail
      metadata, from the same update-stamp.html — card and page must not show
@@ -61,19 +62,21 @@
      is shown in full. */}}
 {{ $contain := and (not (hasPrefix $img.src "/images/cards/")) (ne $img.src "/images/dashboard-placeholder.svg") }}
 
-<div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}{{ with $m }} pp-origin-edge pp-origin-edge--{{ .key }}{{ end }}"
-     {{ with $m }}title="{{ .label }} — {{ .title }}"{{ end }}>
-  {{ with $m }}<span class="visually-hidden">{{ .label }}</span>{{ end }}
+{{ $aiContent := and $m (eq $m.key "ai-assisted") }}
+<div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}">
   <a class="pp-tile__link" href="{{ $href }}">
     <span class="pp-tile__imgwrap">
       <img class="pp-tile__img{{ if $contain }} pp-tile__img--contain{{ end }}" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
-      {{/* Top right, so it does not collide with the AI mark at the bottom right. */}}
-      {{ if $p.Params.redirect_url }}
-      <span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}" aria-hidden="true"><i class="bi bi-box-arrow-up-right"></i></span>
+      {{/* Top right; the illustration's AI mark is at the bottom right. */}}
+      {{ if or $aiContent $p.Params.redirect_url }}
+      <span class="pp-tile__corner" aria-hidden="true">
+        {{ if $aiContent }}<span class="pp-ai-content-mark" title="{{ $m.label }} — {{ $m.lead }}"><i class="bi {{ $m.icon }}"></i></span>{{ end }}
+        {{ if $p.Params.redirect_url }}<span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}"><i class="bi bi-box-arrow-up-right"></i></span>{{ end }}
+      </span>
       {{ end }}
       {{ if $img.ai }}{{ partial "ai-image-mark.html" $p }}{{ end }}
     </span>
-    <span class="pp-tile__title">{{ $p.Title }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}
+    <span class="pp-tile__title">{{ $p.Title }}{{ if $aiContent }}<span class="visually-hidden"> — {{ $m.label }}</span>{{ end }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}
       {{- with $stamp }}<span class="pp-tile__stamp"><i class="bi {{ $icon }}" aria-hidden="true"></i> {{ . }}</span>{{ end -}}
     </span>
   </a>

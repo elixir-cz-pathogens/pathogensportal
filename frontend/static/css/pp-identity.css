@@ -196,3 +196,16 @@ a:hover { color: var(--pp-mid-blue); text-decoration: underline; text-underline-
   font-size: .78rem; font-weight: 600; color: var(--pp-dark-blue);
   background: #eef3fa; border-radius: 999px; padding: .1rem .55rem;
 }
+
+/* ── Cards: shape in the network style (rounded, shadow, no border) ──────────
+   Only the shape — content and layout of the card are in custom.css. */
+.pp-tile {
+  border: 0;
+  border-radius: var(--pp-radius-box);
+  box-shadow: var(--pp-shadow-card);
+  transition: box-shadow .15s;
+}
+.pp-tile:hover { box-shadow: var(--pp-shadow-card-hover); }
+.pp-tile__title { color: var(--pp-dark-blue); }
+.pp-tile__link:hover .pp-tile__title { color: var(--pp-teal); }
+@media (prefers-reduced-motion: reduce) { .pp-tile { transition: none; } }
