@@ -12,7 +12,7 @@ update_read: "month"
 
 {{< nav-pills group="infekcni-nemoci" active="prehled" >}}
 
-Tento dashboard zobrazuje hlášené infekční nemoci v České republice na základě dat z **Informačního Systému Infekčních Nemocí (ISIN)** spravovaného ÚZIS ČR a MZČR. Data pokrývají 272 000+ záznamů od roku 2018 ve všech 14 krajích. Podrobný rozpad podle skupin nemocí najdete v záložkách výš — inspirováno švýcarským [Infectious Disease Dashboard](https://www.idd.bag.admin.ch/en).
+Tento panel zobrazuje hlášené infekční nemoci v České republice na základě dat z **Informačního Systému Infekčních Nemocí (ISIN)** spravovaného ÚZIS ČR a MZČR. Data pokrývají 272 000+ záznamů od roku 2018 ve všech 14 krajích. Podrobný rozpad podle skupin nemocí najdete v záložkách výš — inspirováno švýcarským [Infectious Disease Dashboard](https://www.idd.bag.admin.ch/en).
 
 ---
 
@@ -70,7 +70,7 @@ Rozložení hlášených případů dle věkových skupin za celé sledované ob
 - Databáze: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (~272 000 záznamů, 2018–2025)
 - Sloupce: rok, měsíc, kraj (NUTS3), diagnóza (MKN-10), věková skupina, pohlaví, EWS příznak, počet případů
 - Počty případů jsou agregované (ne individuální záznamy pacientů)
-- Chřipka je vynechána — má vlastní podrobnější zdroj (SZÚ), viz Influenza dashboardy
+- Chřipka je vynechána — má vlastní podrobnější zdroj (SZÚ), viz panely o chřipce
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·

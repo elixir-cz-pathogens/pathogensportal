@@ -4,19 +4,19 @@
 # [Dashboards], so the home-page section heading would render empty.
 
 [dashboards]
-other = "Dashboardy"
+other = "Panely"
 
 [Dashboards]
-other = "Dashboardy"
+other = "Panely"
 
 [seeDashboards]
-other = "Zobrazit všechny dashboardy"
+other = "Zobrazit všechny panely"
 
 [allDashboards]
-other = "Všechny dashboardy"
+other = "Všechny panely"
 
 [dataDashboards]
-other = "Dashboardy"
+other = "Panely"
 
 [newsAndHighlights]
 other = "Novinky"

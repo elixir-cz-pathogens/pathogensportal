@@ -18,7 +18,7 @@ Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti
 
 ## Co na portálu najdete
 
-- **Dashboardy k jednotlivým patogenům** — COVID-19, chřipka a ARI, infekční nemoci
+- **Panely k jednotlivým patogenům** — COVID-19, chřipka a ARI, infekční nemoci
   hlášené do ISIN, odpadní vody, fylogeneze i situační reporty k aktivním ohniskům.
 - **Signály** — automatická detekce překročení očekávané hladiny nad 1 200 časovými
   řadami hlášených onemocnění. Statistický screening, ne potvrzená epidemie.
@@ -26,7 +26,7 @@ Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti
 
 ## Odkud data pocházejí
 
-Původ dat je u každého dashboardu označený štítkem, protože se u jednotlivých stránek
+Původ dat je u každého panelu označený štítkem, protože se u jednotlivých stránek
 zásadně liší:
 
 | Štítek | Co znamená |

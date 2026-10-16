@@ -36,7 +36,7 @@
      complete even when a category is absent from the current pagination page. */}}
 <aside class="pp-origin-legend pp-origin-legend--page mt-4" aria-labelledby="pp-legend-head">
   <h2 id="pp-legend-head" class="pp-origin-legend__head">{{ cond $en "What the card border colour means" "Co znamená barva rámečku karty" }}</h2>
-  <p class="pp-origin-legend__lead">{{ cond $en "Every dashboard says where its data comes from." "U každého dashboardu je vidět, odkud jsou jeho data." }}</p>
+  <p class="pp-origin-legend__lead">{{ cond $en "Every dashboard says where its data comes from." "U každého panelu je vidět, odkud jsou jeho data." }}</p>
   <div class="pp-origin-legend__items">
     {{ range slice "aggregated" "own" "ai-assisted" }}
     {{ $m := partial "origin-meta.html" (dict "Params" (dict "origin" .) "Site" $.Site) }}

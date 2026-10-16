@@ -10,7 +10,7 @@ update_freq: "Denně (Nextstrain server)"
 redirect_url: "https://nextstrain.org/ncov/gisaid/europe"
 ---
 
-Tento dashboard otevírá **Nextstrain** — standard pro real-time fylogenomickou surveillance patogenů, vyvinutý Bedford Lab (Fred Hutch / WHO).
+Tento panel otevírá **Nextstrain** — standard pro real-time fylogenomickou surveillance patogenů, vyvinutý Bedford Lab (Fred Hutch / WHO).
 
 ### Co Nextstrain zobrazuje
 

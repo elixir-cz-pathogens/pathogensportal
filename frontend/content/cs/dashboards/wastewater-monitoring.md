@@ -10,7 +10,7 @@ update_freq: "Průběžně"
 redirect_url: "https://arcg.is/PyKSy1"
 ---
 
-Tento dashboard zobrazuje výsledky wastewater-based epidemiology (WBE) — molekulární detekce patogenů v odpadních vodách čistíren odpadních vod (ČOV) po celé ČR.
+Tento panel zobrazuje výsledky wastewater-based epidemiology (WBE) — molekulární detekce patogenů v odpadních vodách čistíren odpadních vod (ČOV) po celé ČR.
 
 ### Monitorované patogeny
 

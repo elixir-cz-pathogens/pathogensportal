@@ -34,7 +34,7 @@
   {{ $signals := .Site.GetPage "/signals" }}
   {{ $nav := slice
       (dict "p" (.Site.GetPage "section" "dashboards") "icon" "bi-grid-1x2-fill"
-            "t" (cond $en "Dashboards"  "Dashboardy")
+            "t" (cond $en "Dashboards"  "Panely")
             "d" (cond $en "Every data view the portal publishes" "Všechny datové přehledy portálu"))
       (dict "p" $signals "icon" "bi-activity"
             "t" (cond $en "Signals"     "Signály")
@@ -84,8 +84,8 @@
   {{ with $dash }}
   <section class="pp-home-cards mb-5">
     <div class="pp-home-sec-head">
-      <h2>{{ cond $en "Latest dashboards" "Nejnovější dashboardy" }}</h2>
-      <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny dashboardy" }} <i class="bi bi-arrow-right-short"></i></a>
+      <h2>{{ cond $en "Latest dashboards" "Nejnovější panely" }}</h2>
+      <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "All dashboards" "Všechny panely" }} <i class="bi bi-arrow-right-short"></i></a>
     </div>
 
     <div class="pp-home-dash-grid">

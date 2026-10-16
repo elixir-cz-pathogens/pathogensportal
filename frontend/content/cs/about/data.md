@@ -36,7 +36,7 @@ a budeme rádi, když nám o tom [dáte vědět](#nahlasit-chybu).
 
 Každý graf se kreslí ze statického souboru JSON, který si můžete stáhnout. Adresy jsou
 stabilní; obsah se přepisuje s každým během datové pipeline a datum posledního běhu
-je u dashboardu v řádku „Aktualizace".
+je u panelu v řádku „Aktualizace".
 
 {{< data-files >}}
 
@@ -45,7 +45,7 @@ a výběr řad už v nich jsou. Pro vlastní analýzu sáhněte po původním zd
 
 Strojově je k dispozici i **tenhle katalog**: [`sources.json`](sources.json) nese u každého
 zdroje vydavatele, licenci, pokrytí, podrobnost, frekvenci aktualizace a hlavně pole `limits`
-— větu o tom, co z dat vyčíst **nejde**. Jednotlivé dashboardy navíc nesou
+— větu o tom, co z dat vyčíst **nejde**. Jednotlivé panely navíc nesou
 [schema.org/Dataset](https://schema.org/Dataset) v JSON-LD přímo v hlavičce stránky, takže
 vyhledávače a další nástroje poznají, nad jakou datovou sadou stránka stojí, bez čtení textu.
 

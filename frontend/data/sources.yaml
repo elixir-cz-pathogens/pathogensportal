@@ -170,7 +170,7 @@
   pages: ["/dashboards/covid19-surveillance"]
 
 - id: external
-  name: { cs: "Externí dashboardy (Nextstrain, odpadní vody SZÚ)", en: "External dashboards (Nextstrain, SZÚ wastewater)" }
+  name: { cs: "Externí panely (Nextstrain, odpadní vody SZÚ)", en: "External dashboards (Nextstrain, SZÚ wastewater)" }
   publisher: { cs: "Nextstrain · SZÚ", en: "Nextstrain · NIPH" }
   url: "https://nextstrain.org/"
   licence: { name: { cs: "podle provozovatele — data nepřebíráme, jen odkazujeme", en: "per the operator — we link to the data, we do not take it over" } }
