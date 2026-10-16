@@ -1,0 +1,198 @@
+/* ── Pathogens Portal network identity ──────────────────────────────────────
+   The colours, type and chrome shared by the network's portals (pathogens.se,
+   pathogensportal.org). Pathogen Portal CZ is the Czech national node, so it
+   uses them; logo, name, data and structure stay its own.
+
+   Palette from the Swedish portal's cms/static/cms/css/base.css (MIT). Loaded
+   LAST in head.html, so it overrides the SIB theme and custom.css.
+
+   Scope: site chrome only — header, menu, banners, breadcrumbs, footer, links.
+   Data colours (charts, maps, origin badges, status) are NOT here; they live in
+   dashboards.css / custom.css and must not be re-coloured with brand colours. */
+:root {
+  --pp-dark-blue: #295986;
+  --pp-mid-blue: #4770b1;
+  --pp-teal: #37ae94;
+  --pp-lime: #d4de27;
+  --pp-pale-grey: #d8d8d8;
+  --pp-dark-grey: #55585a;
+  --pp-almost-black: #1a1c1a;
+
+  --pp-radius-box: 0.75rem;
+  --pp-radius-field: 0.5rem;
+  --pp-shadow-card: 0 1px 2px 0 rgb(0 0 0 / .1), 0 -1px 2px 0 rgb(0 0 0 / .1);
+  --pp-shadow-card-hover: 0 4px 6px -1px rgb(0 0 0 / .1), 0 2px 4px -2px rgb(0 0 0 / .1),
+                          0 -4px 6px -1px rgb(0 0 0 / .1), 0 -2px 4px -2px rgb(0 0 0 / .1);
+  --pp-gradient: linear-gradient(90deg, var(--pp-dark-blue) 0%, var(--pp-mid-blue) 55%, var(--pp-teal) 100%);
+}
+
+body {
+  background: #fff;
+  color: var(--pp-almost-black);
+}
+
+/* Links in running text. Buttons, cards and the menu set their own. */
+a { color: var(--pp-mid-blue); text-decoration: none; }
+a:hover { color: var(--pp-mid-blue); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ── Header and menu ────────────────────────────────────────────────────── */
+.pp-nav {
+  background: #fff;
+  border-bottom: 1px solid var(--pp-pale-grey);
+  padding: .5rem 0;
+}
+.pp-nav .navbar-nav { gap: .25rem; }
+.pp-nav .nav-link {
+  color: var(--pp-dark-blue);
+  font-weight: 500;
+  padding: .5rem .75rem;
+  border-radius: var(--pp-radius-field);
+}
+.pp-nav .nav-link:hover,
+.pp-nav .nav-link:focus-visible { color: var(--pp-teal); text-decoration: none; }
+.pp-nav .nav-link.active { color: var(--pp-dark-blue); box-shadow: inset 0 -2px 0 var(--pp-teal); border-radius: 0; }
+.pp-nav .dropdown-menu {
+  border: 1px solid var(--pp-pale-grey);
+  border-radius: var(--pp-radius-box);
+  box-shadow: var(--pp-shadow-card-hover);
+  padding: .5rem;
+}
+.pp-nav .dropdown-item {
+  border-radius: var(--pp-radius-field);
+  color: var(--pp-almost-black);
+  white-space: normal;
+  padding: .35rem .75rem;
+}
+.pp-nav .dropdown-item:hover,
+.pp-nav .dropdown-item:focus { background: #eef3fa; color: var(--pp-dark-blue); text-decoration: none; }
+.pp-nav .dropdown-header {
+  color: var(--pp-dark-grey);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  padding: .5rem .75rem .25rem;
+}
+.pp-nav__all { font-weight: 600; color: var(--pp-dark-blue) !important; }
+
+/* Dashboards dropdown: two columns (ours / external) from `lg` up. */
+@media (min-width: 992px) {
+  .pp-nav__mega { min-width: 38rem; }
+  .pp-nav__cols { display: grid; grid-template-columns: 3fr 2fr; gap: .5rem; }
+}
+.pp-nav__mega { max-height: 80vh; overflow-y: auto; }
+
+/* Collapsed menu below `lg`: full-width list under the header. */
+@media (max-width: 991.98px) {
+  .pp-nav .navbar-collapse { border-top: 1px solid var(--pp-pale-grey); margin-top: .5rem; padding-top: .5rem; }
+  .pp-nav .dropdown-menu { box-shadow: none; border: 0; padding-left: 1rem; }
+}
+
+/* ── Banners ────────────────────────────────────────────────────────────── */
+/* Home page hero. */
+.pp-hero {
+  background-image: linear-gradient(100deg, rgb(41 89 134 / .94) 0%, rgb(71 112 177 / .86) 60%, rgb(55 174 148 / .80) 100%),
+                    var(--pp-hero-img);
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+  padding: 3.5rem 0 3.75rem;
+}
+.pp-hero h1 {
+  color: #fff;
+  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin: 0 0 1rem;
+}
+.pp-hero__lead { font-size: 1.2rem; max-width: 42rem; margin: 0 0 1.75rem; opacity: .95; }
+.pp-hero__cta {
+  display: inline-block;
+  background: var(--pp-lime);
+  color: var(--pp-almost-black);
+  font-weight: 600;
+  padding: .6rem 1.4rem;
+  border-radius: var(--pp-radius-field);
+}
+.pp-hero__cta:hover { color: var(--pp-almost-black); text-decoration: none; filter: brightness(.95); }
+
+/* Every other page: a narrow band with the title. Overrides the theme's
+   `.header` (teal photo). */
+.header.pp-band {
+  background: var(--pp-gradient);
+  padding: .85rem 0;
+}
+.header.pp-band h1 {
+  color: #fff;
+  font-size: clamp(1.4rem, 3vw, 1.85rem);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* Breadcrumbs: plain, under the band. */
+.breadcrumbs { background: transparent; font-size: .9rem; margin-bottom: 1rem; }
+.breadcrumbs .breadcrumb { padding: .75rem 0 0; margin: 0; }
+.breadcrumbs .breadcrumb a { color: var(--pp-mid-blue); }
+.breadcrumbs .breadcrumb-item.active,
+.breadcrumbs .breadcrumb-item:last-child a { color: var(--pp-dark-grey); }
+
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.pp-footer__partners { border-top: 1px solid var(--pp-pale-grey); padding: .5rem 0 1.5rem; }
+.pp-footer__partners .pp-partners { border-top: 0; margin-top: 0; }
+.pp-footer__band {
+  background: var(--pp-dark-blue);
+  background-image: linear-gradient(180deg, var(--pp-dark-blue), #24507a);
+  color: #e8eef6;
+  padding: 2.5rem 0 1.5rem;
+  font-size: .95rem;
+}
+.pp-footer__band a { color: #fff; }
+.pp-footer__band a:hover { color: var(--pp-lime); }
+.pp-footer__brand {
+  display: inline-flex; align-items: center; gap: .6rem;
+  font-size: 1.15rem; font-weight: 700; color: #fff;
+}
+.pp-footer__brand:hover { text-decoration: none; color: #fff; }
+.pp-footer__brand img { background: #fff; border-radius: 50%; padding: 2px; }
+.pp-footer__tagline { margin: .75rem 0 0; max-width: 26rem; color: #d5e0ee; }
+.pp-footer__head {
+  font-size: .78rem; text-transform: uppercase; letter-spacing: .08em;
+  color: #b9cbe0; margin: 0 0 .75rem;
+}
+.pp-footer__band ul li { margin-bottom: .35rem; }
+.pp-footer__social { display: flex; gap: .75rem; font-size: 1.35rem; }
+.pp-footer__social a {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: var(--pp-radius-field);
+  background: rgb(255 255 255 / .12);
+}
+.pp-footer__social a:hover { background: rgb(255 255 255 / .22); color: #fff; }
+.pp-footer__credit {
+  border-top: 1px solid rgb(255 255 255 / .2);
+  margin: 2rem 0 0; padding-top: 1rem;
+  font-size: .8rem; text-align: center; color: #c7d5e6;
+}
+
+/* Small phones: the full logo, the language switcher and the toggler must fit
+   on one row, or the logo wraps above them. */
+@media (max-width: 575.98px) {
+  .navbar .navbar-brand .portal-logo { height: 36px !important; max-height: 36px !important; }
+  .pp-nav .navbar-brand { margin-right: .5rem; }
+}
+
+/* ── Topics list (/tags/) ───────────────────────────────────────────────── */
+.pp-topics__lead { color: var(--pp-dark-grey); max-width: 46rem; }
+.pp-topics {
+  list-style: none; padding: 0; margin: 1.5rem 0 0;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr)); gap: .75rem;
+}
+.pp-topics a {
+  display: flex; justify-content: space-between; align-items: center; gap: .5rem;
+  padding: .85rem 1rem; background: #fff;
+  border-radius: var(--pp-radius-box); box-shadow: var(--pp-shadow-card);
+  color: var(--pp-dark-blue); font-weight: 600; transition: box-shadow .15s;
+}
+.pp-topics a:hover { box-shadow: var(--pp-shadow-card-hover); color: var(--pp-teal); text-decoration: none; }
+.pp-topics__count {
+  font-size: .78rem; font-weight: 600; color: var(--pp-dark-blue);
+  background: #eef3fa; border-radius: 999px; padding: .1rem .55rem;
+}

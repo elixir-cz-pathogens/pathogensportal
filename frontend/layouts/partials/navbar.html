@@ -1,171 +1,103 @@
-<!-- MAIN CONTENT -->
+{{/* Site header: logo, one menu for all widths, language switcher.
 
-<!-- Top navigation bar with logo and menu beside the logo -->
-{{/* No `navbar-expand-*` needed here: there is nothing in this navbar to
-     collapse, and without `navbar-expand-lg` Bootstrap does not hide
-     `.navbar-toggler` above `lg`, so the button stays visible without a CSS
-     exception. */}}
-<nav class="navbar navbar-light bg-white pb-0">
-    <div class="container">
-        {{/* Only the portal logo is in the header; partner logos are not repeated
-             on every page next to the title.
+     Layout follows the Pathogens Portal network (pathogens.se): a horizontal
+     menu with dropdowns from `lg` up, the same items behind a hamburger below.
+     There is ONE menu, so desktop and mobile cannot drift apart.
 
-             The acknowledgement must not be lost: all partners including the
-             Swiss programme are rendered by partners.html from the footer, i.e.
-             also on every page — for the grant logo, visible acknowledgement is
-             a condition, not a courtesy. Removing the footer logos requires
-             checking with the funder first.
+     Items come from `menus.main` in hugo.toml, per language. An item opens a
+     dropdown when it has `params.submenu` (the name of another menu), and
+     `dashboards` builds its own: internal pages first, then the ones that
+     leave the portal (`redirect_url`), which carry an external-link icon.
 
-             `params.logo` in hugo.toml is no longer used by this template. It is
-             kept: the theme templates still read it, and the footer takes the
-             ELIXIR logo by its own path. */}}
-        <!-- Logo -->
-        <div class="d-flex navbar-brand">
-            <a href="{{ site.Home.RelPermalink }}">
-                <img class="mt-1 me-lg-3 portal-logo" src="{{ "images/portal.png" | relURL }}" alt="Pathogens Portal">
-            </a>
-        </div>
+     Only the portal logo is here. Partner and funder logos are in the footer on
+     every page (partners.html) — for the grant logo a visible acknowledgement
+     is a condition, so do not drop them without checking with the funder.
 
-        {{/* Language switcher OUTSIDE every `collapse`, so it is visible at every
-             screen width. Inside the top `<div class="collapse navbar-collapse">`
-             (which has no id, while the hamburger targets `#navbarCollapseBottom`)
-             it could not be opened on mobile at all.
+     The language switcher sits OUTSIDE the collapse, so it is reachable at every
+     width. It links to the translation of the current page when one exists,
+     otherwise to the other language's home page. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $cur := . }}
+<nav class="navbar navbar-expand-lg pp-nav" aria-label="{{ cond $en "Main" "Hlavní" }}">
+  <div class="container">
+    <a class="navbar-brand" href="{{ site.Home.RelPermalink }}">
+      <img class="portal-logo" src="{{ "images/portal.png" | relURL }}" alt="Pathogens Portal CZ">
+    </a>
 
-             Links to the TRANSLATION OF THE CURRENT PAGE when one exists;
-             otherwise to the home page of the other language. */}}
-        {{/* The language switcher and the menu button form one group on the right
-             of the header. */}}
-        <div class="d-flex align-items-center ms-auto gap-2">
-
-        {{ if hugo.IsMultilingual }}
-        <div class="pp-langswitch" role="group" aria-label="{{ if eq .Site.Language.Lang "en" }}Language{{ else }}Jazyk{{ end }}">
-          {{ $cur := . }}
-          {{ range .Site.Languages }}
-          {{ $lang := .Lang }}
-          {{ $target := "" }}
-          {{ range $cur.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}
-          {{ if not $target }}{{ range $cur.Site.Home.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}{{ end }}
-          {{ if eq $lang $cur.Site.Language.Lang }}
-          <span class="pp-langswitch__item is-active" aria-current="true">{{ upper $lang }}</span>
-          {{ else if $target }}
-          <a class="pp-langswitch__item" href="{{ $target }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
-          {{ end }}
-          {{ end }}
-        </div>
+    <div class="d-flex align-items-center gap-2 order-lg-last ms-auto ms-lg-3">
+      {{ if hugo.IsMultilingual }}
+      <div class="pp-langswitch" role="group" aria-label="{{ cond $en "Language" "Jazyk" }}">
+        {{ range .Site.Languages }}
+        {{ $lang := .Lang }}
+        {{ $target := "" }}
+        {{ range $cur.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}
+        {{ if not $target }}{{ range $cur.Site.Home.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}{{ end }}
+        {{ if eq $lang $cur.Site.Language.Lang }}
+        <span class="pp-langswitch__item is-active" aria-current="true">{{ upper $lang }}</span>
+        {{ else if $target }}
+        <a class="pp-langswitch__item" href="{{ $target }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
         {{ end }}
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseBottom"
-                aria-controls="navbarCollapseBottom" aria-expanded="false"
-                aria-label="{{ if eq .Site.Language.Lang "en" }}Menu{{ else }}Nabídka{{ end }}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        </div>
-
+        {{ end }}
+      </div>
+      {{ end }}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pp-nav-menu"
+              aria-controls="pp-nav-menu" aria-expanded="false" aria-label="{{ cond $en "Menu" "Nabídka" }}">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </div>
-</nav>
-<!-- ENDS HERE - Top navigation bar with logo and menu beside the logo -->
 
-{{/* Menu for ALL widths, opened by the hamburger above.
-     Deliberately without `navbar-expand-*`: with `navbar-expand-lg` it would
-     expand by itself on desktop and sit spread out under the header. */}}
-<nav class="navbar navbar-light pt-0 pb-1">
-    <div class="container">
-        <div class="collapse navbar-collapse" id="navbarCollapseBottom">
+    <div class="collapse navbar-collapse" id="pp-nav-menu">
+      <ul class="navbar-nav ms-lg-auto">
+        {{ range .Site.Menus.main }}
+        {{ $active := or ($cur.IsMenuCurrent "main" .) ($cur.HasMenuCurrent "main" .) }}
+        {{ if and (not $active) .Page }}{{ $active = or (eq $cur .Page) ($cur.IsDescendant .Page) }}{{ end }}
+        {{ $sub := "" }}{{ with .Params.submenu }}{{ $sub = index $.Site.Menus . }}{{ end }}
 
-            {{/* navbar_top (About, GitHub) is rendered here too, because at the top it
-                 sits in a `<div class="collapse navbar-collapse">` WITHOUT an id,
-                 while the hamburger targets #navbarCollapseBottom — below `lg`
-                 "About" would be unreachable. Same trap as the language
-                 switcher, which is therefore outside every collapse.
-
-                 No `d-lg-none` here: this is the only place the item is rendered,
-                 so hiding it above `lg` would remove "About" entirely. */}}
-            <div>
-                {{ range .Site.Menus.navbar_top }}
-                <div class="main_menu_item pb-1"><a href="{{ .URL }}">{{ .Name }}</a></div>
-                {{ end }}
+        {{ if eq .Identifier "dashboards" }}
+          {{ $section := .Page }}
+          {{/* Outbreak reports have their own menu; do not list them twice. */}}
+          {{ $outbreaks := slice }}{{ range $.Site.Menus.outbreaks }}{{ with .Page }}{{ $outbreaks = $outbreaks | append .RelPermalink }}{{ end }}{{ end }}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>
+            <div class="dropdown-menu pp-nav__mega">
+              <a class="dropdown-item pp-nav__all" href="{{ .URL }}">{{ cond $en "All dashboards" "Všechny panely" }} <i class="bi bi-arrow-right-short"></i></a>
+              <div class="pp-nav__cols">
+                <div>
+                  <h6 class="dropdown-header">{{ cond $en "Our dashboards" "Naše panely" }}</h6>
+                  {{ range where $section.RegularPages "Params.redirect_url" "==" nil }}
+                  {{ if not (in $outbreaks .RelPermalink) }}
+                  <a class="dropdown-item" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                  {{ end }}
+                  {{ end }}
+                </div>
+                <div>
+                  <h6 class="dropdown-header">{{ cond $en "External dashboards" "Externí panely" }}</h6>
+                  {{ range where $section.RegularPages "Params.redirect_url" "!=" nil }}
+                  <a class="dropdown-item" href="{{ .Params.redirect_url }}" target="_blank" rel="noopener">{{ .LinkTitle }}
+                    <i class="bi bi-box-arrow-up-right small" title="{{ cond $en "external link" "externí odkaz" }}"></i></a>
+                  {{ end }}
+                </div>
+              </div>
             </div>
-
-            <!-- Top nav list i.e. About, Contact, Language, etc -->
-            <hr>
-
-            {{/* This block must NOT have `d-lg-none`: there is no separate desktop menu
-                 bar, so the hamburger above `lg` would open an EMPTY menu. The
-                 closed menu looks correct either way — check the open state. */}}
-            <div>
-                {{ $events := .Site.GetPage "section" "dashboards" }}
-                {{ if $events }}
-                <div class="main_menu_item pb-1">
-                    <a href="#dashboards" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="dashboards">
-                        {{ i18n "dataDashboards" }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="dashboards">
-                        <a class="d-block" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
-                        {{ range $events.RegularPages }}
-                        {{- /* Items leading outside the portal carry an external-link icon. */ -}}
-                        <a class="d-block" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
-                        {{ end }}
-                    </div>
-                </div>
-                {{ end }}
-
-                {{ range where .Site.Menus.main "Identifier" "ne" "dashboards" }}
-                <!-- Data Dashboards -->
-                <div class="main_menu_item pb-1">
-                    {{ $menuName := .Identifier }}
-                    {{ $menu := index $.Site.Menus $menuName }}
-                    {{ if $menu }}
-                    <a href="#{{ .Identifier }}" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="{{ .Identifier }}">
-                        {{ .Name }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="{{ .Identifier }}">
-                        {{ range $menu }}
-                        <a class="d-block" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
-                        {{ end }}
-                    </div>
-                    {{ else }}
-                    <a href="{{ .URL }}">
-                        {{ .Name }}
-                    </a>
-                    {{ end }}
-                </div>
-                {{ end }}
-
-                {{ if .Site.Taxonomies.tags }}
-                <div class="main_menu_item pb-1">
-                    <a href="#topics" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="topics">
-                        {{ i18n "topics" }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="topics">
-                        {{/* Only tags with content — tags of hidden subpages (build:
-                             list: never) would lead to empty pages. */}}
-                        {{- /* Only tags assigned to a visible page: site.RegularPages respects
-     build: list: never, the .Site.Taxonomies map does not — tags of hidden
-     subpages would lead to empty tag pages. */ -}}
-{{- $visible := slice -}}
-{{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
-{{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-                        {{ if in $visible ($name | urlize) }}
-                        <a class="d-block" href="{{ (printf "tags/%s/" (urlize $name)) | relLangURL }}">{{ $name }}</a>
-                        {{ end }}
-                        {{ end }}
-                    </div>
-                </div>
-                {{ end }}
-            </div>
-
-        </div>
+          </li>
+        {{ else if $sub }}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>
+            <ul class="dropdown-menu">
+              {{ range $sub }}
+              <li><a class="dropdown-item" href="{{ .URL }}">{{ .Name }}</a></li>
+              {{ end }}
+            </ul>
+          </li>
+        {{ else }}
+          <li class="nav-item">
+            <a class="nav-link{{ if $active }} active{{ end }}" href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
+          </li>
+        {{ end }}
+        {{ end }}
+      </ul>
     </div>
+  </div>
 </nav>
-<!-- ENDS HERE - Expandable top navigation menu, controlled by above defined hamburger button -->
-
-{{/* There is no separate horizontal desktop menu bar: the site has ONE menu
-     for all widths — `#navbarCollapseBottom` above. That is why its `<nav>` has
-     no `navbar-expand-lg`: with it the menu would expand by itself on desktop.
-
-     The hamburger is in the top `<nav>`, which KEEPS `navbar-expand-lg` —
-     without it the "About" strip, which has no `id`, would collapse too and
-     nothing could open it. Bootstrap hides the button above `lg` in such a
-     navbar, so custom.css has to show it again (`.navbar-toggler`). The two
-     belong together: restoring `navbar-expand-lg` below or deleting that CSS
-     rule leaves the site without a menu. */}}

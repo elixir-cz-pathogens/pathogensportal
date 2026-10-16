@@ -48,6 +48,8 @@
 
     <!-- Custom site overrides -->
     <link rel="stylesheet" href="{{ "css/custom.css" | relURL }}">
+    <!-- Pathogens Portal network identity: site chrome, loaded last -->
+    <link rel="stylesheet" href="{{ "css/pp-identity.css" | relURL }}">
 
     {{ if .Params.redirect_url }}
     <meta http-equiv="refresh" content="0;url={{ .Params.redirect_url }}">

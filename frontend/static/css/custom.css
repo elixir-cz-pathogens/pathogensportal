@@ -1,7 +1,7 @@
 /* Limit the size of the main portal logo in the navbar */
 .navbar .navbar-brand .portal-logo {
-  height: 65px !important;
-  max-height: 65px !important;
+  height: 48px !important;
+  max-height: 48px !important;
   width: auto !important;
 }
 
@@ -604,10 +604,8 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-tile__desc + .pp-tile__tags { padding-top: .45rem; }
 .pp-tile > :last-child { margin-bottom: 0; }
 
-/* ── Hamburger menu at all widths ──────────────────────────────────────────
-   The site uses one menu for all widths: `#navbarCollapseBottom` opens with
-   the toggler button. The navbar has no `navbar-expand-*` class, so Bootstrap
-   never hides the toggler and no display override is needed. */
+/* ── Menu toggler (below lg) ───────────────────────────────────────────────
+   The menu itself (partials/navbar.html) is styled in pp-identity.css. */
 .navbar-toggler:focus-visible { outline: 2px solid var(--pp-origin-aggregated, #2a78d6); outline-offset: 2px; }
 
 /* ── Data source catalogue (PP-77): About → Data and citation ──────────────

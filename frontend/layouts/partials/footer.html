@@ -24,66 +24,69 @@
 </div>
 {{ end }}
 {{ end }}
-<footer class="container border-top mt-5 mb-2">
-  <div class="row border-bottom">
+{{/* Footer in the Pathogens Portal network style (pathogens.se): partners on a
+     white strip, then a blue band with the portal, its links and contact.
 
-    <!-- About section -->
-    <div class="col-md px-5 px-md-2">
-      <h2 class="small text-uppercase text-black-50">{{ i18n "about" }}</h2>
-      <ul class="list-unstyled mb-1">
-        {{ range .Site.Menus.footer_about }}
-        <li><a href="{{ .Page.RelPermalink }}" class="small">
-          {{ .Name }}
-        </a></li>
-        {{ end }}
-      </ul>
+     Partners stay on a WHITE background on purpose: their logos are in colour,
+     and on the blue band several would be illegible. They must stay on every
+     page — for the grant logo the visible acknowledgement is a condition.
+
+     No licence line yet: the licence is undecided (TODO R12), and the footer
+     must not state one before it is chosen. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $pl := cond $en "en" "cs" }}
+<footer class="pp-footer mt-5">
+  <div class="pp-footer__partners">
+    <div class="container">
+      {{ partial "partners.html" . }}
     </div>
-
-    <!-- Data and follow section -->
-    <div class="col-md px-5 px-md-2">
-      <h2 class="small text-uppercase text-black-50">{{ i18n "data" }}</h2>
-      <ul class="list-unstyled mb-0">
-        {{ range .Site.Menus.footer_data }}
-        <li><a href="{{ .Page.RelPermalink }}">{{ .Name }}</a></li>
-        {{ end }}
-      </ul>
-      <h2 class="small text-uppercase text-black-50">{{ i18n "connect" }}</h2>
-      <div>
-        {{ with .Site.Params.linkedin }}
-        <a style="font-size:1.75em;" target="_blank" aria-label="LinkedIn"
-          href="https://www.linkedin.com/{{ . }}"><i class="bi bi-linkedin"></i></a>
-        {{ end }}
-
-        {{ with .Site.Params.twitter }}
-        <a class="ps-2" style="font-size:1.75em;" target="_blank" aria-label="X"
-           href="https://twitter.com/{{ . }}"><i class="bi bi-twitter-x"></i></a>
-        {{ end }}
-
-        {{ with .Site.Params.mail }}
-        <a class="ps-2" style="font-size:1.90em;" target="_blank" aria-label="Email"
-          href="mailto:{{ . }}"><i class="bi bi-envelope-fill"></i></a>
-        {{ end }}
+  </div>
+  <div class="pp-footer__band">
+    <div class="container">
+      <div class="row gy-4">
+        <div class="col-lg-5">
+          <a href="{{ site.Home.RelPermalink }}" class="pp-footer__brand">
+            <img src="{{ "images/portal-mark.png" | relURL }}" alt="" width="40" height="40">
+            <span>Pathogen Portal CZ</span>
+          </a>
+          <p class="pp-footer__tagline">{{ site.Home.Description }}</p>
+        </div>
+        <div class="col-sm-6 col-lg-4">
+          <h2 class="pp-footer__head">{{ i18n "about" }}</h2>
+          <ul class="list-unstyled">
+            {{ range .Site.Menus.footer_about }}
+            <li><a href="{{ .Page.RelPermalink }}">{{ .Name }}</a></li>
+            {{ end }}
+            {{/* Permanent link to the privacy details — the banner can be closed,
+                 the information must stay reachable. Opens the same dialog; the
+                 JS is in privacy-notice.html. */}}
+            <li><a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index hugo.Data.privacy $pl).title }}</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+          <h2 class="pp-footer__head">{{ i18n "connect" }}</h2>
+          <div class="pp-footer__social">
+            {{ with .Site.Params.mail }}<a href="mailto:{{ . }}" aria-label="E-mail"><i class="bi bi-envelope-fill"></i></a>{{ end }}
+            {{ with .Site.Params.linkedin }}<a href="https://www.linkedin.com/{{ . }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{{ end }}
+            {{ with .Site.Params.twitter }}<a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener" aria-label="X"><i class="bi bi-twitter-x"></i></a>{{ end }}
+            {{ with .Site.Params.repository }}<a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>{{ end }}
+          </div>
+        </div>
       </div>
+      <p class="pp-footer__credit">
+        {{ if $en }}
+        Pathogen Portal CZ is the Czech national node of the <a href="https://www.pathogensportal.org/" target="_blank" rel="noopener">Pathogens Portal</a> network.
+        Built with <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; the layout follows the
+        <a href="https://www.pathogens.se/" target="_blank" rel="noopener">Swedish Pathogens Portal</a> (MIT) and the
+        <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">SIB theme</a>.
+        {{ else }}
+        Pathogen Portal CZ je český národní uzel sítě <a href="https://www.pathogensportal.org/" target="_blank" rel="noopener">Pathogens Portal</a>.
+        Postaveno na <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; vzhled vychází ze
+        <a href="https://www.pathogens.se/" target="_blank" rel="noopener">švédského Pathogens Portal</a> (MIT) a
+        <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">motivu SIB</a>.
+        {{ end }}
+      </p>
     </div>
-
-  </div>
-
-  {{/* Permanent link to the details — the banner can be closed, the information
-       must stay reachable. Opens the same dialog; the JS is in privacy-notice.html. */}}
-  {{ $pl := cond (eq .Site.Language.Lang "en") "en" "cs" }}
-  <div class="d-flex justify-content-center small mt-2">
-    <a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index .Site.Data.privacy $pl).title }}</a>
-  </div>
-
-  {{/* All partners and sponsors, on every page of the site. */}}
-  {{ partial "partners.html" . }}
-
-  <div class="d-flex justify-content-center small mt-2">
-    {{ if eq .Site.Language.Lang "en" }}
-    <small>The site runs on the <a href="https://gohugo.io" target="_blank">Hugo</a> generator with the <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> theme by the <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. The reference implementation of a national Pathogens Portal node is <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">here</a>.</small>
-    {{ else }}
-    <small>Web běží na generátoru <a href="https://gohugo.io" target="_blank">Hugo</a> s motivem <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> od <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. Referenční implementace národního Pathogens Portal uzlu je <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">zde</a>.</small>
-    {{ end }}
   </div>
 </footer>
 

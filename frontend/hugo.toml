@@ -113,11 +113,23 @@ enableGitInfo = true
     # Menus are defined per language — a global [menus] would give the English
     # version Czech item names.
     # There is no "Home" item: the portal logo links to the home page.
+    # Order follows the Pathogens Portal network layout (pathogens.se). An item
+    # with `params.submenu` opens that menu as a dropdown; `dashboards` builds
+    # its own grouped dropdown in partials/navbar.html.
     [[languages.cs.menus.main]]
       identifier = "dashboards"
-      name = "Dashboardy"
+      name = "Panely"
       pageRef = "/dashboards"
       weight = 10
+    # Outbreaks are situational reports; their pages stay in the dashboards
+    # section (URLs unchanged), this menu only groups them.
+    [[languages.cs.menus.main]]
+      identifier = "outbreaks"
+      name = "Ohniska"
+      pageRef = "/dashboards/ebola-bundibugyo-2026"
+      weight = 12
+      [languages.cs.menus.main.params]
+        submenu = "outbreaks"
     # Signals must stay in the menu: the page is not part of the dashboards
     # section and has no home-page tile, so this is its only navigation path.
     [[languages.cs.menus.main]]
@@ -126,9 +138,29 @@ enableGitInfo = true
       pageRef = "/signals"
       weight = 15
     [[languages.cs.menus.main]]
+      identifier = "topics"
+      name = "Témata"
+      pageRef = "/tags"
+      weight = 18
+    [[languages.cs.menus.main]]
       identifier = "news"
       name = "Novinky"
       pageRef = "/news"
+      weight = 20
+    [[languages.cs.menus.main]]
+      identifier = "about"
+      name = "O portálu"
+      pageRef = "/about"
+      weight = 30
+      [languages.cs.menus.main.params]
+        submenu = "footer_about"
+    [[languages.cs.menus.outbreaks]]
+      name = "Ebola (Bundibugyo) 2026"
+      pageRef = "/dashboards/ebola-bundibugyo-2026"
+      weight = 10
+    [[languages.cs.menus.outbreaks]]
+      name = "Hantavirus — MV Hondius"
+      pageRef = "/dashboards/hantavirus-mhondius"
       weight = 20
     # Events are intentionally not in the menu: they are a section of the home
     # page (calendar + list) and /events/ is not rendered
@@ -141,11 +173,23 @@ enableGitInfo = true
     locale = "en-GB"
     contentDir = "content/en"
     # There is no "Home" item: the portal logo links to the home page.
+    # Order follows the Pathogens Portal network layout (pathogens.se). An item
+    # with `params.submenu` opens that menu as a dropdown; `dashboards` builds
+    # its own grouped dropdown in partials/navbar.html.
     [[languages.en.menus.main]]
       identifier = "dashboards"
       name = "Dashboards"
       pageRef = "/dashboards"
       weight = 10
+    # Outbreaks are situational reports; their pages stay in the dashboards
+    # section (URLs unchanged), this menu only groups them.
+    [[languages.en.menus.main]]
+      identifier = "outbreaks"
+      name = "Outbreaks"
+      pageRef = "/dashboards/ebola-bundibugyo-2026"
+      weight = 12
+      [languages.en.menus.main.params]
+        submenu = "outbreaks"
     # Signals must stay in the menu: the page is not part of the dashboards
     # section and has no home-page tile, so this is its only navigation path.
     [[languages.en.menus.main]]
@@ -154,9 +198,29 @@ enableGitInfo = true
       pageRef = "/signals"
       weight = 15
     [[languages.en.menus.main]]
+      identifier = "topics"
+      name = "Topics"
+      pageRef = "/tags"
+      weight = 18
+    [[languages.en.menus.main]]
       identifier = "news"
       name = "News"
       pageRef = "/news"
+      weight = 20
+    [[languages.en.menus.main]]
+      identifier = "about"
+      name = "About"
+      pageRef = "/about"
+      weight = 30
+      [languages.en.menus.main.params]
+        submenu = "footer_about"
+    [[languages.en.menus.outbreaks]]
+      name = "Ebola (Bundibugyo) 2026"
+      pageRef = "/dashboards/ebola-bundibugyo-2026"
+      weight = 10
+    [[languages.en.menus.outbreaks]]
+      name = "Hantavirus — MV Hondius"
+      pageRef = "/dashboards/hantavirus-mhondius"
       weight = 20
 
 [markup]
