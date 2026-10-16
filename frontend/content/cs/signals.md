@@ -74,6 +74,8 @@ Na co se dívat nejdřív: **vysoká síla spolu s vysokým počtem případů**
 epidemie). Řádek s malými počty a překročením těsně nad 1× může být náhoda —
 při 1 200 hodnocených řadách jich pár takových čekáme každý měsíc.
 
+{{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
+
 ---
 
 ### Co signál znamená — a co ne

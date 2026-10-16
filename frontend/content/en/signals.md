@@ -78,6 +78,8 @@ What to look at first: **high strength together with high case counts** (an
 epidemic under way). A row with small counts and strength just above 1× may be
 chance — with 1,200 series scored, we expect a few such rows every month.
 
+{{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
+
 ---
 
 ### What a signal means — and what it does not

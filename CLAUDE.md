@@ -97,7 +97,7 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
   `pp-charts.js`, `pp-flu.js` and `partials/signals-map.html` prefer on the English site. The
   dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
 
-Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`,
+Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`,
 `stat-card`, `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
 `organization`, `person`, `report-cards`. Each template starts with a usage comment.
 
