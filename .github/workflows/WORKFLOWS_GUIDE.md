@@ -57,6 +57,7 @@ into `dev`; CI checks the commit convention at the `dev → main` PR (every comm
 | `auto-pr-open-notify.yml` | Automation | PR opened | — |
 | `auto-pr-merged-notify.yaml` | Automation | PR merged | — |
 | `auto-release-closes-issues.yaml` | Automation | PR into `main` (not `content/…`) | — |
+| `check-external-links.yaml` | Check | Mondays 06:17 UTC, manual | — |
 | `release-data-candidate.yml` | Automation | manual (`workflow_dispatch`) | — |
 | `deploy-staging.yml` | Deploy | push to `dev` | — (`DEPLOY_STAGING_ENABLED`) |
 | `deploy-production.yml` | Deploy | push to `main` | — (`DEPLOY_PRODUCTION_ENABLED`) |
@@ -163,6 +164,12 @@ comments that it is on staging. A PR into `main` (except `content/…`) gets a m
 `on-staging` issue, refreshed on each push to the PR. Merging the release closes them: an issue is
 closed when its work reaches production. Edit the PR body outside the block freely; inside it is
 rewritten. To keep an issue open through a release, remove its `on-staging` label before merging.
+
+### `check-external-links.yaml`
+Weekly, `tools/check_external_links.py` checks every link on the dashboards with `redirect_url`
+(Nextstrain, SZÚ wastewater, …). A 404/410/5xx or no answer opens an issue labelled `link-check` (or
+comments on the open one); when all links answer again, the issue is closed. 401/403/429 are listed as
+warnings only — some sites refuse bots while serving people. Runs from `main` only (schedule).
 ### `auto-sync-main-to-dev.yaml`
 After every push to `main`, merges `main` back into `dev`. On a merge conflict it does not resolve
 anything; the run fails and `dev` has to be realigned by hand (`git checkout dev && git merge origin/main`).
