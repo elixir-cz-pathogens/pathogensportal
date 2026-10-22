@@ -30,7 +30,7 @@ a budeme rádi, když nám o tom [dáte vědět](#nahlasit-chybu).
   můžete je šířit a upravovat, když uvedete zdroj.
 - **Převzatá data:** platí licence původního zdroje, uvedená v katalogu. Kde ji zdroj
   neuvádí, píšeme to tak — než taková data použijete dál, ověřte si podmínky u něj.
-- **Kód:** oba repozitáře jsou veřejné na [GitHubu](https://github.com/elixir-cz-pathogens).
+- **Kód:** licence [MIT](https://opensource.org/license/mit); oba repozitáře jsou veřejné na [GitHubu](https://github.com/elixir-cz-pathogens).
 
 ## Strojově čitelná data
 

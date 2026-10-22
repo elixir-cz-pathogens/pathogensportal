@@ -30,7 +30,7 @@ the source is right — and we would be glad if you [let us know](#report-an-err
   you may share and adapt them with attribution.
 - **Source data:** the licence of the original source applies, as listed in the catalogue.
   Where the source states none, we say so — check the terms with the source before reusing such data.
-- **Code:** both repositories are public on [GitHub](https://github.com/elixir-cz-pathogens).
+- **Code:** [MIT](https://opensource.org/license/mit) licence; both repositories are public on [GitHub](https://github.com/elixir-cz-pathogens).
 
 ## Machine-readable data
 

@@ -137,3 +137,18 @@ Commit/branch conventions and workflows: see `CONTRIBUTING.md` and `.github/work
 In production, Apache serves the static Hugo build (TLS: Let's Encrypt) and is the reverse proxy in front
 of the BE services. Pushes to `dev` deploy to staging and merges into `main` deploy to production
 automatically; see the deploy section of `WORKFLOWS_GUIDE.md`.
+
+## Licence
+
+Two licences, by what a file is (decided 22 Oct 2026):
+
+| What | Licence | File |
+|---|---|---|
+| Code — templates, styles, scripts, backend, workflows, tools | MIT | [`LICENSE`](LICENSE) |
+| Content and data — `frontend/content/`, `frontend/static/data/`, `frontend/data/` | CC BY 4.0 | [`LICENSE-CC-BY-4.0`](LICENSE-CC-BY-4.0) |
+
+Third-party files keep their own licences: the libraries in `frontend/static/vendor/`, the theme
+submodule and the images credited in `frontend/static/images/cards/CREDITS.md`. The
+`pathogensportal-db` submodule carries its own licence. **Data taken over from a third-party source
+stay under that source's terms** (listed in `frontend/data/sources.yaml`); CC BY 4.0 covers the
+portal's own texts, charts and processing.

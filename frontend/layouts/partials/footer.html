@@ -31,8 +31,8 @@
      and on the blue band several would be illegible. They must stay on every
      page — for the grant logo the visible acknowledgement is a condition.
 
-     No licence line yet: the licence is undecided (TODO R12), and the footer
-     must not state one before it is chosen. */}}
+     Licences decided 22 Oct 2026: content and data CC BY 4.0, code MIT
+     (LICENSE, LICENSE-CC-BY-4.0 in the repository). */}}
 {{ $en := eq .Site.Language.Lang "en" }}
 {{ $pl := cond $en "en" "cs" }}
 <footer class="pp-footer mt-5">
@@ -79,11 +79,13 @@
         Built with <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; the layout follows the
         <a href="https://www.pathogens.se/" target="_blank" rel="noopener">Swedish Pathogens Portal</a> (MIT) and the
         <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">SIB theme</a>.
+        <br>Content and processed data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (source data under the <a href="{{ (site.GetPage "/about/data").RelPermalink }}">source's licence</a>) · code: MIT.
         {{ else }}
         Pathogen Portal CZ je český národní uzel sítě <a href="https://www.pathogensportal.org/" target="_blank" rel="noopener">Pathogens Portal</a>.
         Postaveno na <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; vzhled vychází ze
         <a href="https://www.pathogens.se/" target="_blank" rel="noopener">švédského Pathogens Portal</a> (MIT) a
         <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">motivu SIB</a>.
+        <br>Obsah a zpracovaná data: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank" rel="noopener">CC BY 4.0</a> (převzatá data podle <a href="{{ (site.GetPage "/about/data").RelPermalink }}">licence zdroje</a>) · kód: MIT.
         {{ end }}
       </p>
     </div>
