@@ -1,0 +1,11 @@
+{{/* A documentation page: sidebar + text. */}}
+{{ define "main" }}
+<div class="pp-docs">
+  <aside class="pp-docs__side">{{ partial "docs/sidebar.html" . }}</aside>
+  <article class="pp-docs__main">
+    {{ if eq .Params.status "draft" }}<p><span class="pp-docs__pill">Připravujeme</span></p>{{ end }}
+    {{ with .Description }}<p class="pp-docs__lead">{{ . }}</p>{{ end }}
+    {{ .Content }}
+  </article>
+</div>
+{{ end }}

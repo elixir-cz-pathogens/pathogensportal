@@ -1,0 +1,51 @@
+/* ── Documentation (/docs/) ────────────────────────────────────────────────
+   Loaded only on /docs/ pages (head.html). Colours from pp-identity.css. */
+.pp-docs {
+  display: grid; gap: 2rem;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 992px) {
+  .pp-docs { grid-template-columns: 16rem minmax(0, 1fr); }
+  .pp-docs__side { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow-y: auto; }
+}
+.pp-docs__main { max-width: 48rem; }
+.pp-docs__lead { font-size: 1.1rem; color: var(--pp-dark-grey); }
+
+/* Sidebar */
+.pp-docs__nav { font-size: .95rem; border: 1px solid var(--pp-pale-grey); border-radius: var(--pp-radius-box); padding: .5rem; }
+.pp-docs__home { display: block; padding: .45rem .6rem; font-weight: 600; border-radius: var(--pp-radius-field); color: var(--pp-dark-blue); }
+.pp-docs__group summary {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .45rem .6rem; border-radius: var(--pp-radius-field);
+  font-weight: 600; color: var(--pp-dark-blue); cursor: pointer; list-style: none;
+}
+.pp-docs__group summary::-webkit-details-marker { display: none; }
+.pp-docs__group summary::after { content: "\203A"; margin-left: auto; transition: transform .15s; }
+.pp-docs__group[open] summary::after { transform: rotate(90deg); }
+.pp-docs__group summary:hover, .pp-docs__home:hover { background: #eef3fa; text-decoration: none; }
+.pp-docs__group ul { list-style: none; margin: 0 0 .35rem; padding: 0 0 0 1.6rem; }
+.pp-docs__group li a { display: block; padding: .3rem .6rem; border-radius: var(--pp-radius-field); color: var(--pp-almost-black); }
+.pp-docs__group li a:hover { background: #eef3fa; text-decoration: none; }
+.pp-docs__nav .is-active { background: #eef3fa; color: var(--pp-dark-blue); font-weight: 600; box-shadow: inset 3px 0 0 var(--pp-teal); }
+.pp-docs__pill {
+  display: inline-block; vertical-align: middle;
+  font-size: .68rem; font-weight: 600; letter-spacing: .02em;
+  padding: .05rem .45rem; border-radius: 999px;
+  background: #fdf3e1; color: #7a4a00;
+}
+
+/* Cards on landing pages */
+.pp-docs__cards {
+  list-style: none; padding: 0; margin: 1.5rem 0;
+  display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+}
+.pp-docs__cards a {
+  display: flex; flex-direction: column; gap: .35rem; height: 100%;
+  padding: 1.1rem 1.2rem; background: #fff;
+  border-radius: var(--pp-radius-box); box-shadow: var(--pp-shadow-card); color: var(--pp-almost-black);
+}
+.pp-docs__cards a:hover { box-shadow: var(--pp-shadow-card-hover); text-decoration: none; }
+.pp-docs__cards i { font-size: 1.5rem; color: var(--pp-teal); }
+.pp-docs__card-t { font-weight: 700; color: var(--pp-dark-blue); font-size: 1.05rem; }
+.pp-docs__card-d { color: var(--pp-dark-grey); font-size: .9rem; }
+
