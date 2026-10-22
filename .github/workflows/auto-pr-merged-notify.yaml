@@ -1,6 +1,12 @@
 name: "AUTOMATION: PR Merged Notification"
 
 # When a PR is merged, posts a comment into the matching issue.
+#
+# A merge into `dev` also labels the issue `on-staging` (TODO I39): `Closes #N`
+# only fires on the default branch, so issues of feature PRs never closed.
+# auto-release-closes-issues.yaml turns every open `on-staging` issue into a
+# `Closes #N` line on the release PR, so an issue closes when its work reaches
+# PRODUCTION, not when it reaches staging.
 on:
   pull_request:
     types: [closed]
@@ -35,13 +41,31 @@ jobs:
             const project_prefix = process.env.PROJECT_PREFIX;
             const match = pr.title.match(new RegExp(`\\b${project_prefix}-(\\d+)\\b`));
             if (match) {
-              const issueNumber = match[1];
+              const issueNumber = Number(match[1]);
+              const toDev = pr.base.ref === "dev";
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: issueNumber,
-                body: `PR [#${pr.number}](${pr.html_url}) merged! 🎉`
+                body: toDev
+                  ? `PR [#${pr.number}](${pr.html_url}) merged into \`dev\` — on staging now. ` +
+                    `This issue closes with the next release to production.`
+                  : `PR [#${pr.number}](${pr.html_url}) merged! 🎉`
               });
+              if (toDev) {
+                // Create the label on first use; 422 = it exists already.
+                try {
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner, repo: context.repo.repo,
+                    name: "on-staging", color: "fbca04",
+                    description: "Merged into dev; closes when released to production",
+                  });
+                } catch (e) { if (e.status !== 422) throw e; }
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner, repo: context.repo.repo,
+                  issue_number: issueNumber, labels: ["on-staging"],
+                });
+              }
             } else {
               console.log("No issue number in PR title — skipping.");
             }

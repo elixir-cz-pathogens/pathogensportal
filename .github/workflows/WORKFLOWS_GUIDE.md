@@ -56,6 +56,7 @@ into `dev`; CI checks the commit convention at the `dev → main` PR (every comm
 | `auto-branch-issue-tracking.yaml` | Automation | push to `feature/**`,`bugfix/**`,`docs/**` | — |
 | `auto-pr-open-notify.yml` | Automation | PR opened | — |
 | `auto-pr-merged-notify.yaml` | Automation | PR merged | — |
+| `auto-release-closes-issues.yaml` | Automation | PR into `main` (not `content/…`) | — |
 | `release-data-candidate.yml` | Automation | manual (`workflow_dispatch`) | — |
 | `deploy-staging.yml` | Deploy | push to `dev` | — (`DEPLOY_STAGING_ENABLED`) |
 | `deploy-production.yml` | Deploy | push to `main` | — (`DEPLOY_PRODUCTION_ENABLED`) |
@@ -152,6 +153,16 @@ corresponding issue.
 Comment into the issue (whose number comes from `PP-<number>` in the PR title) when a PR is opened /
 merged.
 
+
+### Issues close on release (`auto-pr-merged-notify.yaml` + `auto-release-closes-issues.yaml`)
+
+`Closes #N` fires only on a merge into the default branch, and feature PRs go to `dev`, so issues used
+to stay open. Now a PR titled `PP-<n>: …` merged into `dev` labels issue `#n` **`on-staging`** and
+comments that it is on staging. A PR into `main` (except `content/…`) gets a managed block in its body
+— between `<!-- pp-release-closes:start -->` and `…:end -->` — with `Closes #N` for every open
+`on-staging` issue, refreshed on each push to the PR. Merging the release closes them: an issue is
+closed when its work reaches production. Edit the PR body outside the block freely; inside it is
+rewritten. To keep an issue open through a release, remove its `on-staging` label before merging.
 ### `auto-sync-main-to-dev.yaml`
 After every push to `main`, merges `main` back into `dev`. On a merge conflict it does not resolve
 anything; the run fails and `dev` has to be realigned by hand (`git checkout dev && git merge origin/main`).
