@@ -36,7 +36,7 @@ enableGitInfo = true
   [mediaTypes."application/ld+json"]
     suffixes = ["jsonld"]
 
-# Two machine-readable outputs of the "Data and citation" page. They are enabled
+# Two machine-readable outputs of the "Data and licences" page. They are enabled
 # in that page's front matter via `outputs`, not globally — otherwise Hugo would
 # generate them for every page on the site.
 [outputFormats]

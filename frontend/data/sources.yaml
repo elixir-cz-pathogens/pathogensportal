@@ -1,7 +1,7 @@
 # Catalogue of the portal's data sources — the one place that records where
 # each dataset comes from.
 #
-# Read by the {{< data-catalogue >}} shortcode (About → Data and citation page):
+# Read by the {{< data-catalogue >}} shortcode (About → Data and licences page):
 # it renders a human-readable overview and schema.org/DataCatalog (JSON-LD).
 #
 # Rules:

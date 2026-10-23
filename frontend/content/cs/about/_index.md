@@ -22,7 +22,7 @@ Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti
   očekávanou úroveň (přes 1 200 časových řad podle diagnózy a kraje). Signál není potvrzením
   epidemie.
 - **Data ke stažení:** zpracované datové soubory, ze kterých se kreslí grafy (viz
-  [Data a citace](/about/data/)).
+  [Data a licence](/about/data/)).
 
 ## Odkud data pocházejí
 

@@ -1,16 +1,14 @@
 ---
-title: Data and citation
+title: Data and licences
 description: "Where Pathogen Portal CZ gets its data, under which licence, what the data cannot tell you and how to download the data."
 menu:
   footer_about:
-    name: Data and citation
+    name: Data and licences
     weight: 4
 layout: about_navbar
 # Besides the human-readable page, also emit the machine-readable catalogue: /about/data/sources.json
 outputs: ["html", "sources"]
 ---
-
-## Data and citation
 
 The portal does not collect any primary data itself. It takes **open data from public
 institutions**, processes and charts them — and states the origin of the numbers next to every

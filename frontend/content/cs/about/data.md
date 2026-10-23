@@ -1,9 +1,9 @@
 ---
-title: Data a citace
+title: Data a licence
 description: "Odkud Pathogen Portal CZ bere data, pod jakou licencí, co z nich nejde vyčíst a jak si data stáhnout."
 menu:
   footer_about:
-    name: Data a citace
+    name: Data a licence
     weight: 4
 layout: about_navbar
 # Besides the human-readable page, also emit the machine-readable catalogue: /about/data/sources.json
