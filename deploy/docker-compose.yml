@@ -4,8 +4,16 @@ name: pathogensportal
 # The services listen on the internal network only; everything goes out through the Apache reverse proxy.
 # Nothing is published to the host (no ports:) — the DB is not reachable from outside.
 
+# Every long-running service gets a memory and process cap. A healthcheck that hangs is not killed
+# by Docker at its timeout, so without pids_limit hung checks pile up in the container (~2/min)
+# until the host runs out of RAM — this took down a developer laptop on 23 Oct 2026.
+x-limits: &limits
+  mem_limit: 512m
+  pids_limit: 256
+
 services:
   website-be:
+    <<: *limits
     build: ../backend/website-be
     restart: unless-stopped
     env_file: [.env]
@@ -20,18 +28,21 @@ services:
     networks: [internal]
 
   llm-agent-be:
+    <<: *limits
     build: ../backend/llm-agent-be
     restart: unless-stopped
     env_file: [.env]
     networks: [internal]
 
   mcp:
+    <<: *limits
     build: ../backend/mcp
     restart: unless-stopped
     env_file: [.env]
     networks: [internal]
 
   pathogen-db:
+    <<: *limits
     image: postgres:16-alpine
     restart: unless-stopped
     environment:
