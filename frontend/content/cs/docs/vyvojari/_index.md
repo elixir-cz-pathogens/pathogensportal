@@ -1,6 +1,6 @@
 ---
 title: "Pro vývojáře"
-description: "Jak je portál postavený a kde je jeho kód."
+description: "Jak je portál postavený, jak ho spustit, upravit a vydat."
 weight: 30
 icon: "bi-code-slash"
 ---

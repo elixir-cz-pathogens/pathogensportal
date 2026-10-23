@@ -8,5 +8,4 @@ menu:
 # Czech only for now (decided 16 Oct 2026); there is deliberately no content/en/docs/.
 ---
 
-Dokumentace je rozdělená podle toho, s čím na portál přicházíte. Vyberte svou roli vlevo,
-nebo začněte jednou z karet níže.
+Dokumentace je rozdělena podle typu uživatele: pro čtenáře dat a pro vývojáře.

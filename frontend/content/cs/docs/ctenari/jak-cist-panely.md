@@ -1,23 +1,46 @@
 ---
 title: "Jak číst panely"
-description: "Datum aktualizace, štítek původu dat a ikonky na kartách."
+description: "Datum aktualizace, původ dat, absolutní počty a přepočty, tabulka u grafu a ikonky na kartách."
 weight: 10
 ---
 
 ## Datum aktualizace
 
-Každý panel ukazuje, k jakému datu jsou jeho data. Datum se bere přímo z dat, ne z toho,
-kdy se stránka naposledy upravovala.
+U každého panelu je uvedeno, jak aktuální jsou jeho data. Podle typu dat se zobrazuje jeden
+z těchto údajů:
 
-## Štítek původu dat
+| Údaj | Význam |
+|---|---|
+| **Aktualizace: 16. 10. 2026, 05:56 UTC** | Kdy portál naposledy zpracoval data ze zdroje. Neříká, za jaké období data jsou. |
+| **Data k 13. 9. 2026 (KT 37/26)** | Poslední den nebo kalendářní týden, který data pokrývají. |
+| **Data k 12/2025** | Poslední měsíc, který data pokrývají. |
+| **Data za rok 2025** | Data jsou roční; uvedený je poslední dostupný rok. |
 
-Na stránce každého panelu je štítek, který říká, odkud data pocházejí:
+Datum se vždy čte přímo z datového souboru, ne z data úpravy stránky.
 
-- **Veřejný zdroj** — data zveřejnila externí instituce. Portál je shromažďuje a vykresluje,
-  závazný je původní zdroj.
-- **Naše data** — vznikla u nás, nebo jsme je dostali ke zpracování.
-- **Vytvořeno s pomocí AI** — posbíráno z veřejných zdrojů a sepsáno AI agentem; před
-  zveřejněním prošlo odbornou revizí.
+Zpracování může proběhnout dnes a přesto obsahovat data za starší období. Například otevřený
+export dat ISIN zatím končí prosincem 2025, takže [Signály](/signals/) vyhodnocují prosinec 2025,
+i když je údaj „Aktualizace“ novější. Jak často se mění jednotlivé zdroje, shrnuje stránka
+[Aktuálnost dat](/docs/ctenari/aktualnost-dat/).
+
+## Původ dat
+
+Každý panel nese štítek s původem dat: **Veřejný zdroj**, **Vlastní analýza** nebo
+**Vytvořeno s pomocí AI**. Význam štítků je popsán na stránce
+[O portálu](/about/#odkud-data-pocházejí).
+
+## Absolutní počty a přepočet na obyvatele
+
+Poznámka pod každým grafem uvádí, zda jde o **absolutní počty**, nebo o **přepočet na
+100 000 obyvatel** (incidenci). Ke srovnání krajů nebo období s různou velikostí populace
+používejte přepočtené hodnoty; absolutní počty odrážejí především velikost populace.
+Víc o tom, jak data číst, je na stránce [Jak data interpretovat](/docs/ctenari/interpretace/).
+
+## Tabulka a podrobné hodnoty
+
+Tlačítko **Tabulka** pod grafem zobrazí hodnoty, ze kterých je graf vykreslen. Přesnou hodnotu
+bodu nebo kraje zobrazíte najetím myší, na mobilu klepnutím. Datové soubory ke stažení popisuje
+stránka [Stažení dat a licence](/docs/ctenari/citace-a-data/).
 
 ## Ikonky na kartách
 
