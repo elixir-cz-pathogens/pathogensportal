@@ -1,0 +1,21 @@
+{{/* Red "not in operation yet" bar for the intake pages (TODO D15, I34).
+
+     Usage: {{< intake-status >}}  — on about/prispet, which carries the
+     request form under the #zadost anchor.
+
+     Invites people to file a request now, but ONLY where the request form can
+     actually send (params.intake.api set). Where it cannot — today: production,
+     which runs no backend — it points to e-mail instead: a bar saying "fill in
+     the form" above a form that sends nothing would lose exactly the people
+     it invites. */}}
+{{ $api := site.Params.intake.api | default "" }}
+<div class="pp-status-bar" role="alert">
+  <p><strong>Tato stránka je zatím v přípravě — příjem dat ještě není v provozu.</strong></p>
+  {{ if $api }}
+  <p>Pokud se chcete zapojit už teď, klidně vyplňte <a href="#zadost">formulář žádosti</a> níže.
+  Ozveme se vám, jen počítejte s tím, že vyřízení bude chvíli trvat.</p>
+  {{ else }}
+  <p>Pokud se chcete zapojit už teď, napište nám{{ with site.Params.mail }} na
+  <a href="mailto:{{ . }}">{{ . }}</a>{{ end }}. Ozveme se vám, jen počítejte s tím, že vyřízení bude chvíli trvat.</p>
+  {{ end }}
+</div>

@@ -50,7 +50,14 @@
     <link rel="stylesheet" href="{{ "css/custom.css" | relURL }}">
     <!-- Pathogens Portal network identity: site chrome, loaded last -->
     <link rel="stylesheet" href="{{ "css/pp-identity.css" | relURL }}">
-    {{ if eq .Section "docs" }}<link rel="stylesheet" href="{{ "css/pp-docs.css" | relURL }}">{{ end }}
+    {{/* Docs pages, and any page carrying the intake forms (about/prispet). */}}
+    {{ $intake := or (.HasShortcode "intake-request") (.HasShortcode "intake-upload") }}
+    {{ if or (eq .Section "docs") $intake }}<link rel="stylesheet" href="{{ "css/pp-docs.css" | relURL }}">{{ end }}
+    {{/* The forms' script, ONCE per page however many forms it has — twice would
+         send every request twice. Decided here, not in the shortcodes: a
+         "loaded already" flag in .Page.Store survives `hugo server` rebuilds,
+         so after the first edit the script vanished from the page. */}}
+    {{ if $intake }}<script src="{{ "js/pp-intake.js" | relURL }}" defer></script>{{ end }}
 
     {{ if .Params.redirect_url }}
     <meta http-equiv="refresh" content="0;url={{ .Params.redirect_url }}">

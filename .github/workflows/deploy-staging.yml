@@ -88,6 +88,10 @@ jobs:
         # baseURL is derived from STAGING_HOST — the machine name lives in one place,
         # so a DNS change (a different provider, an own domain) is a variable change,
         # not a code change.
+        # The intake forms (about/prispet) send to website-be, which runs only on
+        # staging; production builds without this and the page points to e-mail.
+        env:
+          HUGO_PARAMS_INTAKE_API: /api/intake
         run: hugo --minify --baseURL "https://${STAGING_HOST}/"
 
       - name: Deploy via rsync over SSH

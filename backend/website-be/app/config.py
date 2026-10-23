@@ -27,6 +27,34 @@ class Settings:
         "CORS_ORIGINS", "http://localhost:1313,http://127.0.0.1:1313"
     )
 
+    # ── Data intake from providers (TODO D15) ────────────────────────────────
+    # Uploaded files; a volume on the server, never inside the web root.
+    intake_dir: Path = Path(os.getenv("INTAKE_DIR", "/intake"))
+    # Accepted uploads, normalised, for the data pipeline to pick up (files.py).
+    # On the server this is the -db DATA_DIR's `ext_income/`. Empty = no hand-over.
+    intake_export_dir: str = os.getenv("INTAKE_EXPORT_DIR", "")
+    # Peers whose X-Forwarded-For is believed (api.client_ip). On the server the
+    # request reaches the container from Apache through Docker's port proxy, so
+    # the peer is the bridge gateway, not loopback — without it every visitor
+    # would share one rate-limit bucket.
+    intake_trusted_proxies: list[str] = _csv_env("INTAKE_TRUSTED_PROXIES", "127.0.0.0/8,::1/128")
+    # Who is told about new requests and uploads. Comma-separated. Empty = log only.
+    intake_notify_to: list[str] = _csv_env("INTAKE_NOTIFY_TO", "")
+    intake_smtp_host: str = os.getenv("INTAKE_SMTP_HOST", "")
+    intake_smtp_port: int = int(os.getenv("INTAKE_SMTP_PORT", "587"))
+    intake_smtp_user: str = os.getenv("INTAKE_SMTP_USER", "")
+    intake_smtp_password: str = os.getenv("INTAKE_SMTP_PASSWORD", "")
+    intake_smtp_from: str = os.getenv("INTAKE_SMTP_FROM", "noreply@pathogens.vm.cesnet.cz")
+    intake_smtp_starttls: bool = os.getenv("INTAKE_SMTP_STARTTLS", "1") == "1"
+    # "postgres" on a server; "memory" runs the intake with no database (local
+    # tryout only — everything is lost on restart).
+    intake_store: str = os.getenv("INTAKE_STORE", "postgres")
+    # Requests per client IP per hour on the public request endpoint.
+    intake_requests_per_hour: int = int(os.getenv("INTAKE_REQUESTS_PER_HOUR", "5"))
+    # Uploads per provider key per 24 h, accepted and rejected alike — stops a
+    # provider's script stuck in a loop, not an honest weekly or daily export.
+    intake_uploads_per_day: int = int(os.getenv("INTAKE_UPLOADS_PER_DAY", "50"))
+
     @property
     def dsn(self) -> str:
         return (

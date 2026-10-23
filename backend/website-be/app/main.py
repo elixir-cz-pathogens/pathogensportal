@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from . import charts, db
 from .config import settings
+from .intake.api import router as intake_router
 
 app = FastAPI(title=settings.service_name)
 
@@ -14,10 +15,13 @@ if settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_methods=["GET"],
+        # POST only for the intake endpoints (the request form and uploads).
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
         expose_headers=["X-Recorded-At"],
     )
+
+app.include_router(intake_router)
 
 # The chart key = the file name without its extension; nothing else reaches the query.
 _KEY_RE = re.compile(r"^[a-z0-9_]{1,255}$")

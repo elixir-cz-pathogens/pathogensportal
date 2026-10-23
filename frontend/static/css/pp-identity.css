@@ -223,3 +223,18 @@ a:hover { color: var(--pp-mid-blue); text-decoration: underline; text-underline-
 .pp-callout--warning:not(.pp-viz .pp-callout) { border-left-color: #f3b153; background: #fdf6ea; }
 .pp-callout--critical:not(.pp-viz .pp-callout) { border-left-color: #a0302c; background: #fbeceb; }
 .pp-callout:not(.pp-viz .pp-callout) > :last-child { margin-bottom: 0; }
+
+/* ── "Not in operation yet" bar (shortcodes/intake-status.html) ──────────────
+   Deliberately loud: solid red, white text, full width of the content. It
+   marks a page that describes something people cannot use yet. */
+.pp-status-bar {
+  background: #b3261e; color: #fff;
+  border-radius: var(--pp-radius-field);
+  padding: 1rem 1.25rem; margin: 0 0 1.75rem;
+  box-shadow: 0 2px 6px rgb(179 38 30 / .35);
+}
+.pp-status-bar p { margin: 0; }
+.pp-status-bar p + p { margin-top: .4rem; }
+.pp-status-bar strong { font-size: 1.1rem; }
+.pp-status-bar a { color: #fff; text-decoration: underline; font-weight: 600; }
+.pp-status-bar a:hover { color: #ffe9a8; }

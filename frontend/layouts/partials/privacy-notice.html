@@ -123,6 +123,10 @@
   /* Footer link — the information must stay reachable after the banner is closed. */
   var footerLink = document.getElementById("pp-privacy-footer-link");
   if (footerLink) footerLink.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
+  /* Any other link to the notice, e.g. from the intake request form. */
+  document.querySelectorAll("[data-pp-privacy-open]").forEach(function (a) {
+    a.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
+  });
 
   /* Clicking outside the content closes the dialog; `<dialog>` does not do this itself. */
   dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });

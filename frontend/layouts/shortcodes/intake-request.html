@@ -1,0 +1,67 @@
+{{/* Request form for data providers (TODO D15).
+
+     Usage: {{< intake-request >}}
+
+     The API base comes from `params.intake.api` (e.g. "/api/intake", or
+     HUGO_PARAMS_INTAKE_API for a local run against website-be on :8000). While
+     it is empty the form validates and shows what it WOULD send, and sends
+     nothing. The privacy notice (data/privacy.yaml) says who processes the
+     applicant's data and for how long.
+
+     The fields are the minimum to decide on a request by hand. Data are NOT
+     uploaded here: an approved provider gets a key and uploads separately. */}}
+{{ $api := site.Params.intake.api | default "" }}
+{{ $endpoint := cond (ne $api "") (printf "%s/requests" $api) "" }}
+<form class="pp-intake" data-pp-intake data-endpoint="{{ $endpoint }}" novalidate>
+  {{ if not $endpoint }}
+  <div class="pp-intake__notice">
+    <p><strong>Formulář zatím nic neodesílá.</strong> Příjem dat připravujeme. Formulář si můžete
+    vyzkoušet — po kliknutí na tlačítko uvidíte, co by se odeslalo.</p>
+  </div>
+  {{ end }}
+
+  <fieldset>
+    <legend>Kdo jste</legend>
+    <label>Jméno a příjmení <input name="name" required autocomplete="name"></label>
+    <label>E-mail <input name="email" type="email" required autocomplete="email"></label>
+    <label>Instituce <input name="institution" required autocomplete="organization"></label>
+    <label>Pracovní zařazení <span class="pp-intake__opt">(nepovinné)</span> <input name="position"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Jaká data nabízíte</legend>
+    <label>Stručný popis dat
+      <textarea name="description" rows="3" required placeholder="Např. týdenní počty pozitivních vzorků chřipky podle krajů"></textarea></label>
+    <label>Odkud data pocházejí a jak vznikají
+      <textarea name="origin" rows="3" required placeholder="Laboratoř, systém hlášení, metoda…"></textarea></label>
+    <label>Jak často se data aktualizují
+      <select name="frequency" required>
+        <option value="">— vyberte —</option>
+        <option>jednorázově</option><option>denně</option><option>týdně</option>
+        <option>měsíčně</option><option>ročně</option><option>jinak</option>
+      </select></label>
+    <label>Odkaz na ukázku nebo popis dat <span class="pp-intake__opt">(nepovinné)</span> <input name="link" type="url" placeholder="https://"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Potvrzení</legend>
+    <label class="pp-intake__check"><input type="checkbox" name="no_personal_data" required>
+      <span>Data, která nabízím, neobsahují osobní ani citlivé údaje a nedá se z nich poznat konkrétní člověk.</span></label>
+    {{/* Not "I agree to the terms": the full terms are deferred (TODO R24). The
+         processing of the applicant's contact data rests on legitimate interest,
+         so what the form needs is that they were TOLD how — the privacy notice,
+         which opens in place (data-pp-privacy-open, privacy-notice.html). */}}
+    <label class="pp-intake__check"><input type="checkbox" name="privacy_ack" required>
+      <span>Beru na vědomí, jak budou mé kontaktní údaje zpracovány
+      (<a href="#" data-pp-privacy-open>zásady zpracování osobních údajů</a>).</span></label>
+  </fieldset>
+
+  {{/* Honeypot: hidden from people, filled in by bots; the API discards those. */}}
+  <div class="pp-intake__hp" aria-hidden="true">
+    <label>Web <input name="website" tabindex="-1" autocomplete="off"></label>
+  </div>
+
+  <button type="submit" class="pp-hero__cta">Odeslat žádost</button>
+  <div class="pp-intake__result" role="status" aria-live="polite"></div>
+</form>
+{{/* pp-intake.js is loaded by head.html for any page with an intake form. */}}

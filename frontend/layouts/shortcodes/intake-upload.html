@@ -1,0 +1,36 @@
+{{/* Upload page for approved providers (TODO D15).
+
+     Usage: {{< intake-upload >}}
+
+     The key is sent as `Authorization: Bearer …` to `params.intake.api`/uploads
+     and is never stored by the page (no localStorage): a key left in a shared
+     browser is a key anyone at that desk can use. The report comes back from
+     website-be and is rendered by pp-intake.js. */}}
+{{ $api := site.Params.intake.api | default "" }}
+<form class="pp-intake" data-pp-upload data-endpoint="{{ with $api }}{{ . }}/uploads{{ end }}" novalidate>
+  {{ if not $api }}
+  <div class="pp-intake__notice">
+    <p><strong>Nahrávání zatím není zapnuté.</strong> Příjem dat připravujeme.</p>
+  </div>
+  {{ end }}
+  <label>Váš klíč
+    <input name="key" type="password" required autocomplete="off" spellcheck="false" placeholder="pp_…"></label>
+  <label>Šablona
+    <select name="template"><option value="agregace-v1">Agregovaná data (agregace-v1)</option></select></label>
+  <label>Soubory CSV nebo archiv ZIP/TAR
+    <input name="file" type="file" multiple required
+           accept=".csv,text/csv,.zip,application/zip,.tar,.tgz,.gz,application/gzip,application/x-tar"></label>
+  {{/* The declaration (TODO I34). Its text and key must match CURRENT in
+       backend/website-be/app/intake/declaration.py: the backend refuses any
+       other key, so a page left behind after a wording change fails loudly. */}}
+  <label class="pp-intake__check"><input type="checkbox" name="declaration" value="prohlaseni-v1" required>
+    <span>Prohlašuji, že jsem oprávněn(a) tato data za svou instituci poskytnout, že neobsahují
+    osobní údaje a že souhlasím s jejich zpracováním a zveřejněním na portálu Pathogen Portal CZ
+    pod licencí <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank" rel="noopener">Creative Commons Uveďte původ 4.0 (CC BY 4.0)</a>
+    s uvedením naší instituce jako zdroje. Beru na vědomí, že takto zveřejněná data může kdokoli dál
+    používat, pokud uvede zdroj. O opravu nebo stažení dat můžeme kdykoli požádat.</span></label>
+
+  <button type="submit" class="pp-hero__cta">Nahrát a zkontrolovat</button>
+  <div class="pp-intake__result" role="status" aria-live="polite"></div>
+</form>
+{{/* pp-intake.js is loaded by head.html for any page with an intake form. */}}

@@ -1,4 +1,4 @@
-/* ── Documentation (/docs/) ────────────────────────────────────────────────
+/* ── Documentation (/docs/) and the provider request form ───────────────────
    Loaded only on /docs/ pages (head.html). Colours from pp-identity.css. */
 .pp-docs {
   display: grid; gap: 2rem;
@@ -49,3 +49,36 @@
 .pp-docs__card-t { font-weight: 700; color: var(--pp-dark-blue); font-size: 1.05rem; }
 .pp-docs__card-d { color: var(--pp-dark-grey); font-size: .9rem; }
 
+/* Request form */
+.pp-intake fieldset { border: 0; padding: 0; margin: 1.5rem 0 0; }
+.pp-intake legend { font-size: 1.15rem; font-weight: 600; color: var(--pp-dark-blue); margin-bottom: .5rem; }
+.pp-intake label { display: block; margin: 0 0 .9rem; font-weight: 500; }
+.pp-intake input:not([type=checkbox]), .pp-intake textarea, .pp-intake select {
+  display: block; width: 100%; margin-top: .3rem;
+  padding: .5rem .7rem; font: inherit; font-weight: 400;
+  border: 1px solid var(--pp-pale-grey); border-radius: var(--pp-radius-field); background: #fff;
+}
+.pp-intake input:focus, .pp-intake textarea:focus, .pp-intake select:focus {
+  outline: 2px solid var(--pp-mid-blue); outline-offset: 1px; border-color: var(--pp-mid-blue);
+}
+.pp-intake.was-validated :invalid { border-color: #a0302c; }
+.pp-intake__check { display: flex !important; gap: .6rem; align-items: flex-start; font-weight: 400 !important; }
+.pp-intake__check input { margin-top: .3rem; flex: 0 0 auto; }
+.pp-intake__opt { color: var(--pp-dark-grey); font-weight: 400; font-size: .85rem; }
+.pp-intake button { border: 0; margin-top: .5rem; }
+.pp-intake__result { margin-top: 1rem; }
+.pp-intake__preview { background: #f5f7fa; border-radius: var(--pp-radius-field); padding: .75rem 1rem; font-size: .85rem; margin-top: .5rem; }
+.pp-intake__notice {
+  border-left: 4px solid var(--pp-warning, #f3b153);
+  background: #fdf6ea; border-radius: var(--pp-radius-field);
+  padding: .75rem 1rem; margin: 0 0 1rem;
+}
+.pp-intake__notice p { margin: 0; }
+
+.pp-docs__main h2 { font-size: 1.5rem; margin-top: 2rem; }
+.pp-docs__main h3 { font-size: 1.2rem; }
+.pp-intake__hp { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+.pp-intake__issues { margin: .5rem 0 0; padding-left: 1.2rem; }
+.pp-intake__issues .is-error { color: #a0302c; }
+.pp-intake__issues .is-warning { color: #7a4a00; }
+.pp-intake__ok { color: #1b7a54; font-weight: 600; }
