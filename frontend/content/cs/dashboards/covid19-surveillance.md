@@ -1,7 +1,7 @@
 ---
-title: "COVID-19 Surveillance"
+title: "COVID-19: epidemiologická situace"
 origin: aggregated
-description: "Epidemiologická situace SARS-CoV-2 v České republice — denní případy, hospitalizace, testování a vakcinace."
+description: "Týdenní přehled covidu-19 v ČR: nové případy a úmrtí, hospitalizace, testování a pozitivita, 7denní incidence."
 image: "/images/cards/covid.webp"
 highlight: true
 tags: ["SARS-CoV-2", "hospitalizace", "vakcinace", "surveillance", "MZČR", "ČR"]
@@ -16,7 +16,7 @@ update_read: "stamp"
   Oficiální COVID-19 portál MZČR →
 </a>
 <a href="https://virus.img.cas.cz/" target="_blank" class="btn btn-outline-secondary mb-3">
-  Živé grafy SARS-CoV-2 — virus.img.cas.cz →
+  Průběžně aktualizované grafy SARS-CoV-2 (virus.img.cas.cz) →
 </a>
 
 ---
@@ -38,9 +38,9 @@ chřipky a RSV, každý virus s vlastním počtem vyšetřených vzorků.
 
 ---
 
-### Zdroje dat a metodika
+### Metodika a omezení
 
-Data jsou stahována z **MZČR otevřených dat** (API v2) a zahrnují denní hlášení od začátku pandemie.
+Data pocházejí z **otevřených datových sad MZČR** (API v2) a pokrývají období od března 2020.
 
 | Ukazatel | Zdroj | Aktualizace |
 |---|---|---|
@@ -48,6 +48,5 @@ Data jsou stahována z **MZČR otevřených dat** (API v2) a zahrnují denní hl
 | Hospitalizace | [MZČR — hospitalizace](https://onemocneni-aktualne.mzcr.cz/covid-19) | denně |
 | PCR a antigenní testy | [MZČR — testy](https://onemocneni-aktualne.mzcr.cz/covid-19) | denně |
 | Pozitivita v laboratorní surveillance | [ECDC ERVISS](https://erviss.org/) | týdně |
-| Genomická surveillance | [COG-CZ / virus.img.cas.cz](https://virus.img.cas.cz/) | průběžně |
 
 <p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR Open Data API v2</a> · Licence: otevřená data ČR</p>

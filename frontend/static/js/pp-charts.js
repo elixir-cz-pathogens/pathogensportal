@@ -87,7 +87,7 @@
        the page is read by epidemiologists and journalists alike. Definitions stay in
        the title attribute and on the Signals page. */
     "Nahlášeno": "Reported", "Obvykle bývá": "Usually", "Ještě v normě do": "Still normal up to",
-    "Překročeno": "Exceeded by", "překročeno": "exceeded by",
+    "Skóre překročení": "Exceedance score", "skóre překročení": "exceedance score",
     "nahlášeno": "reported", "obvykle bývá": "usually", "ještě v normě do": "still normal up to",
     "vzácná nemoc": "rare disease",
     "mimo dosavadní výskyt": "outside prior occurrence",
@@ -103,7 +103,7 @@
     "Kolik případů bylo za daný měsíc skutečně nahlášeno": "How many cases were actually notified in the given month",
     "Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce": "How many cases this disease usually has in this region and time of year in an ordinary year",
     "Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál": "Up to this value the count can still be explained by ordinary fluctuation; a signal starts above it",
-    "Kolikrát dál za hranicí normy, než jak daleko je hranice od běžného stavu; 1× = přesně na hranici": "How many times further beyond the limit of normal than the limit is from the usual level; 1× = exactly at the limit",
+    "(nahlášeno − obvykle) / (mez normy − obvykle); 1 = právě na mezi normy": "(reported − usual) / (limit of normal − usual); 1 = exactly at the limit",
     "Celostátně": "Nationwide",
     "V žádném kraji tato diagnóza signál nemá.": "This diagnosis has no signal in any region.",
     "Data signálů se nepodařilo načíst.": "Signal data could not be loaded.",
@@ -1016,7 +1016,7 @@
         '<th scope="col" class="text-end" title="' + tr("Kolik z nahlášených případů přišlo novým kanálem hlášení (EWS), který funguje od července 2025 a v historii chybí") + '">' + tr("Z toho novým kanálem") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce") + '">' + tr("Obvykle bývá") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál") + '">' + tr("Ještě v normě do") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Kolikrát dál za hranicí normy, než jak daleko je hranice od běžného stavu; 1× = přesně na hranici") + '">' + tr("Překročeno") + '</th></tr></thead>' +
+        '<th scope="col" class="text-end" title="' + tr("(nahlášeno − obvykle) / (mez normy − obvykle); 1 = právě na mezi normy") + '">' + tr("Skóre překročení") + '</th></tr></thead>' +
         "<tbody>" + rows.join("") + "</tbody></table></div>";
 
       if (signals.length > SIGNALS_PREVIEW) {
@@ -1222,7 +1222,7 @@
               tr("nahlášeno") + " " + fmt(g.national.observed) + ", " +
               tr("obvykle bývá") + " " + fmtInt(g.national.expected) + ", " +
               tr("ještě v normě do") + " " + fmtInt(g.national.threshold) +
-              " — " + tr("překročeno") + " " + fmt(g.national.score) + "×";
+              " — " + tr("skóre překročení") + " " + fmt(g.national.score);
           } else {
             natEl.hidden = true;
           }
@@ -1249,7 +1249,7 @@
               tr("ještě v normě do") + ": " + fmtInt(sig.threshold) + "<br>" +
               (sig.reporting_channel ? tr("z toho novým kanálem") + ": " + fmt(sig.reporting_channel.ews) + "<br>" : "") +
               (isUndecided(sig) ? "<em>" + tr("nelze rozhodnout — nový kanál hlášení") + "</em>"
-                                : tr("překročeno") + " " + fmt(sig.score) + "×");
+                                : tr("skóre překročení") + " " + fmt(sig.score));
             var rect = mapBox.getBoundingClientRect();
             var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
             var y = event.clientY !== undefined ? event.clientY : rect.top;

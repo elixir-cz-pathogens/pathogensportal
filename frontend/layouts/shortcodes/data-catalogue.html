@@ -32,7 +32,7 @@
       {{ $licence := partial "functions/lang-value.html" (dict "v" .licence.name "lang" $lang) }}
       <dd>{{ with .licence.url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ $licence }}</a>{{ else }}{{ $licence }}{{ end }}</dd>
     </dl>
-    <p class="pp-source__limits"><strong>{{ if $en }}What the data cannot tell you.{{ else }}Co z dat nejde vyčíst.{{ end }}</strong> {{ index .limits $lang | default .limits.cs }}</p>
+    <p class="pp-source__limits"><strong>{{ if $en }}What the data cannot tell you.{{ else }}Omezení dat:{{ end }}</strong> {{ index .limits $lang | default .limits.cs }}</p>
     <p class="pp-source__links">
       <a href="{{ .url }}" target="_blank" rel="noopener">{{ if $en }}Original source{{ else }}Původní zdroj{{ end }}</a>
       {{ with .download }} · <a href="{{ . }}" target="_blank" rel="noopener">{{ if $en }}data file{{ else }}datový soubor{{ end }}</a>{{ end }}

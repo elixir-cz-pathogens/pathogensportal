@@ -16,8 +16,8 @@ build:
 
 Pohlavní nemoci se v Česku hlásí **dvěma cestami**. Syfilis, kapavka a venerický
 lymfogranulom mají vlastní Registr pohlavních nemocí s řadou od roku 1994; chlamydiové
-infekce, trichomoniáza a další jdou přes ISIN a máme je od roku 2018. Stránka ukazuje
-obojí — dohromady se sečíst nedají, každý zdroj má jiná pravidla hlášení.
+infekce, trichomoniáza a další se hlásí přes ISIN a jsou k dispozici od roku 2018. Oba zdroje
+jsou zobrazeny odděleně; kvůli odlišným pravidlům hlášení je nelze sčítat.
 
 ### Syfilis a kapavka — Registr pohlavních nemocí
 
@@ -35,7 +35,7 @@ obojí — dohromady se sečíst nedají, každý zdroj má jiná pravidla hlá�
 
 {{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Pohlavně přenosné nemoci hlášené přes ISIN — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
-### Na co si dát pozor
+### Metodika a omezení
 
 - **Hlášené případy nejsou skutečný výskyt.** Pohlavní nemoci často probíhají bez příznaků; čísla rostou i tehdy, když se víc testuje.
 - **HIV tu není** — má vlastní registr, který v otevřených datech zatím není.

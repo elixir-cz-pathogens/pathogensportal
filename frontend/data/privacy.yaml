@@ -14,7 +14,7 @@
 cs:
   banner: >-
     Portál si o návštěvě ukládá provozní záznam (IP adresa, čas, stránka)
-    a používá vlastní statistiku návštěvnosti. Bez cookies, bez sledování napříč weby.
+    a používá vlastní statistiku návštěvnosti. Portál nepoužívá cookies ani sledování napříč weby.
   more: Podrobnosti
   dismiss: Rozumím
   title: Zpracování osobních údajů
@@ -24,13 +24,13 @@ cs:
     - h: Co sbíráme
       p:
         - "**Provozní záznam webového serveru** — IP adresa, čas, adresa stránky, typ prohlížeče a odkud jste přišli. Maže se po **14 dnech**."
-        - "**Počty návštěv podle organizace** — IP adresa se přeloží na organizaci (například „Univerzita Karlova“) a **zahodí**. Uchovávají se jen počty. Nejsou to osobní údaje."
-        - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data neodcházejí třetím stranám."
-        - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Není to identifikátor a nikam neodchází."
+        - "**Počty návštěv podle organizace** — IP adresa se zpětným dotazem DNS přeloží na organizaci (například „Univerzita Karlova“) a **zahodí**. Uchovávají se jen počty. Nejsou to osobní údaje."
+        - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data se nepředávají třetím stranám."
+        - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Nejde o identifikátor a nikam se neodesílá."
     - h: Vaše práva
       p:
         - "Máte právo na přístup ke svým údajům, na jejich opravu nebo výmaz, na omezení zpracování, právo vznést námitku a podat stížnost u [Úřadu pro ochranu osobních údajů](https://uoou.gov.cz)."
-        - "⚠️ Prakticky: v provozním záznamu vás **nedokážeme dohledat**, pokud nesdělíte IP adresu a přibližný čas návštěvy — nic jiného, podle čeho hledat, neuchováváme."
+        - "Upozornění: v provozním záznamu vás **nedokážeme dohledat**, pokud nesdělíte IP adresu a přibližný čas návštěvy — nic jiného, podle čeho hledat, neuchováváme."
         - "Správcem je **Ústav molekulární genetiky AV ČR**. Kontakt: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"
 en:
   banner: >-
@@ -45,11 +45,11 @@ en:
     - h: What we collect
       p:
         - "**Web server access log** — IP address, time, page address, browser type and referring page. Deleted after **14 days**."
-        - "**Visit counts by organisation** — the IP address is resolved to an organisation (for example “Charles University”) and **discarded**. Only counts are kept. They are not personal data."
+        - "**Visit counts by organisation** — the IP address is resolved to an organisation by a reverse DNS lookup (for example “Charles University”) and **discarded**. Only counts are kept. They are not personal data."
         - "**Which pages are read** — our own analytics running on our server, with no cookies and no device identifier. The data does not go to third parties."
         - "**On your device** we store a single item, and only so that this notice does not appear on every visit. It is not an identifier and it goes nowhere."
     - h: Your rights
       p:
         - "You have the right of access to your data, to rectification or erasure, to restriction of processing, to object, and to lodge a complaint with the [Czech Data Protection Authority](https://uoou.gov.cz)."
-        - "⚠️ In practice: we **cannot find you** in the access log unless you tell us the IP address and roughly when you visited — we keep nothing else to search on."
+        - "Note: we **cannot find you** in the access log unless you tell us the IP address and roughly when you visited — we keep nothing else to search on."
         - "The controller is the **Institute of Molecular Genetics of the Czech Academy of Sciences**. Contact: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"

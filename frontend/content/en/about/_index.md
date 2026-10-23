@@ -34,8 +34,8 @@ substantially from page to page:
 | Badge | What it means |
 |---|---|
 | **Public source** | Data published by an external institution (Czech MoH, ÚZIS, NIPH, ECDC, Czech Statistical Office). The portal collects and visualises it; the original source is authoritative. |
-| **Our data** | Produced by us, or handed to us for processing. We stand behind it. |
-| **AI-assisted** | Collected from public sources and written by an AI agent, reviewed by a subject-matter expert before publication. |
+| **Own analysis** | Calculations and analyses by the portal operator (e.g. Signals, influenza intensity thresholds). The operator is responsible for the method and processing; the source of the input data is given on the dashboard. |
+| **AI-assisted** | Text prepared from publicly available sources with the help of AI tools and reviewed by an expert before publication. |
 
 ## Who runs the portal
 

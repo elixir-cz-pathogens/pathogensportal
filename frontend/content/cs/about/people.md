@@ -7,8 +7,6 @@ menu:
 layout: about_navbar
 ---
 
-## Lidé za portálem
-
 {{< person name="Mgr. Jan Pačes, Ph.D." photo="/images/people/paces.jpg" >}}
 Technický správce portálu a kontaktní osoba projektu ELIXIR IMPACT2 za IMG AV ČR.
 Kontakt: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)

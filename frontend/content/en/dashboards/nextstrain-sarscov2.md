@@ -10,7 +10,7 @@ update_freq: "Daily (Nextstrain server)"
 redirect_url: "https://nextstrain.org/ncov/gisaid/europe"
 ---
 
-This dashboard opens **Nextstrain** — the standard for real-time phylogenomic pathogen surveillance, developed by the Bedford Lab (Fred Hutch / WHO).
+This dashboard opens **Nextstrain**, a widely used platform for ongoing phylogenetic analysis of pathogens. Nextstrain is an open-source project founded by Trevor Bedford (Fred Hutch) and Richard Neher (University of Basel).
 
 ### What Nextstrain shows
 
@@ -31,16 +31,4 @@ This dashboard opens **Nextstrain** — the standard for real-time phylogenomic 
   Open Nextstrain — SARS-CoV-2 Europe
 </a>
 
-### Local Nextstrain build (for your own sequences)
-
-To build from your own or local sequences, a Nextstrain/Augur Docker container is available in `docker-compose.yml` (profile `nextstrain`):
-
-```bash
-docker compose --profile nextstrain run augur --help
-```
-
-Required input files:
-- `nextstrain/data/sequences.fasta` — FASTA sequences from GISAID/ENA
-- `nextstrain/data/metadata.tsv` — metadata (date, source, location)
-
-<p class="stat-source">Nextstrain: open source · Bedford Lab · MIT licence</p>
+<p class="stat-source">Nextstrain (Augur, Auspice): open source, AGPL-3.0 licence</p>

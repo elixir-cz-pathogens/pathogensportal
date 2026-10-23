@@ -122,7 +122,7 @@
   grain: { cs: "týden × ukazatel × věková skupina", en: "week × indicator × age group" }
   frequency: { cs: "týdně", en: "weekly" }
   limits:
-    cs: "Tatáž česká hlášení jako WHO FluID, jen čerstvější. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení. Počet vzorků vyšetřených na SARS-CoV-2 od týdne 34/2026 znamená něco jiného a na dřívější řadu nenavazuje."
+    cs: "Obsahuje stejná česká hlášení jako WHO FluID, s kratším zpožděním. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení. Počet vzorků vyšetřených na SARS-CoV-2 od týdne 34/2026 znamená něco jiného a na dřívější řadu nenavazuje."
     en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays. The number of specimens tested for SARS-CoV-2 changes its meaning in week 34/2026 and does not continue the earlier series."
   pages: ["/dashboards/influenza-intensity", "/dashboards/influenza-surveillance", "/dashboards/covid19-surveillance"]
 
@@ -131,14 +131,14 @@
   publisher: "ECDC, ISI Foundation, LSHTM"
   url: "https://respicast.ecdc.europa.eu/"
   download: "https://github.com/european-modelling-hubs/RespiCast-SyndromicIndicators"
-  licence: { name: { cs: "neuvedena — před veřejným použitím ověřit u provozovatele hubu", en: "not stated — to be verified with the hub operator before public use" } }
+  licence: { name: { cs: "neuvedena (repozitář RespiCast-SyndromicIndicators licenci neuvádí); data přebírána s uvedením zdroje", en: "not stated (the RespiCast-SyndromicIndicators repository states no licence); data used with attribution" } }
   format: "CSV (GitHub)"
   coverage: { cs: "od října 2024", en: "since October 2024" }
   grain: { cs: "týdenní kolo × cílový týden × 23 kvantilů", en: "weekly round × target week × 23 quantiles" }
   frequency: { cs: "týdně", en: "weekly" }
   limits:
-    cs: "Předpověď, ne měření. Pro ČR je o ~15 % lepší než nejjednodušší referenční model, ale intervaly má užší, než slibuje (95% pás zachytil 85 % případů), a nástup vlny nevidí."
-    en: "A forecast, not a measurement. For Czechia it is ~15% better than the simplest reference model, but its intervals are narrower than claimed (the 95% band contained 85% of outcomes) and it does not see the onset of a wave."
+    cs: "Předpověď, ne měření. Pro ČR o ~15 % přesnější než referenční model (metrika WIS). 95% predikční interval pokryl skutečnou hodnotu v 85 % týdnů. Nástup sezónní vlny nepředpovídá."
+    en: "A forecast, not a measurement. For Czechia ~15% more accurate than the reference model (WIS). The 95% prediction interval covered the observed value in 85% of weeks. It does not predict the onset of the seasonal wave."
   pages: ["/dashboards/influenza-intensity"]
 
 - id: csu-population
@@ -179,6 +179,6 @@
   grain: { cs: "—", en: "—" }
   frequency: { cs: "podle provozovatele", en: "set by the operator" }
   limits:
-    cs: "Běží na cizím serveru a portál nad nimi nemá kontrolu. Fylogenetické stromy nejsou specifické pro ČR. Odpadní vody SZÚ nemají strojově čitelný export."
-    en: "They run on third-party servers outside the portal's control. The phylogenetic trees are not specific to Czechia. SZÚ wastewater data have no machine-readable export."
+    cs: "Provozuje je třetí strana; portál neodpovídá za jejich obsah ani dostupnost. Fylogenetické stromy nejsou specifické pro ČR. Odpadní vody SZÚ nemají strojově čitelný export."
+    en: "Run by third parties; the portal is not responsible for their content or availability. The phylogenetic trees are not specific to Czechia. SZÚ wastewater data have no machine-readable export."
   pages: ["/dashboards/nextstrain-sarscov2", "/dashboards/nextstrain-influenza", "/dashboards/wastewater-monitoring"]

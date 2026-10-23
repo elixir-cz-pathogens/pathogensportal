@@ -14,7 +14,7 @@ build:
 
 {{< nav-pills group="infekcni-nemoci" active="ostatni" >}}
 
-Souhrnný součet přibližně 80 zbytkových ICD diagnóz ("jiné ... nezařazené jinde" apod.), co nejsou samostatně dostatečně specifické pro vlastní skupinu. Jednotlivé diagnózy jsou v tabulce pod grafem na stránce [Top 10 diagnóz](/dashboards/infectious-diseases/).
+Souhrnný součet přibližně 80 zbytkových diagnóz MKN-10 („jiné…, nezařazené jinde“ apod.), které nejsou dostatečně specifické pro vlastní skupinu.
 
 {{< chart id="isinOther" src="/data/charts/isin_group_other.json" type="bar" title="Ostatní diagnózy (souhrn) — roční počty případů (2018–2025)" height="380"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 

@@ -66,7 +66,7 @@ week the NRL publishes a report with virological test results from ARI/ILI patie
 historical seasons are extracted from archived reports, the current season is
 downloaded automatically.
 
-Monitored viruses:
+Monitored pathogens:
 - **influenza A** (H1N1pdm, H3N2) and **influenza B**
 - **RSV** (respiratory syncytial virus)
 - **HRV** (rhinoviruses), **HAdV** (adenoviruses), **HPIV** (parainfluenza viruses)

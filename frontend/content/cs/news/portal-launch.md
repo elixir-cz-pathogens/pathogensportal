@@ -1,7 +1,7 @@
 ---
 title: "Pathogen Portal CZ je spuštěn"
 date: 2026-07-02
-description: "Spouštíme český národní portál pro sledování patogenů — otevřený přístup k datům z infekční surveillance."
+description: "Spouštíme český národní portál pro sledování patogenů — otevřený přístup k datům ze surveillance infekčních nemocí."
 highlight: true
 image: "/images/elixir_logo.png"
 tags: ["novinky", "ELIXIR"]

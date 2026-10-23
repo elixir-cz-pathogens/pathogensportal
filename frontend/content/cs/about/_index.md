@@ -10,30 +10,29 @@ menu:
 layout: about_navbar
 ---
 
-## O portálu
-
-**Pathogen Portal CZ** je centrální rozcestník pro data o výskytu infekčních onemocnění
-v České republice — klinická, environmentální i genomická surveillance na jednom místě.
+**Pathogen Portal CZ** zpřístupňuje na jednom místě data ze surveillance infekčních nemocí
+v České republice: hlášené případy, laboratorní, environmentální a genomická data.
 Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti.
 
 ## Co na portálu najdete
 
-- **Panely k jednotlivým patogenům** — COVID-19, chřipka a ARI, infekční nemoci
-  hlášené do ISIN, odpadní vody, fylogeneze i situační reporty k aktivním ohniskům.
-- **Signály** — automatická detekce překročení očekávané hladiny nad 1 200 časovými
-  řadami hlášených onemocnění. Statistický screening, ne potvrzená epidemie.
-- **Datové sady a analýzy**, ze kterých grafy vznikají.
+- **Panely k jednotlivým patogenům:** COVID-19, chřipka a ARI, infekční nemoci
+  hlášené do ISIN, odpadní vody, fylogeneze a situační reporty k aktivním ohniskům.
+- **Signály:** automatické vyhledávání měsíců, kdy počet hlášených případů výrazně překročil
+  očekávanou úroveň (přes 1 200 časových řad podle diagnózy a kraje). Signál není potvrzením
+  epidemie.
+- **Data ke stažení:** zpracované datové soubory, ze kterých se kreslí grafy (viz
+  [Data a citace](/about/data/)).
 
 ## Odkud data pocházejí
 
-Původ dat je u každého panelu označený štítkem, protože se u jednotlivých stránek
-zásadně liší:
+Každý panel nese štítek s původem dat:
 
 | Štítek | Co znamená |
 |---|---|
-| **Veřejný zdroj** | Data zveřejněná externí institucí (MZČR, ÚZIS, SZÚ, ECDC, ČSÚ). Portál je shromažďuje a vykresluje; závazný je původní zdroj. |
-| **Naše data** | Vznikla u nás, nebo jsme je dostali ke zpracování. Ručíme za ně. |
-| **Vytvořeno s pomocí AI** | Posbíráno z veřejných zdrojů a sepsáno AI agentem; před zveřejněním prošlo odbornou revizí. |
+| **Veřejný zdroj** | Data zveřejněná externí institucí (MZČR, ÚZIS, SZÚ, ECDC, ČSÚ). Portál je přebírá a vykresluje; závazný je původní zdroj. |
+| **Vlastní analýza** | Výpočty a analýzy provozovatele portálu (např. Signály, prahy intenzity chřipky). Za metodiku a zpracování odpovídá provozovatel; zdroj vstupních dat je uveden u panelu. |
+| **Vytvořeno s pomocí AI** | Text připravený s pomocí nástrojů umělé inteligence z veřejně dostupných zdrojů a před zveřejněním zkontrolovaný odborníkem. |
 
 ## Kdo portál provozuje
 
@@ -41,8 +40,8 @@ Portál vzniká v rámci projektu **ELIXIR IMPACT2**, podpořeného z
 [Programu švýcarsko-české spolupráce](https://www.swiss-contribution.cz/),
 a je provozován na infrastruktuře [CESNET](https://www.cesnet.cz).
 
-Úplný seznam spolupracujících pracovišť je na stránce **Partneři**, jmenný seznam
-na stránce **Lidé**.
+Spolupracující instituce jsou uvedeny na stránce [Partneři a podpora](/about/affiliations/),
+řešitelský tým na stránce [Lidé](/about/people/).
 
 <a href="https://www.swiss-contribution.cz/" target="_blank" rel="noopener"><img src="/images/swiss-contribution-cz.png" alt="Program švýcarsko-české spolupráce" style="max-width:340px;width:100%;height:auto" class="my-3"></a>
 

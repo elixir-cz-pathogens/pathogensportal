@@ -25,6 +25,8 @@ therefore screens them automatically: for every series it computes the **expecte
 endemic level** from seasonality and history, and shows the months where the notified
 count exceeded the threshold.
 
+{{< signals-period src="/data/charts/anomaly_signals.json" >}}
+
 {{< signals-map src="/data/charts/anomaly_signals.json" title="Where the signal is — by region" >}}
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Series above the expected level" >}}

@@ -5,7 +5,7 @@ description: "Situační report vypuknutí viru Andes (hantavirus) spojeného s 
 image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiologie", "IMG AV ČR"]
-data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'
+data_source: 'Jan Pačes, Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG AV ČR</a> / UJEP / VZÚ'
 # Closed report: the figures below are from the final WHO summary (DON611) as of
 # 2 Jul 2026 and will not change. The only case where a date goes here — see update-stamp.html.
 data_as_of: "2026-07-02"
@@ -23,7 +23,7 @@ data_as_of: "2026-07-02"
 - **HFRS** — hemoragická horečka s renálním syndromem (Evropa, Asie)
 - **HPS/HCPS** — hantavirový kardiopulmonální syndrom (Amerika), smrtnost 30–40 %
 
-**Virus Andes** (*Orthohantavirus andesense*) je jediný hantavirus s prokázaným přenosem **z člověka na člověka** — to je epidemiologicky výjimečné. Všechny ostatní hantaviry se přenáší pouze od hlodavců.
+**Virus Andes** (*Orthohantavirus andesense*) je jediný hantavirus s prokázaným přenosem **z člověka na člověka** — to je epidemiologicky výjimečné. Všechny ostatní hantaviry se přenášejí pouze od hlodavců.
 
 ---
 

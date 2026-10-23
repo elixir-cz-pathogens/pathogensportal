@@ -31,14 +31,14 @@ P(růst) = P( T[n−2] < r / SE )     (Studentovo t)
 
 Kategorie podle P(růst): nad 90 % roste · 75–90 % pravděpodobně roste · 25–75 % beze změny · 10–25 % pravděpodobně klesá · pod 10 % klesá.
 
-**Proč ne reprodukční číslo R.** R patří jednomu patogenu se známým generačním intervalem. ILI a ARI jsou směs chřipky, RSV, covidu a rhinovirů — jedno R pro ně neexistuje a převod by byl přesný jen naoko.
+**Proč ne reprodukční číslo R.** R patří jednomu patogenu se známým generačním intervalem. ILI a ARI jsou směs chřipky, RSV, covidu a rhinovirů. Jedno R pro ně neexistuje; přepočet na R by vyžadoval předpoklady, které pro směs patogenů neplatí.
 {{< /method-part >}}
 {{< method-part title="Studie" >}}
 - CDC, Center for Forecasting and Outbreak Analytics: *Current Epidemic Trends (Based on R<sub>t</sub>)* — odtud kategorie a hranice pravděpodobností.
 - Wallinga J., Lipsitch M. (2007): *How generation intervals shape the relationship between growth rates and reproductive numbers.* Proc. R. Soc. B 274 — proč tempo růstu nese stejnou informaci jako R.
 {{< /method-part >}}
 {{< method-part title="Jak jsme to testovali" >}}
-Na minulých sezónách: když portál řekl…, další týden nemocnost opravdu vzrostla:
+Shoda kategorie trendu s vývojem v následujícím týdnu (zpětný test na minulých sezónách):
 
 {{< flu part="backtest" />}}
 
@@ -75,10 +75,10 @@ práh = průměr + 1,645 · sd
 
 ```
 hranice = exp( průměr(ln x) + z · sd(ln x) )
-z = −0,253 · 1,282 · 1,960   (40. · 90. · 97,5. percentil)
+z ∈ {−0,253; 1,282; 1,960}   (40., 90. a 97,5. percentil)
 ```
 
-Z každé sezóny jdou do odhadu 3 nejvyšší týdny (30 hodnot děleno počtem sezón).
+Z každé sezóny se použije n nejvyšších týdnů, n = 30 / počet sezón (při deseti sezónách 3 týdny).
 {{< /method-part >}}
 {{< method-part title="Studie" >}}
 - Vega T. a kol. (2013): *Influenza surveillance in Europe: establishing epidemic thresholds by the Moving Epidemic Method.* Influenza and Other Respiratory Viruses 7(4).
@@ -95,7 +95,7 @@ Z každé sezóny jdou do odhadu 3 nejvyšší týdny (30 hodnot děleno počtem
 - **ILI je klinická diagnóza, ne laboratorně potvrzená chřipka.** Do čísla se promítají i jiné viry se stejnými příznaky.
 - **Deset sezón je málo.** Pásmo „velmi vysoká“ stojí na extrapolaci — tak silnou sezónu data neobsahují.
 - **Hlásí jen část ordinací.** Pokrytá populace se mění; ve FluID skočila v sezóně 2025/26 z 5,4 na 8,5 mil., proto ta sezóna do prahů zatím nejde.
-- **Svátky.** Kolem Vánoc ordinace nehlásí a křivka má umělý zub.
+- **Svátky.** V období Vánoc ordinace nehlásí, v křivce proto vzniká artefakt.
 
 Do odhadu jde posledních deset sezón, ve kterých epidemie proběhla. Vynechané:
 
@@ -145,9 +145,9 @@ Každou minulou předpověď pro ČR porovnáváme se skutečností a s referen�
 
 ### ILI a ARI — dvě čísla z týchž ordinací
 
-**ILI — chřipce podobné onemocnění.** Náhlý začátek, horečka nebo schvácenost a k tomu kašel či bolest v krku. Úzká definice: běžnou rýmu odfiltruje, takže křivka sleduje hlavně chřipku. Vlna ji zvedne zhruba patnáctkrát nad podzimní klid.
+**ILI — chřipce podobné onemocnění.** Náhlý začátek, horečka nebo schvácenost a k tomu kašel či bolest v krku. Úzká definice: běžnou rýmu odfiltruje, takže křivka sleduje hlavně chřipku. Během chřipkové epidemie stoupá ILI přibližně 15× nad podzimní úroveň.
 
-**ARI — akutní respirační infekce.** Stačí jeden respirační příznak. Spadá sem všechno, co se zrovna točí: rhinoviry, RSV, covid i chřipka (ILI je podmnožinou ARI). Vlna ji zvedne jen asi dvakrát, ale je to číslo, ve kterém tradičně mluví česká hygiena.
+**ARI — akutní respirační infekce.** Stačí jeden respirační příznak. Zahrnuje infekce způsobené všemi cirkulujícími respiračními viry: rhinoviry, RSV, covid i chřipku (ILI je podmnožinou ARI). Během chřipkové epidemie stoupá ARI jen asi dvakrát; je to ale ukazatel, který tradičně používá česká hygienická služba.
 
 {{< flu part="chart" indicator="ari" height="300" title="Všechny akutní respirační infekce (ARI)" subtitle="ARI na 100 tis. obyvatel · stejná sezóna a týden jako nahoře · celá ČR" note="U ARI záměrně chybí pásma intenzity: chřipková vlna se v ní ztrácí v celoročním pozadí jiných virů a pásma by předstírala přesnost, kterou data nemají. Práh je orientační čára spočítaná metodou MEM — není to úřední hranice, kterou pro vyhlášení epidemie používají hygienici." >}}
 {{< method inside="true" title="Proč u ARI nejsou pásma intenzity" >}}

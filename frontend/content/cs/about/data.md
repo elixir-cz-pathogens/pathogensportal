@@ -10,15 +10,12 @@ layout: about_navbar
 outputs: ["html", "sources"]
 ---
 
-## Data a citace
+Portál nesbírá primární data. Přebírá **otevřená data veřejných institucí**, zpracovává je
+a u každého grafu uvádí zdroj. Tato stránka shrnuje použité zdroje, jejich licence, frekvenci
+aktualizace a **známá omezení**.
 
-Portál sám žádná primární data nesbírá. Přebírá **otevřená data veřejných institucí**,
-zpracovává je a vykresluje — a u každého grafu říká, odkud čísla jsou. Tahle stránka to
-shrnuje na jednom místě: co používáme, pod jakou licencí, jak často se to mění a hlavně
-**co z těch dat vyčíst nejde**.
-
-Závazný je vždy původní zdroj. Když se číslo na portálu liší od čísla u zdroje, platí zdroj —
-a budeme rádi, když nám o tom [dáte vědět](#nahlasit-chybu).
+Závazný je vždy původní zdroj. Liší-li se hodnota na portálu od zdroje, platí údaj zdroje.
+Rozdíl prosím [nahlaste](#nahlasit-chybu).
 
 ## Katalog zdrojů
 
@@ -27,27 +24,27 @@ a budeme rádi, když nám o tom [dáte vědět](#nahlasit-chybu).
 ## Licence
 
 - **Texty, grafy a zpracování na portálu:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) —
-  můžete je šířit a upravovat, když uvedete zdroj.
-- **Převzatá data:** platí licence původního zdroje, uvedená v katalogu. Kde ji zdroj
-  neuvádí, píšeme to tak — než taková data použijete dál, ověřte si podmínky u něj.
-- **Kód:** licence [MIT](https://opensource.org/license/mit); oba repozitáře jsou veřejné na [GitHubu](https://github.com/elixir-cz-pathogens).
+  lze je sdílet a upravovat za podmínky uvedení autora, licence a případných změn.
+- **Převzatá data:** platí licence původního zdroje, uvedená v katalogu. Pokud zdroj
+  licenci neuvádí, katalog to výslovně uvádí. Podmínky dalšího užití je nutné ověřit
+  u poskytovatele.
+- **Kód:** licence [MIT](https://opensource.org/license/mit); zdrojový kód webu (pathogensportal) i zpracování dat (pathogensportal-db) je veřejný na
+  [GitHubu](https://github.com/elixir-cz-pathogens).
 
 ## Strojově čitelná data
 
-Každý graf se kreslí ze statického souboru JSON, který si můžete stáhnout. Adresy jsou
-stabilní; obsah se přepisuje s každým během datové pipeline a datum posledního běhu
-je u panelu v řádku „Aktualizace".
+Každý graf se kreslí ze statického souboru JSON, který si můžete stáhnout. Adresy souborů
+se nemění, obsah se přepisuje při každé aktualizaci dat. Datum poslední aktualizace je uvedeno
+u panelu. Starší verze souborů portál nearchivuje.
 
 {{< data-files >}}
 
 Soubory jsou **zpracovaná data pro grafy**, ne surová data — agregace, přepočty na obyvatele
 a výběr řad už v nich jsou. Pro vlastní analýzu sáhněte po původním zdroji.
 
-Strojově je k dispozici i **tenhle katalog**: [`sources.json`](sources.json) nese u každého
-zdroje vydavatele, licenci, pokrytí, podrobnost, frekvenci aktualizace a hlavně pole `limits`
-— větu o tom, co z dat vyčíst **nejde**. Jednotlivé panely navíc nesou
-[schema.org/Dataset](https://schema.org/Dataset) v JSON-LD přímo v hlavičce stránky, takže
-vyhledávače a další nástroje poznají, nad jakou datovou sadou stránka stojí, bez čtení textu.
+Katalog zdrojů je k dispozici i ve strojově čitelné podobě ([`sources.json`](sources.json)),
+včetně pole `limits` s popisem omezení dat. Stránky panelů obsahují metadata
+[schema.org/Dataset](https://schema.org/Dataset) (JSON-LD).
 
 ### Katalog podle DCAT-AP-CZ
 
@@ -63,12 +60,12 @@ odkazuje v přehledu výš.
 
 ## Nahlásit chybu {#nahlasit-chybu}
 
-Našli jste číslo, které nesedí se zdrojem, rozbitý graf nebo nejasnou formulaci?
-Napište na [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz), nebo založte issue:
+Chyby v datech, nefunkční grafy a nejasné formulace hlaste e-mailem na
+[hpaces@img.cas.cz](mailto:hpaces@img.cas.cz), nebo jako issue na GitHubu:
 k webu v repozitáři [pathogensportal](https://github.com/elixir-cz-pathogens/pathogensportal/issues),
 k datům a výpočtům v [pathogensportal-db](https://github.com/elixir-cz-pathogens/pathogensportal-db/issues).
 
-## Co portál nedělá
+## Omezení portálu
 
 - **Nepřijímá a nezpřístupňuje citlivá data.** Všechno, co tu je, jsou veřejné agregované
   údaje bez osobních informací. Řízený přístup k neveřejným datům portál zatím nenabízí.

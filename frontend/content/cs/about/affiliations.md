@@ -1,13 +1,11 @@
 ---
-title: Partneři
+title: Partneři a podpora
 menu:
   footer_about:
-    name: Partneři
+    name: Partneři a podpora
     weight: 3
 layout: about_navbar
 ---
-
-## Afiliace a partneři
 
 {{< organization name="Ústav molekulární genetiky AV ČR (IMG)" img="/images/IMG.png" >}}
 [www.img.cas.cz](https://www.img.cas.cz) — hlavní pracoviště zajišťující obsah a analýzy portálu.
@@ -26,7 +24,7 @@ layout: about_navbar
 {{< /organization >}}
 
 {{< organization name="FIT ČVUT v Praze" img="/images/FIT_CVUT.svg" >}}
-[fit.cvut.cz](https://fit.cvut.cz) — Fakulta informačních technologií ČVUT, spoluautorské pracoviště portálu.
+[fit.cvut.cz](https://fit.cvut.cz) — Fakulta informačních technologií ČVUT, spolupráce na vývoji portálu.
 {{< /organization >}}
 
 {{< organization name="Vojenský zdravotní ústav (VZÚ)" img="/images/VZU.png" >}}
@@ -41,4 +39,7 @@ layout: about_navbar
 Portál vzniká v rámci projektu **ELIXIR IMPACT2** podpořeného z
 [Programu švýcarsko-české spolupráce](https://www.swiss-contribution.cz/) (druhý švýcarský příspěvek vybraným členským státům EU).
 {{< /organization >}}
+
+Poskytovatelé dat (ÚZIS, SZÚ, MZČR, ČSÚ, WHO, ECDC) nejsou partnery projektu; jejich data
+portál přebírá z otevřených zdrojů.
 

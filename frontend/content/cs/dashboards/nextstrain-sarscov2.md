@@ -10,7 +10,7 @@ update_freq: "Denně (Nextstrain server)"
 redirect_url: "https://nextstrain.org/ncov/gisaid/europe"
 ---
 
-Tento panel otevírá **Nextstrain** — standard pro real-time fylogenomickou surveillance patogenů, vyvinutý Bedford Lab (Fred Hutch / WHO).
+Tento panel otevírá **Nextstrain**, široce používanou platformu pro průběžnou fylogenetickou analýzu patogenů. Nextstrain je open-source projekt, který založili Trevor Bedford (Fred Hutch) a Richard Neher (Univerzita v Basileji).
 
 ### Co Nextstrain zobrazuje
 
@@ -19,9 +19,9 @@ Tento panel otevírá **Nextstrain** — standard pro real-time fylogenomickou s
 - **Časová osa** — kdy které varianty vznikly a dominovaly
 - **České sekvence** — ČR přispívá sekvencemi přes GISAID
 
-### Dostupné Nextstrain buildy
+### Dostupné analýzy Nextstrain
 
-| Build | Popis |
+| Analýza | Popis |
 |-------|-------|
 | [ncov/gisaid/europe](https://nextstrain.org/ncov/gisaid/europe) | Evropa — GISAID sekvence (obsahuje CZ) |
 | [ncov/open/global](https://nextstrain.org/ncov/open/global) | Globální open-data build |
@@ -31,16 +31,4 @@ Tento panel otevírá **Nextstrain** — standard pro real-time fylogenomickou s
   Otevřít Nextstrain — SARS-CoV-2 Evropa
 </a>
 
-### Lokální Nextstrain build (pro vlastní sekvence)
-
-Pro build z vlastních/lokálních sekvencí je k dispozici Nextstrain/Augur Docker kontejner v `docker-compose.yml` (profil `nextstrain`):
-
-```bash
-docker compose --profile nextstrain run augur --help
-```
-
-Potřebné vstupní soubory:
-- `nextstrain/data/sequences.fasta` — FASTA sekvence z GISAID/ENA
-- `nextstrain/data/metadata.tsv` — metadata (datum, zdroj, lokalita)
-
-<p class="stat-source">Nextstrain: open source · Bedford Lab · MIT licence</p>
+<p class="stat-source">Nextstrain (Augur, Auspice): open source, licence AGPL-3.0</p>
