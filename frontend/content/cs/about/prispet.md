@@ -106,7 +106,7 @@ Pole `file` můžete uvést vícekrát, nebo poslat jeden archiv (`-F file=@expo
 
 | Odpověď | Co znamená |
 |---|---|
-| `200`, `"status": "accepted"` | vše prošlo kontrolou a čeká na posouzení |
+| `200`, `"status": "accepted"` | vše prošlo kontrolou a je uložené |
 | `200`, `"status": "duplicate"` | přesně tytéž soubory jsme už přijali, nový záznam nevzniká |
 | `422`, `"status": "rejected"` | chyby jsou v `report.issues` (soubor, řádek, sloupec, popis); opravte a pošlete znovu |
 | `422` s `detail` | chybí prohlášení nebo je neznámá šablona |
@@ -124,16 +124,11 @@ tajných údajů. Kdyby unikl, dejte nám vědět: zneplatníme ho a vydáme nov
 2. **Uložení.** Přijatý soubor uložíme na serveru portálu v datovém centru CESNET, spolu s
    protokolem kontroly a záznamem o tom, kdy a kdo potvrdil prohlášení. Stejný soubor poslaný
    znovu poznáme a podruhé neukládáme.
-3. **Posouzení člověkem.** Před zveřejněním data zkontroluje někdo z týmu portálu — zejména jestli
-   z malých počtů v malém území nejde poznat konkrétní člověk.
-4. **Zpracování a zveřejnění.** Schválená data zpracujeme do grafů na panelu a uvedeme vaši
-   instituci jako zdroj. Zveřejňujeme je pod licencí
-   [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.cs) — kdokoli je smí dál používat,
-   pokud uvede zdroj.
-5. **Oprava a stažení.** O opravu nebo stažení dat můžete kdykoli požádat. Data, která si
-   mezitím někdo stáhl, už ale odvolat nemůžeme.
+3. **Další postup.** Nahraná data se na portálu automaticky nezveřejňují. Jak s nimi naložíme,
+   s vámi domluvíme.
+4. **Oprava a smazání.** O opravu nebo smazání uložených dat můžete kdykoli požádat.
 
-Původní soubory nikomu dalšímu nepředáváme; zveřejňujeme jen to, co je vidět na panelu. Jak
+Nahrané soubory nikomu dalšímu nepředáváme. Jak
 zacházíme s vašimi kontaktními údaji, popisují zásady zpracování osobních údajů (odkaz v patičce).
 
 ## Kontakt

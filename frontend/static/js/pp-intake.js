@@ -73,7 +73,7 @@
       out.append(el("p", "pp-intake__ok",
         (!several ? "Soubor je" : n === 2 ? "Oba soubory jsou" : n <= 4 ? "Všechny " + n + " soubory jsou"
           : "Všech " + n + " souborů je") + " v pořádku (" + rowsCs(rep.rows) +
-        "). Před zveřejněním " + (several ? "je" : "ho") + " ještě posoudíme."));
+        "); " + (several ? "uložili jsme je." : "uložili jsme ho.")));
     } else {
       out.append(el("p", null, "Nahrání jsme nepřijali. Opravte prosím tyto chyby a nahrajte ho znovu:"));
     }

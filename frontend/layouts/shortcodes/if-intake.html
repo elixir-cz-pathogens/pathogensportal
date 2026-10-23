@@ -1,0 +1,9 @@
+{{/* Content shown only where the data intake page is built (staging today).
+
+     Usage: {{% if-intake %}} …markdown linking to /about/prispet/… {{% /if-intake %}}
+
+     about/prispet is left out of the production build (hugo.toml ignoreFiles),
+     so any text that links to it must disappear with it — otherwise production
+     shows links to a page that does not exist. Use the % delimiters so the
+     inner Markdown, headings included, is rendered. */}}
+{{- if site.GetPage "/about/prispet" }}{{ .Inner }}{{ end -}}

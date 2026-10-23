@@ -30,6 +30,7 @@ cs:
         - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data se nepředávají třetím stranám."
         - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Nejde o identifikátor a nikam se neodesílá."
     - h: Žadatelé a poskytovatelé dat
+      intake: true
       p:
         - "Pokud pošlete **žádost o zapojení** jako poskytovatel dat, zpracováváme jméno, e-mail, instituci a (nepovinně) pracovní zařazení, které ve formuláři uvedete, spolu s popisem nabízených dat. Používáme je jen k posouzení žádosti a ke komunikaci s vámi."
         - "U **schváleného poskytovatele** navíc evidujeme přidělený klíč (ukládáme jen jeho otisk, ne klíč samotný) a u každého nahraného souboru čas nahrání a potvrzení prohlášení o zpracování dat. Slouží to k doložení, odkud zveřejněná data pocházejí a kdo souhlasil s jejich zveřejněním."
@@ -57,6 +58,7 @@ en:
         - "**Which pages are read** — our own analytics running on our server, with no cookies and no device identifier. The data does not go to third parties."
         - "**On your device** we store a single item, and only so that this notice does not appear on every visit. It is not an identifier and it goes nowhere."
     - h: Applicants and data providers
+      intake: true
       p:
         - "If you send a **request to contribute data**, we process the name, e-mail, institution and (optionally) position you enter in the form, together with the description of the data on offer. We use them only to assess the request and to communicate with you."
         - "For an **approved provider** we also keep a record of the key issued (we store only its fingerprint, not the key itself) and, for every uploaded file, when it was uploaded and that the data-processing declaration was confirmed. This documents where published data come from and who agreed to their publication."

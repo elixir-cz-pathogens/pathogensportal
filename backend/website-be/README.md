@@ -52,7 +52,8 @@ docker run -d --rm --name pp-testdb -e POSTGRES_USER=portal -e POSTGRES_PASSWORD
   -e POSTGRES_DB=pathogens -p 127.0.0.1:55432:5432 postgres:16-alpine
 DB_HOST=127.0.0.1 DB_PORT=55432 POSTGRES_PASSWORD=test INTAKE_DIR=/tmp/intake \
   uvicorn app.main:app --port 8010
-(cd ../../frontend && HUGO_PARAMS_INTAKE_API=http://127.0.0.1:8010/api/intake hugo server)
+# The intake page is built only in the staging environment (frontend/config/staging/).
+(cd ../../frontend && HUGO_PARAMS_INTAKE_API=http://127.0.0.1:8010/api/intake hugo server --environment staging)
 PP_TEST_DB=1 DB_HOST=127.0.0.1 DB_PORT=55432 POSTGRES_PASSWORD=test pytest   # incl. real-DB tests
 ```
 

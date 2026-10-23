@@ -3,6 +3,11 @@ title = "Pathogen Portal CZ"
 theme = "hugo-pathogens-portal"
 defaultContentLanguage = "cs"
 defaultContentLanguageInSubdir = false
+
+# The data intake (about/prispet) needs website-be, which runs on staging only.
+# Production must not show forms that cannot send, so the page is left out of
+# every build except `--environment staging` (config/staging/hugo.toml).
+ignoreFiles = ['about/prispet\.md$']
 enableRobotsTXT = true
 
 # Source of .Lastmod, which the home page uses to order cards. Without it

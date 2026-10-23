@@ -57,10 +57,16 @@
     {{ range $l := slice "cs" "en" }}
     {{ $t := index $.Site.Data.privacy $l }}
     <div class="pp-privacy-dialog__body" data-lang="{{ $l }}"{{ if ne $l $pageLang }} hidden{{ end }}>
-      {{ range $t.sections }}
+      {{/* A section marked `intake: true` describes the data intake, which only
+           exists where about/prispet is built (staging) — elsewhere it would
+           describe processing that does not happen. Decided by the intake API
+           setting, not by looking the page up: the page is Czech only, and the
+           English notice must show the section too. */}}
+      {{ $intake := site.Params.intake.api }}
+      {{ range $t.sections }}{{ if or (not .intake) $intake }}
       <h3>{{ .h }}</h3>
       {{ range .p }}<p>{{ . | markdownify }}</p>{{ end }}
-      {{ end }}
+      {{ end }}{{ end }}
     </div>
     {{ end }}
   </article>

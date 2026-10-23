@@ -58,13 +58,15 @@ Přebíraná data v tomto katalogu **nejsou**. Publikovali je jejich původci (�
 WHO, ECDC) a najdete je v [Národním katalogu otevřených dat](https://data.gov.cz); portál na ně
 odkazuje v přehledu výš.
 
+{{% if-intake %}}
 ## Poskytnout data {#poskytnout-data}
 
 Portál přijímá i data přímo od institucí: agregované soubory CSV bez osobních údajů. Kdo chce
 přispět, pošle [žádost](/about/prispet/#zadost); po schválení dostane klíč a data nahrává
 [ručně](/about/prispet/#nahrani) nebo [automaticky ze svého systému](/about/prispet/#strojove-nahravani).
-Každý soubor se hned zkontroluje a před zveřejněním ho posoudí člověk; na panelu je pak
-poskytovatel uvedený jako zdroj. Celý postup popisuje stránka [Chci přispět](/about/prispet/).
+Každý soubor se hned po nahrání automaticky zkontroluje. Celý postup popisuje stránka
+[Chci přispět](/about/prispet/).
+{{% /if-intake %}}
 
 ## Nahlásit chybu {#nahlasit-chybu}
 

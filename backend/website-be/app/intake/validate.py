@@ -262,7 +262,7 @@ def validate_csv(raw: bytes, template: Template) -> Report:
         report.add(
             "warning",
             f"{_cs_values(small)} než {SMALL_COUNT}. U malých počtů v malém území hrozí, "
-            "že půjde poznat konkrétního člověka — posoudíme to při revizi.",
+            "že půjde poznat konkrétního člověka. Zvažte prosím sloučení do větších celků.",
             column="hodnota",
         )
     if not report.ok:
