@@ -10,13 +10,6 @@ update_from: "flu_mem.json"
 update_read: "stamp"
 ---
 
-{{< callout tone="warning" >}}
-**Stránka je ve vývoji.** Výpočty i podoba se ještě mění a čísla tu mohou být neúplná nebo
-vzájemně nesourodá: hlášení chodí se zpožděním a zpětně se doplňují, přes léto se nehlásí
-vůbec, pokrytá populace se mezi sezónami mění a předpověď pochází od třetí strany. Neberte
-stránku jako podklad pro rozhodování — závazné jsou údaje SZÚ, ÚZIS a MZČR.
-{{< /callout >}}
-
 {{< flu part="status" />}}
 
 {{< method title="Jak se pozná trend a jak často se trefuje" >}}

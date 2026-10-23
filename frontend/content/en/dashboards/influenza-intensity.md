@@ -10,14 +10,6 @@ update_from: "flu_mem.json"
 update_read: "stamp"
 ---
 
-{{< callout tone="warning" >}}
-**This page is under development.** The calculations and the layout are still changing and the
-figures may be incomplete or inconsistent with each other: reports arrive late and are filled in
-retrospectively, nothing is reported over the summer, the covered population changes between
-seasons and the forecast comes from a third party. Do not use the page as a basis for decisions —
-the figures of NIPH (SZÚ), IHIS (ÚZIS) and the Ministry of Health are binding.
-{{< /callout >}}
-
 {{< flu part="status" />}}
 
 {{< method title="How the trend is determined and how often it is right" >}}
