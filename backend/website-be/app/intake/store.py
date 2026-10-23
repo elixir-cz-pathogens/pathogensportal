@@ -48,7 +48,8 @@ class Provider:
     name: str
     institution: str
     email: str
-    key_hash: str
+    # Empty until the provider claims the key through the one-time link (claims).
+    key_hash: str | None
     key_prefix: str
     created_at: datetime
     revoked_at: datetime | None = None
@@ -56,10 +57,27 @@ class Provider:
     # unique on purpose: a replacement key for the same institution keeps the slug,
     # so its data keep landing in the same place.
     slug: str = ""
+    # A one-off contribution: the key stops working after the first accepted upload.
+    single_use: bool = False
 
     @property
     def active(self) -> bool:
         return self.revoked_at is None
+
+    @property
+    def claimed(self) -> bool:
+        return bool(self.key_hash)
+
+
+@dataclass(frozen=True)
+class Claim:
+    """A one-time link that hands a provider its key (see api.claim)."""
+    token_hash: str
+    provider_id: str
+    created_at: datetime
+    expires_at: datetime
+    claimed_at: datetime | None = None
+    claimed_ip: str = ""
 
 
 @dataclass(frozen=True)
@@ -85,7 +103,12 @@ class Store(Protocol):
     def get_request(self, request_id: str) -> Request | None: ...
     def list_requests(self, status: str | None = None) -> list[Request]: ...
     def decide_request(self, request_id: str, status: str, by: str, note: str = "") -> Request: ...
-    def add_provider(self, request: Request, key_hash: str, key_prefix: str, slug: str = "") -> Provider: ...
+    def add_provider(self, request: Request, key_hash: str | None, key_prefix: str, slug: str = "",
+                     single_use: bool = False) -> Provider: ...
+    def get_provider(self, provider_id: str) -> Provider | None: ...
+    def add_claim(self, provider_id: str, token_hash: str, expires_at: datetime) -> Claim: ...
+    def find_claim(self, token_hash: str) -> Claim | None: ...
+    def redeem_claim(self, token_hash: str, key_hash: str, key_prefix: str, ip: str) -> Provider | None: ...
     def provider_by_key_hash(self, key_hash: str) -> Provider | None: ...
     def list_providers(self) -> list[Provider]: ...
     def revoke_provider(self, provider_id: str) -> Provider: ...
@@ -101,6 +124,7 @@ class MemoryStore:
         self.requests: dict[str, Request] = {}
         self.providers: dict[str, Provider] = {}
         self.uploads: dict[str, Upload] = {}
+        self.claims: dict[str, Claim] = {}
 
     def add_request(self, data: dict) -> Request:
         r = Request(id=str(uuid.uuid4()), created_at=_now(), **{k: data.get(k, "") for k in REQUEST_FIELDS})
@@ -119,12 +143,34 @@ class MemoryStore:
         self.requests[request_id] = r
         return r
 
-    def add_provider(self, request: Request, key_hash: str, key_prefix: str, slug: str = "") -> Provider:
+    def add_provider(self, request: Request, key_hash: str | None, key_prefix: str, slug: str = "",
+                     single_use: bool = False) -> Provider:
         p = Provider(
             id=str(uuid.uuid4()), request_id=request.id, name=request.name,
             institution=request.institution, email=request.email,
-            key_hash=key_hash, key_prefix=key_prefix, created_at=_now(), slug=slug,
+            key_hash=key_hash, key_prefix=key_prefix, created_at=_now(), slug=slug, single_use=single_use,
         )
+        self.providers[p.id] = p
+        return p
+
+    def get_provider(self, provider_id: str) -> Provider | None:
+        return self.providers.get(provider_id)
+
+    def add_claim(self, provider_id: str, token_hash: str, expires_at: datetime) -> Claim:
+        c = Claim(token_hash, provider_id, _now(), expires_at)
+        self.claims[token_hash] = c
+        return c
+
+    def find_claim(self, token_hash: str) -> Claim | None:
+        return self.claims.get(token_hash)
+
+    def redeem_claim(self, token_hash: str, key_hash: str, key_prefix: str, ip: str) -> Provider | None:
+        c = self.claims.get(token_hash)
+        p = self.providers.get(c.provider_id) if c else None
+        if c is None or c.claimed_at is not None or c.expires_at <= _now() or p is None or not p.active:
+            return None
+        self.claims[token_hash] = replace(c, claimed_at=_now(), claimed_ip=ip)
+        p = replace(p, key_hash=key_hash, key_prefix=key_prefix)
         self.providers[p.id] = p
         return p
 
@@ -213,13 +259,27 @@ SCHEMA = (
     "ALTER TABLE intake.uploads ADD COLUMN IF NOT EXISTS declaration TEXT NOT NULL DEFAULT ''",
     # Added 23 Oct 2026 — the hand-over directory name, see Provider.slug.
     "ALTER TABLE intake.providers ADD COLUMN IF NOT EXISTS slug TEXT NOT NULL DEFAULT ''",
+    # Added 23 Oct 2026 — keys handed over by one-time link, and one-off keys.
+    "ALTER TABLE intake.providers ALTER COLUMN key_hash DROP NOT NULL",
+    "ALTER TABLE intake.providers ADD COLUMN IF NOT EXISTS single_use BOOLEAN NOT NULL DEFAULT false",
+    """
+    CREATE TABLE IF NOT EXISTS intake.claims (
+        token_hash  TEXT PRIMARY KEY,
+        provider_id UUID NOT NULL REFERENCES intake.providers (id),
+        created_at  TIMESTAMPTZ NOT NULL,
+        expires_at  TIMESTAMPTZ NOT NULL,
+        claimed_at  TIMESTAMPTZ,
+        claimed_ip  TEXT NOT NULL DEFAULT ''
+    )
+    """,
     # Duplicate check and the daily limit both look up a provider's uploads.
     "CREATE INDEX IF NOT EXISTS uploads_provider_sha ON intake.uploads (provider_id, sha256)",
     "CREATE INDEX IF NOT EXISTS uploads_provider_time ON intake.uploads (provider_id, received_at)",
 )
 
 _REQ_COLS = "id, created_at, " + ", ".join(REQUEST_FIELDS) + ", status, decided_at, decided_by, note"
-_PROV_COLS = "id, request_id, name, institution, email, key_hash, key_prefix, created_at, revoked_at, slug"
+_PROV_COLS = "id, request_id, name, institution, email, key_hash, key_prefix, created_at, revoked_at, slug, single_use"
+_CLAIM_COLS = "token_hash, provider_id, created_at, expires_at, claimed_at, claimed_ip"
 _UP_COLS = "id, provider_id, received_at, template, filename, sha256, rows, status, report, path, declaration"
 
 
@@ -229,6 +289,10 @@ def _req(row) -> Request:
 
 def _prov(row) -> Provider:
     return Provider(str(row[0]), str(row[1]), *row[2:])
+
+
+def _claim(row) -> Claim:
+    return Claim(row[0], str(row[1]), *row[2:])
 
 
 def _up(row) -> Upload:
@@ -283,15 +347,54 @@ class PostgresStore:
             raise KeyError(request_id)
         return _req(row)
 
-    def add_provider(self, request: Request, key_hash: str, key_prefix: str, slug: str = "") -> Provider:
-        p = MemoryStore().add_provider(request, key_hash, key_prefix, slug)
+    def add_provider(self, request: Request, key_hash: str | None, key_prefix: str, slug: str = "",
+                     single_use: bool = False) -> Provider:
+        p = MemoryStore().add_provider(request, key_hash, key_prefix, slug, single_use)
         with self._db.connect() as conn:
             conn.execute(
-                f"INSERT INTO intake.providers ({_PROV_COLS}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                f"INSERT INTO intake.providers ({_PROV_COLS}) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 (p.id, p.request_id, p.name, p.institution, p.email, p.key_hash, p.key_prefix, p.created_at, None,
-                 p.slug),
+                 p.slug, p.single_use),
             )
         return p
+
+    def get_provider(self, provider_id: str) -> Provider | None:
+        with self._db.connect() as conn:
+            row = conn.execute(f"SELECT {_PROV_COLS} FROM intake.providers WHERE id = %s", (provider_id,)).fetchone()
+        return _prov(row) if row else None
+
+    def add_claim(self, provider_id: str, token_hash: str, expires_at: datetime) -> Claim:
+        c = Claim(token_hash, provider_id, _now(), expires_at)
+        with self._db.connect() as conn:
+            conn.execute(
+                f"INSERT INTO intake.claims ({_CLAIM_COLS}) VALUES (%s, %s, %s, %s, %s, %s)",
+                (c.token_hash, c.provider_id, c.created_at, c.expires_at, None, ""),
+            )
+        return c
+
+    def find_claim(self, token_hash: str) -> Claim | None:
+        with self._db.connect() as conn:
+            row = conn.execute(f"SELECT {_CLAIM_COLS} FROM intake.claims WHERE token_hash = %s", (token_hash,)).fetchone()
+        return _claim(row) if row else None
+
+    def redeem_claim(self, token_hash: str, key_hash: str, key_prefix: str, ip: str) -> Provider | None:
+        # One transaction; the conditional UPDATE is what makes the link single-use
+        # even when two clicks race: only one of them gets a row back.
+        with self._db.connect() as conn:
+            row = conn.execute(
+                "UPDATE intake.claims c SET claimed_at = %s, claimed_ip = %s "
+                "FROM intake.providers p "
+                "WHERE c.token_hash = %s AND c.claimed_at IS NULL AND c.expires_at > %s "
+                "AND p.id = c.provider_id AND p.revoked_at IS NULL RETURNING c.provider_id",
+                (_now(), ip, token_hash, _now()),
+            ).fetchone()
+            if row is None:
+                return None
+            prov = conn.execute(
+                f"UPDATE intake.providers SET key_hash = %s, key_prefix = %s WHERE id = %s RETURNING {_PROV_COLS}",
+                (key_hash, key_prefix, row[0]),
+            ).fetchone()
+        return _prov(prov)
 
     def provider_by_key_hash(self, key_hash: str) -> Provider | None:
         with self._db.connect() as conn:

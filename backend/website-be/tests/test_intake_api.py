@@ -396,3 +396,104 @@ def test_forwarded_header_is_believed_from_a_configured_proxy(env, monkeypatch):
     req = Request({"type": "http", "client": ("198.51.100.1", 1234),
                    "headers": [(b"x-forwarded-for", b"203.0.113.7")]})
     assert api.client_ip(req) == "198.51.100.1"
+
+
+# ── Key hand-over by one-time link, one-off keys, invalid-key alerts ────────
+from datetime import datetime, timedelta, timezone
+
+
+def _link(store: MemoryStore, client, single_use=False, hours=72) -> str:
+    """What `cli.py issue` does: a provider with no key yet, and a claim token."""
+    r = store.get_request(client.post("/api/intake/requests", json=FORM).json()["id"])
+    p = store.add_provider(r, None, "", "zkusebni-ustav", single_use)
+    token = keys.generate_claim()
+    store.add_claim(p.id, keys.digest(token), datetime.now(timezone.utc) + timedelta(hours=hours))
+    return token
+
+
+def test_claim_gives_a_working_key_once(env, caplog):
+    client, store, _ = env
+    token = _link(store, client)
+    r = client.post("/api/intake/claim", json={"token": token})
+    assert r.status_code == 200 and r.headers["cache-control"] == "no-store"
+    key = r.json()["key"]
+    assert _post(client, key).status_code == 200
+    # Only the hash is kept, for the key and the token alike.
+    p = store.list_providers()[0]
+    assert p.key_hash == keys.digest(key) and key not in repr(store.__dict__)
+    assert token not in repr(store.__dict__)
+
+    caplog.clear()
+    again = client.post("/api/intake/claim", json={"token": token})
+    assert again.status_code == 410 and "už byl použit" in again.json()["detail"]
+    assert "Odkaz na klíč otevřen podruhé" in caplog.text
+
+
+def test_expired_claim_is_refused(env):
+    client, store, _ = env
+    token = _link(store, client, hours=-1)
+    r = client.post("/api/intake/claim", json={"token": token})
+    assert r.status_code == 410 and "vypršela" in r.json()["detail"]
+    assert store.list_providers()[0].key_hash is None
+
+
+def test_unknown_claim_is_404(env):
+    client, _, _ = env
+    assert client.post("/api/intake/claim", json={"token": keys.generate_claim()}).status_code == 404
+
+
+def test_unclaimed_provider_cannot_upload(env):
+    client, store, _ = env
+    _link(store, client)
+    # A provider without a key must not match an empty or missing hash.
+    assert _post(client, "").status_code == 401
+
+
+def test_single_use_key_stops_after_the_first_accepted_upload(env):
+    client, store, _ = env
+    key = client.post("/api/intake/claim", json={"token": _link(store, client, single_use=True)}).json()["key"]
+    bad = b"obdobi,uzemi,hodnota\n2026,CZ,1\n"
+    # A rejected upload does not use it up — the provider fixes the file and resends.
+    assert _post(client, key, bad).status_code == 422
+    r = _post(client, key)
+    assert r.status_code == 200 and r.json()["key_revoked"] is True
+    assert _post(client, key, GOOD_CSV + b"2026-W41,CZ,x,1\n").status_code == 401
+
+
+def test_ten_invalid_keys_in_a_row_alert_the_operator_once(env, caplog, monkeypatch):
+    client, _, _ = env
+    api._failures.clear()
+    caplog.clear()
+    for _ in range(12):
+        assert _post(client, "pp_" + "x" * 40).status_code == 401
+    alerts = [r for r in caplog.records if "Opakované pokusy" in r.getMessage()]
+    assert len(alerts) == 1 and "(10×)" in alerts[0].getMessage()
+    # The attempted key is never logged whole.
+    assert "pp_" + "x" * 40 not in caplog.text
+
+
+def test_a_valid_key_resets_the_count(env, caplog):
+    client, store, _ = env
+    api._failures.clear()
+    key = approve(store, client.post("/api/intake/requests", json=FORM).json()["id"])
+    for _ in range(9):
+        _post(client, "pp_" + "y" * 40)
+    _post(client, key)
+    caplog.clear()
+    _post(client, "pp_" + "y" * 40)
+    assert "Opakované pokusy" not in caplog.text
+
+
+def test_notification_is_spooled_for_the_host_mailer(env, tmp_path, monkeypatch):
+    from email import message_from_bytes, policy
+
+    client, _, _ = env
+    spool = tmp_path / "spool"
+    spool.mkdir()
+    monkeypatch.setattr(settings, "intake_notify_spool", str(spool))
+    monkeypatch.setattr(settings, "intake_notify_to", ["approver@example.org"])
+    client.post("/api/intake/requests", json=FORM)
+    files = list(spool.iterdir())
+    assert len(files) == 1 and files[0].suffix == ".eml"
+    msg = message_from_bytes(files[0].read_bytes(), policy=policy.default)
+    assert msg["To"] == "approver@example.org" and "Zkušební ústav" in msg["Subject"]

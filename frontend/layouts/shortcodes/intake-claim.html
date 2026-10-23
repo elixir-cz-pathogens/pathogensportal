@@ -1,0 +1,30 @@
+{{/* Turns a one-time link into the provider's key (api.claim, keys.claim_url).
+
+     Usage: {{< intake-claim >}}  — on about/klic, opened as /about/klic/#ppc_…
+
+     The token is in the URL fragment, which the browser never sends anywhere;
+     pp-intake.js reads it, removes it from the address bar, and posts it only
+     when the provider presses the button. Not on page load: e-mail scanners
+     open links to check them, and a link they could spend would reach the
+     provider already used. */}}
+{{ $api := site.Params.intake.api | default "" }}
+<div class="pp-intake" data-pp-claim data-endpoint="{{ with $api }}{{ . }}/claim{{ end }}">
+  <div data-pp-claim-start>
+    <p>Tímto odkazem si převezmete <strong>klíč pro nahrávání dat</strong>. Odkaz funguje
+    <strong>jen jednou</strong>: klíč se vytvoří a zobrazí teď a znovu ho ukázat nepůjde.
+    Mějte připravené místo, kam si ho bezpečně uložíte (správce hesel, proměnná prostředí).</p>
+    <button type="button" class="pp-hero__cta" data-pp-claim-go>Převzít klíč</button>
+  </div>
+  <div data-pp-claim-done hidden>
+    <p class="pp-intake__ok">Váš klíč — uložte si ho teď, znovu se nezobrazí:</p>
+    <p><input type="text" readonly data-pp-claim-key class="pp-intake__key" aria-label="Klíč">
+    <button type="button" class="pp-hero__cta" data-pp-claim-copy>Zkopírovat</button></p>
+    <p data-pp-claim-mode></p>
+    <ul>
+      <li>Klíč nikomu nepřeposílejte a neukládejte ho do kódu, repozitáře ani e-mailu.</li>
+      <li>Kdyby se dostal k někomu jinému, dejte nám hned vědět — zneplatníme ho a pošleme nový.</li>
+      <li>Data nahrajete na stránce <a href="{{ (site.GetPage "/about/prispet").RelPermalink }}#nahrani">Chci přispět</a>.</li>
+    </ul>
+  </div>
+  <div class="pp-intake__result" role="status" aria-live="polite"></div>
+</div>

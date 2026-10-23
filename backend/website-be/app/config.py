@@ -40,6 +40,16 @@ class Settings:
     intake_trusted_proxies: list[str] = _csv_env("INTAKE_TRUSTED_PROXIES", "127.0.0.0/8,::1/128")
     # Who is told about new requests and uploads. Comma-separated. Empty = log only.
     intake_notify_to: list[str] = _csv_env("INTAKE_NOTIFY_TO", "")
+    # A directory the host's mailer empties (notify.py). On the server the
+    # container has no SMTP of its own: it drops a finished message here and a
+    # systemd path unit on the host sends it with the host's postfix.
+    intake_notify_spool: str = os.getenv("INTAKE_NOTIFY_SPOOL", "")
+    # Where the site is, for the one-time key links the CLI prints.
+    intake_public_url: str = os.getenv("INTAKE_PUBLIC_URL", "http://127.0.0.1:1313").rstrip("/")
+    # How long a one-time key link stays valid.
+    intake_claim_hours: int = int(os.getenv("INTAKE_CLAIM_HOURS", "72"))
+    # Invalid keys in a row from one address before the operator is e-mailed.
+    intake_auth_alert_after: int = int(os.getenv("INTAKE_AUTH_ALERT_AFTER", "10"))
     intake_smtp_host: str = os.getenv("INTAKE_SMTP_HOST", "")
     intake_smtp_port: int = int(os.getenv("INTAKE_SMTP_PORT", "587"))
     intake_smtp_user: str = os.getenv("INTAKE_SMTP_USER", "")

@@ -103,14 +103,24 @@ def test_cli_issue_creates_an_approved_provider_and_prints_the_key_once(store, c
 
     assert cli.main(["issue", "--slug", "svu-praha-omb", "--name", "Alexandr Test",
                      "--email", "a@example.org", "--institution", "SVÚ Praha", "--by", "test"]) == 0
-    key = capsys.readouterr().out.strip().splitlines()[-1]
-    p = store.provider_by_key_hash(keys.digest(key))
-    assert p is not None and p.slug == "svu-praha-omb" and p.institution == "SVÚ Praha"
+    out = capsys.readouterr().out
+    # No key is printed — a one-time link is.
+    assert "pp_" not in out.replace("ppc_", "")
+    token = next(line for line in out.splitlines() if "/about/klic/#" in line).split("#", 1)[1]
+    (p,) = store.list_providers()
+    assert p.slug == "svu-praha-omb" and p.institution == "SVÚ Praha" and not p.claimed and not p.single_use
     r = store.get_request(p.request_id)
     assert r.status == "approved" and r.decided_by == "test"
-    # Only the hash is stored.
+
+    key = keys.generate()
+    redeemed = store.redeem_claim(keys.digest(token), keys.digest(key), keys.display_prefix(key), "192.0.2.1")
+    assert redeemed is not None and store.provider_by_key_hash(keys.digest(key)) == redeemed
+    # Single use, also in SQL.
+    assert store.redeem_claim(keys.digest(token), keys.digest("pp_other"), "pp_oth", "192.0.2.2") is None
+    assert store.find_claim(keys.digest(token)).claimed_ip == "192.0.2.1"
+    # Only hashes are stored.
     with db.connect() as conn:
-        assert conn.execute("SELECT count(*) FROM intake.providers WHERE key_hash = %s", (key,)).fetchone()[0] == 0
+        assert conn.execute("SELECT count(*) FROM intake.claims WHERE token_hash = %s", (token,)).fetchone()[0] == 0
 
 
 def test_cli_refuses_a_bad_slug(store):
@@ -118,3 +128,12 @@ def test_cli_refuses_a_bad_slug(store):
 
     with pytest.raises(SystemExit):
         cli.main(["issue", "--slug", "../etc", "--name", "x", "--email", "x@example.org", "--institution", "x"])
+
+
+def test_approve_of_a_one_off_request_issues_a_single_use_key(store, capsys):
+    from app.intake import cli
+
+    r = store.add_request({**FORM, "frequency": "jednorázově"})
+    assert cli.main(["approve", r.id, "--slug", "jednorazovy", "--by", "test"]) == 0
+    assert "JEDNORÁZOVÝ" in capsys.readouterr().out
+    assert store.list_providers()[0].single_use

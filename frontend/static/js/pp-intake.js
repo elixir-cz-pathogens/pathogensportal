@@ -1,5 +1,6 @@
-/* Data intake forms (TODO D15): the request form (shortcodes/intake-request.html)
- * and the upload form (shortcodes/intake-upload.html).
+/* Data intake forms (TODO D15): the request form (shortcodes/intake-request.html),
+ * the upload form (shortcodes/intake-upload.html) and the key hand-over
+ * (shortcodes/intake-claim.html).
  *
  * Browser checks are for the applicant's convenience; website-be validates
  * everything again. While a form has no data-endpoint (params.intake.api is
@@ -124,12 +125,71 @@
           if (body.status === "duplicate") {
             out.textContent = "Tyto soubory už máme (přijaté " +
               new Date(body.received_at).toLocaleString("cs-CZ") + "). Nic dalšího není potřeba.";
-          } else if (body.report) renderReport(out, body);
+          } else if (body.report) {
+            renderReport(out, body);
+            if (body.key_revoked) {
+              out.append(el("p", null, "Klíč byl jednorázový a tímto nahráním přestal platit. Děkujeme za příspěvek."));
+            }
+          }
           else out.textContent = "Nahrání se nepodařilo (" + r.status + "): " + (body.detail || "");
         });
       }).catch(function () {
         out.textContent = "Nahrání se nepodařilo. Zkontrolujte připojení a zkuste to znovu.";
       });
+    });
+  });
+  /* ── Key hand-over (shortcodes/intake-claim.html) ─────────────────────── */
+  document.querySelectorAll("[data-pp-claim]").forEach(function (box) {
+    var out = box.querySelector(".pp-intake__result");
+    var start = box.querySelector("[data-pp-claim-start]");
+    var done = box.querySelector("[data-pp-claim-done]");
+    // Take the token and drop it from the address bar at once, so it is not
+    // left in the history or on the screen for anyone looking over a shoulder.
+    var token = decodeURIComponent(location.hash.replace(/^#/, ""));
+    if (location.hash) history.replaceState(null, "", location.pathname);
+    if (!/^ppc_[A-Za-z0-9_-]{20,}$/.test(token)) {
+      start.hidden = true;
+      out.textContent = "Odkaz není úplný. Otevřete prosím celý odkaz z e-mailu.";
+      return;
+    }
+    box.querySelector("[data-pp-claim-go]").addEventListener("click", function (ev) {
+      var btn = ev.currentTarget;
+      if (!box.dataset.endpoint) { out.textContent = "Převzetí klíče zatím není zapnuté."; return; }
+      btn.disabled = true;
+      out.textContent = "Vytvářím klíč…";
+      fetch(box.dataset.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: token }),
+        cache: "no-store"
+      }).then(function (r) {
+        return r.json().then(function (body) {
+          out.textContent = "";
+          if (!r.ok) {
+            out.textContent = body.detail || ("Převzetí se nepodařilo (" + r.status + ").");
+            return;
+          }
+          token = "";
+          start.hidden = true;
+          done.hidden = false;
+          var input = box.querySelector("[data-pp-claim-key]");
+          input.value = body.key;
+          input.select();
+          box.querySelector("[data-pp-claim-mode]").textContent = body.single_use
+            ? "Klíč je jednorázový: platí pro jedno přijaté nahrání dat."
+            : "Klíč platí pro opakované nahrávání dat.";
+        });
+      }).catch(function () {
+        btn.disabled = false;
+        out.textContent = "Převzetí se nepodařilo. Zkontrolujte připojení a zkuste to znovu.";
+      });
+    });
+    box.querySelector("[data-pp-claim-copy]").addEventListener("click", function () {
+      var input = box.querySelector("[data-pp-claim-key]");
+      input.select();
+      if (navigator.clipboard) navigator.clipboard.writeText(input.value);
+      else document.execCommand("copy");
+      out.textContent = "Zkopírováno.";
     });
   });
 })();

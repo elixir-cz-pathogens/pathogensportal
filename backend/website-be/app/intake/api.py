@@ -4,6 +4,7 @@
     GET  /api/intake/templates  what a CSV must look like
     POST /api/intake/uploads    one or more CSV files, or a ZIP/TAR of them, with the provider's key
     GET  /api/intake/uploads    the provider's own uploads, with the key
+    POST /api/intake/claim      a one-time link turned into the provider's key
 
 Approving a request and issuing a key is NOT an endpoint: it is `cli.py`, run
 by an administrator on the server. An approval API would need its own login,
@@ -14,24 +15,26 @@ from __future__ import annotations
 
 import hashlib
 import ipaddress
+import logging
 import re
 import time
 import uuid
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 from ..config import settings
-from pathlib import Path
-
 from . import declaration, files, keys, notify
 from .bundle import MAX_REQUEST_BYTES, BundleError, safe_names, unpack
 from .store import MemoryStore, PostgresStore, Store, Upload
 from .templates import TEMPLATES
 from .validate import to_csv, validate_csv
+
+log = logging.getLogger("intake")
 
 router = APIRouter(prefix="/api/intake", tags=["intake"])
 
@@ -152,21 +155,54 @@ def list_templates() -> dict:
     }
 
 
+# ── Invalid keys ────────────────────────────────────────────────────────────
+# Nobody guesses a 256-bit key, so attempts are not throttled (decided 23 Oct
+# 2026). Every one is logged, and a run of them from one address is reported to
+# the operator: it means a broken script at a provider, or someone probing.
+_failures: dict[str, int] = defaultdict(int)
+
+
+def _auth_failed(ip: str, presented: str, what: str) -> None:
+    _failures[ip] += 1
+    n = _failures[ip]
+    # Only the first characters: a mistyped real key must not end up in the log.
+    shown = presented[:7] + "…" if presented else "(nic)"
+    log.warning("intake: %s from %s (%d in a row), presented %s", what, ip, n, shown)
+    alert = settings.intake_auth_alert_after
+    # At the threshold, then at 10x and 100x it — a report per order of magnitude, not per attempt.
+    if alert and n in (alert, alert * 10, alert * 100):
+        notify.send(
+            f"Opakované pokusy s neplatným klíčem ({n}×)",
+            f"Z adresy {ip} přišlo {n} požadavků za sebou s neplatným klíčem nebo odkazem ({what}).\n"
+            f"Poslední začínal: {shown}\n\n"
+            "Jde buď o rozbitý skript některého poskytovatele, nebo o zkoušení klíčů.\n"
+            "Podrobnosti: sudo pp-intake log\n",
+        )
+
+
+def _auth_ok(ip: str) -> None:
+    _failures.pop(ip, None)
+
+
 # ── Uploads ─────────────────────────────────────────────────────────────────
-def _provider(authorization: str, store: Store):
+def _provider(authorization: str, store: Store, request: Request):
+    ip = client_ip(request)
     scheme, _, key = authorization.partition(" ")
-    if scheme.lower() != "bearer" or not keys.looks_valid(key.strip()):
-        raise HTTPException(status_code=401, detail="Chybí nebo je neplatný klíč.",
-                            headers={"WWW-Authenticate": "Bearer"})
-    provider = store.provider_by_key_hash(keys.digest(key.strip()))
+    key = key.strip()
+    provider = None
+    if scheme.lower() == "bearer" and keys.looks_valid(key):
+        provider = store.provider_by_key_hash(keys.digest(key))
     if provider is None:
+        _auth_failed(ip, key, "neplatný klíč")
         raise HTTPException(status_code=401, detail="Chybí nebo je neplatný klíč.",
                             headers={"WWW-Authenticate": "Bearer"})
+    _auth_ok(ip)
     return provider
 
 
 @router.post("/uploads")
 async def upload(
+    request: Request,
     # One or more files under the same field name. Each may be a CSV or a
     # ZIP/TAR of CSVs (bundle.py); one upload = everything sent in one request.
     file: list[UploadFile] = File(...),
@@ -178,7 +214,7 @@ async def upload(
     authorization: str = Header(default=""),
     store: Store = Depends(get_store),
 ) -> JSONResponse:
-    provider = _provider(authorization, store)
+    provider = _provider(authorization, store, request)
     if declaration_key != declaration.CURRENT:
         raise HTTPException(
             status_code=422,
@@ -278,6 +314,10 @@ async def upload(
         + (f"Ke zpracování: {export}\n" if export else ""),
     )
     body = {"id": stored.id, "status": stored.status, "report": result}
+    if ok and provider.single_use:
+        # A one-off contribution: the key has done its job.
+        store.revoke_provider(provider.id)
+        body["key_revoked"] = True
     return JSONResponse(content=body, status_code=200 if ok else 422)
 
 
@@ -317,8 +357,8 @@ def _check(received: list[tuple[str, bytes]], tpl) -> dict:
 
 
 @router.get("/uploads")
-def my_uploads(authorization: str = Header(default=""), store: Store = Depends(get_store)) -> dict:
-    provider = _provider(authorization, store)
+def my_uploads(request: Request, authorization: str = Header(default=""), store: Store = Depends(get_store)) -> dict:
+    provider = _provider(authorization, store, request)
     return {
         "uploads": [
             {"id": u.id, "received_at": u.received_at.isoformat(), "filename": u.filename,
@@ -326,3 +366,50 @@ def my_uploads(authorization: str = Header(default=""), store: Store = Depends(g
             for u in store.list_uploads(provider.id)
         ]
     }
+
+
+# ── Key hand-over ───────────────────────────────────────────────────────────
+class ClaimIn(BaseModel):
+    token: str = Field(max_length=100)
+
+
+@router.post("/claim")
+def claim(body: ClaimIn, request: Request, store: Store = Depends(get_store)) -> JSONResponse:
+    """Turn a one-time link into the provider's key. The key is generated here,
+    shown in this response only, and stored as a hash; the link stops working."""
+    ip = client_ip(request)
+    token_hash = keys.digest(body.token.strip())
+    known = store.find_claim(token_hash) if body.token.startswith(keys.CLAIM_PREFIX) else None
+    if known is None:
+        _auth_failed(ip, body.token, "neplatný odkaz pro převzetí klíče")
+        raise HTTPException(status_code=404, detail="Odkaz není platný. Zkontrolujte, že jste ho zkopírovali celý.")
+    if known.claimed_at is not None:
+        # The case the whole design is for: tell the operator at once.
+        notify.send(
+            "Odkaz na klíč otevřen podruhé",
+            f"Někdo z adresy {ip} otevřel odkaz pro převzetí klíče, který už byl použit "
+            f"{known.claimed_at:%Y-%m-%d %H:%M} UTC z adresy {known.claimed_ip}.\n"
+            f"Poskytovatel: {known.provider_id}\n\n"
+            "Pokud to nebyl sám poskytovatel, klíč zneplatněte: sudo pp-intake revoke <id>\n",
+        )
+        raise HTTPException(status_code=410, detail="Tento odkaz už byl použit. Pokud jste klíč nepřevzali vy, "
+                            "ozvěte se nám prosím hned — klíč zneplatníme a pošleme nový.")
+    if known.expires_at <= datetime.now(timezone.utc):
+        raise HTTPException(status_code=410, detail="Platnost odkazu vypršela. Ozvěte se nám, pošleme nový.")
+
+    key = keys.generate()
+    provider = store.redeem_claim(token_hash, keys.digest(key), keys.display_prefix(key), ip)
+    if provider is None:
+        # Lost a race with another click, or the provider was revoked meanwhile.
+        raise HTTPException(status_code=410, detail="Tento odkaz už není platný. Ozvěte se nám prosím.")
+    _auth_ok(ip)
+    notify.send(
+        f"Klíč převzat: {provider.institution}",
+        f"Poskytovatel {provider.name} ({provider.institution}) převzal klíč {provider.key_prefix}… "
+        f"z adresy {ip}.\nJednorázový: {'ano' if provider.single_use else 'ne'}\n",
+    )
+    return JSONResponse(
+        content={"key": key, "institution": provider.institution, "single_use": provider.single_use},
+        # Nothing between us and the browser may keep a copy.
+        headers={"Cache-Control": "no-store"},
+    )

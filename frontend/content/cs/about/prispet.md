@@ -33,8 +33,10 @@ institucí, které se nám ozvou a které schválíme.
 ## 1. Požádejte o zapojení {#zadost}
 
 Napište, kdo jste, jaká data máte, odkud pocházejí a jak často se mění. Žádost osobně posoudí
-autoři portálu a ozvou se vám e-mailem. Po schválení dostanete **osobní klíč**, který slouží
-k nahrávání a platí i pro další data v čase.
+autoři portálu a ozvou se vám e-mailem. Po schválení vám pošleme **jednorázový odkaz**, přes který
+si převezmete **osobní klíč** pro nahrávání. Odkaz platí 72 hodin a funguje jen jednou; klíč se
+zobrazí jen vám a znovu ho ukázat nejde. Pokud jste v žádosti uvedli, že jde o jednorázový
+příspěvek, klíč platí pro jedno přijaté nahrání. Jinak platí i pro další data v čase.
 
 {{< intake-request >}}
 

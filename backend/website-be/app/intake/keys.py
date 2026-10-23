@@ -30,3 +30,23 @@ def display_prefix(key: str) -> str:
 
 def looks_valid(key: str) -> bool:
     return key.startswith(PREFIX) and 30 <= len(key) <= 100
+
+
+# ── One-time links that hand a key over (api.claim) ──────────────────────────
+# The link carries a claim TOKEN, not the key: the key is generated only when the
+# provider opens the link and presses the button, and is shown to them alone.
+# A link intercepted on the way is therefore either useless (already claimed —
+# the provider sees "already used" and tells us) or noticed. Like the key, only
+# the token's hash is stored.
+CLAIM_PREFIX = "ppc_"
+
+
+def generate_claim() -> str:
+    return CLAIM_PREFIX + secrets.token_urlsafe(32)
+
+
+def claim_url(base: str, token: str) -> str:
+    # The token goes in the FRAGMENT: browsers never send it to the server, so it
+    # is not in the access log, and e-mail link scanners that fetch the page do
+    # not get it either.
+    return f"{base}/about/klic/#{token}"

@@ -51,7 +51,7 @@
     <!-- Pathogens Portal network identity: site chrome, loaded last -->
     <link rel="stylesheet" href="{{ "css/pp-identity.css" | relURL }}">
     {{/* Docs pages, and any page carrying the intake forms (about/prispet). */}}
-    {{ $intake := or (.HasShortcode "intake-request") (.HasShortcode "intake-upload") }}
+    {{ $intake := or (.HasShortcode "intake-request") (.HasShortcode "intake-upload") (.HasShortcode "intake-claim") }}
     {{ if or (eq .Section "docs") $intake }}<link rel="stylesheet" href="{{ "css/pp-docs.css" | relURL }}">{{ end }}
     {{/* The forms' script, ONCE per page however many forms it has — twice would
          send every request twice. Decided here, not in the shortcodes: a
