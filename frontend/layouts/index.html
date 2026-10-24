@@ -88,13 +88,14 @@
       {{/* Indicates navigation ELSEWHERE. The chips sit next to a filter that works
            in place — without this distinction they look like a second set of filters. */}}
       <p class="pp-home-topics__lead">{{ cond $en "Across dashboards" "Napříč panely" }}</p>
-      {{/* Only the most used topics (by number of pages), so the box stays short
-           next to the cards; the full list is one click away (decided 24 Oct 2026). */}}
-      <div class="pp-home-topics__list">
-      {{ $shown := 0 }}
+      {{/* All topics, most used first. The box is as tall as the two rows of
+           cards beside it, and the script below hides whatever does not fit, so
+           it fills the space at any width without cutting a chip in half (decided
+           24 Oct 2026). Without JS the list is simply clipped by the box. The full
+           list is one click away. */}}
+      <div class="pp-home-topics__list" data-pp-topics>
       {{ range .Site.Taxonomies.tags.ByCount }}
-      {{ if and (lt $shown 12) (in $visible (.Name | urlize)) }}
-      {{ $shown = add $shown 1 }}
+      {{ if in $visible (.Name | urlize) }}
       <a class="pp-home-topic" href="{{ (printf "tags/%s/" (urlize .Name)) | relLangURL }}">{{ index $labels (urlize .Name) | default .Name }}</a>
       {{ end }}
       {{ end }}
@@ -102,6 +103,27 @@
       {{ with .Site.GetPage "/tags" }}
       <a class="pp-home-topics__all" href="{{ .RelPermalink }}">{{ cond $en "All topics" "Všechna témata" }} <span aria-hidden="true">→</span></a>
       {{ end }}
+      <script>
+      (function () {
+        var list = document.querySelector("[data-pp-topics]");
+        if (!list) return;
+        var chips = Array.prototype.slice.call(list.children);
+        function fit() {
+          chips.forEach(function (c) { c.hidden = false; });
+          // Single column (phone/tablet): the box is not beside the cards, so
+          // there is no height to fill — show a short list instead.
+          if (window.matchMedia("(max-width: 860px)").matches) {
+            chips.forEach(function (c, i) { c.hidden = i >= 12; });
+            return;
+          }
+          var bottom = list.getBoundingClientRect().bottom;
+          chips.forEach(function (c) { if (c.getBoundingClientRect().bottom > bottom) c.hidden = true; });
+        }
+        fit();
+        window.addEventListener("load", fit);   // card images change the height
+        window.addEventListener("resize", fit);
+      })();
+      </script>
     </aside>
     </div>
 

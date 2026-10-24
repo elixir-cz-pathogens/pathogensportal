@@ -233,7 +233,10 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 .pp-home-topics h3 { margin: 0; font-size: 1rem; }
 .pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: var(--pp-text-muted); }
-.pp-home-topics__list { display: flex; flex-wrap: wrap; gap: .35rem; }
+.pp-home-topics__list {
+  display: flex; flex-wrap: wrap; align-content: flex-start; gap: .35rem;
+  flex: 1 1 0; min-height: 0; overflow: hidden;   /* fills the box, clips the rest */
+}
 .pp-home-topics__all { display: inline-block; margin-top: auto; padding-top: .7rem; font-size: .85rem; }
 .pp-home-topic {
   display: inline-block;
@@ -256,6 +259,8 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 @media (max-width: 860px) {
   .pp-home-dash-grid { grid-template-columns: 1fr; }
+  /* One column: the box is not beside the cards, so it has no height to fill. */
+  .pp-home-topics__list { flex: none; overflow: visible; }
 }
 
 /* ── Data processing notice (PP-55) ──────────────────────────────────────── */
