@@ -24,51 +24,10 @@
     {{ with .Content }}<div class="pp-home-lead">{{ . }}</div>{{ end }}
   </section>
 
-  {{/* ── 2. Site navigation ───────────────────────────────────────────────
-       Links are resolved via .Site.GetPage, not hardcoded, so RelPermalink is
-       language-correct on its own. Same trap as `url` instead of `pageRef` in
-       menus (PP-52) and hardcoded /tags/ (PP-51): a hardcoded path looks fine
-       and leads elsewhere in the other language.
+  {{/* No navigation tiles here: they repeated the menu in the header one to
+       one (removed 24 Oct 2026). */}}
 
-       A tile whose target is not found is skipped — better than a 404 link. */}}
-  {{ $signals := .Site.GetPage "/signals" }}
-  {{ $nav := slice
-      (dict "p" (.Site.GetPage "section" "dashboards") "icon" "bi-grid-1x2-fill"
-            "t" (cond $en "Dashboards"  "Panely")
-            "d" (cond $en "Every data view the portal publishes" "Všechny datové přehledy portálu"))
-      (dict "p" $signals "icon" "bi-activity"
-            "t" (cond $en "Signals"     "Signály")
-            "d" (cond $en "Automatic detection of unusually high case counts" "Automatická detekce neobvykle vysokého počtu hlášení"))
-      (dict "p" (.Site.GetPage "section" "news") "icon" "bi-newspaper"
-            "t" (cond $en "News"        "Novinky")
-            "d" (cond $en "New features and portal updates" "Nové funkce a aktualizace portálu"))
-      (dict "p" (.Site.GetPage "section" "events") "icon" "bi-calendar-event"
-            "href" (cond $en "#events" "#akce")
-            "t" (cond $en "Events"      "Akce")
-            "d" (cond $en "Talks, workshops and meetings" "Přednášky, workshopy a setkání"))
-      (dict "p" (.Site.GetPage "section" "about") "icon" "bi-info-circle"
-            "t" (cond $en "About"       "O portálu")
-            "d" (cond $en "Operator, partners and data sources" "Provozovatel, partneři a zdroje dat"))
-  }}
-  <nav class="pp-home-nav mb-5" aria-label="{{ cond $en "Sections of this site" "Sekce webu" }}">
-    {{/* `$it := .` BEFORE `with`: inside `with` the context switches to the page,
-         so the tile's .icon and .t would be empty. Silently — `with` on a
-         missing key reports nothing, it just does not render. */}}
-    {{/* `href` overrides the page URL — Events have no page of their own
-         (build.render: never, empty RelPermalink) and link to the anchor below. */}}
-    {{ range $nav }}
-    {{ $it := . }}
-    {{ with $it.p }}
-    <a class="pp-home-navtile" href="{{ $it.href | default .RelPermalink }}">
-      <i class="bi {{ $it.icon }}" aria-hidden="true"></i>
-      <span class="pp-home-navtile__t">{{ $it.t }}</span>
-      <span class="pp-home-navtile__d">{{ $it.d }}</span>
-    </a>
-    {{ end }}
-    {{ end }}
-  </nav>
-
-  {{/* ── 3. Dashboards as cards ────────────────────────────────────────────
+  {{/* ── 2. Dashboards as cards ────────────────────────────────────────────
        Cards, not a text list: whether to open a dashboard depends on what it is
        about, and an image conveys that faster than a line of text.
 
@@ -136,7 +95,7 @@
   </section>
   {{ end }}
 
-  {{/* ── 4. News ──────────────────────────────────────────────────────── */}}
+  {{/* ── 3. News ──────────────────────────────────────────────────────── */}}
   {{ $news := .Site.GetPage "section" "news" }}
   {{ with $news }}
   {{ $items := first 3 .RegularPages }}
@@ -159,7 +118,7 @@
   {{ end }}
   {{ end }}
 
-  {{/* ── 5. Events ──────────────────────────────────────────────────────── */}}
+  {{/* ── 4. Events ──────────────────────────────────────────────────────── */}}
   {{ partial "home-events.html" . }}
 
 </div>

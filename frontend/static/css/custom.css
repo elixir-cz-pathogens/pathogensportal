@@ -284,34 +284,6 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   .pp-privacy__actions { align-self: stretch; justify-content: flex-end; }
 }
 
-/* ── Home page: site navigation ───────────────────────────────────────────
-   Tiles, not inline links: choosing where to go next is the main job of the
-   home page, and it deserves targets that are easy to hit with a finger.
-
-   Colours come from the --pp-* tokens (defined by dashboards.css on .pp-viz),
-   not hard-coded values. A hard-coded #fff with its own prefers-color-scheme
-   override would darken the background but not the text; tokens switch surface
-   and text together. */
-.pp-home-nav {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: .5rem;
-}
-.pp-home-navtile {
-  display: flex; flex-direction: column; gap: .15rem;
-  padding: .8rem .9rem;
-  border: 1px solid var(--pp-border); border-radius: 8px;
-  background: var(--pp-surface-raised);
-  color: var(--pp-text); text-decoration: none;
-  transition: border-color .12s, background .12s, transform .12s;
-}
-.pp-home-navtile:hover, .pp-home-navtile:focus-visible {
-  border-color: var(--pp-text-muted); background: var(--pp-surface); transform: translateY(-1px);
-}
-.pp-home-navtile i { font-size: 1.15rem; color: var(--pp-text-muted); margin-bottom: .1rem; }
-.pp-home-navtile__t { font-weight: 600; }
-.pp-home-navtile__d { font-size: .8rem; color: var(--pp-text-muted); line-height: 1.35; }
-
 /* ── Dashboard card: home page and /dashboards/ ───────────────────────────
    One design for both places; the markup is shared in dashboard-tile.html.
    The image aspect ratio is fixed (400×220, as the source SVGs). Without it the
