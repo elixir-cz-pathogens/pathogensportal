@@ -24,62 +24,68 @@
 </div>
 {{ end }}
 {{ end }}
-<footer class="container border-top mt-5 mb-2">
-  <div class="row border-bottom">
+{{/* Footer in the Pathogens Portal network style (pathogens.se): partners on a
+     white strip, then a blue band with the portal, its links and contact.
 
-    <!-- About section -->
-    <div class="col-md px-5 px-md-2">
-      <h2 class="small text-uppercase text-black-50">{{ i18n "about" }}</h2>
-      <ul class="list-unstyled mb-1">
-        {{ range .Site.Menus.footer_about }}
-        <li><a href="{{ .Page.RelPermalink }}" class="small">
-          {{ .Name }}
-        </a></li>
-        {{ end }}
-      </ul>
+     Partners stay on a WHITE background on purpose: their logos are in colour,
+     and on the blue band several would be illegible. They must stay on every
+     page — for the grant logo the visible acknowledgement is a condition.
+
+     Licences decided 22 Oct 2026: content and data CC BY 4.0, code MIT
+     (LICENSE, LICENSE-CC-BY-4.0 in the repository). */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $pl := cond $en "en" "cs" }}
+<footer class="pp-footer mt-5">
+  <div class="pp-footer__partners">
+    <div class="container">
+      {{ partial "partners.html" . }}
     </div>
-
-    <!-- Data and follow section -->
-    <div class="col-md px-5 px-md-2">
-      <h2 class="small text-uppercase text-black-50">{{ i18n "data" }}</h2>
-      <ul class="list-unstyled mb-0">
-        {{ range .Site.Menus.footer_data }}
-        <li><a href="{{ .Page.RelPermalink }}">{{ .Name }}</a></li>
-        {{ end }}
-      </ul>
-      <h2 class="small text-uppercase text-black-50">{{ i18n "connect" }}</h2>
-      <div>
-        {{ with .Site.Params.linkedin }}
-        <a style="font-size:1.75em;" target="_blank" aria-label="LinkedIn"
-          href="https://www.linkedin.com/{{ . }}"><i class="bi bi-linkedin"></i></a>
-        {{ end }}
-
-        {{ with .Site.Params.twitter }}
-        <a class="ps-2" style="font-size:1.75em;" target="_blank" aria-label="X"
-           href="https://twitter.com/{{ . }}"><i class="bi bi-twitter-x"></i></a>
-        {{ end }}
-
-        {{ with .Site.Params.mail }}
-        <a class="ps-2" style="font-size:1.90em;" target="_blank" aria-label="Email"
-          href="mailto:{{ . }}"><i class="bi bi-envelope-fill"></i></a>
-        {{ end }}
+  </div>
+  <div class="pp-footer__band">
+    <div class="container">
+      <div class="row gy-4">
+        {{/* Two columns like the Swedish portal (decided 24 Oct 2026): the brand
+             on the left; on the right a row of three links and under it a row
+             of contact / social icons. The links are fixed, not the whole About
+             menu, and the privacy page is reachable ONLY from here and from the
+             banner: it is deliberately not in the About menu. */}}
+        <div class="col-lg-6">
+          <a href="{{ site.Home.RelPermalink }}" class="pp-footer__brand">
+            <img src="{{ "images/portal-mark.png" | relURL }}" alt="" width="40" height="40">
+            <span>Pathogen Portal CZ</span>
+          </a>
+          <p class="pp-footer__tagline">{{ site.Home.Description }}</p>
+        </div>
+        <div class="col-lg-6 pp-footer__nav">
+          <ul class="pp-footer__links">
+            {{ with .Site.GetPage "/about" }}<li><a href="{{ .RelPermalink }}">{{ cond $en "About the portal" "O portálu" }}</a></li>
+            <li><a href="{{ .RelPermalink }}#{{ cond $en "contact" "kontakt" }}">{{ cond $en "Contact" "Kontakt" }}</a></li>{{ end }}
+            {{ with .Site.GetPage (cond $en "/privacy" "/ochrana-soukromi") }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}
+          </ul>
+          <div class="pp-footer__social">
+            {{ with .Site.Params.mail }}<a href="mailto:{{ . }}" aria-label="E-mail"><i class="bi bi-envelope-fill"></i></a>{{ end }}
+            {{ with .Site.Params.linkedin }}<a href="https://www.linkedin.com/{{ . }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{{ end }}
+            {{ with .Site.Params.twitter }}<a href="https://twitter.com/{{ . }}" target="_blank" rel="noopener" aria-label="X"><i class="bi bi-twitter-x"></i></a>{{ end }}
+            {{ with .Site.Params.repository }}<a href="{{ . }}" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>{{ end }}
+          </div>
+        </div>
       </div>
+      <p class="pp-footer__credit">
+        {{ if $en }}
+        Pathogen Portal CZ is the Czech national node of the <a href="https://www.pathogensportal.org/" target="_blank" rel="noopener">Pathogens Portal</a> network.
+        Built with <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; the layout follows the
+        <a href="https://www.pathogens.se/" target="_blank" rel="noopener">Swedish Pathogens Portal</a> (MIT) and the
+        <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">SIB theme</a>.
+        <br>Content and processed data: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (source data under the <a href="{{ (site.GetPage "/about/data").RelPermalink }}">source's licence</a>) · code: MIT.
+        {{ else }}
+        Pathogen Portal CZ je český národní uzel sítě <a href="https://www.pathogensportal.org/" target="_blank" rel="noopener">Pathogens Portal</a>.
+        Web je vytvořen v generátoru <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>; vzhled vychází ze
+        <a href="https://www.pathogens.se/" target="_blank" rel="noopener">švédského Pathogens Portal</a> (MIT) a
+        <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank" rel="noopener">motivu SIB</a>.
+        <br>Obsah a zpracovaná data: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank" rel="noopener">CC BY 4.0</a> (převzatá data podle <a href="{{ (site.GetPage "/about/data").RelPermalink }}">licence zdroje</a>) · kód: MIT.
+        {{ end }}
+      </p>
     </div>
-
-  </div>
-
-  {{/* Trvalý odkaz na podrobnosti — proužek se zavře, informace musí zůstat
-       dosažitelná. Otevírá totéž okno; JS je v privacy-notice.html. */}}
-  {{ $pl := cond (eq .Site.Language.Lang "en") "en" "cs" }}
-  <div class="d-flex justify-content-center small mt-2">
-    <a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index .Site.Data.privacy $pl).title }}</a>
-  </div>
-
-  {{/* Všichni partneři a sponzoři, na každé stránce webu. */}}
-  {{ partial "partners.html" . }}
-
-  <div class="d-flex justify-content-center small mt-2">
-    <small>Web běží na generátoru <a href="https://gohugo.io" target="_blank">Hugo</a> s motivem <a href="https://github.com/sib-swiss/hugo-pathogens-portal" target="_blank">Pathogens Portal</a> od <a href="https://www.sib.swiss" target="_blank">Swiss Institute of Bioinformatics</a>. Referenční implementace národního Pathogens Portal uzlu je <a href="https://github.com/ScilifelabDataCentre/node-pathogens-portal" target="_blank">zde</a>.</small>
   </div>
 </footer>
 
@@ -98,17 +104,23 @@
   document.addEventListener("DOMContentLoaded", function() {
     // `order: []` is essential: DataTables' default behaviour is to sort by the
     // first column ascending, which in curated tables destroys the order the
-    // author chose — the "Major events" timeline sorted as text ("10. 7." before
-    // "5. 5.") and the most important source ended up in the middle.
-    // ⛔ `table` bralo VŠECHNY tabulky na stránce, včetně těch, které si řídí
-    // vlastní skript. Tabulka signálů na titulce je zároveň přepínač mapy —
-    // DataTables ji stránkoval po 25 řádcích a klik na řádek pak mohl vybrat
-    // něco jiného, než na co uživatel klikl.
+    // author chose (e.g. a timeline sorted as text).
+    // The selector excludes tables marked data-no-datatable — tables driven by
+    // their own script (e.g. the events calendar) must not be
+    // paginated or re-sorted.
     new DataTable('table:not([data-no-datatable])', {
       order: [],
       pageLength: 25,
       lengthMenu: [10, 25, 50, 100],
-      language: {
+      language: {{ if eq .Site.Language.Lang "en" }}{
+        search: "Search:",
+        lengthMenu: "Show _MENU_ rows",
+        info: "_START_–_END_ of _TOTAL_ rows",
+        infoEmpty: "No rows",
+        infoFiltered: "(filtered from _MAX_ rows)",
+        zeroRecords: "Nothing found",
+        paginate: { first: "First", last: "Last", next: "Next", previous: "Previous" }
+      }{{ else }}{
         search: "Hledat:",
         lengthMenu: "Zobrazit _MENU_ řádků",
         info: "_START_–_END_ z _TOTAL_ řádků",
@@ -116,7 +128,7 @@
         infoFiltered: "(filtrováno z _MAX_ řádků)",
         zeroRecords: "Nic nenalezeno",
         paginate: { first: "První", last: "Poslední", next: "Další", previous: "Předchozí" }
-      }
+      }{{ end }}
     })
   })
 </script>

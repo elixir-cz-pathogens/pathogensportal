@@ -14,7 +14,7 @@ services:
     environment:
       # The dev server runs on :1313 and the API on :8000 — a different origin, so the
       # frontend needs an absolute URL. In production both sit behind the same Apache and
-      # the param stays empty (see hugo.toml → params.api_base).
+      # the param stays empty (see hugo.toml → params.apibase).
       HUGO_PARAMS_APIBASE: http://localhost:8000
     command: server --bind 0.0.0.0 --baseURL http://localhost:1313/ --disableFastRender
 

@@ -1,17 +1,14 @@
 name: "CHECK: Commit Message"
 
-# Commit message format check — ONLY on PRs into `main` (dev is free, no checks).
+# Commit message format check — only on PRs into `main` (dev has no checks).
 # Valid format:  <PROJECT_PREFIX>-<number>: message
 #            or:  starting with <IGNORE_PREFIX>
 #            or:  content: message
 #
-# ⚠️ `content:` was added 3 Sep 2026 for AI-authored dashboard updates. Without it
-# every generated PR failed a REQUIRED check and could not merge — found by running
-# one end to end rather than by reading the workflow. It mirrors the `content/`
-# branch prefix the preview job keys on, so the branch and the commit say the same
-# thing about where a change came from.
+# `content:` is accepted for generated dashboard content PRs. It mirrors the
+# `content/` branch prefix that the preview workflow keys on.
 #
-# Commits taken from upstream (the repo variable UPSTREAM_URL) are NOT validated — we
+# Commits taken from upstream (the repo variable UPSTREAM_URL) are not validated — we
 # cannot rewrite their messages without breaking the merge, and it would fail on every sync.
 # So the convention applies only to commits we write ourselves.
 on:
@@ -30,7 +27,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check commit messages (main..HEAD, bez upstreamu)
+      - name: Check commit messages (main..HEAD, excluding upstream)
         run: |
           git fetch origin main:main || true
 

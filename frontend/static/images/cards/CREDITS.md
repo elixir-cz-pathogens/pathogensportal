@@ -20,9 +20,9 @@ data should not be careless about the provenance of its pictures.
 
 Sourced through Wikimedia Commons; each file's licence was read from the Commons API
 rather than assumed. Cropped from the centre to 20:11 and resized to 800×440 — no
-image was upscaled by more than 1.15×, because a stretched micrograph is mush.
+image was upscaled by more than 1.15×.
 
-⛔ These are NOT AI-generated and must stay out of `images/cards/ai/`. That directory
+**Note:** these are not AI-generated and must stay out of `images/cards/ai/`. That directory
 is what makes a card show the "AI" badge; a real CDC micrograph filed there would
 carry a badge that lies about it.
 
@@ -35,8 +35,8 @@ card about exactly one pathogen — the two Nextstrain phylogenies and the regio
 influenza surveillance — and a card about one pathogen shows that pathogen. All three
 now use the same photograph as the surveillance dashboard for the same pathogen.
 
-⚠️ The consequence is three identical influenza pictures on /dashboards/: weekly
+As a result there are three identical influenza pictures on /dashboards/: weekly
 surveillance, regional surveillance and phylogeny. That is deliberate — the card is
 identified by its title, and a reader should recognise the pathogen without reading.
-Splitting them again needs three DIFFERENT influenza photographs, not a return to
+Splitting them again needs three different influenza photographs, not a return to
 abstract icons for two of them.

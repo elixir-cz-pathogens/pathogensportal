@@ -1,0 +1,81 @@
+{{/* Request form for data providers (TODO D15).
+
+     Usage: {{< intake-request >}}
+
+     The API base comes from `params.intake.api` (e.g. "/api/intake", or
+     HUGO_PARAMS_INTAKE_API for a local run against website-be on :8000). While
+     it is empty the form validates and shows what it WOULD send, and sends
+     nothing. The privacy notice (data/privacy.yaml) says who processes the
+     applicant's data and for how long.
+
+     The fields are the minimum to decide on a request by hand. Data are NOT
+     uploaded here: an approved provider gets a key and uploads separately. */}}
+{{ $api := site.Params.intake.api | default "" }}
+{{ $en := eq .Page.Language.Lang "en" }}
+{{ $endpoint := cond (ne $api "") (printf "%s/requests" $api) "" }}
+<form class="pp-intake" data-pp-intake data-endpoint="{{ $endpoint }}" novalidate>
+  {{ if not $endpoint }}
+  <div class="pp-intake__notice">
+    {{ if $en }}
+    <p><strong>The form does not send anything yet.</strong> Data intake is in preparation. You can try
+    the form — after pressing the button you will see what would be sent.</p>
+    {{ else }}
+    <p><strong>Formulář zatím nic neodesílá.</strong> Příjem dat připravujeme. Formulář si můžete
+    vyzkoušet — po kliknutí na tlačítko uvidíte, co by se odeslalo.</p>
+    {{ end }}
+  </div>
+  {{ end }}
+
+  {{ $opt := cond $en "(optional)" "(nepovinné)" }}
+  <fieldset>
+    <legend>{{ cond $en "Who you are" "Kdo jste" }}</legend>
+    <label>{{ cond $en "Full name" "Jméno a příjmení" }} <input name="name" required autocomplete="name"></label>
+    <label>E-mail <input name="email" type="email" required autocomplete="email"></label>
+    <label>{{ cond $en "Institution" "Instituce" }} <input name="institution" required autocomplete="organization"></label>
+    <label>{{ cond $en "Position" "Pracovní zařazení" }} <span class="pp-intake__opt">{{ $opt }}</span> <input name="position"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ cond $en "What data you offer" "Jaká data nabízíte" }}</legend>
+    <label>{{ cond $en "Short description of the data" "Stručný popis dat" }}
+      <textarea name="description" rows="3" required placeholder="{{ cond $en "E.g. weekly counts of influenza-positive specimens by region" "Např. týdenní počty pozitivních vzorků chřipky podle krajů" }}"></textarea></label>
+    <label>{{ cond $en "Where the data come from and how they are produced" "Odkud data pocházejí a jak vznikají" }}
+      <textarea name="origin" rows="3" required placeholder="{{ cond $en "Laboratory, reporting system, method…" "Laboratoř, systém hlášení, metoda…" }}"></textarea></label>
+    {{/* The VALUES stay Czech in both languages: the backend reads them, and
+         "jednorázově" (one-off) makes the approved key single-use (cli.py). */}}
+    <label>{{ cond $en "How often the data are updated" "Jak často se data aktualizují" }}
+      <select name="frequency" required>
+        <option value="">{{ cond $en "— choose —" "— vyberte —" }}</option>
+        <option value="jednorázově">{{ cond $en "one-off" "jednorázově" }}</option>
+        <option value="denně">{{ cond $en "daily" "denně" }}</option>
+        <option value="týdně">{{ cond $en "weekly" "týdně" }}</option>
+        <option value="měsíčně">{{ cond $en "monthly" "měsíčně" }}</option>
+        <option value="ročně">{{ cond $en "yearly" "ročně" }}</option>
+        <option value="jinak">{{ cond $en "other" "jinak" }}</option>
+      </select></label>
+    <label>{{ cond $en "Link to a sample or a description of the data" "Odkaz na ukázku nebo popis dat" }} <span class="pp-intake__opt">{{ $opt }}</span> <input name="link" type="url" placeholder="https://"></label>
+  </fieldset>
+
+  <fieldset>
+    <legend>{{ cond $en "Confirmation" "Potvrzení" }}</legend>
+    <label class="pp-intake__check"><input type="checkbox" name="no_personal_data" required>
+      <span>{{ cond $en "The data I offer contain no personal or sensitive data and no individual person can be identified from them." "Data, která nabízím, neobsahují osobní ani citlivé údaje a nedá se z nich poznat konkrétní člověk." }}</span></label>
+    {{/* Not "I agree to the terms": the full terms are deferred (TODO R24). The
+         processing of the applicant's contact data rests on legitimate interest,
+         so what the form needs is that they were TOLD how — the privacy notice,
+         a page of its own, opened in a new tab so the half-filled form is kept. */}}
+    {{ $privacy := site.GetPage (cond $en "/privacy" "/ochrana-soukromi") }}
+    <label class="pp-intake__check"><input type="checkbox" name="privacy_ack" required>
+      <span>{{ cond $en "I acknowledge how my contact details will be processed" "Beru na vědomí, jak budou mé kontaktní údaje zpracovány" }}
+      (<a href="{{ $privacy.RelPermalink }}" target="_blank" rel="noopener">{{ cond $en "processing of personal data" "zásady zpracování osobních údajů" }}</a>).</span></label>
+  </fieldset>
+
+  {{/* Honeypot: hidden from people, filled in by bots; the API discards those. */}}
+  <div class="pp-intake__hp" aria-hidden="true">
+    <label>Web <input name="website" tabindex="-1" autocomplete="off"></label>
+  </div>
+
+  <button type="submit" class="pp-hero__cta">{{ cond $en "Send request" "Odeslat žádost" }}</button>
+  <div class="pp-intake__result" role="status" aria-live="polite"></div>
+</form>
+{{/* pp-intake.js is loaded by head.html for any page with an intake form. */}}

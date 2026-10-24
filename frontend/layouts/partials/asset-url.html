@@ -1,0 +1,11 @@
+{{/* URL of one of our own static files with a content fingerprint.
+
+     Usage: {{ partial "asset-url.html" "css/pp-identity.css" }}
+            → /css/pp-identity.css?v=3f2a91c0
+
+     Without it a browser keeps the old stylesheet from its cache next to new
+     HTML (the server lets assets be cached), and a changed layout looks broken
+     until a hard reload. The fingerprint changes only when the file does, so
+     an unchanged file is still served from cache. */}}
+{{ $v := readFile (printf "static/%s" .) | md5 | truncate 8 "" }}
+{{ return printf "%s?v=%s" (relURL .) $v }}

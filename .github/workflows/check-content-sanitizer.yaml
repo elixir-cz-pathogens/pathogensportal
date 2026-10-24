@@ -2,38 +2,26 @@ name: "CHECK: Content Sanitizer"
 
 # Fails a PR that puts executable or navigational markup into `frontend/content/`.
 #
-# WHY THIS EXISTS
+# Why this exists
 # ---------------
 # `hugo.toml` sets `allowContent = ['^text/markdown$', '^text/html$']`, so HTML in
-# `content/` is rendered verbatim. That permission was granted on the explicit
-# reasoning that `tools/ingest_report.py` sanitizes every delivery against an
-# allowlist before it is written. Since 3 Sep 2026 the AI content flow writes
-# `content/` DIRECTLY and the ingest is not in the path — so the permission stayed
-# and its justification went away. This check is that justification, moved into CI.
+# `content/` is rendered verbatim. That is safe for deliveries that go through
+# `tools/ingest_report.py`, which sanitizes against an allowlist. Generated
+# content PRs write `content/` directly and bypass the ingest, so this check
+# enforces the same guarantee in CI.
 #
-# It matters because the pages are machine-authored FROM EXTERNAL SOURCES (WHO,
-# ECDC, national health agencies, news). That is a prompt-injection surface: an
-# instruction embedded in a scraped page can make a well-behaved generator emit a
-# <script> without intending to. An allowlist does not care what the generator
-# intended.
+# The pages are generated from external sources (WHO, ECDC, national health
+# agencies, news), which makes them a prompt-injection surface: text embedded in
+# a source page can lead a generator to emit a <script>. Human review focuses on
+# subject-matter accuracy and is not a reliable way to spot such markup.
 #
-# It is also not something review covers. `ingest_report.py`'s own docstring says
-# the human review targets subject-matter accuracy and "would easily miss a
-# <script> appearing somewhere" — across 8 files and ~50 KB of diff, it would.
+# Scope: the whole content tree, not just the PR's changed files. A full scan is
+# cheap and cannot be bypassed by an unusual diff. Both stages are tested against
+# planted samples, so they are known to be able to fail.
 #
-# SCOPE — the whole content tree, not just the PR's changed files. A full scan is
-# cheap (60 files / ~730 KB today) and cannot be walked past with an odd diff.
-#
-# GREEN ON DAY ONE. Both stages were measured against the content tree as merged
-# by PR #49 — the first real AI delivery — before this workflow was added, and the
-# greps were positive-controlled against planted samples so they are known to be
-# able to fail. A check that is red on arrival teaches its audience to ignore it,
-# and a check that can only pass is not a check.
-#
-# ⚠️ The job name is flat and calls no reusable workflow, so the status reported to
-# branch protection is exactly `content-sanitizer`. A required check whose name did
-# not match what was reported blocked every PR into `main` for 8 days in Aug 2026
-# (`backend-tests` vs `backend-tests / pytest`) — do not turn this into a caller job.
+# The job name is flat and calls no reusable workflow, so the status reported to
+# branch protection is exactly `content-sanitizer`. A caller job would report as
+# `<job> / <called job>` and no longer match the required check name.
 on:
   pull_request:
     branches: [main]
@@ -47,8 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-        # No submodules: this reads `frontend/content/` only. The theme is not scanned
-        # — it is ours, it is reviewed, and it legitimately contains <script>.
+        # No submodules: this reads `frontend/content/` only. The theme is not
+        # scanned; it is reviewed separately and legitimately contains <script>.
 
       - name: Scan frontend/content for foreign markup
         run: |
@@ -71,22 +59,21 @@ jobs:
 
           # ── Stage 1: <link>, which has exactly one legitimate form ──────────
           #
-          # The AI-authored report pages open with the report stylesheet:
+          # The generated report pages open with the report stylesheet:
           #
           #     <link rel="stylesheet" href="../../css/reports.css">     (cs/…)
           #     <link rel="stylesheet" href="../../../css/reports.css">  (en/…)
           #
-          # A stylesheet in the body is a hack — it is there because the theme
-          # does not load reports.css itself. Allowing it is therefore a bounded
-          # exception, not an endorsement: the shape is pinned to a RELATIVE path
-          # ending in css/reports.css, so it can only ever reach our own
+          # A stylesheet in the body is a workaround: the theme does not load
+          # reports.css itself. The exception is bounded: the shape is pinned to a
+          # relative path ending in css/reports.css, so it can only reach
           # frontend/static/css/. An absolute or off-site href, a different file,
-          # or any other rel= is a different thing and fails here.
+          # or any other rel= fails here.
           #
-          # ⛔ Do not relax this into a bare `<link`. `rel="import"`,
-          # `rel="prefetch"` and a remote stylesheet are all real attacks, and a
-          # remote stylesheet leaks every reader's IP to whoever serves it.
-          # ⏳ The exception disappears the day the theme loads reports.css.
+          # Do not relax this into a bare `<link`. `rel="import"`, `rel="prefetch"`
+          # and a remote stylesheet are all real attack vectors, and a remote
+          # stylesheet leaks every reader's IP address to its host.
+          # The exception can be removed once the theme loads reports.css.
           LINK_OK='^[^:]+:[0-9]+:[[:space:]]*<link rel="stylesheet" href="(\.\./)+css/reports\.css">[[:space:]]*$'
 
           bad_links=$(grep -rEn --include='*.md' --include='*.html' '<link' "$TARGET" \

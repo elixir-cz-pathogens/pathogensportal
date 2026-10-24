@@ -1,7 +1,7 @@
 ---
 title: "Pathogen Portal CZ je spuštěn"
 date: 2026-07-02
-description: "Spouštíme český národní portál pro sledování patogenů — otevřený přístup k datům z infekční surveillance."
+description: "Spouštíme český národní portál pro sledování patogenů — otevřený přístup k datům ze surveillance infekčních nemocí."
 highlight: true
 image: "/images/elixir_logo.png"
 tags: ["novinky", "ELIXIR"]
@@ -10,4 +10,4 @@ tags: ["novinky", "ELIXIR"]
 **Pathogen Portal CZ** je otevřená platforma pro data ze surveillance infekčních nemocí v České republice.
 Portál sdružuje data z klinické, genomické a environmentální surveillance na jednom místě.
 
-Aktuálně jsou k dispozici dashboardy pro SARS-CoV-2, chřipku, infekční nemoci dle ISIN a monitoring odpadních vod.
+Aktuálně jsou k dispozici panely pro SARS-CoV-2, chřipku, infekční nemoci dle ISIN a monitoring odpadních vod.

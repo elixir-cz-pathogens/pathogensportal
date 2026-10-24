@@ -1,5 +1,5 @@
 ---
-title: "Influenza Phylogeny (Nextstrain)"
+title: "Influenza phylogeny (Nextstrain)"
 origin: aggregated
 description: "Phylogeny of seasonal influenza — H3N2, H1N1pdm and type B. Evolution of haemagglutinin and predictions for vaccine strain selection."
 image: "/images/cards/flu.webp"
@@ -32,4 +32,4 @@ Nextstrain maintains continuously updated phylogenetic trees for **seasonal infl
   Open Nextstrain — H3N2 HA (2 years)
 </a>
 
-<p class="stat-source">Nextstrain Influenza · Bedford Lab · sequences from GISAID EpiFlu</p>
+<p class="stat-source">Nextstrain Influenza · open source, AGPL-3.0 licence · sequences from GISAID EpiFlu</p>

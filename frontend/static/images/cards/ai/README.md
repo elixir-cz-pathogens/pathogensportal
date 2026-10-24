@@ -13,5 +13,5 @@ Reference it from a dashboard's front matter as usual:
 Size 400×220 (any 20:11 ratio works — the card fixes the aspect and scales).
 WebP or PNG, kept small: these load on the homepage.
 
-The badge says the PICTURE was generated. Whether the page's CONTENT was written
+The badge says the picture was generated. Whether the page's CONTENT was written
 by an AI is a separate claim, carried by `origin: ai-assisted`.

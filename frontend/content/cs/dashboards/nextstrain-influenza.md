@@ -10,9 +10,9 @@ update_freq: "Týdně (Nextstrain server)"
 redirect_url: "https://nextstrain.org/flu/seasonal/h3n2/ha/2y"
 ---
 
-Nextstrain udržuje průběžně aktualizované fylogenetické stromy pro **sezónní chřipku** — klíčový nástroj pro sledování antigenetického driftu a výběr kmenů pro vakcíny.
+Nextstrain udržuje průběžně aktualizované fylogenetické stromy pro **sezónní chřipku** — klíčový nástroj pro sledování antigenního driftu a výběr kmenů pro vakcíny.
 
-### Dostupné Nextstrain influenza buildy
+### Dostupné analýzy Nextstrain pro chřipku
 
 | Subtyp | Segment | Okno | Odkaz |
 |--------|---------|------|-------|
@@ -26,10 +26,10 @@ Nextstrain udržuje průběžně aktualizované fylogenetické stromy pro **sez�
 - **Antigenní klady** — barevně odlišené skupiny s podobným antigenem
 - **Vakcinační kmeny** — označení doporučených WHO kmenů pro sezónu
 - **Geografické rozložení** — odkud sekvence pochází
-- **Mutace HA** — mapování amino-acid substitucí na stromě
+- **Mutace HA** — aminokyselinové záměny vyznačené na stromě
 
 <a href="https://nextstrain.org/flu/seasonal/h3n2/ha/2y" target="_blank" class="btn btn-primary mt-2 mb-3">
   Otevřít Nextstrain — H3N2 HA (2 roky)
 </a>
 
-<p class="stat-source">Nextstrain Influenza · Bedford Lab · sekvence GISAID EpiFlu</p>
+<p class="stat-source">Nextstrain Influenza · open source, licence AGPL-3.0 · sekvence GISAID EpiFlu</p>

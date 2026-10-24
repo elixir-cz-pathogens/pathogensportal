@@ -1,17 +1,18 @@
-/* Adaptér pro externě generované situační reporty.
+/* Adapter for externally generated situation reports.
  *
- * Dodaný HTML obsah si nese vlastní názvy tříd (`note ok`, `summary`, `card`,
- * `fair-panel`, …). Tenhle soubor je překládá na tokeny portálu z dashboards.css,
- * takže cizí obsah vypadá jako zbytek webu, aniž by se do něj muselo zasahovat.
+ * The supplied HTML carries its own class names (`note ok`, `summary`, `card`,
+ * `fair-panel`, …). This file maps them to the portal tokens from dashboards.css,
+ * so external content looks like the rest of the site without being modified.
  *
- * ⚠️ Kontrakt s generátorem = tyhle názvy tříd. Když v dodávce přibude nová,
- * `tools/ingest_report.py` ji ohlásí jako neznámou — jinak by se sekce tiše
- * vykreslila bez stylu. Nová třída se řeší tady, ne úpravou obsahu.
+ * The contract with the generator is this set of class names. When a new one
+ * appears in a delivery, `tools/ingest_report.py` reports it as unknown;
+ * otherwise the section would silently render unstyled. A new class is handled
+ * here, not by editing the content.
  *
- * Načítá se jen na stránkách s `report:` ve front matteru (viz dashboards/single.html).
+ * Loaded only on pages with `report:` in front matter (see dashboards/single.html).
  */
 
-/* Report je uvnitř kontejneru portálu — vlastní šířku si neurčuje. */
+/* The report sits inside the portal container and does not set its own width. */
 .pp-report .wrap {
   width: auto;
   margin: 0;
@@ -44,7 +45,7 @@
   max-width: 72ch;
 }
 
-/* ---------- Zvýrazněná sdělení (.note, .ok, .warning) ---------- */
+/* ---------- Highlighted messages (.note, .ok, .warning) ---------- */
 
 .pp-report .note {
   border: 1px solid var(--pp-border);
@@ -67,7 +68,7 @@
   --pp-note-accent: var(--pp-status-warn);
 }
 
-/* ---------- Klíčové údaje (.summary) ---------- */
+/* ---------- Key figures (.summary) ---------- */
 
 .pp-report .summary {
   display: grid;
@@ -88,7 +89,7 @@
   padding: 0.85rem 1rem;
 }
 
-/* Údaj, který si žádá pozornost — stavová barva, ne barva řady. */
+/* A figure that calls for attention: a status colour, not a series colour. */
 .pp-report .summary > div.alert {
   border-left-color: var(--pp-status-alert);
 }
@@ -99,7 +100,7 @@
   line-height: 1.35;
 }
 
-/* `.meta` je vysvětlivka pod údajem — v dodávce je to <span>, tedy inline. */
+/* `.meta` is the explanation under a figure; in the delivery it is a <span>, i.e. inline. */
 .pp-report .meta {
   display: block;
   color: var(--pp-text-muted);
@@ -107,7 +108,7 @@
   line-height: 1.5;
 }
 
-/* ---------- Karty a mřížky (.card, .grid, .source, .debunk) ---------- */
+/* ---------- Cards and grids (.card, .grid, .source, .debunk) ---------- */
 
 .pp-report .grid,
 .pp-report .source-group,
@@ -153,7 +154,7 @@
   margin-bottom: 0;
 }
 
-/* ---------- Tabulky (.plain-table-wrap / .plain-table) ---------- */
+/* ---------- Tables (.plain-table-wrap / .plain-table) ---------- */
 
 .pp-report .plain-table-wrap {
   overflow-x: auto;
@@ -189,7 +190,7 @@
   border-bottom: 0;
 }
 
-/* Minimální šířky si nese obsah — široké tabulky se posouvají v obalu výše. */
+/* Minimum widths come from the content; wide tables scroll in the wrapper above. */
 .pp-report .milestone-table {
   min-width: 900px;
 }
@@ -203,7 +204,7 @@
   padding: 0.35rem 0.6rem;
 }
 
-/* ---------- Poznámky pod obsahem ---------- */
+/* ---------- Notes below content ---------- */
 
 .pp-report .refs,
 .pp-report .data-note {
@@ -299,10 +300,10 @@
   color: var(--pp-text-muted);
 }
 
-/* ---------- Zbytky po nahrazeném grafu ---------- */
+/* ---------- Leftovers from the replaced chart ---------- */
 
-/* Vlastní vykreslování grafu nahrazuje ingest naší komponentou; legenda ale
-   může zůstat mimo nahrazený panel, tak ať aspoň nevyčnívá. */
+/* The ingest replaces the report's own chart rendering with a portal component;
+   the legend may remain outside the replaced panel, so keep it from sticking out. */
 .pp-report .legend,
 .pp-report .trajectory-legend {
   display: flex;

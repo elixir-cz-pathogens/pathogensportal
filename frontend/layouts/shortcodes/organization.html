@@ -1,0 +1,20 @@
+{{/* Overrides the theme shortcode (themes/…/shortcodes/organization.html) ONLY for
+     the logo size. The theme stretched the logo to the full column width, so a
+     narrow logo became very tall. The size is now computed by
+     partials/logo-box.html — as in the footer, just at a larger scale.
+
+     `alt` is empty on purpose: the organization name is right next to it. */}}
+{{ $img := .Get "img" }}
+{{ $s := partialCached "logo-box.html" (dict "src" $img "area" 12000 "hmax" 85 "wmax" 210) $img "affiliations" }}
+<div class="row">
+    <div class="col-12 col-md-4 col-lg-3 d-none d-md-block">
+        <figure class="figure mt-3 pp-org-logo">
+            <img alt="" src="{{ $img }}" width="{{ $s.w }}" height="{{ $s.h }}" loading="lazy">
+        </figure>
+    </div>
+    <div class="col-12 col-md-8 col-lg-9">
+        <h6>{{ .Get "name" }}</h6>
+        {{ .Inner | markdownify }}
+    </div>
+</div>
+<hr class="faded" />
