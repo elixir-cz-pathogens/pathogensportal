@@ -218,7 +218,8 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 16rem);
   gap: 1.25rem;
-  align-items: start;
+  /* The topics box is exactly as tall as the two rows of cards beside it. */
+  align-items: stretch;
 }
 .pp-home-dash-main { min-width: 0; }
 .pp-home-topics {
@@ -226,13 +227,14 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   border-radius: 10px;
   background: var(--pp-surface);
   padding: .85rem 1rem;
-  position: sticky;
-  top: 1rem;
+  margin-top: .75rem;   /* level with the cards, which have the same top margin */
+  display: flex; flex-direction: column;
+  overflow: hidden;
 }
 .pp-home-topics h3 { margin: 0; font-size: 1rem; }
 .pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: var(--pp-text-muted); }
 .pp-home-topics__list { display: flex; flex-wrap: wrap; gap: .35rem; }
-.pp-home-topics__all { display: inline-block; margin-top: .7rem; font-size: .85rem; }
+.pp-home-topics__all { display: inline-block; margin-top: auto; padding-top: .7rem; font-size: .85rem; }
 .pp-home-topic {
   display: inline-block;
   padding: .12rem .55rem;
@@ -253,8 +255,6 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   background: var(--pp-surface); border-color: var(--pp-border-strong); color: var(--pp-text);
 }
 @media (max-width: 860px) {
-  /* Sticky only jumps around in a single-column layout. */
-  .pp-home-topics { position: static; }
   .pp-home-dash-grid { grid-template-columns: 1fr; }
 }
 
@@ -292,12 +292,14 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
    below them. */
 .pp-tilegrid {
   list-style: none; padding: 0; margin: .75rem 0 0;
-  /* 10rem = 15rem / 1.5. The image scales by itself (it keeps aspect-ratio), text
-     does not, so font size and padding below are reduced in the same ratio.
-     Otherwise text would grow relative to the image on a smaller card. */
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  gap: .6rem;
+  /* Three cards in a row everywhere, like the Swedish portal (decided 24 Oct
+     2026): wide cards read better than many narrow ones. Two on a tablet, one
+     on a phone (media queries below). */
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
 }
+@media (max-width: 860px) { .pp-tilegrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .pp-tilegrid { grid-template-columns: 1fr; } }
 .pp-tile {
   display: flex; flex-direction: column;
   border: 1px solid var(--pp-border); border-radius: 8px; overflow: hidden;
@@ -312,8 +314,8 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 }
 .pp-tile__title {
   display: block; font-weight: 600; line-height: 1.25;
-  font-size: .88rem;
-  padding: .45rem .5rem .2rem;
+  font-size: 1rem;
+  padding: .6rem .75rem .25rem;
 }
 /* An image that is not a card illustration (a logo on a news item): shown whole,
    not cropped. White background, because partner logos have white backgrounds. */
@@ -322,7 +324,7 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
    Smaller and muted: it describes the title, it is not a second title. */
 .pp-tile__stamp {
   display: block; margin-top: .2rem;
-  font-weight: 400; font-size: .72rem; line-height: 1.3;
+  font-weight: 400; font-size: .8rem; line-height: 1.3;
   color: var(--pp-text-secondary);
 }
 
@@ -434,12 +436,12 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
    The column is wider than on the home page out of necessity: none of the
    descriptions fit a 10rem card (66 characters fit; descriptions are 114–158).
    The card design is the same, it just gets room for text. */
-.pp-tilegrid--full { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); }
+/* Same three columns as .pp-tilegrid; kept as a hook for the full card. */
 .pp-tile__desc {
-  margin: .3rem 0 0; padding: 0 .6rem;
+  margin: .3rem 0 0; padding: 0 .75rem;
   font-size: .8rem; color: var(--pp-text-secondary); line-height: 1.4;
 }
-.pp-tile__tags { padding: .5rem .6rem .6rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+.pp-tile__tags { padding: .5rem .75rem .75rem; display: flex; flex-wrap: wrap; gap: .3rem; }
 .pp-tile__desc + .pp-tile__tags { padding-top: .45rem; }
 .pp-tile > :last-child { margin-bottom: 0; }
 
