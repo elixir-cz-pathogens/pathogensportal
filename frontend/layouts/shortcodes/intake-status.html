@@ -1,33 +1,14 @@
-{{/* Red "not in operation yet" bar for the intake pages (TODO D15, I34).
+{{/* Red bar at the top of the intake pages (TODO D15, I34).
 
-     Usage: {{< intake-status >}}  — on about/prispet, which carries the
-     request form under the #zadost anchor.
+     Usage: {{< intake-status >}}  — on about/prispet and en about/contribute.
 
-     Invites people to file a request now, but ONLY where the request form can
-     actually send (params.intake.api set). Where it cannot — today: production,
-     which runs no backend — it points to e-mail instead: a bar saying "fill in
-     the form" above a form that sends nothing would lose exactly the people
-     it invites. */}}
-{{ $api := site.Params.intake.api | default "" }}
+     Says plainly that data are not being accepted yet and the intake is a
+     pilot (wording decided 24 Oct 2026). */}}
 {{ $en := eq .Page.Language.Lang "en" }}
 <div class="pp-status-bar" role="alert">
   {{ if $en }}
-  <p><strong>This page is still in preparation — data intake is not in operation yet.</strong></p>
-  {{ if $api }}
-  <p>If you want to take part now, feel free to fill in the <a href="#request">request form</a> below.
-  We will get back to you, but please allow some time.</p>
+  <p><strong>We are currently not accepting data.</strong> This feature is still in a pilot version.</p>
   {{ else }}
-  <p>If you want to take part now, write to us{{ with site.Params.mail }} at
-  <a href="mailto:{{ . }}">{{ . }}</a>{{ end }}. We will get back to you, but please allow some time.</p>
-  {{ end }}
-  {{ else }}
-  <p><strong>Tato stránka je zatím v přípravě — příjem dat ještě není v provozu.</strong></p>
-  {{ if $api }}
-  <p>Pokud se chcete zapojit už teď, klidně vyplňte <a href="#zadost">formulář žádosti</a> níže.
-  Ozveme se vám, jen počítejte s tím, že vyřízení bude chvíli trvat.</p>
-  {{ else }}
-  <p>Pokud se chcete zapojit už teď, napište nám{{ with site.Params.mail }} na
-  <a href="mailto:{{ . }}">{{ . }}</a>{{ end }}. Ozveme se vám, jen počítejte s tím, že vyřízení bude chvíli trvat.</p>
-  {{ end }}
+  <p><strong>V současné době nepřijímáme data.</strong> Tato funkcionalita je zatím v pilotní verzi.</p>
   {{ end }}
 </div>
