@@ -6,11 +6,13 @@ image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiology", "IMG CAS"]
 data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG CAS</a> / UJEP / Military Health Institute'
-update_freq: "Updated continuously (active outbreak)"
+# Closed report: the figures below are from the final WHO summary (DON611) as of
+# 2 Jul 2026 and will not change. The only case where a date goes here — see update-stamp.html.
+data_as_of: "2026-07-02"
 ---
 
 <a href="https://titan.img.cas.cz/hantavirus/" target="_blank" class="btn btn-primary mb-4">
-  Open the live situation report (in Czech) →
+  Open the final situation report (in Czech) →
 </a>
 
 ---
@@ -27,16 +29,16 @@ update_freq: "Updated continuously (active outbreak)"
 
 ### The 2026 outbreak — MV Hondius cruise ship
 
-In 2026, **community transmission of Andes virus** linked to the MV Hondius cruise ship was identified. As of June 2026:
+In May 2026, **Andes virus** infections were identified among passengers and crew of the MV Hondius cruise ship, including limited human-to-human transmission on board. **On 2 July 2026 WHO declared the outbreak over.** Final WHO summary as of 2 July 2026 (DON611):
 
 | Indicator | Value |
 |---|---|
 | Confirmed cases | 12 |
 | Probable cases | 1 |
 | Deaths | 3 |
-| Contacts under follow-up | 600+ |
-| Countries/territories affected | 32 |
-| Rt (reproduction number) | 0.7 (declining trend) |
+| Contacts who completed follow-up | 650+ (317 high-risk, ~336 low-risk) |
+| Countries/territories with contacts followed up | 33 |
+| New cases since 25 May 2026 | 0 |
 
 The **incubation period** of Andes virus is 4–42 days; a 42-day quarantine of contacts is recommended.
 
@@ -56,11 +58,11 @@ The Czech Republic is not an endemic area for Andes virus. The risk of an import
 
 ---
 
-### Where to follow developments
+### Where to find the details
 
-- **[IMG CAS situation report](https://titan.img.cas.cz/hantavirus/)** — a continuously updated overview in Czech
+- **[IMG CAS situation report](https://titan.img.cas.cz/hantavirus/)** — the final overview in Czech (last updated 10 Jul 2026)
 - [ECDC — Andes Virus Outbreak](https://www.ecdc.europa.eu) — EU epidemiological reporting
-- [WHO DON604](https://www.who.int) — Disease Outbreak News
+- [WHO DON611](https://www.who.int) — Disease Outbreak News, final summary
 - [CDC — Hantavirus](https://www.cdc.gov/hantavirus/) — US clinical guidance
 - [RIVM](https://www.rivm.nl) — Dutch reporting (the Netherlands had more MV Hondius cases)
 

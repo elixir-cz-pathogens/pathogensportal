@@ -1,144 +1,145 @@
-# CLAUDE.md — pathogensportal
+# CLAUDE.md — Pathogen Portal CZ
 
-Public repo of **Pathogen Portal CZ** — a static Hugo website plus a data pipeline that feeds it.
-Fork of `jirkavlasak/pathogensportal` (`upstream`); this fork
-(`origin = elixir-cz-pathogens/pathogensportal`) is the working repo.
-Live site: `https://pathogens.vm.cesnet.cz` · Staging: `https://pathogens-dev.vm.cesnet.cz` (`noindex`).
+Technical orientation for AI coding assistants (and humans) working on this repository.
+Process and conventions are in `CONTRIBUTING.md`; CI/CD is in `.github/workflows/WORKFLOWS_GUIDE.md`.
 
-Docs, code and commit messages are in **English**. The only Czech is the site's own content in
-`frontend/content/cs/`, which is what the public reads.
+## What this is
 
-> ✅ **Transferred to the `elixir-cz-pathogens` organization on 11 Aug 2026.** The fork link to upstream,
-> all issues/PRs, branch protection and the repo variables survived; old `draessld/...` URLs redirect.
-> Verification record: `prep_phase/devops_intra/GITHUB_ORG_MIGRATION.md` in the workspace.
+A **static Hugo website** that publishes pathogen surveillance data for the Czech Republic
+(influenza, COVID-19, notifiable infectious diseases, situational reports), plus optional FastAPI
+backend services. Production: <https://pathogens.vm.cesnet.cz/> · staging: <https://pathogens-dev.vm.cesnet.cz/>.
 
-## Layout
+The site works with **no backend at all**: chart data is committed as JSON and served as static files.
 
-| Path | What |
+**Language:** site content is Czech (default) and English. Everything else — code, comments, docs,
+commit messages — is English.
+
+## Repository layout
+
+| Path | Contents |
 |---|---|
-| `frontend/` | Hugo site (`hugo.toml`, `content/`, `layouts/`, `static/`). The theme is a **git submodule** (`frontend/themes/…`). |
-| `backend/` | FastAPI services, **one directory = one container**: `website-be`, `llm-agent-be`, `mcp`. |
-| `deploy/` | `docker-compose.yml` (production), `docker-compose.dev.yml` (dev override), `.env.example`. |
-| `pathogensportal-db/` | a **git submodule** — scrapers, `db/init.sql`, the chart JSON generator. Pinned to a tag. |
-| `incoming/` | situational report deliveries from the generator — see `incoming/README.md`. |
-| `.github/workflows/` | CI + automations — see `WORKFLOWS_GUIDE.md`. |
+| `frontend/` | Hugo site: `hugo.toml`, `content/`, `layouts/`, `static/`, `data/`, `i18n/` |
+| `frontend/themes/hugo-pathogens-portal/` | theme, **git submodule** (external repo, do not edit — override in `frontend/layouts/`) |
+| `frontend/static/data/charts/*.json` | generated chart data, committed |
+| `frontend/static/js/` | `pp-charts.js` (all charts), `pp-flu.js` (influenza intensity), `pp-events.js` (home-page events) |
+| `frontend/static/vendor/` | Bootstrap, jQuery, DataTables, Chart.js — hosted locally, not from a CDN |
+| `backend/` | FastAPI services, one directory = one container: `website-be`, `llm-agent-be`, `mcp` |
+| `deploy/` | `docker-compose.yml`, `docker-compose.dev.yml` (dev override), `.env.example` |
+| `pathogensportal-db/` | **git submodule** pinned to a release tag: scrapers, DB schema, `scripts/generate_json.py` |
+| `incoming/` | situational report deliveries before ingest (see `incoming/README.md`) |
+| `tools/ingest_report.py` | turns an `incoming/<report>/` delivery into portal pages and chart JSON |
 
-Monitoring (Grafana) lives in **`pathogensportal-priv`**. This repo holds the FE, the BE services and the
-data submodule.
-
-### Content languages (careful)
-
-- `frontend/content/cs/` — **Czech, built** (`hugo.toml` → `[languages.cs]`, served at `/`).
-- `frontend/content/en/` — **English, built since Sep 2026** (`[languages.en]` in hugo.toml, served
-  at `/en/` with the theme's language switcher). Menus are defined **per language** — a root `[menus]`
-  block would leak Czech names into the English UI. Chart *data* labels stay Czech (they live inside
-  the generated JSONs); a finite dictionary in `pp-charts.js` translates the common ones, the 114 ISIN
-  diagnosis names remain Czech with a note on the pages (permanent fix tracked as pathogensportal-db#47).
-  New content pages must be added in both languages or the EN site silently loses them.
-  ⚠️ **`aliases:` must be written language-neutral.** Hugo prefixes the language onto an alias of a
-  non-default language, so `/en/dashboards/signals/` in `content/en/` builds `/en/en/dashboards/signals/`
-  and the real English URL 404s. Write the Czech form in both files. (Found 9 Sep 2026, live on staging.)
-
-**Data model (A):** chart JSON is **committed** into `frontend/static/data/charts/` (the site stays static).
-To regenerate from the submodule:
-```bash
-git submodule update --init --recursive
-OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/generate_json.py
-# or through the container:
-docker compose -f deploy/docker-compose.yml --profile tools run --rm datascrapper
-```
-
-⛔ **Check `git status -sb` before you edit anything in this repo.** The pipeline commits to `dev` on its
-own schedule, so a checkout goes stale without anyone touching it — on 9 Sep 2026 a local `dev` was
-**173 commits behind** and an edit to it looked like it had done nothing, because staging builds from
-`origin/dev`. "I pulled recently" is not the same as "I am current".
-
-⚠️ **On `dev` this is automated since 31 Aug 2026 — do not hand-edit the generated files there.**
-A push to `pathogensportal-db`'s `dev` branch makes the dev server run the pipeline and **commit** the
-regenerated chart JSON *and* the eight `content/cs/dashboards/ebola-*.md` straight to this branch
-(author `pathogensportal datapipeline`). Anything you change in those files by hand is silently
-reverted by the next run. `main`/production is **not** affected — it only moves on a `dev` → `main`
-merge.
-
-⏳ Model A itself is transitional. `pp-charts.js` already asks `/api/charts` first and falls back to
-the committed JSON only when the backend is absent, so once website-be + Postgres run the data stops
-needing to be committed at all.
-
-⛔ **Never type an update date into a dashboard's front matter.** A page names a chart file and says how
-to read a date out of it — `update_from: "flu_weekly.json"` + `update_read: "week"` — and
-`layouts/partials/update-stamp.html` does the reading. A hand-written date rots at the next pipeline run
-with nothing to correct it, because the pipeline rewrites only the `ebola-*` pages.
-
-⛔ **`update_read` must stay explicit; do not "simplify" it into guessing from the file.** The last label
-of a series is a period in `flu_weekly` (`KT 36/26`), an age band in `covid_by_age` (`80+`) and a region
-in `flu_regional_overview` (`Liberecký`). Anything that takes the last label automatically prints an age
-band as an update date on a third of the dashboards, and it looks like a valid figure.
-Readings: `stamp` (`generated_at` = pipeline run → "Aktualizace: …", else `posledni_datum` = data extent
-→ "Data k …"), `period-end`, `week` (ISO week → its Sunday), `month`, `year`. ⚠️ Month and year are not
-converted to a day — ISIN by disease group is an annual series and a fabricated 31 Dec would claim daily
-precision. ⚠️ Four pages have no date to read and keep a sentence about frequency: the two Nextstrain
-builds and wastewater run on someone else's server, hantavirus is a closed situational report.
-
-## Common commands
+## Commands
 
 ```bash
-git clone --recurse-submodules <url>          # the theme is a submodule — always recurse
-# dev stack (Hugo + BE + DB, ports on localhost only):
-docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml up
-# production FE build:
-(cd frontend && hugo --minify)                 # -> frontend/public/
-# tests for one BE service:
+git clone --recurse-submodules <url>        # both the theme and the data repo are submodules
+(cd frontend && hugo server)                # local preview, http://localhost:1313/
+(cd frontend && hugo --minify)              # production build -> frontend/public/
 (cd backend/website-be && pip install -r requirements.txt && pytest)
+
+# full dev stack (Hugo + backend + Postgres, ports bound to 127.0.0.1)
+docker compose -f deploy/docker-compose.yml -f deploy/docker-compose.dev.yml up
+
+# regenerate chart JSON from the submodule
+OUTPUT_DIR=../frontend/static/data/charts python pathogensportal-db/scripts/generate_json.py
 ```
 
-Every BE service has `GET /health`. In production the services do not listen on the host — everything goes
-through Apache.
+CI pins Hugo **0.164.0 extended**. Always run a full `hugo` build before opening a PR into `main`.
 
-## Conventions (EFSA project style — detail in `CONTRIBUTING.md`)
+## Site architecture
 
-- **Commit:** `PP-<n>: message`  •  escape: `no-issue: …`  (prefix = repo variable `PROJECT_PREFIX=PP`).
-- **Branch:** `feature|bugfix|docs/PP-<n>_desc`  •  escape: `no-issue/...`.
-- **`dev`** = free sandbox — push directly, no PR, no checks. ⚠️ **But since 17 Aug a push to `dev`
-  DEPLOYS to staging**, which reviewers look at. Still free to break; just not unobserved.
-- **Checks run ONLY on PR → `main`:** `commit-message-check`, `hugo-build` and **`backend-tests / pytest`**
-  are all **required**. ⚠️ **Note the exact name — it is `backend-tests / pytest`, with the suffix.** That
-  job calls a reusable workflow, and GitHub names such checks `<calling job> / <called job>`. Protection
-  matches on the exact string, so the plain `backend-tests` that was configured on 23 Aug matched nothing:
-  it stayed pending and **blocked every PR into `main`** until 31 Aug, when PR #24 exposed it. The 23 Aug
-  "verified against the API" only confirmed the name was *listed*, not that anything *reports* it.
-  `branch-name-check` runs but is not required. 1 approving review, stale
-  reviews dismissed, no force-push, no deletion. `enforce_admins` is **off**, so an admin can bypass.
-  Automations: issue prefixer, branch→issue linker, PR notify.
-- **Both deploys are LIVE since 17 Aug** (this used to say production was off).
-  `deploy-staging.yml` (push to `dev`) and `deploy-production.yml` (push to `main`) both run
-  tests → Hugo build → rsync. Production has been exercised **once**, verified byte-identical to the manual
-  build. ⛔ **One flag per environment** (`DEPLOY_STAGING_ENABLED` / `DEPLOY_PRODUCTION_ENABLED`) — it used
-  to be a single `DEPLOY_ENABLED`, so enabling staging also armed production. Do not merge them back.
-- **Host keys are pinned, not scanned** (23 Aug). Both workflows write the server's key from
-  `STAGING_SSH_HOST_KEY` / `PRODUCTION_SSH_HOST_KEY` and rsync with `StrictHostKeyChecking=yes`;
-  `ssh-keyscan` trusted whatever answered, on every run. The keys are also in `-priv/ansible/known_hosts`.
-- ⚠️ **`STAGING_PATH` is `/` and that is deliberate.** Staging's deploy key is pinned to a forced
-  `rrsync -wo` command on the server, and rrsync prefixes a leading-slash client path with its restricted
-  directory. `PRODUCTION_PATH` is still the absolute path because production's jail is not on yet — the
-  server switch and the variable must change in the same window, server first.
-- **Tests gate both deploys** via the reusable `_test-backend.yml`; it fails if it finds *no* tests.
-- Staging and production have **separate** hosts and keys (`vars.STAGING_HOST`/`PRODUCTION_HOST`,
-  `secrets.STAGING_SSH_KEY`/`PRODUCTION_SSH_KEY`) — do not merge them. `baseURL` is derived from `*_HOST`;
-  no hostname is hardcoded.
-- **Merges to `main` must be squash/rebase** (linear history) — so **realign `dev` with `main` right after
-  every release**, or the two histories drift and the next release conflicts. This has bitten us twice.
-- Full workflow reference: `.github/workflows/WORKFLOWS_GUIDE.md`.
+### Languages
+- `content/cs/` is the default language, served at `/` (`defaultContentLanguageInSubdir = false`).
+- `content/en/` is served at `/en/`.
+- A new page must exist in **both** directories, otherwise the other language silently lacks it.
+- Menus are defined **per language** in `hugo.toml` (`[[languages.<lang>.menus.main]]`) and use
+  `pageRef`, never `url` — Hugo does not prefix a menu `url` with the language.
+- Write `aliases:` **language-neutral** (the Czech path, e.g. `/dashboards/signals/`) in both files.
+  Hugo prefixes aliases of a non-default language itself; writing `/en/...` produces `/en/en/...`.
+- Templates switch strings with `eq .Site.Language.Lang "en"`; `i18n/cs.toml` holds shared labels.
 
-## Related repos
+### Dashboards
+A dashboard is a page in `content/<lang>/dashboards/` rendered by `layouts/dashboards/single.html`,
+which is the template that loads Chart.js and `pp-charts.js` (and `pp-flu.js` only when the page uses
+the `flu` shortcode). A page outside that section that needs charts must set `type: dashboards`.
 
-- `pathogensportal-priv` — **private** infra (Ansible, configs, Vault). Nothing infra or secret goes here.
-- `pathogensportal-db` — scrapers + DB schema, attached as a **submodule pinned to a release tag**
-  (currently `v0.4.0`; URL in `.gitmodules` points at the `elixir-cz-pathogens` org). After every
-  pipeline release the pin must be bumped in a PR here, or production keeps building the old
-  `datascrapper` image — this was missed once and cost a debugging session.
+Front matter used by the templates:
+
+| Field | Meaning |
+|---|---|
+| `title`, `description`, `tags`, `image` | standard; `image` is the card picture (`/images/cards/…`) |
+| `origin` | closed code list: `aggregated` (public source), `own` (produced/processed by the portal), `ai-assisted` (AI-written, expert-reviewed). Drives the badge and card border (`partials/origin-meta.html`). No `origin` → no badge. |
+| `data_source` | HTML citation of the data source shown on the page |
+| `update_from` + `update_read` | which chart JSON holds the freshness date and how to read it (see below) |
+| `update_freq` | free-text frequency, used only when the page has no `update_from` |
+| `data_as_of` | fixed date, **only** for closed reports whose figures never change; build fails if combined with `update_from` |
+| `highlight` | show on the home page |
+| `redirect_url` | tile and page redirect to an external dashboard (Nextstrain, wastewater) |
+
+**Never type an update date into front matter.** `partials/update-stamp.html` reads it from the data.
+`update_read` is explicit on purpose — the last label of a series can be a week, an age band or a region:
+`stamp` (default: `generated_at`, else `posledni_datum`), `period-end`, `week` (`KT WW/YY` → Sunday of
+that ISO week), `month`, `year`. Month and year are not converted to a day.
+
+### Charts
+- Shortcode: `{{< chart id="…" src="/data/charts/<file>.json" type="line|bar|…" title="…" height="380" note="…" >}}`.
+  The template emits markup only; `pp-charts.js` does everything else (rendering, data table toggle,
+  origin label in the card footer).
+- Chart JSON shape: `{ labels: [...], datasets: [...], meta: {...} }` (Chart.js-like) plus optional fields.
+- **Data source order:** `pp-charts.js` queries `/api/charts` once per page. If the backend answers, charts
+  load from `/api/charts/<key>`; otherwise from the static `src`. The payload is identical either way.
+  `params.apibase` is empty in production (same origin); the dev compose sets `HUGO_PARAMS_APIBASE`.
+- Colours come from CSS variables (`--pp-*`) in `static/css/dashboards.css`; colours in the JSON are
+  ignored. The eight-colour palette is colour-blind safe — do not reorder it; series beyond eight are
+  grouped into a grey "Other".
+- Data labels inside the JSON are Czech; pathogensportal-db (PPDB-77) adds English ones in `*_en` fields
+  (`labels_en`, `datasets[].label_en`, `x_title_en`, `unit_en`, `diagnoza_nazev_en`, …), which
+  `pp-charts.js`, `pp-flu.js` and `partials/signals-map.html` prefer on the English site. The
+  dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
+
+Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`,
+`stat-card`, `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
+`organization`, `person`, `report-cards`. Each template starts with a usage comment.
+
+### Structured data and catalogues
+- `data/sources.yaml` is the single source catalogue; it feeds the human-readable data page,
+  `/about/data/sources.json` (`layouts/_default/single.sources.json`) and the DCAT-AP-CZ catalogue
+  (`partials/dcat-publish.html`, metadata in `data/dcat.yaml`, generated in the default language only).
+- `partials/dataset-jsonld.html` emits schema.org `Dataset` markup per dashboard.
+- Other data files: `navpills.yaml` (section navigation), `reports.yaml` (situational reports),
+  `privacy.yaml` (privacy notice text).
+
+## Where content and data come from
+
+- **Generated chart JSON** (`frontend/static/data/charts/`) is produced by `pathogensportal-db` and
+  arrives on `dev` as automated commits authored `pathogensportal datapipeline`. Do not hand-edit these
+  files — the next run overwrites them. Fix the generator in `pathogensportal-db` instead.
+- **Situational reports** (e.g. Ebola) arrive as content PRs from `content/…` branches that write
+  `frontend/content/` and the related chart JSON directly. They are checked by
+  `check-content-sanitizer.yaml`, get a preview build (`preview-content.yml`) and a subject-matter
+  review. `incoming/` + `tools/ingest_report.py` is the documented path for raw HTML deliveries.
+  Never put a delivery directly into `frontend/static/` — Hugo publishes it verbatim and unsanitized.
+- Everything else (dashboard text, layouts, styles) is edited here by hand.
+
+Because automated commits land on `dev` continuously, run `git fetch && git status -sb` before editing;
+a local branch goes stale quickly.
+
+## Workflow summary
+
+- `dev` — integration branch, pushed to directly, **autodeploys to staging**.
+- `main` — production, protected; changes only via PR with one approval and the required checks
+  (`commit-message-check`, `hugo-build`, `backend-tests / pytest`, `content-sanitizer`). Merged by
+  rebase (linear history); a push to `main` **autodeploys to production**.
+- Commits: `PP-<issue>: summary` or `no-issue: summary`. Branches: `feature|bugfix|docs/PP-<n>_desc`,
+  `content/…`, `no-issue/…`.
+- `main` is merged back into `dev` automatically after each push; a failed sync run means `dev` needs a
+  manual merge of `origin/main`.
+- The `pathogensportal-db` submodule pin is bumped in a PR after each data release.
 
 ## Rules
 
-- **Never commit secrets or real data** (the repo is public). Data stays out of git via `.gitignore`.
-- Keep the live site working — production deploys from `upstream` on the CESNET VM; don't break the build.
-- When editing the site, verify it still builds (`hugo`) before opening a PR to `main`.
+- The repository is public: never commit secrets, credentials or non-public data. Secrets live in
+  GitHub Actions secrets and in a separate private infrastructure repository.
+- Do not edit the theme submodule; override templates in `frontend/layouts/`.
+- Do not change user-visible Czech text unless the task is a content change.
+- Keep comments and docs in English, concise, and about the *why*.

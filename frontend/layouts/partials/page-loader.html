@@ -1,0 +1,28 @@
+{{/* Full-window loading overlay — a translucent white layer that blurs the
+     loading page, with the portal emblem spinning in the middle.
+
+     Usage: {{ partial "page-loader.html" . }}   (context = page, for the language)
+
+     Hidden by pp-charts.js (hidePageLoader) once all data loads on the page
+     have finished. The content below renders normally in the meantime — the
+     layer only covers it, it does not delay anything.
+
+     The fallback timeout below must NOT be removed. If pp-charts.js failed to
+     load or crashed before hiding the layer, it would cover the page forever
+     and make it unusable. 15 s is longer than any reasonable load.
+
+     The emblem, not the full logo — same reason as in spinner.html: the
+     lettering would turn upside down while rotating. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-page-loader" data-pp-page-loader role="status">
+  <img class="pp-page-loader__mark" src="{{ "images/portal-mark.png" | relURL }}" alt=""
+       width="88" height="88" decoding="async">
+  <span class="visually-hidden">{{ cond $en "Loading data…" "Načítání dat…" }}</span>
+</div>
+<noscript><style>.pp-page-loader { display: none; }</style></noscript>
+<script>
+  setTimeout(function () {
+    document.querySelectorAll("[data-pp-page-loader]").forEach(function (el) { el.remove(); });
+    document.querySelectorAll("[data-pp-busy]").forEach(function (el) { el.removeAttribute("aria-busy"); });
+  }, 15000);
+</script>

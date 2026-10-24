@@ -3,8 +3,8 @@
      Usage: {{< stat-card src="/data/charts/covid_summary.json" >}}
 
      Which keys are displayed is decided by STAT_FIELDS in /js/pp-charts.js — a
-     tile for a missing key is not rendered, so the same shortcode serves
-     covid_summary i ebola_summary.
+     tile for a missing key is not rendered, so the same shortcode serves both
+     covid_summary and ebola_summary.
 */}}
 {{ $src := .Get "src" }}
 
@@ -14,5 +14,5 @@
     <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
     <div class="pp-stat pp-stat--loading"><div class="pp-skeleton"></div></div>
   </div>
-  <p class="pp-stats-origin"><span class="pp-origin" data-pp-origin>načítám data…</span></p>
+  <p class="pp-stats-origin"><span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}načítám data…{{ end }}</span></p>
 </div>

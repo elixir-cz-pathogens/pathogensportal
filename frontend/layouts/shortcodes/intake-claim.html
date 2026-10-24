@@ -1,0 +1,44 @@
+{{/* Turns a one-time link into the provider's key (api.claim, keys.claim_url).
+
+     Usage: {{< intake-claim >}}  — on about/klic, opened as /about/klic/#ppc_…
+
+     The token is in the URL fragment, which the browser never sends anywhere;
+     pp-intake.js reads it, removes it from the address bar, and posts it only
+     when the provider presses the button. Not on page load: e-mail scanners
+     open links to check them, and a link they could spend would reach the
+     provider already used. */}}
+{{ $api := site.Params.intake.api | default "" }}
+{{ $en := eq .Page.Language.Lang "en" }}
+{{ $contribute := site.GetPage (cond $en "/about/contribute" "/about/prispet") }}
+<div class="pp-intake" data-pp-claim data-endpoint="{{ with $api }}{{ . }}/claim{{ end }}">
+  <div data-pp-claim-start>
+    {{ if $en }}
+    <p>With this link you take over your <strong>key for uploading data</strong>. The link works
+    <strong>only once</strong>: the key is created and shown now and cannot be shown again.
+    Have a safe place ready to store it (a password manager, an environment variable).</p>
+    {{ else }}
+    <p>Tímto odkazem si převezmete <strong>klíč pro nahrávání dat</strong>. Odkaz funguje
+    <strong>jen jednou</strong>: klíč se vytvoří a zobrazí teď a znovu ho ukázat nepůjde.
+    Mějte připravené místo, kam si ho bezpečně uložíte (správce hesel, proměnná prostředí).</p>
+    {{ end }}
+    <button type="button" class="pp-hero__cta" data-pp-claim-go>{{ cond $en "Take over the key" "Převzít klíč" }}</button>
+  </div>
+  <div data-pp-claim-done hidden>
+    <p class="pp-intake__ok">{{ cond $en "Your key — store it now, it will not be shown again:" "Váš klíč — uložte si ho teď, znovu se nezobrazí:" }}</p>
+    <p><input type="text" readonly data-pp-claim-key class="pp-intake__key" aria-label="{{ cond $en "Key" "Klíč" }}">
+    <button type="button" class="pp-hero__cta" data-pp-claim-copy>{{ cond $en "Copy" "Zkopírovat" }}</button></p>
+    <p data-pp-claim-mode></p>
+    <ul>
+      {{ if $en }}
+      <li>Do not forward the key to anyone and do not store it in code, a repository or e-mail.</li>
+      <li>If it reaches someone else, let us know at once — we will revoke it and send a new one.</li>
+      <li>Upload data on the <a href="{{ with $contribute }}{{ .RelPermalink }}{{ end }}#upload">Contribute</a> page.</li>
+      {{ else }}
+      <li>Klíč nikomu nepřeposílejte a neukládejte ho do kódu, repozitáře ani e-mailu.</li>
+      <li>Kdyby se dostal k někomu jinému, dejte nám hned vědět — zneplatníme ho a pošleme nový.</li>
+      <li>Data nahrajete na stránce <a href="{{ with $contribute }}{{ .RelPermalink }}{{ end }}#nahrani">Chci přispět</a>.</li>
+      {{ end }}
+    </ul>
+  </div>
+  <div class="pp-intake__result" role="status" aria-live="polite"></div>
+</div>

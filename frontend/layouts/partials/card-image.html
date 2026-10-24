@@ -1,37 +1,37 @@
-{{/* Obrázek karty dashboardu. Vrací dict `src` + `ai`, nic nevykresluje.
+{{/* Dashboard card image. Returns a dict `src` + `ai`, renders nothing.
 
      Usage: {{ $img := partial "card-image.html" $page }}
-            <img src="{{ $img.src }}"> {{ if $img.ai }}…značka…{{ end }}
+            <img src="{{ $img.src }}"> {{ if $img.ai }}…mark…{{ end }}
 
-     Pořadí: `image` z hlavičky → odvození podle URL → placeholder.
+     Order: front matter `image` → derived from URL → placeholder.
 
-     ⛔ Odvození podle URL tu není z lenosti. Ebola stránky píše AI a datová
-     pipeline je přepisuje celé — 5. 9. 2026 při jednom takovém běhu zmizelo
-     `origin: ai-assisted` ze všech osmi. Cokoli, co do jejich hlavičky dopíšeme,
-     má stejnou životnost. Odvození ze šablony pipeline přepsat nemůže.
+     Derivation from the URL is deliberate. The Ebola pages are AI-authored
+     and regenerated wholesale, so anything added to their front matter can be
+     lost on the next regeneration. A derivation in the template cannot be
+     overwritten that way.
 
-     ⚠️ Placeholder se bere jako CHYBĚJÍCÍ obrázek, ne jako volba. V hlavičce ho
-     má ebola-bundibugyo-2026 a je to obecná šedá dlaždice; kdyby se
-     respektoval, zůstala by ta stránka bez ebolího obrázku i s tímhle partialem.
+     The placeholder is treated as a MISSING image, not a choice. Some pages
+     carry it in front matter; honouring it would leave them without their
+     topic image.
 
-     ── Co znamená `ai` ──────────────────────────────────────────────────────
-     ⛔ Rozhoduje CESTA: obrázek pod {{ "/images/cards/ai/" }} je vygenerovaný AI.
-     Ne příznak v hlavičce — ten se dá zapomenout dopsat, dá se odstranit a
-     u ebola stránek ho pipeline smaže. Cesta je vlastnost souboru: kdo obrázek
-     uloží do toho adresáře, označí ho tím samým úkonem, a odznačit ho nejde
-     jinak než přesunutím souboru.
+     ── What `ai` means ──────────────────────────────────────────────────────
+     The PATH decides: an image under {{ "/images/cards/ai/" }} is AI-generated.
+     Not a front matter flag — that can be forgotten, removed or overwritten by
+     regeneration. The path is a property of the file: storing an image in that
+     directory marks it in the same act, and the only way to unmark it is to
+     move the file.
 
-     ⛔ NENÍ to totéž co `origin: ai-assisted`. To říká, že AI napsala OBSAH
-     stránky. Tohle říká, že AI vygenerovala OBRÁZEK. Dashboard s lidsky psaným
-     textem a generovanou ilustrací je první, ne druhé — spojit je dohromady by
-     znamenalo tvrdit o datech něco, co není pravda.
+     This is NOT the same as `origin: ai-assisted`. That says AI wrote the page
+     CONTENT; this says AI generated the IMAGE. A dashboard with human-written
+     text and a generated illustration is the latter, not the former —
+     conflating them would make a false claim about the data.
 */}}
 {{ $placeholder := "/images/dashboard-placeholder.svg" }}
 {{ $aiDir       := "/images/cards/ai/" }}
 {{ $img := .Params.image | default "" }}
 
 {{ if or (eq $img "") (eq $img $placeholder) }}
-  {{/* Klíč je URL, ne jméno souboru: .File je u generovaných stránek nil. */}}
+  {{/* The key is the URL, not the file name: .File is nil for generated pages. */}}
   {{ $url := .RelPermalink }}
   {{ range $needle, $file := (dict "ebola" "ebola.webp") }}
     {{ if in $url $needle }}{{ $img = printf "/images/cards/%s" $file }}{{ end }}

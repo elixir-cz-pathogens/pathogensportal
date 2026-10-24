@@ -1,7 +1,7 @@
 ---
 title: "COVID-19 — Věk a vakcinace"
 origin: aggregated
-description: "4,9 milionu potvrzených případů COVID-19 v ČR podle věku a stavu očkování — úmrtí, smrtnost, hospitalizace. Otevřená data MZČR, aktualizováno průběžně."
+description: "Potvrzené případy covidu-19 v ČR podle věku a stavu očkování: úmrtí, smrtnost a hospitalizace. Otevřená data MZČR."
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "úmrtí", "vakcinace", "epidemiologie", "MZČR"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR — Otevřená data COVID-19</a>'
@@ -17,8 +17,8 @@ build:
 ### Případy a úmrtí podle věkové skupiny
 
 Rozložení potvrzených případů a úmrtí podle věku pacienta za celé pandemické období
-(od března 2020). Případy se soustředí do produktivního věku, úmrtí drtivě do
-nejvyšších věkových skupin.
+(od března 2020). Případy se soustředí do produktivního věku, úmrtí převážně do
+nejstarších věkových skupin.
 
 {{< callout >}}
 **U 22 780 případů (0,5 %) není věk ve zdrojových datech vyplněn** — v grafu proto
@@ -53,21 +53,19 @@ Denní hlášení MZČR podle stavu očkování, sečtená za období **od ledna
 Podíl hospitalizovaných mezi pozitivně testovanými v dané skupině. **Pozor na
 interpretaci:** skupina s posilující dávkou je výrazně starší než průměr (očkování
 se prioritizovalo podle věku), takže její vyšší hospitalizační míra odráží hlavně
-věkové složení, ne selhání vakcíny. Očištění o věk tato agregovaná data neumožňují.
+věkové složení, nikoli nižší účinnost očkování. Očištění o věk tato agregovaná data neumožňují.
 
 {{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalizační míra (%) — stav očkování" height="300" note="Podíl v procentech: hospitalizovaní / pozitivní v dané skupině, od ledna 2021. Neočištěno o věk — skupiny mají různé věkové složení." >}}
 
 ---
 
-### Metodická poznámka
+### Metodika a omezení
 
 - Zdroje: otevřené datasety MZČR
   [`osoby`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19) (4,9 mil. případů
   s věkem a krajem), [`umrti`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19)
   (44 tis. úmrtí s věkem) a `ockovani-pozitivni` / `ockovani-hospitalizace`
   (denní počty podle stavu očkování).
-- Všechny grafy se generují automaticky datovou pipeline a aktualizují se s ní —
-  žádný ruční mezikrok.
 - Smrtnost (CFR) = úmrtí / potvrzené případy; skutečná smrtnost infekce (IFR) je
   nižší, protože ne každá nákaza byla zachycena testem.
 - Hospitalizace podle věku otevřená data neobsahují; podle stavu očkování ano.

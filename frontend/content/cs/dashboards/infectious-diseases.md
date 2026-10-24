@@ -5,20 +5,20 @@ description: "Přehled hlášených infekčních nemocí v ČR 2018–2025 dle �
 image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infekční nemoci", "surveillance", "ÚZIS", "kraje", "ČR"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
 update_from: "isin_monthly_trend.json"
 update_read: "month"
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="prehled" >}}
 
-Tento dashboard zobrazuje hlášené infekční nemoci v České republice na základě dat z **Informačního Systému Infekčních Nemocí (ISIN)** spravovaného ÚZIS ČR a MZČR. Data pokrývají 272 000+ záznamů od roku 2018 ve všech 14 krajích. Podrobný rozpad podle skupin nemocí najdete v záložkách výš — inspirováno švýcarským [Infectious Disease Dashboard](https://www.idd.bag.admin.ch/en).
+Tento panel zobrazuje hlášené infekční nemoci v České republice na základě dat z **Informačního systému infekčních nemocí (ISIN)** spravovaného ÚZIS ČR a MZČR. Data pokrývají roky 2018–2025 a všech 14 krajů. Podrobný rozpad podle skupin nemocí najdete v záložkách výše.
 
 ---
 
 ### Regionální mapa — celkový počet případů
 
-Choroplethová mapa ukazuje celkový počet hlášených infekčních nemocí v jednotlivých krajích ČR za poslední dostupný rok. Najeďte myší na kraj pro zobrazení přesného počtu.
+Mapa ukazuje celkový počet hlášených infekčních nemocí v jednotlivých krajích ČR za poslední dostupný rok. Přesný počet se zobrazí po najetí myší nebo klepnutí na kraj.
 
 {{< region-map id="isinMap" src="/data/charts/isin_regional_map.json" title="Hlášené infekční nemoci podle krajů ČR — absolutní počty"  note="Absolutní počty hlášených případů za poslední dostupný rok. Nepřepočteno na obyvatele — mapa z velké části kopíruje počet obyvatel kraje." >}}
 
@@ -26,22 +26,22 @@ Choroplethová mapa ukazuje celkový počet hlášených infekčních nemocí v 
 
 ### Regionální mapa — incidence na 100 000 obyvatel
 
-Stejná data přepočtená na velikost populace kraje (zdroj jmenovatelů: ČSÚ). **Obě mapy vypadají úplně jinak — a ta druhá je ta správná pro srovnávání krajů.**
+Stejná data přepočtená na velikost populace kraje (zdroj jmenovatelů: ČSÚ). **Pro srovnání krajů je vhodná mapa incidence**; absolutní počty odrážejí hlavně velikost populace kraje.
 
-Absolutní počty totiž hlavně kopírují, kde bydlí víc lidí. Praha má v absolutních číslech průměrný počet případů, ale po přepočtu na obyvatele má **nejnižší incidenci ze všech krajů** (720,6 na 100 tis.). Naopak Kraj Vysočina, který v absolutních počtech nijak nevyčnívá, je po přepočtu **nejvyšší** (1 639,9). Moravskoslezský kraj má nejvíc případů v absolutních číslech, ale v incidenci je až čtvrtý.
+Za rok 2025: Praha má v absolutních číslech průměrný počet případů, ale po přepočtu na obyvatele má **nejnižší incidenci ze všech krajů** (720,6 na 100 tis.). Naopak Kraj Vysočina, který v absolutních počtech nijak nevyčnívá, je po přepočtu **nejvyšší** (1 639,9). Moravskoslezský kraj má nejvíc případů v absolutních číslech, ale v incidenci je až čtvrtý.
 
-{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="případů na 100 tis." title="Incidence infekčních nemocí podle krajů ČR — na 100 000 obyvatel"  note="Přepočet na populaci: hlášené případy za rok na 100 000 obyvatel kraje (jmenovatele ČSÚ). Tahle mapa je ta správná pro srovnávání krajů." >}}
+{{< region-map id="isinIncidence" src="/data/charts/isin_regional_incidence.json" unit="případů na 100 tis." title="Incidence infekčních nemocí podle krajů ČR — na 100 000 obyvatel"  note="Přepočet na populaci: hlášené případy za rok na 100 000 obyvatel kraje (jmenovatele ČSÚ). Tato mapa je vhodná pro srovnávání krajů." >}}
 
 Rozdíly mezi kraji můžou odrážet i pokrytí a kapacitu hlásící sítě, ne jen skutečný výskyt — vyšší incidence nemusí znamenat víc nemocí, ale i důslednější hlášení.
 
 ---
 
-### Top 10 diagnóz — roční počty 2018–2025
+### 10 nejčastějších diagnóz — roční počty 2018–2025
 
 Přehled deseti nejčastěji hlášených infekčních nemocí dle počtu případů v jednotlivých letech.
-Varicella (plané neštovice) dlouhodobě dominuje díky povinnosti hlášení a velké nákazlivosti v dětské populaci.
+Nejčastěji hlášenou nemocí jsou dlouhodobě plané neštovice.
 
-{{< chart id="isinTopDiseases" src="/data/charts/isin_top_diseases.json" type="bar" title="Top 10 infekčních nemocí — počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
+{{< chart id="isinTopDiseases" src="/data/charts/isin_top_diseases.json" type="bar" title="10 nejčastějších infekčních nemocí — počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
 
 ---
 
@@ -57,23 +57,24 @@ jako výrazný vrchol vymykající se všem předchozím rokům.
 
 ### Věková struktura případů (kumulativně 2018–2025)
 
-Rozložení hlášených případů dle věkových skupin za celé sledované období. Nejrizikovější skupiny jsou děti do 14 let (varicella, GI infekce) a senioři 65+ (komplikované průběhy).
+Rozložení hlášených případů dle věkových skupin za celé sledované období. Nejvíce hlášených případů připadá na děti do 14 let (zejména plané neštovice a střevní infekce).
 
 {{< chart id="isinAge" src="/data/charts/isin_age_groups.json" type="bar" title="Počet hlášených případů dle věkové skupiny (2018–2025)" height="360"  note="Absolutní počty případů 2018–2025 po věkových skupinách. Nepřepočteno na velikost věkové skupiny v populaci." >}}
 
 ---
 
-### Poznámky k datům
+### Metodika a omezení
 
-- Data pocházejí z **ISIN** (Informační Systém Infekčních Nemocí), povinné hlášení dle zákona č. 258/2000 Sb.
-- Vydavatel: **ÚZIS ČR / MZČR** — licence CC BY 4.0
-- Databáze: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (~272 000 záznamů, 2018–2025)
+- Data pocházejí z **ISIN** (Informační systém infekčních nemocí), povinné hlášení dle zákona č. 258/2000 Sb.
+- Vydavatel: **ÚZIS ČR / MZČR** — licence [volný přístup](https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/)
+- Databáze: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (2018–2025; jeden řádek je agregovaný počet, ne jeden případ)
 - Sloupce: rok, měsíc, kraj (NUTS3), diagnóza (MKN-10), věková skupina, pohlaví, EWS příznak, počet případů
 - Počty případů jsou agregované (ne individuální záznamy pacientů)
-- Chřipka je vynechána — má vlastní podrobnější zdroj (SZÚ), viz Influenza dashboardy
+- Chřipka je vynechána — má vlastní podrobnější zdroj (SZÚ), viz panely o chřipce
+- Uspořádání panelu je inspirováno švýcarským [Infectious Disease Dashboard](https://www.idd.bag.admin.ch/en)
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
-  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> ·
+  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">volný přístup</a> ·
   Kategorie: povinné hlášení infekčních nemocí · Roky: 2018–2025
 </p>

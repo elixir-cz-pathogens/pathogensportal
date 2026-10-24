@@ -1,8 +1,8 @@
-{{/* Rozcestník „Kam dál" — karty na ostatní sekce reportu.
+{{/* "Where next" hub — cards linking to the other sections of the report.
 
      Usage: {{< report-cards report="ebola" >}}
 
-     Stránku, na které shortcode běží, ze seznamu sám vynechá.
+     The page the shortcode runs on is left out of the list automatically.
 */}}
 {{ $key := .Get "report" }}
 {{ $report := index site.Data.reports $key }}

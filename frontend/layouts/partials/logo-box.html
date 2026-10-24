@@ -1,0 +1,41 @@
+{{/* Partner logo size such that all logos occupy roughly the SAME AREA.
+
+     Usage: {{ $s := partial "logo-box.html" (dict "src" "/images/VZU.png" "area" 4800 "hmax" 56 "wmax" 170) }}
+            → dict "w" "h" (px, integers)
+
+     Why not equal height or width: logo aspect ratios range from 0.8 (the VZÚ
+     shield) to 6 (the Swiss programme). Equal height turns a narrow logo into
+     a sliver and a wide one into a billboard; equal width blows up a narrow
+     shield next to a wide logo. Equal area is the usual compromise;
+     `hmax`/`wmax` stop a narrow logo from growing too tall and a wide one too wide.
+
+     The aspect ratio is read from the file — PNG/JPG via images.Config, SVG
+     from viewBox. Empty margin in the file counts as logo, so logo files are
+     cropped to their content; crop new logos the same way or they come out smaller. */}}
+{{ $src  := .src }}
+{{ $path := printf "static%s" $src }}
+{{ $r    := 0.0 }}
+{{ if strings.HasSuffix (lower $src) ".svg" }}
+  {{ $m := findRESubmatch `viewBox="\s*[-\d.]+[\s,]+[-\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)` (os.ReadFile $path) 1 }}
+  {{ if $m }}
+    {{ $vb := index $m 0 }}
+    {{ $r = div (float (index $vb 1)) (float (index $vb 2)) }}
+  {{ else }}
+    {{ errorf "logo-box: %q nemá viewBox, poměr stran nejde přečíst" $src }}
+  {{ end }}
+{{ else }}
+  {{ $c := images.Config $path }}
+  {{ $r = div (float $c.Width) (float $c.Height) }}
+{{ end }}
+
+{{ $w := 0.0 }}{{ $h := 0.0 }}
+{{ if gt $r 0.0 }}
+  {{ $hmax := float .hmax }}
+  {{ $wmax := float .wmax }}
+  {{ $h = math.Sqrt (div (float .area) $r) }}
+  {{ if gt $h $hmax }}{{ $h = $hmax }}{{ end }}
+  {{ $w = mul $h $r }}
+  {{ if gt $w $wmax }}{{ $w = $wmax }}{{ $h = div $w $r }}{{ end }}
+{{ end }}
+
+{{ return dict "w" (int (math.Round $w)) "h" (int (math.Round $h)) }}

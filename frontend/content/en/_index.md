@@ -1,4 +1,4 @@
 ---
 title: "Pathogen Portal CZ"
-description: "Czech national portal for pathogen surveillance data"
+description: "Overviews and analyses of open data on infectious diseases in Czechia"
 ---

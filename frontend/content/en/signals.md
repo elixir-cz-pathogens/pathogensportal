@@ -1,11 +1,10 @@
 ---
-# ⛔ NENÍ to dashboard, je to stránka s vlastní funkcionalitou (mapa +
-# přepínač diagnóz), a proto nežije v sekci dashboards. `type` ale zůstává
-# `dashboards`: JEN layouts/dashboards/single.html načítá /js/pp-charts.js,
-# bez kterého se mapa nikdy neobarví. Bez tohohle řádku se stránka přesune
-# a ztichne — vypadá hotově a nefunguje.
+# Not a dashboard: a page with its own functionality (map + diagnosis
+# selector), so it lives outside the dashboards section. `type` stays
+# `dashboards` because only layouts/dashboards/single.html loads
+# /js/pp-charts.js, without which the map is never coloured.
 type: dashboards
-# Stará adresa musí dál fungovat: odkazují na ni dvě publikované novinky.
+# Keep the old URL working: published news items link to it.
 aliases:
   - "/dashboards/signals/"
 title: "Signals — anomaly detection"
@@ -14,7 +13,7 @@ description: "Automated screening of 1,200+ notified infectious disease time ser
 image: "/images/cards/signals.svg"
 highlight: true
 tags: ["anomaly detection", "surveillance", "early warning", "ÚZIS", "statistics"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
 # The date of the last run comes from generated_at in this JSON, not from here.
 update_from: "anomaly_signals.json"
 update_read: "stamp"
@@ -26,17 +25,18 @@ therefore screens them automatically: for every series it computes the **expecte
 endemic level** from seasonality and history, and shows the months where the notified
 count exceeded the threshold.
 
+{{< signals-period src="/data/charts/anomaly_signals.json" >}}
+
 {{< signals-map src="/data/charts/anomaly_signals.json" title="Where the signal is — by region" >}}
 
 {{< signals src="/data/charts/anomaly_signals.json" title="Series above the expected level" >}}
-
-*Note: diagnosis and region names in the table come from the Czech source data.*
 
 ### How to read the table
 
 | Column | Meaning |
 |---|---|
 | **Reported** | How many cases were actually notified in the given month. |
+| **Of which via the new channel** | How many of the reported cases arrived through EWS notifications — a reporting route that ÚZIS introduced in July 2025 and that is absent from the history. |
 | **Usually** | The model's endemic level: how many cases this disease, in this region, at this time of year, would have in an ordinary year. Computed from the 2018–present history with past epidemics down-weighted. |
 | **Still normal up to** | The upper limit of what ordinary fluctuation can still explain (99th percentile of the prediction interval). A count between *Usually* and this limit is business as usual; a signal starts above it. |
 | **Exceeded by** | How many times further past the limit of normal than that limit is from the usual level. **1×** = exactly at the limit, **2×** = twice as far beyond it. The higher, the less likely it is chance. |
@@ -45,6 +45,27 @@ An example from the table: hepatitis A in the South Moravian region — usually
 **1** case, still normal up to **5**, notified **80**. The observation is ~19× further
 beyond the threshold than ordinary fluctuation reaches (strength 19×) — chance
 practically cannot explain that.
+
+
+### The new reporting channel: why some signals "cannot be decided"
+
+Since July 2025 ÚZIS has also accepted cases through a new route, EWS notifications.
+For some diseases most cases now arrive this way — 62% for herpes zoster, 59% for Lyme
+borreliosis ("other spirochaetal infections"), 51% for infectious mononucleosis. The
+series jumps **without any more people being ill**: we simply learn of more cases.
+
+They cannot just be subtracted. Some notifications moved to the new channel from the old
+one (zoster reported the old way fell from ~340 to ~175 cases a month), so the count that
+is comparable with earlier years is unknown — we only know it lies somewhere between
+"reported without the new channel" and "reported in total". The table therefore splits
+signals in two:
+
+- **at the top**, signals that hold even if the new-channel cases are left out entirely —
+  a real exceedance whatever moved between channels;
+- **under the heading "cannot be decided"**, series that are above the normal range only
+  thanks to new-channel cases. There may be a real rise behind them or merely a change in
+  reporting, and the data cannot tell the two apart. On the map these regions are grey,
+  not shaded by strength.
 
 Two badges replace strength where a statistical model makes no sense:
 
@@ -58,6 +79,8 @@ Two badges replace strength where a statistical model makes no sense:
 What to look at first: **high strength together with high case counts** (an
 epidemic under way). A row with small counts and strength just above 1× may be
 chance — with 1,200 series scored, we expect a few such rows every month.
+
+{{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
 
 ---
 

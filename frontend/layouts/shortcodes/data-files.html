@@ -1,0 +1,23 @@
+{{/* List of the machine-readable files the portal draws charts from.
+
+     Usage: {{< data-files >}}
+
+     Read from disk at build time (static/data/charts), not from a manual list:
+     directory listing is deliberately disabled on the server, so without this
+     page nobody would know about the files — and a manual list would go stale
+     with the first new chart.
+*/}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-datafiles">
+  <table class="table table-sm">
+    <thead><tr><th>{{ if $en }}File{{ else }}Soubor{{ end }}</th><th class="text-end">{{ if $en }}Size{{ else }}Velikost{{ end }}</th></tr></thead>
+    <tbody>
+    {{ range sort (os.ReadDir "static/data/charts") "Name" }}
+      {{ if strings.HasSuffix .Name ".json" }}
+      <tr><td><a href="{{ printf "data/charts/%s" .Name | relURL }}"><code>{{ .Name }}</code></a></td>
+          <td class="text-end">{{ div .Size 1024 | lang.FormatNumber 0 }} kB</td></tr>
+      {{ end }}
+    {{ end }}
+    </tbody>
+  </table>
+</div>

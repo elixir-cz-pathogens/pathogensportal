@@ -11,7 +11,8 @@
 {{ $note := .Get "note" | default "" }}
 {{/* What the legend counts. Default keeps the original wording; incidence maps
      pass e.g. unit="případů na 100 tis." so the legend does not claim raw counts. */}}
-{{ $unit  := .Get "unit" | default "případů" }}
+{{ $en    := eq .Page.Language.Lang "en" }}
+{{ $unit  := .Get "unit" | default (cond $en "cases" "případů") }}
 
 <figure class="pp-card">
   {{ with $title }}
@@ -21,9 +22,9 @@
   {{ end }}
 
   <div class="pp-map__legend">
-    <span>méně {{ $unit }} (<span data-pp-min>—</span>)</span>
+    <span>{{ if $en }}fewer{{ else }}méně{{ end }} {{ $unit }} (<span data-pp-min>—</span>)</span>
     <div class="pp-map__ramp" role="presentation"></div>
-    <span>více {{ $unit }} (<span data-pp-max>—</span>)</span>
+    <span>{{ if $en }}more{{ else }}více{{ end }} {{ $unit }} (<span data-pp-max>—</span>)</span>
   </div>
 
   <div class="pp-map" id="{{ $id }}" data-pp-map data-src="{{ $src }}">
@@ -33,6 +34,6 @@
 
   {{ with $note }}<p class="pp-note">{{ . }}</p>{{ end }}
   <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>načítám data…</span>
+    <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
   </div>
 </figure>

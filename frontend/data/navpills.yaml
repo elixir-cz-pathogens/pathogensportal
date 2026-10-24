@@ -1,10 +1,8 @@
-# Navigační „pilulky“ dashboardových skupin — JEDINÝ zdroj pravdy.
-# Dřív byl tenhle seznam vkopírovaný v každé stránce skupiny zvlášť (11 kopií),
-# takže přidání stránky znamenalo editovat všechny — a kopie se rozcházely
-# (stránka Signály se do žádné nepropsala). Renderuje shortcode nav-pills:
+# Navigation pills for the dashboard groups — the single source of truth.
+# Rendered by the nav-pills shortcode:
 #   {{< nav-pills group="infekcni-nemoci" active="gastro" >}}
-# URL jsou bez jazykového prefixu — shortcode je žene přes relLangURL, takže
-# tatáž definice slouží české i anglické verzi.
+# URLs carry no language prefix — the shortcode passes them through relLangURL,
+# so one definition serves both the Czech and the English version.
 
 infekcni-nemoci:
   aria:
@@ -32,6 +30,9 @@ infekcni-nemoci:
     - id: sti
       url: /dashboards/infectious-diseases-sti/
       label: { cs: Pohlavně přenosné, en: Sexually transmitted }
+    - id: tbc
+      url: /dashboards/infectious-diseases-tbc/
+      label: { cs: Tuberkulóza, en: Tuberculosis }
     - id: vzacne
       url: /dashboards/infectious-diseases-rare/
       label: { cs: Vzácné závažné, en: Rare severe }
@@ -40,7 +41,7 @@ infekcni-nemoci:
       label: { cs: Ostatní, en: Other }
     - id: covid
       url: /dashboards/covid19-surveillance/
-      label: { cs: COVID-19 — Surveillance, en: COVID-19 — Surveillance }
+      label: { cs: "COVID-19: epidemiologická situace", en: "COVID-19: epidemiological situation" }
     - id: covid-demografie
       url: /dashboards/covid-demographics/
       label: { cs: COVID-19 — Věk a vakcinace, en: COVID-19 — Age & vaccination }

@@ -1,4 +1,4 @@
-{{/* Karta s grafem.
+{{/* Chart card.
 
      Usage: {{< chart id="myChart" src="/data/charts/file.json" type="line"
                      title="Title" subtitle="Subtitle" height="380" >}}
@@ -30,7 +30,7 @@
 
   {{ with $note }}<p class="pp-note">{{ . }}</p>{{ end }}
   <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>načítám data…</span>
+    <span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}načítám data…{{ end }}</span>
     <button type="button" class="pp-btn" data-pp-table-toggle aria-expanded="false">{{ if eq .Site.Language.Lang "en" }}Table{{ else }}Tabulka{{ end }}</button>
   </div>
   <div class="pp-table-wrap" data-open="false"></div>
