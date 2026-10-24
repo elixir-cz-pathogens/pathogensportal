@@ -141,13 +141,7 @@
       <a class="pp-home-more" href="{{ $news.RelPermalink }}">{{ cond $en "All news" "Všechny novinky" }} <i class="bi bi-arrow-right-short"></i></a>
     </div>
     <div class="pp-home-news-list">
-      {{ range . }}
-      <a class="pp-home-news-item" href="{{ .RelPermalink }}">
-        <span class="pp-home-news-item__date">{{ .Date.Format (cond $en "2 Jan 2006" "2. 1. 2006") }}</span>
-        <span class="pp-home-news-item__title">{{ .Title }}</span>
-        {{ with .Description }}<span class="pp-home-news-item__desc">{{ . }}</span>{{ end }}
-      </a>
-      {{ end }}
+      {{ range . }}{{ partial "news-row.html" . }}{{ end }}
     </div>
   </section>
   {{ end }}
