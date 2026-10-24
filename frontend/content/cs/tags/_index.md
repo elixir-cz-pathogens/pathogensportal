@@ -1,4 +1,4 @@
 ---
 title: "Témata"
-description: "Panely, ohniska a novinky seskupené podle patogenu, zdroje a metody."
+description: "Vyhledat podle klíčových slov"
 ---

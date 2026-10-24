@@ -17,8 +17,7 @@ layout: about_navbar
 {{< intake-status >}}
 
 Máte agregovaná data o infekčních nemocech nebo patogenech v Česku — počty pozitivních vzorků,
-hlášených případů, výsledky monitoringu — a chcete, aby byla vidět na portálu? Přijímáme je od
-institucí, které se nám ozvou a které schválíme.
+hlášených případů, výsledky monitoringu — a chcete, aby byla vidět na portálu?
 
 **Jak na to:** [1. Požádejte o zapojení](#zadost) → schválíme vás a pošleme klíč →
 [2. Nahrajte data](#nahrani) ve [správném formátu](#sablona) → [co se s daty stane](#co-se-s-daty-stane).
@@ -42,19 +41,14 @@ příspěvek, klíč platí pro jedno přijaté nahrání. Jinak platí i pro da
 
 ## 2. Nahrajte data {#nahrani}
 
-Pro schválené poskytovatele. Nahrát můžete jeden soubor CSV, několik souborů najednou, nebo je
-zabalit do archivu **ZIP** nebo **TAR** (i `.tar.gz`). Všechny soubory jednoho nahrání se hned
-zkontrolují; pokud v některém něco nesedí, uvidíte název souboru, číslo řádku a sloupec, který je
-potřeba opravit. Nahrání se přijme, jen když jsou v pořádku všechny jeho soubory. Při každém
-nahrání potvrdíte krátké prohlášení o zpracování dat.
+Pro schválené poskytovatele.
 
 Limity jednoho nahrání: soubor CSV nejvýše 5 MB, celé nahrání nejvýše 20 MB, nejvýše 50 souborů
 CSV. Archiv smí obsahovat jen soubory CSV.
 
 {{< intake-upload >}}
 
-Data můžete posílat i [automaticky ze svého systému nebo skriptu](#strojove-nahravani), stejným
-klíčem a se stejnou kontrolou.
+Pravidelné odesílání dat lze nastavit pomocí klíče i automatizovaně: [návod pro strojové nahrávání](#strojove-nahravani).
 
 ### Jak má soubor vypadat — šablona `agregace-v1` {#sablona}
 
@@ -80,7 +74,7 @@ obdobi,uzemi,ukazatel,hodnota,jednotka
 ```
 
 Tip: v Excelu ukládejte přes **Uložit jako → CSV UTF-8 (s oddělovači)**. Běžné „CSV“ z českého
-Excelu je v jiném kódování a kontrola ho odmítne (a řekne proč).
+Excelu je v jiném kódování a kontrola ho odmítne.
 
 ### Strojové nahrávání {#strojove-nahravani}
 
@@ -118,6 +112,7 @@ Pole `file` můžete uvést vícekrát, nebo poslat jeden archiv (`-F file=@expo
 Klíč nedávejte do kódu ani do repozitáře; uložte ho do proměnné prostředí nebo do správce
 tajných údajů. Kdyby unikl, dejte nám vědět: zneplatníme ho a vydáme nový.
 
+<!--
 ## Co se s daty stane {#co-se-s-daty-stane}
 
 1. **Okamžitá kontrola.** Každý soubor se hned po nahrání zkontroluje (formát, povinné sloupce, kódy
@@ -132,7 +127,8 @@ tajných údajů. Kdyby unikl, dejte nám vědět: zneplatníme ho a vydáme nov
 
 Nahrané soubory nikomu dalšímu nepředáváme. Jak
 zacházíme s vašimi kontaktními údaji, popisují zásady zpracování osobních údajů (odkaz v patičce).
+-->
 
 ## Kontakt
 
-Máte dotaz dřív, než pošlete žádost? Napište nám — kontakt najdete v patičce stránky.
+Máte dotaz? Napište nám.

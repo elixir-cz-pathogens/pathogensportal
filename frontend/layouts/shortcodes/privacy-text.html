@@ -1,0 +1,16 @@
+{{/* The privacy notice as a page (content/cs/ochrana-soukromi.md, content/en/privacy.md).
+
+     Usage: {{< privacy-text >}}
+
+     The text lives in data/privacy.yaml, shared with the banner
+     (partials/privacy-notice.html), so the page and the banner cannot drift
+     apart. A section marked `intake: true` describes the data intake, which
+     exists only where the intake API is configured (staging) — elsewhere it
+     would describe processing that does not happen. */}}
+{{ $lang := cond (eq .Page.Language.Lang "en") "en" "cs" }}
+{{ $t := index hugo.Data.privacy $lang }}
+{{ $intake := site.Params.intake.api }}
+{{ range $t.sections }}{{ if or (not .intake) $intake }}
+<h2>{{ .h }}</h2>
+{{ range .p }}<p>{{ . | markdownify }}</p>{{ end }}
+{{ end }}{{ end }}

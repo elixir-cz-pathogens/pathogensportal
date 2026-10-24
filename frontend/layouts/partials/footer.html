@@ -44,27 +44,24 @@
   <div class="pp-footer__band">
     <div class="container">
       <div class="row gy-4">
-        <div class="col-lg-5">
+        {{/* Two columns like the Swedish portal (decided 24 Oct 2026): the brand
+             on the left; on the right a row of three links and under it a row
+             of contact / social icons. The links are fixed, not the whole About
+             menu, and the privacy page is reachable ONLY from here and from the
+             banner: it is deliberately not in the About menu. */}}
+        <div class="col-lg-6">
           <a href="{{ site.Home.RelPermalink }}" class="pp-footer__brand">
             <img src="{{ "images/portal-mark.png" | relURL }}" alt="" width="40" height="40">
             <span>Pathogen Portal CZ</span>
           </a>
           <p class="pp-footer__tagline">{{ site.Home.Description }}</p>
         </div>
-        <div class="col-sm-6 col-lg-4">
-          <h2 class="pp-footer__head">{{ i18n "about" }}</h2>
-          <ul class="list-unstyled">
-            {{ range .Site.Menus.footer_about }}
-            <li><a href="{{ .Page.RelPermalink }}">{{ .Name }}</a></li>
-            {{ end }}
-            {{/* Permanent link to the privacy details — the banner can be closed,
-                 the information must stay reachable. Opens the same dialog; the
-                 JS is in privacy-notice.html. */}}
-            <li><a href="#" id="pp-privacy-footer-link" class="pp-privacy__footer">{{ (index hugo.Data.privacy $pl).title }}</a></li>
+        <div class="col-lg-6 pp-footer__nav">
+          <ul class="pp-footer__links">
+            {{ with .Site.GetPage "/about" }}<li><a href="{{ .RelPermalink }}">{{ cond $en "About the portal" "O portálu" }}</a></li>
+            <li><a href="{{ .RelPermalink }}#{{ cond $en "contact" "kontakt" }}">{{ cond $en "Contact" "Kontakt" }}</a></li>{{ end }}
+            {{ with .Site.GetPage (cond $en "/privacy" "/ochrana-soukromi") }}<li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>{{ end }}
           </ul>
-        </div>
-        <div class="col-sm-6 col-lg-3">
-          <h2 class="pp-footer__head">{{ i18n "connect" }}</h2>
           <div class="pp-footer__social">
             {{ with .Site.Params.mail }}<a href="mailto:{{ . }}" aria-label="E-mail"><i class="bi bi-envelope-fill"></i></a>{{ end }}
             {{ with .Site.Params.linkedin }}<a href="https://www.linkedin.com/{{ . }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{{ end }}

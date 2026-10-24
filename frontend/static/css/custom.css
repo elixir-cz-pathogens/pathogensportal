@@ -279,38 +279,10 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
   padding: .3rem .9rem; font: inherit; font-weight: 600; cursor: pointer;
 }
 .pp-privacy__ok:hover { background: #fff; }
-.pp-privacy__footer { color: #77766f; text-decoration: underline; }
-
-.pp-privacy-dialog {
-  max-width: 46rem; width: calc(100% - 2rem);
-  border: 1px solid #e2e1dc; border-radius: 12px; padding: 0;
-  color: #0b0b0b; background: #fff;
-}
-.pp-privacy-dialog::backdrop { background: rgba(11,11,11,.45); }
-.pp-privacy-dialog article { padding: 1.25rem 1.5rem 1.5rem; }
-.pp-privacy-dialog__head {
-  display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
-  border-bottom: 1px solid #e2e1dc; padding-bottom: .6rem; margin-bottom: .9rem;
-}
-.pp-privacy-dialog__head h2 { margin: 0; font-size: 1.2rem; }
-.pp-privacy-dialog__x {
-  background: none; border: 0; font-size: 1.6rem; line-height: 1;
-  color: #77766f; cursor: pointer; padding: 0 .2rem;
-}
-.pp-privacy-dialog__x:hover { color: #0b0b0b; }
-.pp-privacy-dialog h3 { font-size: .98rem; margin: 1.1rem 0 .3rem; }
-.pp-privacy-dialog p { margin: 0 0 .5rem; font-size: .875rem; line-height: 1.5; }
 @media (max-width: 576px) {
   .pp-privacy { flex-direction: column; align-items: flex-start; }
   .pp-privacy__actions { align-self: stretch; justify-content: flex-end; }
 }
-.pp-privacy-dialog__tools { display: flex; align-items: center; gap: .5rem; }
-.pp-privacy-dialog__lang {
-  background: none; border: 1px solid #e2e1dc; border-radius: 6px;
-  padding: .12rem .55rem; font: inherit; font-size: .78rem;
-  color: #52514e; cursor: pointer; white-space: nowrap;
-}
-.pp-privacy-dialog__lang:hover { background: #f2f1ee; color: #0b0b0b; }
 
 /* ── Home page: site navigation ───────────────────────────────────────────
    Tiles, not inline links: choosing where to go next is the main job of the

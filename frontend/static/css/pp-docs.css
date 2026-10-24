@@ -83,3 +83,16 @@
 .pp-intake__issues .is-warning { color: #7a4a00; }
 .pp-intake__ok { color: #1b7a54; font-weight: 600; }
 .pp-intake__key { font-family: var(--bs-font-monospace, monospace); width: 100%; max-width: 46rem; padding: .5rem .7rem; }
+
+/* FAQ (shortcodes/faq.html) */
+.pp-faq { border-bottom: 1px solid var(--pp-pale-grey); }
+.pp-faq summary {
+  cursor: pointer; padding: .8rem 0; font-weight: 600; color: var(--pp-dark-blue);
+  list-style: none; display: flex; justify-content: space-between; gap: 1rem;
+}
+.pp-faq summary::-webkit-details-marker { display: none; }
+.pp-faq summary::after { content: "+"; font-weight: 400; font-size: 1.3rem; line-height: 1; color: var(--pp-mid-blue); }
+.pp-faq[open] summary::after { content: "−"; }
+.pp-faq summary:focus-visible { outline: 2px solid var(--pp-mid-blue); outline-offset: 2px; }
+.pp-faq__a { padding: 0 0 1rem; }
+.pp-faq__a > :last-child { margin-bottom: 0; }

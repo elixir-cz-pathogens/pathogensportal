@@ -9,14 +9,11 @@ menu:
     weight: 1
 layout: about_navbar
 ---
-
-**Pathogen Portal CZ** zpřístupňuje na jednom místě data ze surveillance infekčních nemocí
-v České republice: hlášené případy, laboratorní, environmentální a genomická data.
-Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti.
+**Pathogen Portal CZ** shromažďuje na jednom místě data o výskytu infekčních nemocí v České republice: hlášené případy, výsledky laboratorních vyšetření, měření z odpadních vod a genetické analýzy patogenů. Slouží výzkumníkům, pracovníkům ochrany veřejného zdraví i veřejnosti.
 
 ## Co na portálu najdete
 
-- **Panely k jednotlivým patogenům:** COVID-19, chřipka a ARI, infekční nemoci
+- **Panely na různá témata:** COVID-19, chřipka a ARI, infekční nemoci
   hlášené do ISIN, odpadní vody, fylogeneze a situační reporty k aktivním ohniskům.
 - **Signály:** automatické vyhledávání měsíců, kdy počet hlášených případů výrazně překročil
   očekávanou úroveň (přes 1 200 časových řad podle diagnózy a kraje). Signál není potvrzením
@@ -36,15 +33,17 @@ Každý panel nese štítek s původem dat:
 
 ## Kdo portál provozuje
 
+Odpovědným provozovatelem portálu je
+[Ústav molekulární genetiky AV ČR, v. v. i.](https://www.img.cas.cz) (IMG).
+
 Portál vzniká v rámci projektu **ELIXIR IMPACT2**, podpořeného z
 [Programu švýcarsko-české spolupráce](https://www.swiss-contribution.cz/),
-a je provozován na infrastruktuře [CESNET](https://www.cesnet.cz).
+a je provozován na infrastruktuře [CESNET](https://www.cesnet.cz) za podpory [partnerů](/about/affiliations/). 
 
-Spolupracující instituce jsou uvedeny na stránce [Partneři a podpora](/about/affiliations/),
-řešitelský tým na stránce [Lidé](/about/people/).
+Náš tým: [Lidé](/about/people/).
 
 <a href="https://www.swiss-contribution.cz/" target="_blank" rel="noopener"><img src="/images/swiss-contribution-cz.png" alt="Program švýcarsko-české spolupráce" style="max-width:340px;width:100%;height:auto" class="my-3"></a>
 
 ## Kontakt
 
-Technický kontakt na správce portálu: **Mgr. Jan Pačes, Ph.D.** — [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)
+Správce portálu: **Mgr. Jan Pačes, Ph.D.** — [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)

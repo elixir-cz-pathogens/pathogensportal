@@ -1,8 +1,9 @@
 {{/* Data-processing notice on the first visit (PP-55).
 
-     A bottom banner + an expandable dialog with details. The text is in
-     `data/privacy.yaml`, so it can be edited without touching the template and
-     both language versions can be compared side by side.
+     A bottom banner with a link to the full notice, which is a page of its own
+     (/ochrana-soukromi/, en /en/privacy/ — decided 24 Oct 2026; it used to
+     be a dialog, which could be neither linked to nor cited). The text is in
+     `data/privacy.yaml`, shared by the banner and the page.
 
      This is NOT a cookie banner and must not become one. It does not ask for
      consent because none is required: nothing tracking is stored on the device.
@@ -11,78 +12,28 @@
      does nothing is worse than none.
 
      Dismissal IS stored — one localStorage entry, otherwise the banner would
-     appear on every visit. That is storage on the device, and the dialog text
+     appear on every visit. That is storage on the device, and the notice
      discloses it in its own section. A notice that claims to store nothing
      while storing something is worse than none.
-
-     `<dialog>` is a native element — no library, which respects the open PP-7.
 */}}
 {{ $lang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
 {{ $t := index .Site.Data.privacy $lang }}
+{{ $page := site.GetPage (cond (eq $lang "en") "/privacy" "/ochrana-soukromi") }}
 
 <div class="pp-privacy" id="pp-privacy-bar" role="region"
      aria-label="{{ $t.title }}" hidden>
   <p class="pp-privacy__text">{{ $t.banner }}</p>
   <div class="pp-privacy__actions">
-    <button type="button" class="pp-privacy__link" id="pp-privacy-more">{{ $t.more }}</button>
+    {{ with $page }}<a class="pp-privacy__link" href="{{ .RelPermalink }}">{{ $t.more }}</a>{{ end }}
     <button type="button" class="pp-privacy__ok" id="pp-privacy-ok">{{ $t.dismiss }}</button>
   </div>
 </div>
 
-<dialog class="pp-privacy-dialog" id="pp-privacy-dialog" aria-labelledby="pp-privacy-h">
-  {{/* Both language versions are rendered into the page, one hidden. The switch
-       in the header only swaps which is visible.
-
-       Why not link to the other language version of the site: a reader who
-       wants to know what is collected should not have to leave the page they
-       are on and lose their place. The text is under 2 kB in total; if it grew,
-       it should move behind a `fetch`.
-
-       The default is the PAGE language, not the browser's. A reader of the
-       Czech version gets the Czech text; the switch is an offer, not an
-       assumption about the reader. */}}
-  {{ $pageLang := cond (eq .Site.Language.Lang "en") "en" "cs" }}
-  {{ $other := cond (eq $pageLang "en") "cs" "en" }}
-  <article>
-    <header class="pp-privacy-dialog__head">
-      <h2 id="pp-privacy-h" data-pp-t="title">{{ (index .Site.Data.privacy $pageLang).title }}</h2>
-      <div class="pp-privacy-dialog__tools">
-        <button type="button" class="pp-privacy-dialog__lang" id="pp-privacy-lang"
-                data-cs="{{ (index .Site.Data.privacy "cs").switch }}"
-                data-en="{{ (index .Site.Data.privacy "en").switch }}">{{ (index .Site.Data.privacy $pageLang).switch }}</button>
-        <button type="button" class="pp-privacy-dialog__x" id="pp-privacy-close"
-                aria-label="{{ (index .Site.Data.privacy $pageLang).close }}">&times;</button>
-      </div>
-    </header>
-    {{ range $l := slice "cs" "en" }}
-    {{ $t := index $.Site.Data.privacy $l }}
-    <div class="pp-privacy-dialog__body" data-lang="{{ $l }}"{{ if ne $l $pageLang }} hidden{{ end }}>
-      {{/* A section marked `intake: true` describes the data intake, which only
-           exists where about/prispet is built (staging) — elsewhere it would
-           describe processing that does not happen. Decided by the intake API
-           setting, not by looking the page up: the page is Czech only, and the
-           English notice must show the section too. */}}
-      {{ $intake := site.Params.intake.api }}
-      {{ range $t.sections }}{{ if or (not .intake) $intake }}
-      <h3>{{ .h }}</h3>
-      {{ range .p }}<p>{{ . | markdownify }}</p>{{ end }}
-      {{ end }}{{ end }}
-    </div>
-    {{ end }}
-  </article>
-</dialog>
-
 <script>
 (function () {
   var KEY = "pp-privacy-seen";
-  /* `safeJS` is required. Without it Hugo escapes the `jsonify` output as HTML
-     and the page gets the STRING "{\"cs\":…}" instead of an object, so
-     `TITLES[lang]` is undefined and the dialog title does not switch language.
-     The result is still valid syntax, so `node --check` does not catch it. */
-  var TITLES = {{ dict "cs" (index .Site.Data.privacy "cs").title "en" (index .Site.Data.privacy "en").title | jsonify | safeJS }};
   var bar = document.getElementById("pp-privacy-bar");
-  var dlg = document.getElementById("pp-privacy-dialog");
-  if (!bar || !dlg) return;
+  if (!bar) return;
 
   /* localStorage can throw, not just return null — in private windows of some
      browsers and when site data is blocked. Without try/catch the script would
@@ -100,41 +51,5 @@
     remember();
     bar.hidden = true;
   });
-
-  function openDialog() {
-    if (typeof dlg.showModal === "function") { dlg.showModal(); } else { dlg.setAttribute("open", ""); }
-  }
-  document.getElementById("pp-privacy-more").addEventListener("click", openDialog);
-
-  /* Language switch inside the dialog — swaps which of the two versions is visible.
-     Also updates the title and the button label, otherwise the dialog would
-     announce one language and contain the other. */
-  var langBtn = document.getElementById("pp-privacy-lang");
-  if (langBtn) {
-    langBtn.addEventListener("click", function () {
-      var bodies = dlg.querySelectorAll("[data-lang]");
-      var showing = null, other = null;
-      bodies.forEach(function (b) { (b.hidden ? (other = b) : (showing = b)); });
-      if (!showing || !other) return;
-      showing.hidden = true;
-      other.hidden = false;
-      var lang = other.getAttribute("data-lang");
-      var head = dlg.querySelector('[data-pp-t="title"]');
-      if (head) head.textContent = TITLES[lang] || head.textContent;
-      langBtn.textContent = langBtn.getAttribute("data-" + lang) || langBtn.textContent;
-    });
-  }
-  document.getElementById("pp-privacy-close").addEventListener("click", function () { dlg.close(); });
-
-  /* Footer link — the information must stay reachable after the banner is closed. */
-  var footerLink = document.getElementById("pp-privacy-footer-link");
-  if (footerLink) footerLink.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
-  /* Any other link to the notice, e.g. from the intake request form. */
-  document.querySelectorAll("[data-pp-privacy-open]").forEach(function (a) {
-    a.addEventListener("click", function (e) { e.preventDefault(); openDialog(); });
-  });
-
-  /* Clicking outside the content closes the dialog; `<dialog>` does not do this itself. */
-  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
 })();
 </script>

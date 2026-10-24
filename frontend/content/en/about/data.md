@@ -10,13 +10,12 @@ layout: about_navbar
 outputs: ["html", "sources"]
 ---
 
-The portal does not collect any primary data itself. It takes **open data from public
-institutions**, processes and charts them — and states the origin of the numbers next to every
-chart. This page brings it together: what we use, under which licence, how often it changes and,
-above all, **what the data cannot tell you**.
+The portal does not collect primary data. It takes **open data from public institutions** and
+only processes them. This page summarises the sources used, their licences, how often they are
+updated and their **known limitations**.
 
-The original source is always authoritative. If a number on the portal differs from the source,
-the source is right — and we would be glad if you [let us know](#report-an-error).
+The original source is always authoritative. If a value on the portal differs from the source,
+the source's value applies. Please [report](#report-an-error) the difference.
 
 ## Source catalogue
 
@@ -25,16 +24,18 @@ the source is right — and we would be glad if you [let us know](#report-an-err
 ## Licence
 
 - **Texts, charts and processing on the portal:** [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) —
-  you may share and adapt them with attribution.
-- **Source data:** the licence of the original source applies, as listed in the catalogue.
-  Where the source states none, we say so — check the terms with the source before reusing such data.
-- **Code:** [MIT](https://opensource.org/license/mit) licence; both repositories are public on [GitHub](https://github.com/elixir-cz-pathogens).
+  they may be shared and adapted provided the author, the licence and any changes are indicated.
+- **Source data:** the licence of the original source applies, as listed in the catalogue. Where
+  the source states none, the catalogue says so explicitly. Terms of further use must be checked
+  with the provider.
+- **Code:** [MIT](https://opensource.org/license/mit) licence; all of the portal's source code is public in the
+  [elixir-cz-pathogens organisation on GitHub](https://github.com/elixir-cz-pathogens).
 
 ## Machine-readable data
 
-Every chart is drawn from a static JSON file that you can download. The addresses are stable;
-the content is rewritten with every run of the data pipeline, and the date of the last run is
-shown on each dashboard under "Updated".
+Every chart is drawn from a static JSON file that you can download. File addresses do not
+change; the content is rewritten with every data update. The date of the last update is shown on
+the dashboard. Older versions of the files are not archived.
 
 {{< data-files >}}
 
@@ -42,20 +43,16 @@ The files are **processed data for charts**, not raw data — aggregation, per-p
 adjustment and series selection are already applied. Labels inside the files are in Czech,
 with English versions in fields ending in `_en`. For your own analysis, go to the original source.
 
-**This catalogue** is machine-readable too: [`sources.json`](sources.json) gives each source's
-publisher, licence, coverage, granularity, update frequency and — above all — the `limits`
-field, which states what the data **cannot** tell you. Individual dashboards additionally carry
-[schema.org/Dataset](https://schema.org/Dataset) as JSON-LD in the page head, so search engines
-and other tools can tell which dataset a page is built on without parsing its text.
+The source catalogue is also available in machine-readable form ([`sources.json`](sources.json)),
+including a `limits` field describing the limitations of the data. Dashboard pages carry
+[schema.org/Dataset](https://schema.org/Dataset) metadata (JSON-LD).
 
 ### DCAT-AP-CZ catalogue
 
 Data **produced by processing on the portal** are also described by a catalogue following the Czech
 open formal standard
 [Open data catalogue interfaces](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/) (in Czech):
-[`/dcat/katalog.jsonld`](/dcat/katalog.jsonld). It points to four datasets — influenza season
-intensity thresholds, anomaly detection signals, weekly respiratory virus detections and derived
-infectious disease incidence.
+[`/dcat/katalog.jsonld`](/dcat/katalog.jsonld).
 
 Data taken over from elsewhere are **not** in this catalogue. Their originators (ÚZIS, SZÚ, the
 Ministry of Health, the Czech Statistical Office, WHO, ECDC) publish them, and they can be found in
@@ -64,16 +61,7 @@ overview above.
 
 ## Report an error {#report-an-error}
 
-Found a number that does not match the source, a broken chart or an unclear wording? Write to
-[hpaces@img.cas.cz](mailto:hpaces@img.cas.cz), or open an issue: for the website in the
-[pathogensportal](https://github.com/elixir-cz-pathogens/pathogensportal/issues) repository,
+Report errors in the data, broken charts and unclear wording by e-mail to
+[hpaces@img.cas.cz](mailto:hpaces@img.cas.cz), or as an issue on GitHub:
+for the website in the [pathogensportal](https://github.com/elixir-cz-pathogens/pathogensportal/issues) repository,
 for data and calculations in [pathogensportal-db](https://github.com/elixir-cz-pathogens/pathogensportal-db/issues).
-
-## What the portal does not do
-
-- **It does not accept or provide sensitive data.** Everything here is public aggregated
-  information without personal data. The portal does not yet offer controlled access to
-  non-public data.
-- **It is not an official source.** For public health decisions, the data and statements of the
-  responsible institutions (Ministry of Health, SZÚ, ÚZIS, regional public health authorities)
-  are authoritative.

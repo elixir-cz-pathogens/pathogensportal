@@ -7,16 +7,14 @@ menu:
 layout: about_navbar
 ---
 
-## People behind the portal
-
 {{< person name="Mgr. Jan Pačes, Ph.D." photo="/images/people/paces.jpg" >}}
-Technical administrator of the portal and contact person for the ELIXIR IMPACT2
+Portal administrator and contact person for the ELIXIR IMPACT2
 project at IMG CAS.
 Contact: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)
 {{< /person >}}
 
 {{< person name="Mgr. Michaela Liegertová, Ph.D." photo="/images/people/liegertova.jpg" >}}
-Co-author of situation reports and analyses (hantavirus, Ebola) — IMG CAS / UJEP.
+Co-author of situation reports and analyses — IMG CAS / UJEP.
 Contact: [michaela.liegertova@ujep.cz](mailto:michaela.liegertova@ujep.cz)
 {{< /person >}}
 

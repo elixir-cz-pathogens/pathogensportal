@@ -50,10 +50,10 @@
     {{/* Not "I agree to the terms": the full terms are deferred (TODO R24). The
          processing of the applicant's contact data rests on legitimate interest,
          so what the form needs is that they were TOLD how — the privacy notice,
-         which opens in place (data-pp-privacy-open, privacy-notice.html). */}}
+         a page of its own, opened in a new tab so the half-filled form is kept. */}}
     <label class="pp-intake__check"><input type="checkbox" name="privacy_ack" required>
       <span>Beru na vědomí, jak budou mé kontaktní údaje zpracovány
-      (<a href="#" data-pp-privacy-open>zásady zpracování osobních údajů</a>).</span></label>
+      (<a href="{{ (site.GetPage "/ochrana-soukromi").RelPermalink }}" target="_blank" rel="noopener">zásady zpracování osobních údajů</a>).</span></label>
   </fieldset>
 
   {{/* Honeypot: hidden from people, filled in by bots; the API discards those. */}}

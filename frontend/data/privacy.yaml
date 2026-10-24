@@ -7,6 +7,9 @@
 # When this text changes, what the portal actually does must match it. A notice
 # that describes something other than reality is worse than none.
 #
+# Shown as the banner (partials/privacy-notice.html) and as the page
+# /ochrana-soukromi/ / en /en/privacy/ (shortcodes/privacy-text.html).
+#
 # The notice has three sections: what is collected from every visitor, what is
 # collected from data providers (the intake, backend/website-be/app/intake), and
 # what rights people have.
@@ -20,8 +23,6 @@ cs:
   more: Podrobnosti
   dismiss: Rozumím
   title: Zpracování osobních údajů
-  close: Zavřít
-  switch: English
   sections:
     - h: Co sbíráme
       p:
@@ -48,8 +49,6 @@ en:
   more: Details
   dismiss: Got it
   title: Processing of personal data
-  close: Close
-  switch: Čeština
   sections:
     - h: What we collect
       p:

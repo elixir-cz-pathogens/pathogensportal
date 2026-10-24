@@ -163,10 +163,6 @@ enableGitInfo = true
       name = "Ebola (Bundibugyo) 2026"
       pageRef = "/dashboards/ebola-bundibugyo-2026"
       weight = 10
-    [[languages.cs.menus.outbreaks]]
-      name = "Hantavirus — MV Hondius"
-      pageRef = "/dashboards/hantavirus-mhondius"
-      weight = 20
     # Events are intentionally not in the menu: they are a section of the home
     # page (calendar + list) and /events/ is not rendered
     # (content/*/events/_index.md → build.render: never), so an item would 404.
@@ -223,10 +219,6 @@ enableGitInfo = true
       name = "Ebola (Bundibugyo) 2026"
       pageRef = "/dashboards/ebola-bundibugyo-2026"
       weight = 10
-    [[languages.en.menus.outbreaks]]
-      name = "Hantavirus — MV Hondius"
-      pageRef = "/dashboards/hantavirus-mhondius"
-      weight = 20
 
 [markup]
   [markup.goldmark]
