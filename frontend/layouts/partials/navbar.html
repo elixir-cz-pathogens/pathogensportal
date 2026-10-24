@@ -57,6 +57,10 @@
           {{ $section := .Page }}
           {{/* Outbreak reports have their own menu; do not list them twice. */}}
           {{ $outbreaks := slice }}{{ range $.Site.Menus.outbreaks }}{{ with .Page }}{{ $outbreaks = $outbreaks | append .RelPermalink }}{{ end }}{{ end }}
+          {{/* Ordered by FILE name, not by title: titles differ between the
+               languages, so a title sort listed the same dashboards in a
+               different order in Czech and English. The file name is shared. */}}
+          {{ $pages := sort $section.RegularPages "File.ContentBaseName" }}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
                data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>
@@ -65,7 +69,7 @@
               <div class="pp-nav__cols">
                 <div>
                   <h6 class="dropdown-header">{{ cond $en "Our dashboards" "Naše panely" }}</h6>
-                  {{ range where $section.RegularPages "Params.redirect_url" "==" nil }}
+                  {{ range where $pages "Params.redirect_url" "==" nil }}
                   {{ if not (in $outbreaks .RelPermalink) }}
                   <a class="dropdown-item" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
                   {{ end }}
@@ -73,7 +77,7 @@
                 </div>
                 <div>
                   <h6 class="dropdown-header">{{ cond $en "External dashboards" "Externí panely" }}</h6>
-                  {{ range where $section.RegularPages "Params.redirect_url" "!=" nil }}
+                  {{ range where $pages "Params.redirect_url" "!=" nil }}
                   <a class="dropdown-item" href="{{ .Params.redirect_url }}" target="_blank" rel="noopener">{{ .LinkTitle }}
                     <i class="bi bi-box-arrow-up-right small" title="{{ cond $en "external link" "externí odkaz" }}"></i></a>
                   {{ end }}

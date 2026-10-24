@@ -1,7 +1,7 @@
 ---
-title: "COVID-19 Surveillance"
+title: "COVID-19: epidemiological situation"
 origin: aggregated
-description: "The SARS-CoV-2 epidemiological situation in the Czech Republic — daily cases, hospitalisations, testing and vaccination."
+description: "Weekly overview of COVID-19 in the Czech Republic: new cases and deaths, hospitalisations, testing and positivity, 7-day incidence."
 image: "/images/cards/covid.webp"
 highlight: true
 tags: ["SARS-CoV-2", "hospitalisation", "vaccination", "surveillance", "Czech MoH", "Czech Republic"]

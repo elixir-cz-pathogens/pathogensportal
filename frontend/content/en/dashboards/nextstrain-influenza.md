@@ -1,5 +1,5 @@
 ---
-title: "Influenza Phylogeny (Nextstrain)"
+title: "Influenza phylogeny (Nextstrain)"
 origin: aggregated
 description: "Phylogeny of seasonal influenza — H3N2, H1N1pdm and type B. Evolution of haemagglutinin and predictions for vaccine strain selection."
 image: "/images/cards/flu.webp"

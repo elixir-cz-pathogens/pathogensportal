@@ -1,5 +1,5 @@
 ---
-title: "Infectious Diseases — Rare severe"
+title: "Infectious diseases — rare severe"
 origin: aggregated
 description: "Diphtheria, mpox, meningococcal disease, typhoid fever, Q fever, brucellosis, yellow fever, tularaemia — Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-rare.webp"

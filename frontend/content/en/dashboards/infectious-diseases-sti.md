@@ -1,5 +1,5 @@
 ---
-title: "Infectious Diseases — Sexually transmitted"
+title: "Infectious diseases — sexually transmitted"
 origin: aggregated
 description: "Syphilis and gonorrhoea since 1994 (Register of Sexually Transmitted Diseases), chlamydial infections and trichomoniasis 2018–2025 (ISIN) — trends, sex, age and regions."
 image: "/images/cards/id-sti.webp"

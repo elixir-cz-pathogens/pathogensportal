@@ -1,5 +1,5 @@
 ---
-title: "SARS-CoV-2 Phylogeny (Nextstrain)"
+title: "SARS-CoV-2 phylogeny (Nextstrain)"
 origin: aggregated
 description: "Phylogenetic evolution of SARS-CoV-2 in Europe including Czech sequences — an interactive tree of variants and their geographic spread."
 image: "/images/cards/covid.webp"

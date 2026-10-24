@@ -1,5 +1,5 @@
 ---
-title: "Infectious Diseases — Tuberculosis"
+title: "Infectious diseases — tuberculosis"
 origin: aggregated
 description: "Tuberculosis in Czechia 2000–2024 from the Tuberculosis Register: incidence per 100,000 population, age, country of birth and regions."
 image: "/images/cards/id-other.svg"

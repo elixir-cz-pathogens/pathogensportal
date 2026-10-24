@@ -41,7 +41,7 @@ infekcni-nemoci:
       label: { cs: Ostatní, en: Other }
     - id: covid
       url: /dashboards/covid19-surveillance/
-      label: { cs: "COVID-19: epidemiologická situace", en: COVID-19 — Surveillance }
+      label: { cs: "COVID-19: epidemiologická situace", en: "COVID-19: epidemiological situation" }
     - id: covid-demografie
       url: /dashboards/covid-demographics/
       label: { cs: COVID-19 — Věk a vakcinace, en: COVID-19 — Age & vaccination }

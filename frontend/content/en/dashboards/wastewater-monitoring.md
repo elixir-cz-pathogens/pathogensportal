@@ -1,5 +1,5 @@
 ---
-title: "Wastewater Monitoring"
+title: "Wastewater monitoring"
 origin: aggregated
 description: "Surveillance of SARS-CoV-2 and polioviruses in municipal wastewater — an early warning signal for pathogen circulation at the population level."
 image: "/images/cards/wastewater.webp"
