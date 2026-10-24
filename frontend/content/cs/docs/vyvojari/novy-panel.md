@@ -1,5 +1,6 @@
 ---
 title: "Přidání nebo úprava panelu"
+translationKey: docs-add-dashboard
 description: "Front matter panelu, shortcody a katalog zdrojů."
 weight: 40
 ---

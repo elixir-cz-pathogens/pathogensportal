@@ -8,9 +8,10 @@
      `status: draft` in front matter marks a page that describes something not
      running yet; it carries a "Připravujeme" pill here and on the page. */}}
 {{ $cur := . }}
+{{ $en := eq site.Language.Lang "en" }}
 {{ $root := site.GetPage "/docs" }}
-<nav class="pp-docs__nav" aria-label="Dokumentace">
-  <a class="pp-docs__home{{ if eq $cur $root }} is-active{{ end }}" href="{{ $root.RelPermalink }}">Přehled dokumentace</a>
+<nav class="pp-docs__nav" aria-label="{{ cond $en "Documentation" "Dokumentace" }}">
+  <a class="pp-docs__home{{ if eq $cur $root }} is-active{{ end }}" href="{{ $root.RelPermalink }}">{{ cond $en "Documentation overview" "Přehled dokumentace" }}</a>
   {{ range $root.Sections.ByWeight }}
   {{ $open := or (eq $cur .) ($cur.IsDescendant .) }}
   <details class="pp-docs__group"{{ if $open }} open{{ end }}>
@@ -19,10 +20,10 @@
       <span>{{ .Title }}</span>
     </summary>
     <ul>
-      <li><a href="{{ .RelPermalink }}"{{ if eq $cur . }} class="is-active" aria-current="page"{{ end }}>Úvod</a></li>
+      <li><a href="{{ .RelPermalink }}"{{ if eq $cur . }} class="is-active" aria-current="page"{{ end }}>{{ cond $en "Introduction" "Úvod" }}</a></li>
       {{ range .RegularPages.ByWeight }}
       <li><a href="{{ .RelPermalink }}"{{ if eq $cur . }} class="is-active" aria-current="page"{{ end }}>{{ .Title }}
-        {{- if eq .Params.status "draft" }} <span class="pp-docs__pill">Připravujeme</span>{{ end }}</a></li>
+        {{- if eq .Params.status "draft" }} <span class="pp-docs__pill">{{ cond $en "Coming soon" "Připravujeme" }}</span>{{ end }}</a></li>
       {{ end }}
     </ul>
   </details>

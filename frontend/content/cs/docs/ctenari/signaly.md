@@ -1,5 +1,6 @@
 ---
 title: "Signály"
+translationKey: docs-signals
 description: "Co je signál, jak číst skóre překročení a co dělat, když signál vidíte."
 weight: 20
 ---

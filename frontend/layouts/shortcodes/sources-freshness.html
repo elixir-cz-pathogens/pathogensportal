@@ -1,17 +1,18 @@
 {{/* How often each data source changes — a compact table from data/sources.yaml.
 
-     Usage: {{< sources-freshness >}}  (docs/ctenari/aktualnost-dat)
+     Usage: {{< sources-freshness >}}  (docs/ctenari/aktualnost-dat, en docs/readers/data-freshness)
 
      Read from the same file as the catalogue on about/data, so the two cannot
      disagree. Sources without dashboards of their own (the `external` entry)
      are skipped. */}}
 {{ $lang := .Page.Language.Lang }}
+{{ $en := eq $lang "en" }}
 <table class="table">
-  <thead><tr><th scope="col">Zdroj</th><th scope="col">Aktualizace u zdroje</th><th scope="col">Pokrytí</th><th scope="col">Panely</th></tr></thead>
+  <thead><tr><th scope="col">{{ cond $en "Source" "Zdroj" }}</th><th scope="col">{{ cond $en "Updated at the source" "Aktualizace u zdroje" }}</th><th scope="col">{{ cond $en "Coverage" "Pokrytí" }}</th><th scope="col">{{ cond $en "Dashboards" "Panely" }}</th></tr></thead>
   <tbody>
   {{ range hugo.Data.sources }}{{ if ne .id "external" }}
     <tr>
-      <td><a href="/about/data/#zdroj-{{ .id }}">{{ index .name $lang | default .name.cs }}</a></td>
+      <td><a href="{{ printf "about/data/#zdroj-%s" .id | relLangURL }}">{{ index .name $lang | default .name.cs }}</a></td>
       <td>{{ index .frequency $lang | default .frequency.cs }}</td>
       <td>{{ if reflect.IsMap .coverage }}{{ index .coverage $lang | default .coverage.cs }}{{ else }}{{ .coverage }}{{ end }}</td>
       <td>{{ $links := slice }}{{ range .pages }}{{ with site.GetPage . }}{{ $links = $links | append (printf "<a href=\"%s\">%s</a>" .RelPermalink .Title) }}{{ end }}{{ end }}{{ delimit $links ", " | safeHTML }}</td>

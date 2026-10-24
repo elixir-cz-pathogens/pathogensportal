@@ -9,7 +9,18 @@
      the form" above a form that sends nothing would lose exactly the people
      it invites. */}}
 {{ $api := site.Params.intake.api | default "" }}
+{{ $en := eq .Page.Language.Lang "en" }}
 <div class="pp-status-bar" role="alert">
+  {{ if $en }}
+  <p><strong>This page is still in preparation — data intake is not in operation yet.</strong></p>
+  {{ if $api }}
+  <p>If you want to take part now, feel free to fill in the <a href="#request">request form</a> below.
+  We will get back to you, but please allow some time.</p>
+  {{ else }}
+  <p>If you want to take part now, write to us{{ with site.Params.mail }} at
+  <a href="mailto:{{ . }}">{{ . }}</a>{{ end }}. We will get back to you, but please allow some time.</p>
+  {{ end }}
+  {{ else }}
   <p><strong>Tato stránka je zatím v přípravě — příjem dat ještě není v provozu.</strong></p>
   {{ if $api }}
   <p>Pokud se chcete zapojit už teď, klidně vyplňte <a href="#zadost">formulář žádosti</a> níže.
@@ -17,5 +28,6 @@
   {{ else }}
   <p>Pokud se chcete zapojit už teď, napište nám{{ with site.Params.mail }} na
   <a href="mailto:{{ . }}">{{ . }}</a>{{ end }}. Ozveme se vám, jen počítejte s tím, že vyřízení bude chvíli trvat.</p>
+  {{ end }}
   {{ end }}
 </div>

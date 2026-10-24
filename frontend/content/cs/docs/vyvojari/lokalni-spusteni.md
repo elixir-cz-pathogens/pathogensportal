@@ -1,5 +1,6 @@
 ---
 title: "Lokální spuštění"
+translationKey: docs-local-setup
 description: "Jak web spustit na vlastním počítači."
 weight: 20
 ---

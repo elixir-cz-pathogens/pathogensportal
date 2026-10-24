@@ -5,7 +5,7 @@ menu:
   footer_about:
     name: Dokumentace
     weight: 5
-# Czech only for now (decided 16 Oct 2026); there is deliberately no content/en/docs/.
+# Czech and English, 1:1 (decided 24 Oct 2026; was Czech only from 16 Oct).
 ---
 
 Dokumentace portálu.

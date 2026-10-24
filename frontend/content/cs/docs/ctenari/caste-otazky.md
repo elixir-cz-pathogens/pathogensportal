@@ -1,5 +1,6 @@
 ---
 title: "Časté otázky"
+translationKey: docs-faq
 description: "Odpovědi na nejčastější otázky čtenářů dat."
 weight: 50
 ---

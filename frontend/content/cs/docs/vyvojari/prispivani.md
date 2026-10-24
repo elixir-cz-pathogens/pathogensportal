@@ -1,5 +1,6 @@
 ---
 title: "Přispívání do kódu"
+translationKey: docs-contributing
 description: "Hlášení chyb, konvence větví a commitů, licence."
 weight: 60
 ---
@@ -16,7 +17,7 @@ weight: 60
 | Větev | `feature\|bugfix\|docs/PP-<číslo>_popis`, bez issue `no-issue/popis` | `feature/PP-42_wastewater-endpoint` |
 | Commit | `PP-<číslo>: shrnutí`, bez issue `no-issue: shrnutí` | `PP-57: fix PCR positivity rounding` |
 
-Kód, komentáře a commity se píšou anglicky; česky je jen obsah webu. Podrobnosti jsou v
+Kód, komentáře a commity se píšou anglicky; obsah webu je česky a anglicky. Podrobnosti jsou v
 `CONTRIBUTING.md` v repozitáři.
 
 ## Licence

@@ -1,5 +1,6 @@
 ---
 title: "Převzetí klíče"
+translationKey: claim-key
 description: "Převzetí klíče pro nahrávání dat na portál."
 layout: about_navbar
 # Reached only through the one-time link the operator sends (app/intake/cli.py);

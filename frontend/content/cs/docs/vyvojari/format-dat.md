@@ -1,5 +1,6 @@
 ---
 title: "Formát datových souborů"
+translationKey: docs-data-format
 description: "Struktura souborů JSON, ze kterých se kreslí grafy."
 weight: 30
 ---

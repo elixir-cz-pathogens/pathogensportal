@@ -1,5 +1,6 @@
 ---
 title: "Vydávání a nasazení"
+translationKey: docs-releases
 description: "Větve, automatické nasazení a kontroly."
 weight: 50
 ---

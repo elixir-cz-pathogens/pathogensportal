@@ -1,5 +1,6 @@
 ---
 title: "Stažení dat a licence"
+translationKey: docs-downloads
 description: "Kde si data stáhnout, jak jsou soubory uspořádané a pod jakou licencí jsou."
 weight: 30
 ---

@@ -1,5 +1,6 @@
 ---
 title: "Jak číst panely"
+translationKey: docs-read-dashboards
 description: "Datum aktualizace, původ dat, absolutní počty a přepočty, tabulka u grafu a ikonky na kartách."
 weight: 10
 ---

@@ -8,6 +8,12 @@
 (function () {
   "use strict";
 
+  /* The page language picks the message: the same script serves the Czech and
+     the English intake pages. Messages that come from website-be (`detail`,
+     the issues in a report) are Czech in both. */
+  var EN = (document.documentElement.lang || "").indexOf("en") === 0;
+  function t(cs, en) { return EN ? en : cs; }
+
   function el(tag, cls, text) {
     var e = document.createElement(tag);
     if (cls) e.className = cls;
@@ -20,7 +26,7 @@
     form.classList.add("was-validated");
     var bad = form.querySelector(":invalid");
     if (bad) bad.focus();
-    out.textContent = "Vyplňte prosím označená pole.";
+    out.textContent = t("Vyplňte prosím označená pole.", "Please fill in the marked fields.");
     return true;
   }
 
@@ -39,7 +45,7 @@
       var endpoint = form.dataset.endpoint;
       if (!endpoint) {
         var pre = el("pre", "pp-intake__preview", JSON.stringify(data, null, 2));
-        out.append("Odesílání zatím není zapnuté. Takto by vypadala vaše žádost:", pre);
+        out.append(t("Odesílání zatím není zapnuté. Takto by vypadala vaše žádost:", "Sending is not switched on yet. This is what your request would look like:"), pre);
         return;
       }
       fetch(endpoint, {
@@ -48,21 +54,22 @@
         body: JSON.stringify(data)
       }).then(function (r) {
         if (r.ok) {
-          out.textContent = "Děkujeme, žádost jsme přijali. Ozveme se vám e-mailem.";
+          out.textContent = t("Děkujeme, žádost jsme přijali. Ozveme se vám e-mailem.", "Thank you, we have received your request. We will get back to you by e-mail.");
           form.reset();
         } else if (r.status === 429) {
-          out.textContent = "Odeslali jste příliš mnoho žádostí. Zkuste to prosím za hodinu.";
+          out.textContent = t("Odeslali jste příliš mnoho žádostí. Zkuste to prosím za hodinu.", "You have sent too many requests. Please try again in an hour.");
         } else {
-          out.textContent = "Žádost se nepodařilo odeslat (" + r.status + "). Zkontrolujte prosím údaje.";
+          out.textContent = t("Žádost se nepodařilo odeslat (", "The request could not be sent (") + r.status + t("). Zkontrolujte prosím údaje.", "). Please check the details.");
         }
       }).catch(function () {
-        out.textContent = "Žádost se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.";
+        out.textContent = t("Žádost se nepodařilo odeslat. Zkontrolujte připojení a zkuste to znovu.", "The request could not be sent. Check your connection and try again.");
       });
     });
   });
 
   /* ── Upload form ──────────────────────────────────────────────────────── */
   function rowsCs(n) {
+    if (EN) return n + (n === 1 ? " row" : " rows");
     return n + (n === 1 ? " řádek" : n >= 2 && n <= 4 ? " řádky" : " řádků");
   }
 
@@ -72,11 +79,13 @@
     var several = n > 1;
     if (body.status === "accepted") {
       out.append(el("p", "pp-intake__ok",
-        (!several ? "Soubor je" : n === 2 ? "Oba soubory jsou" : n <= 4 ? "Všechny " + n + " soubory jsou"
-          : "Všech " + n + " souborů je") + " v pořádku (" + rowsCs(rep.rows) +
-        "); " + (several ? "uložili jsme je." : "uložili jsme ho.")));
+        EN ? (several ? "All " + n + " files are" : "The file is") + " fine (" + rowsCs(rep.rows) + "); we have stored " +
+             (several ? "them." : "it.")
+           : (!several ? "Soubor je" : n === 2 ? "Oba soubory jsou" : n <= 4 ? "Všechny " + n + " soubory jsou"
+              : "Všech " + n + " souborů je") + " v pořádku (" + rowsCs(rep.rows) +
+             "); " + (several ? "uložili jsme je." : "uložili jsme ho.")));
     } else {
-      out.append(el("p", null, "Nahrání jsme nepřijali. Opravte prosím tyto chyby a nahrajte ho znovu:"));
+      out.append(el("p", null, t("Nahrání jsme nepřijali. Opravte prosím tyto chyby a nahrajte ho znovu:", "We did not accept the upload. Please fix these errors and upload it again:")));
     }
     var issues = rep.issues || [];
     if (issues.length) {
@@ -85,15 +94,15 @@
         var where = [];
         // Name the file only when there is more than one; for one it is noise.
         if (i.file && several) where.push(i.file);
-        if (i.line) where.push("řádek " + i.line);
+        if (i.line) where.push(t("řádek ", "row ") + i.line);
         if (i.column) where.push("sloupec " + i.column);
         var li = el("li", i.level === "error" ? "is-error" : "is-warning",
-          (i.level === "error" ? "Chyba" : "Upozornění") + (where.length ? " (" + where.join(", ") + ")" : "") +
+          (i.level === "error" ? t("Chyba", "Error") : t("Upozornění", "Warning")) + (where.length ? " (" + where.join(", ") + ")" : "") +
           ": " + i.message);
         ul.append(li);
       });
       out.append(ul);
-      if (rep.truncated) out.append(el("p", null, "…a další. Opravte nejdřív tyto."));
+      if (rep.truncated) out.append(el("p", null, t("…a další. Opravte nejdřív tyto.", "…and more. Fix these first.")));
     }
   }
 
@@ -105,7 +114,7 @@
       if (invalid(form, out)) return;
       var endpoint = form.dataset.endpoint;
       if (!endpoint) {
-        out.textContent = "Nahrávání zatím není zapnuté.";
+        out.textContent = t("Nahrávání zatím není zapnuté.", "Uploading is not switched on yet.");
         return;
       }
       var fd = new FormData();
@@ -113,28 +122,28 @@
       fd.append("template", form.elements.template.value);
       // The key of the ticked declaration; the backend records it with the upload.
       fd.append("declaration", form.elements.declaration.checked ? form.elements.declaration.value : "");
-      out.textContent = "Nahrávám a kontroluji…";
+      out.textContent = t("Nahrávám a kontroluji…", "Uploading and checking…");
       fetch(endpoint, {
         method: "POST",
         headers: { "Authorization": "Bearer " + form.elements.key.value.trim() },
         body: fd
       }).then(function (r) {
         out.textContent = "";
-        if (r.status === 401) { out.textContent = "Klíč není platný. Zkontrolujte ho, případně nás kontaktujte."; return; }
+        if (r.status === 401) { out.textContent = t("Klíč není platný. Zkontrolujte ho, případně nás kontaktujte.", "The key is not valid. Check it or contact us."); return; }
         return r.json().then(function (body) {
           if (body.status === "duplicate") {
-            out.textContent = "Tyto soubory už máme (přijaté " +
-              new Date(body.received_at).toLocaleString("cs-CZ") + "). Nic dalšího není potřeba.";
+            out.textContent = t("Tyto soubory už máme (přijaté ", "We already have these files (received ") +
+              new Date(body.received_at).toLocaleString(EN ? "en-GB" : "cs-CZ") + t("). Nic dalšího není potřeba.", "). Nothing else is needed.");
           } else if (body.report) {
             renderReport(out, body);
             if (body.key_revoked) {
-              out.append(el("p", null, "Klíč byl jednorázový a tímto nahráním přestal platit. Děkujeme za příspěvek."));
+              out.append(el("p", null, t("Klíč byl jednorázový a tímto nahráním přestal platit. Děkujeme za příspěvek.", "The key was single-use and is no longer valid after this upload. Thank you for your contribution.")));
             }
           }
-          else out.textContent = "Nahrání se nepodařilo (" + r.status + "): " + (body.detail || "");
+          else out.textContent = t("Nahrání se nepodařilo (", "The upload failed (") + r.status + "): " + (body.detail || "");
         });
       }).catch(function () {
-        out.textContent = "Nahrání se nepodařilo. Zkontrolujte připojení a zkuste to znovu.";
+        out.textContent = t("Nahrání se nepodařilo. Zkontrolujte připojení a zkuste to znovu.", "The upload failed. Check your connection and try again.");
       });
     });
   });
@@ -149,14 +158,14 @@
     if (location.hash) history.replaceState(null, "", location.pathname);
     if (!/^ppc_[A-Za-z0-9_-]{20,}$/.test(token)) {
       start.hidden = true;
-      out.textContent = "Odkaz není úplný. Otevřete prosím celý odkaz z e-mailu.";
+      out.textContent = t("Odkaz není úplný. Otevřete prosím celý odkaz z e-mailu.", "The link is incomplete. Please open the whole link from the e-mail.");
       return;
     }
     box.querySelector("[data-pp-claim-go]").addEventListener("click", function (ev) {
       var btn = ev.currentTarget;
-      if (!box.dataset.endpoint) { out.textContent = "Převzetí klíče zatím není zapnuté."; return; }
+      if (!box.dataset.endpoint) { out.textContent = t("Převzetí klíče zatím není zapnuté.", "Key hand-over is not switched on yet."); return; }
       btn.disabled = true;
-      out.textContent = "Vytvářím klíč…";
+      out.textContent = t("Vytvářím klíč…", "Creating the key…");
       fetch(box.dataset.endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -166,7 +175,7 @@
         return r.json().then(function (body) {
           out.textContent = "";
           if (!r.ok) {
-            out.textContent = body.detail || ("Převzetí se nepodařilo (" + r.status + ").");
+            out.textContent = body.detail || (t("Převzetí se nepodařilo (", "The hand-over failed (") + r.status + ").");
             return;
           }
           token = "";
@@ -176,12 +185,12 @@
           input.value = body.key;
           input.select();
           box.querySelector("[data-pp-claim-mode]").textContent = body.single_use
-            ? "Klíč je jednorázový: platí pro jedno přijaté nahrání dat."
-            : "Klíč platí pro opakované nahrávání dat.";
+            ? t("Klíč je jednorázový: platí pro jedno přijaté nahrání dat.", "The key is single-use: it is valid for one accepted upload.")
+            : t("Klíč platí pro opakované nahrávání dat.", "The key is valid for repeated uploads.");
         });
       }).catch(function () {
         btn.disabled = false;
-        out.textContent = "Převzetí se nepodařilo. Zkontrolujte připojení a zkuste to znovu.";
+        out.textContent = t("Převzetí se nepodařilo. Zkontrolujte připojení a zkuste to znovu.", "The hand-over failed. Check your connection and try again.");
       });
     });
     box.querySelector("[data-pp-claim-copy]").addEventListener("click", function () {
@@ -189,7 +198,7 @@
       input.select();
       if (navigator.clipboard) navigator.clipboard.writeText(input.value);
       else document.execCommand("copy");
-      out.textContent = "Zkopírováno.";
+      out.textContent = t("Zkopírováno.", "Copied.");
     });
   });
 })();

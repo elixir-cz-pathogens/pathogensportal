@@ -1,5 +1,6 @@
 ---
 title: "Aktuálnost dat"
+translationKey: docs-freshness
 description: "Jak často se mění jednotlivé zdroje dat a co z toho plyne pro čtení panelů."
 weight: 25
 ---

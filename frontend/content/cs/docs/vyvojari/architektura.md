@@ -1,5 +1,6 @@
 ---
 title: "Architektura"
+translationKey: docs-architecture
 description: "Repozitáře, tok dat, role backendu a jak se web staví."
 weight: 10
 ---

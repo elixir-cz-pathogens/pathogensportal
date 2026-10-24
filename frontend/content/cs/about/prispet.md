@@ -1,12 +1,13 @@
 ---
 title: "Chci přispět"
+translationKey: contribute
 description: "Jak na portál přispět vlastními daty: žádost, nahrání, formát souboru a co se s daty stane."
 menu:
   footer_about:
     name: Chci přispět
     weight: 6
 layout: about_navbar
-# Czech only for now, like /docs/ (decided 16 Oct 2026); there is no EN page.
+# Czech and English, 1:1 (en/about/contribute.md, decided 24 Oct 2026).
 # Carries BOTH intake forms, the template description and the machine-upload
 # instructions (decided 22 Oct 2026:
 # forms and templates belong here, not in /docs/). Describes the intake built in
@@ -20,7 +21,7 @@ Máte agregovaná data o infekčních nemocech nebo patogenech v Česku — poč
 hlášených případů, výsledky monitoringu — a chcete, aby byla vidět na portálu?
 
 **Jak na to:** [1. Požádejte o zapojení](#zadost) → schválíme vás a pošleme klíč →
-[2. Nahrajte data](#nahrani) ve [správném formátu](#sablona) → [co se s daty stane](#co-se-s-daty-stane).
+[2. Nahrajte data](#nahrani) ve [správném formátu](#sablona).
 
 ## Co přijímáme
 

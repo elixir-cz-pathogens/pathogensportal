@@ -1,5 +1,6 @@
 ---
 title: "Jak data interpretovat"
+translationKey: docs-interpretation
 description: "Hlášené případy, vliv testování, malá čísla, srovnání krajů a zlomy v řadách."
 weight: 27
 ---

@@ -1,5 +1,6 @@
 ---
 title: "Pojmy a zkratky"
+translationKey: docs-glossary
 description: "Slovník ukazatelů, metod a zkratek, které portál používá."
 weight: 15
 ---

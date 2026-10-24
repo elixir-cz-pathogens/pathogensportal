@@ -59,6 +59,12 @@ Ministry of Health, the Czech Statistical Office, WHO, ECDC) publish them, and t
 the [Czech National Open Data Catalogue](https://data.gov.cz); the portal links to them in the
 overview above.
 
+{{% if-intake %}}
+## Provide data {#provide-data}
+
+The portal also accepts data directly from institutions: aggregated CSV files without personal data. [Contribute data](/en/about/contribute/).
+{{% /if-intake %}}
+
 ## Report an error {#report-an-error}
 
 Report errors in the data, broken charts and unclear wording by e-mail to
