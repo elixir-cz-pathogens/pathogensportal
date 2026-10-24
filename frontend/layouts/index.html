@@ -81,14 +81,21 @@
       <h3 id="pp-topics-head">{{ cond $en "Topics" "Témata" }}</h3>
       {{/* Indicates navigation ELSEWHERE. The chips sit next to a filter that works
            in place — without this distinction they look like a second set of filters. */}}
-      <p class="pp-home-topics__lead">{{ cond $en "Jump across diseases" "Napříč nemocemi" }}</p>
+      <p class="pp-home-topics__lead">{{ cond $en "Across dashboards" "Napříč panely" }}</p>
+      {{/* Only the most used topics (by number of pages), so the box stays short
+           next to the cards; the full list is one click away (decided 24 Oct 2026). */}}
       <div class="pp-home-topics__list">
-      {{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-      {{ if in $visible ($name | urlize) }}
-      <a class="pp-home-topic" href="{{ (printf "tags/%s/" (urlize $name)) | relLangURL }}">{{ index $labels (urlize $name) | default $name }}</a>
+      {{ $shown := 0 }}
+      {{ range .Site.Taxonomies.tags.ByCount }}
+      {{ if and (lt $shown 12) (in $visible (.Name | urlize)) }}
+      {{ $shown = add $shown 1 }}
+      <a class="pp-home-topic" href="{{ (printf "tags/%s/" (urlize .Name)) | relLangURL }}">{{ index $labels (urlize .Name) | default .Name }}</a>
       {{ end }}
       {{ end }}
       </div>
+      {{ with .Site.GetPage "/tags" }}
+      <a class="pp-home-topics__all" href="{{ .RelPermalink }}">{{ cond $en "All topics" "Všechna témata" }} <span aria-hidden="true">→</span></a>
+      {{ end }}
     </aside>
     </div>
 

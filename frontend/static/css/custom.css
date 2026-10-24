@@ -232,6 +232,7 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-home-topics h3 { margin: 0; font-size: 1rem; }
 .pp-home-topics__lead { margin: .1rem 0 .6rem; font-size: .78rem; color: var(--pp-text-muted); }
 .pp-home-topics__list { display: flex; flex-wrap: wrap; gap: .35rem; }
+.pp-home-topics__all { display: inline-block; margin-top: .7rem; font-size: .85rem; }
 .pp-home-topic {
   display: inline-block;
   padding: .12rem .55rem;
