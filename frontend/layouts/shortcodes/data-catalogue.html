@@ -2,8 +2,9 @@
 
      Usage: {{< data-catalogue >}}
 
-     For people, a card per source (what it is, licence, coverage, what the data
-     CANNOT tell you, where on the portal it is used); for machines,
+     For people, a card per source (what it is, licence and its conditions, how
+     to cite it, coverage, what the data CANNOT tell you, where on the portal it
+     is used); for machines,
      schema.org/DataCatalog in JSON-LD. A dashboard link is rendered only when
      the page exists — so a source can be in the catalogue before its dashboard
      without breaking the build.
@@ -30,12 +31,16 @@
       <dd>{{ if reflect.IsMap .format }}{{ index .format $lang | default .format.cs }}{{ else }}{{ .format }}{{ end }}</dd>
       <dt>{{ if $en }}Licence{{ else }}Licence{{ end }}</dt>
       {{ $licence := partial "functions/lang-value.html" (dict "v" .licence.name "lang" $lang) }}
-      <dd>{{ with .licence.url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ $licence }}</a>{{ else }}{{ $licence }}{{ end }}</dd>
+      <dd>{{ with .licence.url }}<a href="{{ . }}" target="_blank" rel="noopener">{{ $licence }}</a>{{ else }}{{ $licence }}{{ end }}{{ with .licence.note }}<br><span class="pp-source__note">{{ partial "functions/lang-value.html" (dict "v" . "lang" $lang) }}</span>{{ end }}</dd>
     </dl>
+    {{ with .citation }}
+    <p class="pp-source__citation"><strong>{{ if $en }}How to cite:{{ else }}Jak citovat:{{ end }}</strong> {{ partial "functions/lang-value.html" (dict "v" . "lang" $lang) }}</p>
+    {{ end }}
     <p class="pp-source__limits"><strong>{{ if $en }}What the data cannot tell you.{{ else }}Omezení dat:{{ end }}</strong> {{ index .limits $lang | default .limits.cs }}</p>
     <p class="pp-source__links">
       <a href="{{ .url }}" target="_blank" rel="noopener">{{ if $en }}Original source{{ else }}Původní zdroj{{ end }}</a>
       {{ with .download }} · <a href="{{ . }}" target="_blank" rel="noopener">{{ if $en }}data file{{ else }}datový soubor{{ end }}</a>{{ end }}
+      {{ with .archive }} · <a href="{{ .url }}" target="_blank" rel="noopener">{{ partial "functions/lang-value.html" (dict "v" .label "lang" $lang) }}</a>{{ end }}
       {{ range .pages }}{{ with site.GetPage . }} · <a href="{{ .RelPermalink }}">{{ .Title }}</a>{{ end }}{{ end }}
     </p>
   </article>
@@ -46,6 +51,7 @@
 {{ range $sources }}
   {{ $d := dict "@type" "Dataset" "name" (index .name $lang | default .name.cs) "description" (index .limits $lang | default .limits.cs) "url" .url "creator" (dict "@type" "Organization" "name" (partial "functions/lang-value.html" (dict "v" .publisher "lang" $lang))) }}
   {{ with .licence.url }}{{ $d = merge $d (dict "license" .) }}{{ end }}
+  {{ with .citation }}{{ $d = merge $d (dict "creditText" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end }}
   {{ with .download }}{{ $d = merge $d (dict "distribution" (dict "@type" "DataDownload" "contentUrl" . "encodingFormat" "text/csv")) }}{{ end }}
   {{ $datasets = $datasets | append $d }}
 {{ end }}

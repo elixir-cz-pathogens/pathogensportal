@@ -7,6 +7,12 @@
 # Rules:
 #   - Write `licence.name` as the SOURCE states it. If the source states none,
 #     say so ("neuvedena") — an assumed licence is worse than an admitted gap.
+#     `licence.note` = conditions the name does not carry (what to credit, how
+#     to mark modifications, what is forbidden); `licence.verified` = the day
+#     the terms were read on the linked page. The technical twin of this record
+#     is pathogensportal-db/sources.yaml — keep the licence the same on both.
+#   - `citation` = the citation / attribution sentence the source asks for,
+#     verbatim (plain text when the source gives it in one language only).
 #   - Text shown on the page (`publisher`, `licence.name`, `format`, …) is a
 #     { cs, en } pair; plain text is allowed only when it reads the same in both
 #     languages ("WHO", "CSV").
@@ -20,7 +26,14 @@
   publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
   url: "https://www.nzip.cz/data/2621-infekcni-nemoci-otevrena-data"
   download: "https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv"
-  licence: { name: { cs: "volný přístup (otevřená data ÚZIS)", en: "free access (ÚZIS open data)" }, url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  licence:
+    name: "CC BY 4.0"
+    url: "https://creativecommons.org/licenses/by/4.0/"
+    note:
+      cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
+      en: "When reusing the data, give the citation recommended by ÚZIS ČR."
+    verified: "2026-10-25"
+  citation: "Šanca O., Májek T., Davidová H., Rázková K., Klimeš D., Kubát J., Blaha M., Jarkovský J.. Infekční nemoci v ČR. Národní zdravotnický informační portál [online]. Praha: Ministerstvo zdravotnictví ČR a Ústav zdravotnických informací a statistiky ČR, 2026. Dostupné z: http://www.nzip.cz/data/2621-infekcni-nemoci-otevrena-data. ISSN 2695-0340"
   format: "CSV + CSVW metadata"
   coverage: "2018–2025"
   grain: { cs: "měsíc × kraj × diagnóza MKN-10 × věk × pohlaví", en: "month × region × ICD-10 diagnosis × age × sex" }
@@ -44,7 +57,14 @@
   publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
   url: "https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data"
   download: "https://datanzis.uzis.gov.cz/data/NR-29-RPN/NR-29-01/Otevrena-data-NR-29-01-pohlavni-nemoci.csv"
-  licence: { name: { cs: "volný přístup (otevřená data ÚZIS)", en: "free access (ÚZIS open data)" }, url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  licence:
+    name: "CC BY 4.0"
+    url: "https://creativecommons.org/licenses/by/4.0/"
+    note:
+      cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
+      en: "When reusing the data, give the citation recommended by ÚZIS ČR."
+    verified: "2026-10-25"
+  citation: "Májek T., Bartůněk V., Jarkovský J.. Pohlavní nemoci v ČR. Národní zdravotnický informační portál [online]. Praha: Ministerstvo zdravotnictví ČR a Ústav zdravotnických informací a statistiky ČR, 2026. Dostupné z: http://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data. ISSN 2695-0340"
   format: "CSV + CSVW metadata"
   coverage: "1994–2025"
   grain: { cs: "rok × okres bydliště × diagnóza × věk × pohlaví", en: "year × district of residence × diagnosis × age × sex" }
@@ -59,7 +79,14 @@
   publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
   url: "https://www.nzip.cz/data/2671-tuberkuloza-epidemiologie-otevrena-data"
   download: "https://datanzis.uzis.gov.cz/data/NR-30-RTBC/NR-30-01/Otevrena-data-NR-30-01-tuberkuloza-epidemiologie.csv"
-  licence: { name: { cs: "volný přístup (otevřená data ÚZIS)", en: "free access (ÚZIS open data)" }, url: "https://data.gov.cz/podmínky-užití/volný-přístup/" }
+  licence:
+    name: "CC BY 4.0"
+    url: "https://creativecommons.org/licenses/by/4.0/"
+    note:
+      cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
+      en: "When reusing the data, give the citation recommended by ÚZIS ČR."
+    verified: "2026-10-25"
+  citation: "Májek T., Bartůněk V., Wallenfels J., Jarkovský J.. Epidemiologie tuberkulózy v ČR. Národní zdravotnický informační portál [online]. Praha: Ministerstvo zdravotnictví ČR a Ústav zdravotnických informací a statistiky ČR, 2026. Dostupné z: http://www.nzip.cz/data/2671-tuberkuloza-epidemiologie-otevrena-data. ISSN 2695-0340"
   format: "CSV + CSVW metadata"
   coverage: "2000–2024"
   grain: { cs: "rok a čtvrtletí × kraj × věk × rodná země", en: "year and quarter × region × age × country of birth" }
@@ -73,7 +100,13 @@
   name: { cs: "COVID-19 v ČR — otevřené datové sady", en: "COVID-19 in Czechia — open datasets" }
   publisher: { cs: "MZČR / ÚZIS ČR", en: "Ministry of Health / ÚZIS CZ" }
   url: "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19"
-  licence: { name: { cs: "otevřená data MZČR", en: "Ministry of Health open data" }, url: "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" }
+  licence:
+    name: { cs: "neobsahuje autorská díla, databáze není chráněná (podmínky užití v NKOD)", en: "no copyrighted works, database not protected (terms of use in the Czech open data catalogue NKOD)" }
+    url: "https://data.gov.cz/zdroj/datové-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1"
+    note:
+      cs: "Stránka API licenci neuvádí; podmínky užití jsou shodně u všech sad COVID-19 v Národním katalogu otevřených dat."
+      en: "The API page states no licence; the terms of use are the same for every COVID-19 dataset in the National Open Data Catalogue."
+    verified: "2026-10-25"
   format: "CSV, API"
   coverage: { cs: "od března 2020", en: "since March 2020" }
   grain: { cs: "den; podle sady věk, kraj, stav očkování", en: "day; by dataset age, region, vaccination status" }
@@ -87,21 +120,39 @@
   name: { cs: "Virologická surveillance chřipky a respiračních virů", en: "Virological surveillance of influenza and respiratory viruses" }
   publisher: { cs: "SZÚ — Národní referenční laboratoř pro chřipku", en: "NIPH (SZÚ) — National Reference Laboratory for Influenza" }
   url: "https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/"
-  licence: { name: { cs: "neuvedena — zveřejněné zprávy SZÚ, uvádíme zdroj", en: "not stated — published NIPH reports, source credited" } }
+  licence:
+    name: { cs: "CC BY-NC-ND 4.0 (patička webu SZÚ)", en: "CC BY-NC-ND 4.0 (NIPH website footer)" }
+    url: "https://creativecommons.org/licenses/by-nc-nd/4.0/deed.cs"
+    note:
+      cs: "Licenci uvádí patička webu szu.gov.cz, stránka s daty žádné jiné podmínky nemá. Zda se vztahuje i na číselná data ve zprávách, ověřujeme u SZÚ."
+      en: "The licence is stated in the footer of szu.gov.cz; the data page states no other terms. Whether it also covers the figures in the reports is being checked with NIPH."
+    verified: "2026-10-25"
   format: { cs: "PDF (týdenní zprávy, sezónní archivy)", en: "PDF (weekly reports, seasonal archives)" }
   coverage: { cs: "sezóny 2012/13–dosud; týdně od 2024/25", en: "seasons 2012/13–present; weekly from 2024/25" }
   grain: { cs: "týden × virus; týden × kraj", en: "week × virus; week × region" }
   frequency: { cs: "týdně, celoročně", en: "weekly, year-round" }
   limits:
-    cs: "Data čteme z PDF, strojově čitelný export neexistuje. Počty záchytů rostou s objemem testování — mezi sezónami nejsou přímo srovnatelné. Sezóny 2022/23–2024/25 už zdroj online nemá, vezeme je v repozitáři."
-    en: "Data are read from PDFs; no machine-readable export exists. Detection counts grow with testing volume and are not directly comparable between seasons. Seasons 2022/23–2024/25 are no longer online at the source; we keep them in the repository."
+    cs: "Data čteme z PDF, strojově čitelný export neexistuje. Počty záchytů rostou s objemem testování — mezi sezónami nejsou přímo srovnatelné. Zprávy za sezóny 2022/23–2024/25 SZÚ přesunul pod Témata › A–Z infekce › Chřipka — odkaz níže; jsou to jen PDF, jako zdroj je proto nenapojujeme. Sezónní součty těchto tří sezón vezeme v repozitáři."
+    en: "Data are read from PDFs; no machine-readable export exists. Detection counts grow with testing volume and are not directly comparable between seasons. NIPH moved the reports for seasons 2022/23–2024/25 to Topics › A–Z infections › Influenza — link below; they are PDFs only, so we do not connect them as a source. We keep the season totals of these three seasons in the repository."
+  # Older seasons' reports, which SZÚ moved away from the data page. Shown as
+  # a link only — they are PDFs and not a source the pipeline reads.
+  archive:
+    url: "https://szu.gov.cz/temata-zdravi-a-bezpecnosti/a-z-infekce/ch/chripka/zprava-o-chripkove-aktivite-hlaseni-a-vysledky-laboratornich-vysetreni/chripkova-sezona-2024-2025/"
+    label: { cs: "zprávy sezóny 2024/25 (Témata › A–Z infekce › Chřipka)", en: "season 2024/25 reports (Topics › A–Z infections › Influenza)" }
   pages: ["/dashboards/influenza-surveillance", "/dashboards/influenza-regional"]
 
 - id: who-fluid-flunet
   name: { cs: "WHO FluID a FluNet — hlášení ČR", en: "WHO FluID and FluNet — Czech reports" }
   publisher: "WHO"
   url: "https://www.who.int/tools/flunet"
-  licence: { name: { cs: "neuvedena u datové sady — podmínky WHO, uvádíme zdroj", en: "not stated for the dataset — WHO terms, source credited" } }
+  licence:
+    name: { cs: "Podmínky WHO pro data (Terms and Conditions)", en: "WHO Terms and Conditions for data" }
+    url: "https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions"
+    note:
+      cs: "Užití pro účely veřejného zdraví. Data se nesmí prodávat, nesmí se používat jméno ani znak WHO a nesmí se naznačovat, že WHO portál nebo způsob užití podporuje."
+      en: "Use for public health purposes. The data may not be sold, the WHO name and emblem may not be used, and no WHO endorsement of the portal or of the use may be implied."
+    verified: "2026-10-25"
+  citation: { cs: "WHO, FluNet a FluID, 2026, [datum přístupu]; podkladová data poskytla Česká republika.", en: "WHO, FluNet and FluID, 2026, [date of access]; underlying data provided by Czechia." }
   format: "CSV (xMart API)"
   coverage: { cs: "ILI/ARI od 2009/10; laboratorní záchyty od 1997", en: "ILI/ARI since 2009/10; laboratory detections since 1997" }
   grain: { cs: "týden; u ILI/ARI i věková skupina", en: "week; ILI/ARI also by age group" }
@@ -116,14 +167,21 @@
   publisher: "ECDC / WHO Europe"
   url: "https://erviss.org/"
   download: "https://github.com/EU-ECDC/Respiratory_viruses_weekly_data"
-  licence: { name: { cs: "neuvedena v repozitáři — podmínky ECDC, uvádíme zdroj", en: "not stated in the repository — ECDC terms, source credited" } }
+  licence:
+    name: { cs: "EUPL-1.2 (repozitář); data třetích stran podle podmínek ECDC", en: "EUPL-1.2 (repository); third-party data under the ECDC notice" }
+    url: "https://www.ecdc.europa.eu/en/ecdc-intellectual-property-notices"
+    note:
+      cs: "EUPL-1.2 je licence repozitáře na GitHubu. Data lze šířit s citační větou ECDC; úpravy dat se musí výslovně označit — portál z nich počítá pozitivitu a doplňuje jimi řadu WHO FluID."
+      en: "EUPL-1.2 is the licence of the GitHub repository. The data may be shared with the ECDC attribution sentence; modifications must be stated explicitly — the portal computes positivity from them and uses them to extend the WHO FluID series."
+    verified: "2026-10-25"
+  citation: "Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO."
   format: "CSV (GitHub)"
   coverage: { cs: "ČR od týdne 25/2022", en: "Czechia since week 25/2022" }
   grain: { cs: "týden × ukazatel × věková skupina", en: "week × indicator × age group" }
   frequency: { cs: "týdně", en: "weekly" }
   limits:
-    cs: "Obsahuje stejná česká hlášení jako WHO FluID, s kratším zpožděním. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení. Počet vzorků vyšetřených na SARS-CoV-2 od týdne 34/2026 znamená něco jiného a na dřívější řadu nenavazuje."
-    en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays. The number of specimens tested for SARS-CoV-2 changes its meaning in week 34/2026 and does not continue the earlier series."
+    cs: "Obsahuje stejná česká hlášení jako WHO FluID, s kratším zpožděním. Mezinárodní srovnání ztěžují rozdílné definice a zpoždění hlášení. Počet vzorků vyšetřených na SARS-CoV-2 od týdne 34/2026 znamená něco jiného a na dřívější řadu nenavazuje. README repozitáře od června 2026 uvádí, že aktualizace na GitHubu jsou kvůli přechodu na EpiPulse pozastavené; data se tam ale od 7. 8. 2026 doplňují každý týden (ověřeno 25. 10. 2026, poslední český týden 42/2026)."
+    en: "The same Czech reports as WHO FluID, only fresher. International comparison is hampered by differing definitions and reporting delays. The number of specimens tested for SARS-CoV-2 changes its meaning in week 34/2026 and does not continue the earlier series. Since June 2026 the repository README says GitHub updates are paused because of the move to EpiPulse; in fact the data have been added weekly since 7 August 2026 (checked 25 October 2026, latest Czech week 42/2026)."
   pages: ["/dashboards/influenza-intensity", "/dashboards/influenza-surveillance", "/dashboards/covid19-surveillance"]
 
 - id: ecdc-respicast
@@ -132,6 +190,7 @@
   url: "https://respicast.ecdc.europa.eu/"
   download: "https://github.com/european-modelling-hubs/RespiCast-SyndromicIndicators"
   licence: { name: { cs: "neuvedena (repozitář RespiCast-SyndromicIndicators licenci neuvádí); data přebírána s uvedením zdroje", en: "not stated (the RespiCast-SyndromicIndicators repository states no licence); data used with attribution" } }
+  citation: "European Centre for Disease Prevention and Control. RespiCast - ECDC Respiratory Diseases Forecasting Hub - Syndromic indicators. Consulted on [Date]. https://github.com/european-modelling-hubs/RespiCast-SyndromicIndicators."
   format: "CSV (GitHub)"
   coverage: { cs: "od října 2024", en: "since October 2024" }
   grain: { cs: "týdenní kolo × cílový týden × 23 kvantilů", en: "weekly round × target week × 23 quantiles" }
@@ -145,7 +204,13 @@
   name: { cs: "Počet obyvatel podle krajů", en: "Population by region" }
   publisher: { cs: "ČSÚ", en: "Czech Statistical Office (ČSÚ)" }
   url: "https://data.csu.gov.cz/"
-  licence: { name: { cs: "otevřená data ČSÚ", en: "ČSÚ open data" }, url: "https://csu.gov.cz/otevrena-data" }
+  licence:
+    name: { cs: "CC BY 4.0 (podmínky ČSÚ)", en: "CC BY 4.0 (ČSÚ terms)" }
+    url: "https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu"
+    note:
+      cs: "Incidence na 100 000 obyvatel jsou odvozené údaje portálu, ne oficiální statistika ČSÚ."
+      en: "Incidence per 100,000 population is data derived by the portal, not official ČSÚ statistics."
+    verified: "2026-10-25"
   format: { cs: "CSV (DataStat API, sada PORKR01)", en: "CSV (DataStat API, dataset PORKR01)" }
   coverage: "2000–2025"
   grain: { cs: "rok × kraj × pohlaví", en: "year × region × sex" }
@@ -159,7 +224,14 @@
   name: { cs: "ECDC — COVID-19, historická řada pro ČR", en: "ECDC — COVID-19, historical series for Czechia" }
   publisher: "ECDC"
   url: "https://www.ecdc.europa.eu/en/covid-19/data"
-  licence: { name: { cs: "ECDC — volné použití s uvedením zdroje", en: "ECDC — free use with attribution" } }
+  licence:
+    name: { cs: "data třetích stran podle podmínek ECDC", en: "third-party data under the ECDC notice" }
+    url: "https://www.ecdc.europa.eu/en/ecdc-intellectual-property-notices"
+    note:
+      cs: "Data lze šířit s citační větou ECDC; úpravy dat se musí výslovně označit."
+      en: "The data may be shared with the ECDC attribution sentence; modifications must be stated explicitly."
+    verified: "2026-10-25"
+  citation: "Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO."
   format: "CSV"
   coverage: { cs: "2020 – říjen 2022", en: "2020 – October 2022" }
   grain: { cs: "den", en: "day" }

@@ -49,4 +49,5 @@ Data pocházejí z **otevřených datových sad MZČR** (API v2) a pokrývají o
 | PCR a antigenní testy | [MZČR — testy](https://onemocneni-aktualne.mzcr.cz/covid-19) | denně |
 | Pozitivita v laboratorní surveillance | [ECDC ERVISS](https://erviss.org/) | týdně |
 
-<p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR Open Data API v2</a> · Licence: otevřená data ČR</p>
+<p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR Open Data API v2</a> · podmínky užití: <a href="https://data.gov.cz/zdroj/datov%C3%A9-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1" target="_blank">neobsahuje autorská díla, databáze není chráněná (NKOD)</a></p>
+<p class="stat-source">ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: týdenní pozitivitu z počtu vyšetřených vzorků a záchytů vypočítal portál.</p>

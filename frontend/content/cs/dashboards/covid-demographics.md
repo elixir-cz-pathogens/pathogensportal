@@ -72,5 +72,5 @@ věkové složení, nikoli nižší účinnost očkování. Očištění o věk 
 
 <p class="stat-source">
   Zdroj: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">MZČR otevřená data</a> ·
-  licence dle podmínek MZČR · období 3/2020–současnost (očkování od 1/2021)
+  podmínky užití: <a href="https://data.gov.cz/zdroj/datov%C3%A9-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1" target="_blank">neobsahuje autorská díla, databáze není chráněná (NKOD)</a> · období 3/2020–současnost (očkování od 1/2021)
 </p>

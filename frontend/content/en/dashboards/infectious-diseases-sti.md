@@ -45,6 +45,6 @@ because of their different notification rules they cannot be added together.
 <p class="stat-source">
   Source: <a href="https://www.nzip.cz/data/2639-pohlavni-nemoci-otevrena-data" target="_blank">ÚZIS CZ — Register of Sexually Transmitted Diseases (open data)</a> ·
   <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·
-  denominators <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a> ·
-  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">free access</a>
+  denominators <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a> (<a href="https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu" target="_blank">ČSÚ terms</a>; incidence is derived by the portal, not official ČSÚ statistics) ·
+  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
 </p>

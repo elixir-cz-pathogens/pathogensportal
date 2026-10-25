@@ -49,4 +49,5 @@ The data come from the **Czech Ministry of Health open datasets** (API v2) and c
 | PCR and antigen tests | [Ministry of Health — tests](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
 | Positivity in laboratory surveillance | [ECDC ERVISS](https://erviss.org/) | weekly |
 
-<p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH Open Data API v2</a> · Licence: Czech open data</p>
+<p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH Open Data API v2</a> · terms of use: <a href="https://data.gov.cz/zdroj/datov%C3%A9-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1" target="_blank">no copyrighted works, database not protected (NKOD)</a></p>
+<p class="stat-source">ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: weekly positivity computed by the portal from specimens tested and detections.</p>

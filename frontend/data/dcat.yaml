@@ -99,7 +99,7 @@
       chřipku (SZÚ): počty laboratorních záchytů podle viru a týdne a hlášení
       podle krajů. Zdroj vydává tato čísla pouze jako PDF; sada vzniká jejich
       vytěžením a sjednocením napříč sezónami, včetně tří sezón (2022/23 až
-      2024/25), které už zdroj online nemá.
+      2024/25), jejichž zprávy SZÚ přesunul pod Témata › A–Z infekce › Chřipka.
       ⚠️ Počty záchytů rostou s objemem testování — mezi sezónami nejsou přímo
       srovnatelné a nevyjadřují počet nemocných.
     en: >-
@@ -107,8 +107,8 @@
       Laboratory for Influenza (SZÚ): laboratory detection counts by virus and
       week, and reports by region. The source publishes these figures as PDF
       only; the dataset is produced by extracting and unifying them across
-      seasons, including three seasons (2022/23 to 2024/25) the source no longer
-      keeps online.
+      seasons, including three seasons (2022/23 to 2024/25) whose reports SZÚ
+      moved to Topics › A–Z infections › Influenza.
       ⚠️ Detection counts grow with testing volume — they are not directly
       comparable between seasons and do not express how many people are ill.
   klicova_slova:
@@ -137,6 +137,7 @@
       přenášené vektory a zvířaty, vzácné závažné, ostatní).
       Přepočet na obyvatele je podstatný: mapa absolutních počtů z velké části
       kopíruje počet obyvatel kraje, incidence ukazuje něco jiného.
+      Jde o odvozené údaje portálu, ne o oficiální statistiku ČSÚ ani ÚZIS.
       ⚠️ Nejde o věkově standardizované míry. Zdrojová data neobsahují COVID-19,
       tuberkulózu ani pohlavní nemoci — ty mají vlastní registry.
     en: >-
@@ -148,6 +149,8 @@
       borne, rare severe, other).
       The population adjustment matters: a map of absolute counts largely
       reproduces regional population size, while incidence shows something else.
+      These are data derived by the portal, not official statistics of ČSÚ or
+      ÚZIS.
       ⚠️ These are not age-standardised rates. The source data exclude COVID-19,
       tuberculosis and sexually transmitted diseases, which have their own
       registers.

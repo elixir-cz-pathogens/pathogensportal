@@ -168,3 +168,7 @@ Season-by-season back-test: for ARI the epidemic threshold caught only <span dat
   <a href="https://github.com/elixir-cz-pathogens/pathogensportal-db" target="_blank">pathogensportal-db</a> ·
   laboratory influenza data are on the page <a href="/en/dashboards/influenza-surveillance/">Influenza and respiratory viruses</a>
 </p>
+<p class="stat-source">
+  Data: WHO, FluID, 2026, data accessed at the latest dashboard refresh; underlying data provided by Czechia (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">WHO terms</a>) ·
+  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: the portal extended the WHO FluID series with fresher ERVISS weeks and computed the MEM thresholds from it.
+</p>

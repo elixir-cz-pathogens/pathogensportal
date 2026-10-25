@@ -488,6 +488,8 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-source__facts dt { font-weight: 500; color: var(--bs-secondary-color); }
 .pp-source__facts dd { margin: 0; overflow-wrap: anywhere; }
 .pp-source__limits { margin: 0; font-size: 0.875rem; }
+.pp-source__note { font-size: 0.8rem; color: var(--bs-secondary-color); }
+.pp-source__citation { margin: 0; font-size: 0.8rem; overflow-wrap: anywhere; }
 .pp-source__links { margin: auto 0 0; font-size: 0.85rem; padding-top: 0.35rem; }
 
 .pp-cite {

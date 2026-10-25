@@ -37,12 +37,16 @@
   {{- if reflect.IsMap $src.coverage }}{{ $coverage = index $src.coverage $lang | default $src.coverage.cs }}{{ end -}}
   {{- $format := $src.format -}}
   {{- if reflect.IsMap $src.format }}{{ $format = index $src.format $lang | default $src.format.cs }}{{ end -}}
+  {{- /* `licence.name` and `licence.note` are cs/en pairs like the rest; the
+         record carries the current language only. */ -}}
+  {{- $licence := merge $src.licence (dict "name" (partial "functions/lang-value.html" (dict "v" $src.licence.name "lang" $lang))) -}}
+  {{- with $src.licence.note }}{{ $licence = merge $licence (dict "note" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end -}}
   {{- $rec := dict
       "id" $src.id
       "name" (index $src.name $lang | default $src.name.cs)
       "publisher" (partial "functions/lang-value.html" (dict "v" $src.publisher "lang" $lang))
       "landing_page" $src.url
-      "licence" (merge $src.licence (dict "name" (partial "functions/lang-value.html" (dict "v" $src.licence.name "lang" $lang))))
+      "licence" $licence
       "coverage" $coverage
       "granularity" (index $src.grain $lang | default $src.grain.cs)
       "update_frequency" (index $src.frequency $lang | default $src.frequency.cs)
@@ -50,6 +54,8 @@
       "limits" (index $src.limits $lang | default $src.limits.cs)
       "used_on" $pages -}}
   {{- with $src.download }}{{ $rec = merge $rec (dict "download_url" .) }}{{ end -}}
+  {{- with $src.citation }}{{ $rec = merge $rec (dict "citation" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end -}}
+  {{- with $src.archive }}{{ $rec = merge $rec (dict "archive_url" .url) }}{{ end -}}
   {{- $sources = $sources | append $rec -}}
 {{- end -}}
 {{- dict

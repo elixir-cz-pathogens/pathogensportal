@@ -5,7 +5,7 @@ description: "Overview of notified infectious diseases in the Czech Republic 201
 image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infectious diseases", "surveillance", "ÚZIS", "regions", "Czech Republic"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (free access)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS CZ — ISIN Open Data (CC BY 4.0)</a>'
 update_from: "isin_monthly_trend.json"
 update_read: "month"
 ---
@@ -26,7 +26,7 @@ The map shows the total number of notified infectious diseases in each Czech reg
 
 ### Regional map — incidence per 100,000 population
 
-The same data adjusted for regional population size (denominators: Czech Statistical Office). **Use the incidence map to compare regions**; absolute counts mostly reflect the size of a region's population.
+The same data adjusted for regional population size (denominators: Czech Statistical Office, [CC BY 4.0 under the ČSÚ terms](https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu)). Incidence is derived by the portal, not official ČSÚ statistics. **Use the incidence map to compare regions**; absolute counts mostly reflect the size of a region's population.
 
 For 2025: Prague has an average absolute case count, but after adjusting for population it has the **lowest incidence of all regions** (720.6 per 100k). Conversely, the Vysočina region, unremarkable in absolute counts, is the **highest** after adjustment (1,639.9). The Moravian-Silesian region has the most cases in absolute numbers, but only ranks fourth in incidence.
 
@@ -66,7 +66,7 @@ The distribution of notified cases by age group over the whole observation perio
 ### Methodology and limitations
 
 - The data comes from **ISIN** (Infectious Diseases Information System), mandatory notification under Act No. 258/2000 Coll.
-- Publisher: **ÚZIS CZ / Ministry of Health** — [free access](https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/) licence
+- Publisher: **ÚZIS CZ / Ministry of Health** — [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) licence
 - Database: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (2018–2025; one row is an aggregated count, not one case)
 - Columns: year, month, region (NUTS3), diagnosis (ICD-10), age group, sex, EWS flag, case count
 - Case counts are aggregated (not individual patient records)
@@ -75,6 +75,6 @@ The distribution of notified cases by age group over the whole observation perio
 
 <p class="stat-source">
   Source: <a href="https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv" target="_blank">ÚZIS CZ — ISIN Open Data</a> ·
-  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">free access</a> ·
+  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> ·
   Category: mandatory notification of infectious diseases · Years: 2018–2025
 </p>
