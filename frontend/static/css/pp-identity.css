@@ -114,6 +114,10 @@ a:hover { color: var(--pp-mid-blue); text-decoration: underline; text-underline-
   border-radius: var(--pp-radius-field);
 }
 .pp-hero__cta:hover { color: var(--pp-almost-black); text-decoration: none; filter: brightness(.95); }
+/* The hero's button on the gradient: white with dark-blue text (decided
+   25 Oct 2026). The lime default stays for buttons on white (intake forms). */
+.pp-hero__cta--light { background: #fff; color: var(--pp-dark-blue); }
+.pp-hero__cta--light:hover { color: var(--pp-dark-blue); background: #eef3f9; filter: none; }
 
 /* Every other page: a narrow band with the title. Overrides the theme's
    `.header` (teal photo). */

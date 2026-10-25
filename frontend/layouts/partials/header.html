@@ -10,7 +10,7 @@
     <h1 id="home-banner">{{ .Title }}</h1>
     {{ with .Description }}<p class="pp-hero__lead">{{ . }}</p>{{ end }}
     {{ with .Site.GetPage "section" "dashboards" }}
-    <a class="pp-hero__cta" href="{{ .RelPermalink }}">{{ cond $en "Explore dashboards" "Prozkoumat panely" }}</a>
+    <a class="pp-hero__cta pp-hero__cta--light" href="{{ .RelPermalink }}">{{ cond $en "Explore dashboards" "Prozkoumat panely" }}</a>
     {{ end }}
   </div>
 </div>
