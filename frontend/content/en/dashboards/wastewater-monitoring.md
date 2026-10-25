@@ -10,16 +10,16 @@ update_freq: "Continuous"
 redirect_url: "https://arcg.is/PyKSy1"
 ---
 
-This dashboard presents the results of wastewater-based epidemiology (WBE) — molecular detection of pathogens in wastewater at treatment plants across the Czech Republic.
+This dashboard presents the results of wastewater surveillance (wastewater-based epidemiology, WBE) — molecular detection of pathogens in wastewater at treatment plants across the Czech Republic.
 
 ### Monitored pathogens
 
-- **SARS-CoV-2** — RNA concentration in wastewater as a proxy for community transmission
+- **SARS-CoV-2** — RNA concentration in wastewater as an indicator of community transmission
 - **Poliovirus** — environmental surveillance within the WHO polio eradication network
 
 ### Interactive map
 
-The data is visualised in an ArcGIS map — click the button below to open the interactive overview:
+The data are visualised in an ArcGIS map. Open the interactive overview with the button below:
 
 <a href="https://arcg.is/PyKSy1" target="_blank" class="btn btn-primary mt-2 mb-3">
   Open the interactive map (ArcGIS)

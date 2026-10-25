@@ -14,8 +14,9 @@ build:
 
 {{< nav-pills group="infekcni-nemoci" active="tbc" >}}
 
-Tuberculosis has its own mandatory register in Czechia and is not part of the ISIN data. Over
-a quarter of a century it has fallen to less than a third — and who it affects has changed too.
+Tuberculosis has its own mandatory register in Czechia and is not part of the ISIN data. Tuberculosis
+incidence has fallen to less than a third since 2000; the structure of cases by age and country of
+birth has changed too.
 
 {{< chart id="tbcIncidence" src="/data/charts/tbc_incidence.json" type="line" title="Tuberculosis — newly notified cases per 100,000 population (2000–2024)" height="360" note="All forms of tuberculosis (ICD-10 A15–A19); year of incidence = first confirmed date of disease in the register. Adjusted to the Czech population (Czech Statistical Office). WHO classes countries below 10 cases per 100,000 as low-incidence." >}}
 
@@ -25,7 +26,7 @@ a quarter of a century it has fallen to less than a third — and who it affects
 
 {{< region-map id="tbcMap" src="/data/charts/tbc_map.json" unit="cases per 100,000 per year" title="Tuberculosis by region — three-year average per 100,000 population" note="Average annual number of cases over the last three years per 100,000 population of the region. Averaging is deliberate: a region has around thirty cases a year, and a single year would be mostly chance. The region is the region of dispensary care, not necessarily of residence." >}}
 
-### Points to keep in mind
+### Methodology and limitations
 
 - **The data lag by a year.** The register is published annually; the latest year is 2024.
 - **Small numbers.** Around 430 cases a year for the whole country — read regional differences and year-to-year swings with care.

@@ -16,7 +16,7 @@ update_read: "stamp"
   Official COVID-19 portal of the Czech Ministry of Health →
 </a>
 <a href="https://virus.img.cas.cz/" target="_blank" class="btn btn-outline-secondary mb-3">
-  Live SARS-CoV-2 charts — virus.img.cas.cz →
+  Continuously updated SARS-CoV-2 charts (virus.img.cas.cz) →
 </a>
 
 ---
@@ -38,9 +38,9 @@ SARS-CoV-2 next to influenza and RSV, each virus with its own number of specimen
 
 ---
 
-### Data sources and methodology
+### Methodology and limitations
 
-The data is downloaded from the **Czech Ministry of Health open data** (API v2) and covers daily reports from the start of the pandemic.
+The data come from the **Czech Ministry of Health open datasets** (API v2) and cover the period since March 2020.
 
 | Indicator | Source | Update |
 |---|---|---|
@@ -48,6 +48,5 @@ The data is downloaded from the **Czech Ministry of Health open data** (API v2) 
 | Hospitalisations | [Ministry of Health — hospitalisations](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
 | PCR and antigen tests | [Ministry of Health — tests](https://onemocneni-aktualne.mzcr.cz/covid-19) | daily |
 | Positivity in laboratory surveillance | [ECDC ERVISS](https://erviss.org/) | weekly |
-| Genomic surveillance | [COG-CZ / virus.img.cas.cz](https://virus.img.cas.cz/) | continuous |
 
 <p class="stat-source">Data: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH Open Data API v2</a> · Licence: Czech open data</p>

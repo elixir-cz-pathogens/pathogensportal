@@ -13,7 +13,7 @@ update_read: "week"
 ### Seasonal influenza overview
 
 Laboratory-confirmed influenza A and B cases across the seasons 2012/13–2025/26.
-The drop in the 2020/21 and 2021/22 seasons reflects the effect of COVID-19
+The decline in the 2020/21 and 2021/22 seasons coincides in time with the COVID-19
 countermeasures (masks, contact restrictions). The running season is updated
 continuously, so its column keeps growing during the winter.
 
@@ -34,21 +34,21 @@ updated every week, including over the summer.
 
 Detection counts grow with the amount of testing — and testing keeps growing: about
 16,000 specimens in the 2021/22 season, over 65,000 in 2024/25. Counts therefore cannot
-tell whether this season was stronger than the last one. **Positivity** — the share of
-positive specimens among those tested — cancels the testing volume out, so seasons can be
-compared.
+tell whether this season was stronger than the last one. **Positivity**, the share of
+positive specimens among those tested, depends less on the testing volume and therefore allows
+seasons to be compared.
 
 {{< chart id="fluPositivitySeasons" src="/data/charts/flu_positivity_seasons.json" type="line" title="Influenza positivity by week of the season" height="360" note="Share of specimens positive for influenza among those tested in the laboratory (non-sentinel system), in percent; each line is one season, the X axis runs from week 40 to week 20. Seasons from 2021/22 — before that, a few hundred hand-picked specimens were tested and the percentages are not comparable. Weeks with fewer than 30 specimens are not shown." >}}
 
 The weekly series shows the three main respiratory viruses side by side, each with its
-own number of specimens tested. Hover over a point to see how many specimens the
-percentage comes from.
+own number of specimens tested. Hover over a point or tap it to see how many specimens
+the percentage comes from.
 
 {{< chart id="fluPositivityWeekly" src="/data/charts/flu_positivity_weekly.json" type="line" title="Weekly positivity — influenza, RSV, SARS-CoV-2" height="340" note="Share of positive specimens among those tested, in percent, whole country, ECDC ERVISS data. The series starts in week 1/2025, since when ERVISS continuously reports the number of specimens tested for RSV. SARS-CoV-2 ends in week 33/2026: from the following week a different number of tested specimens is reported and the figures do not continue the series. The last 2–3 weeks are missing until the laboratories report their results." >}}
 
 ---
 
-### The respiratory virological landscape
+### Respiratory viruses by season
 
 All monitored respiratory viruses (influenza, RSV, rhinoviruses, coronaviruses,
 adenoviruses…) across the seasons. The weekly course of the current season by region
@@ -58,7 +58,7 @@ is on the [Influenza — regional surveillance](/en/dashboards/influenza-regiona
 
 ---
 
-### Surveillance background
+### Methodology and limitations
 
 The data come from the **NRL for influenza and non-influenza respiratory viruses**
 at the National Institute of Public Health (SZÚ) in Prague. Every epidemiological
@@ -70,7 +70,7 @@ Monitored pathogens:
 - **influenza A** (H1N1pdm, H3N2) and **influenza B**
 - **RSV** (respiratory syncytial virus)
 - **HRV** (rhinoviruses), **HAdV** (adenoviruses), **HPIV** (parainfluenza viruses)
-- **HMPV** (metapneumoviruses), **CoV** (seasonal coronaviruses), **hBoV** (bocaviruses)
+- **HMPV** (human metapneumovirus), **CoV** (seasonal coronaviruses), **hBoV** (human bocavirus)
 - *Mycoplasma pneumoniae* (atypical pneumonia)
 
 ### Further influenza resources

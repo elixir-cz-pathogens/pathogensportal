@@ -17,8 +17,8 @@ build:
 Sexually transmitted infections are notified in Czechia through **two routes**. Syphilis,
 gonorrhoea and lymphogranuloma venereum have their own Register of Sexually Transmitted
 Diseases, with a series going back to 1994; chlamydial infections, trichomoniasis and others
-go through ISIN and are available from 2018. The page shows both — they cannot be added
-together, as each source has its own notification rules.
+are notified through ISIN and are available from 2018. The two sources are shown separately;
+because of their different notification rules they cannot be added together.
 
 ### Syphilis and gonorrhoea — Register of Sexually Transmitted Diseases
 
@@ -36,7 +36,7 @@ together, as each source has its own notification rules.
 
 {{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Sexually transmitted infections notified through ISIN — annual case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
 
-### Points to keep in mind
+### Methodology and limitations
 
 - **Notified cases are not true occurrence.** Sexually transmitted infections are often asymptomatic; the numbers also rise when more testing is done.
 - **HIV is not included** — it has its own register, which is not yet available as open data.

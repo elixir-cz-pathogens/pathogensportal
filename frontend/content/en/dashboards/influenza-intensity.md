@@ -24,14 +24,14 @@ P(growth) = P( T[n−2] < r / SE )     (Student's t)
 
 Categories by P(growth): above 90 % growing · 75–90 % likely growing · 25–75 % stable · 10–25 % likely declining · below 10 % declining.
 
-**Why not the reproduction number R.** R belongs to a single pathogen with a known generation interval. ILI and ARI are a mixture of influenza, RSV, COVID-19 and rhinoviruses — there is no single R for them and a conversion would only look precise.
+**Why not the reproduction number R.** R belongs to a single pathogen with a known generation interval. ILI and ARI are a mixture of influenza, RSV, COVID-19 and rhinoviruses — There is no single R for them; converting to R would require assumptions that do not hold for a mixture of pathogens.
 {{< /method-part >}}
 {{< method-part title="Studies" >}}
 - CDC, Center for Forecasting and Outbreak Analytics: *Current Epidemic Trends (Based on R<sub>t</sub>)* — the source of the categories and probability cut-offs.
 - Wallinga J., Lipsitch M. (2007): *How generation intervals shape the relationship between growth rates and reproductive numbers.* Proc. R. Soc. B 274 — why the growth rate carries the same information as R.
 {{< /method-part >}}
 {{< method-part title="How we tested it" >}}
-On past seasons: when the portal said…, the rate really did rise the following week:
+Agreement of the trend category with the following week (backtest on past seasons):
 
 {{< flu part="backtest" />}}
 
@@ -68,10 +68,10 @@ threshold = mean + 1.645 · sd
 
 ```
 limit = exp( mean(ln x) + z · sd(ln x) )
-z = −0.253 · 1.282 · 1.960   (40th · 90th · 97.5th percentile)
+z ∈ {−0.253; 1.282; 1.960}   (40th, 90th and 97.5th percentile)
 ```
 
-Each season contributes its 3 highest weeks (30 values divided by the number of seasons).
+Each season contributes its n highest weeks, n = 30 / number of seasons (3 weeks with ten seasons).
 {{< /method-part >}}
 {{< method-part title="Studies" >}}
 - Vega T. et al. (2013): *Influenza surveillance in Europe: establishing epidemic thresholds by the Moving Epidemic Method.* Influenza and Other Respiratory Viruses 7(4).
@@ -88,7 +88,7 @@ Each season contributes its 3 highest weeks (30 values divided by the number of 
 - **ILI is a clinical diagnosis, not laboratory-confirmed influenza.** Other viruses with the same symptoms show up in the figure too.
 - **Ten seasons are few.** The "very high" band rests on extrapolation — the data contain no season that strong.
 - **Only some practices report.** The covered population changes; in FluID it jumped from 5.4 to 8.5 million in the 2025/26 season, so that season is not used for the thresholds yet.
-- **Holidays.** Around Christmas practices do not report and the curve has an artificial dip.
+- **Holidays.** Practices do not report over Christmas, which creates an artefact in the curve.
 
 The estimate uses the last ten seasons in which an epidemic occurred. Left out:
 
@@ -138,9 +138,9 @@ We compare every past forecast for Czechia with what actually happened and with 
 
 ### ILI and ARI — two figures from the same practices
 
-**ILI — influenza-like illness.** Sudden onset, fever or malaise, plus cough or sore throat. A narrow definition: it filters out the common cold, so the curve follows mostly influenza. A wave lifts it about fifteen times above the autumn baseline.
+**ILI — influenza-like illness.** Sudden onset, fever or malaise, plus cough or sore throat. A narrow definition: it filters out the common cold, so the curve follows mostly influenza. During an influenza epidemic ILI rises roughly 15× above its autumn level.
 
-**ARI — acute respiratory infection.** One respiratory symptom is enough. It includes whatever is circulating: rhinoviruses, RSV, COVID-19 and influenza (ILI is a subset of ARI). A wave lifts it only about twofold, but it is the figure Czech public health authorities traditionally use.
+**ARI — acute respiratory infection.** One respiratory symptom is enough. It covers infections caused by all circulating respiratory viruses: rhinoviruses, RSV, COVID-19 and influenza (ILI is a subset of ARI). During an influenza epidemic ARI rises only about twofold; it is, however, the indicator the Czech public health service traditionally uses.
 
 {{< flu part="chart" indicator="ari" height="300" title="All acute respiratory infections (ARI)" subtitle="ARI per 100,000 population · same season and week as above · Czechia" note="ARI deliberately has no intensity bands: the influenza wave is lost in the year-round background of other viruses, and bands would pretend a precision the data do not have. The threshold is an indicative line computed by MEM — it is not the official limit public health authorities use to declare an epidemic." >}}
 {{< method inside="true" title="Why ARI has no intensity bands" >}}

@@ -5,7 +5,7 @@ description: "Situation report on the Andes virus (hantavirus) outbreak linked t
 image: "/images/cards/hantavirus.webp"
 highlight: true
 tags: ["hantavirus", "epidemiology", "IMG CAS"]
-data_source: 'Jan Paces & Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG CAS</a> / UJEP / Military Health Institute'
+data_source: 'Jan Pačes, Michaela Liegertová — <a href="https://www.img.cas.cz" target="_blank">IMG CAS</a> / UJEP / Military Health Institute'
 # Closed report: the figures below are from the final WHO summary (DON611) as of
 # 2 Jul 2026 and will not change. The only case where a date goes here — see update-stamp.html.
 data_as_of: "2026-07-02"
