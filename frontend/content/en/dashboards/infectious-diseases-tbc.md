@@ -34,5 +34,5 @@ birth has changed too.
 
 <p class="stat-source">
   Source: <a href="https://www.nzip.cz/data/2671-tuberkuloza-epidemiologie-otevrena-data" target="_blank">ÚZIS CZ — Epidemiology of tuberculosis (open data)</a> ·
-  denominators <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a> · Licence: free access
+  denominators <a href="https://csu.gov.cz" target="_blank">Czech Statistical Office</a> · Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a> (ÚZIS), <a href="https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu" target="_blank">ČSÚ terms</a> · incidence per 100,000 is derived by the portal, not official ČSÚ statistics
 </p>

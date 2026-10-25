@@ -72,5 +72,5 @@ structure, not lower vaccine effectiveness. These aggregate data do not allow ag
 
 <p class="stat-source">
   Source: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH open data</a> ·
-  licence per the Ministry of Health terms · period 3/2020–present (vaccination since 1/2021)
+  terms of use: <a href="https://data.gov.cz/zdroj/datov%C3%A9-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1" target="_blank">no copyrighted works, database not protected (NKOD)</a> · period 3/2020–present (vaccination since 1/2021)
 </p>

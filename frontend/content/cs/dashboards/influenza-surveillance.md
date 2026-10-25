@@ -81,3 +81,7 @@ Sledované patogeny:
   Zdroj: <a href="https://szu.gov.cz" target="_blank">SZÚ Praha</a> · NRL chřipka ·
   sezóny 2012/13–2025/26 · kategorie: laboratorní detekce (PCR/IF)
 </p>
+<p class="stat-source">
+  Pozitivita: WHO, FluNet, 2026, data stažena při posledním obnovení panelu; podkladová data poskytla Česká republika (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">podmínky WHO</a>) ·
+  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: pozitivitu z počtu vyšetřených vzorků a záchytů vypočítal portál.
+</p>

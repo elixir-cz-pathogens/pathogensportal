@@ -6,7 +6,7 @@ image: "/images/cards/id-hepatitis.webp"
 update_from: "isin_group_hepatitis.json"
 update_read: "year"
 tags: ["infekční nemoci", "ÚZIS", "ISIN", "hepatitida"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 build:
   list: never
   render: always
@@ -20,5 +20,5 @@ Virové hepatitidy hlášené v ČR: chronická virová hepatitida, akutní hepa
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
-  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">volný přístup</a>
+  Licence: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank">CC BY 4.0</a>
 </p>

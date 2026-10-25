@@ -34,5 +34,5 @@ věku a země narození.
 
 <p class="stat-source">
   Zdroj: <a href="https://www.nzip.cz/data/2671-tuberkuloza-epidemiologie-otevrena-data" target="_blank">ÚZIS ČR — Epidemiologie tuberkulózy (otevřená data)</a> ·
-  jmenovatele <a href="https://csu.gov.cz" target="_blank">ČSÚ</a> · Licence: volný přístup
+  jmenovatele <a href="https://csu.gov.cz" target="_blank">ČSÚ</a> · Licence: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank">CC BY 4.0</a> (ÚZIS), <a href="https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu" target="_blank">podmínky ČSÚ</a> · incidence na 100 000 jsou odvozené údaje portálu, ne oficiální statistika ČSÚ
 </p>

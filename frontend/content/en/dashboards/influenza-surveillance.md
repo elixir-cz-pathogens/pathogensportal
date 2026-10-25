@@ -84,3 +84,7 @@ Monitored pathogens:
   Source: <a href="https://szu.gov.cz" target="_blank">SZÚ Prague</a> · NRL influenza ·
   seasons 2012/13–2025/26 · category: laboratory detections (PCR/IF)
 </p>
+<p class="stat-source">
+  Positivity: WHO, FluNet, 2026, data accessed at the latest dashboard refresh; underlying data provided by Czechia (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">WHO terms</a>) ·
+  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: positivity computed by the portal from specimens tested and detections.
+</p>

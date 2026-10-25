@@ -5,7 +5,7 @@ description: "Přehled hlášených infekčních nemocí v ČR 2018–2025 dle �
 image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infekční nemoci", "surveillance", "ÚZIS", "kraje", "ČR"]
-data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (volný přístup)</a>'
+data_source: '<a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN (CC BY 4.0)</a>'
 update_from: "isin_monthly_trend.json"
 update_read: "month"
 ---
@@ -26,7 +26,7 @@ Mapa ukazuje celkový počet hlášených infekčních nemocí v jednotlivých k
 
 ### Regionální mapa — incidence na 100 000 obyvatel
 
-Stejná data přepočtená na velikost populace kraje (zdroj jmenovatelů: ČSÚ). **Pro srovnání krajů je vhodná mapa incidence**; absolutní počty odrážejí hlavně velikost populace kraje.
+Stejná data přepočtená na velikost populace kraje (zdroj jmenovatelů: ČSÚ, [CC BY 4.0 podle podmínek ČSÚ](https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu)). Incidence jsou odvozené údaje portálu, ne oficiální statistika ČSÚ. **Pro srovnání krajů je vhodná mapa incidence**; absolutní počty odrážejí hlavně velikost populace kraje.
 
 Za rok 2025: Praha má v absolutních číslech průměrný počet případů, ale po přepočtu na obyvatele má **nejnižší incidenci ze všech krajů** (720,6 na 100 tis.). Naopak Kraj Vysočina, který v absolutních počtech nijak nevyčnívá, je po přepočtu **nejvyšší** (1 639,9). Moravskoslezský kraj má nejvíc případů v absolutních číslech, ale v incidenci je až čtvrtý.
 
@@ -66,7 +66,7 @@ Rozložení hlášených případů dle věkových skupin za celé sledované ob
 ### Metodika a omezení
 
 - Data pocházejí z **ISIN** (Informační systém infekčních nemocí), povinné hlášení dle zákona č. 258/2000 Sb.
-- Vydavatel: **ÚZIS ČR / MZČR** — licence [volný přístup](https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/)
+- Vydavatel: **ÚZIS ČR / MZČR** — licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.cs)
 - Databáze: `Otevrena-data-NR-27-01-infekcni-nemoci.csv` (2018–2025; jeden řádek je agregovaný počet, ne jeden případ)
 - Sloupce: rok, měsíc, kraj (NUTS3), diagnóza (MKN-10), věková skupina, pohlaví, EWS příznak, počet případů
 - Počty případů jsou agregované (ne individuální záznamy pacientů)
@@ -75,6 +75,6 @@ Rozložení hlášených případů dle věkových skupin za celé sledované ob
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
-  Licence: <a href="https://data.gov.cz/podm%C3%ADnky-u%C5%BEit%C3%AD/voln%C3%BD-p%C5%99%C3%ADstup/" target="_blank">volný přístup</a> ·
+  Licence: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank">CC BY 4.0</a> ·
   Kategorie: povinné hlášení infekčních nemocí · Roky: 2018–2025
 </p>

@@ -91,6 +91,7 @@
         "url" .url
         "creator" (dict "@type" "Organization" "name" (partial "functions/lang-value.html" (dict "v" .publisher "lang" $lang))) }}
     {{ with .licence.url }}{{ $d = merge $d (dict "license" .) }}{{ end }}
+    {{ with .citation }}{{ $d = merge $d (dict "creditText" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end }}
     {{ with .download }}
       {{ $d = merge $d (dict "distribution" (dict
           "@type" "DataDownload" "contentUrl" . "encodingFormat" "text/csv")) }}

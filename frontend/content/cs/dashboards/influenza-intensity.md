@@ -168,3 +168,7 @@ Zpětný test po sezónách: epidemický práh u ARI zachytil jen <span data-pp-
   <a href="https://github.com/elixir-cz-pathogens/pathogensportal-db" target="_blank">pathogensportal-db</a> ·
   laboratorní data o chřipce jsou na stránce <a href="/dashboards/influenza-surveillance/">Chřipka a respirační viry</a>
 </p>
+<p class="stat-source">
+  Data: WHO, FluID, 2026, data stažena při posledním obnovení panelu; podkladová data poskytla Česká republika (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">podmínky WHO</a>) ·
+  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: portál řadu WHO FluID doplnil čerstvějšími týdny z ERVISS a vypočítal z ní prahy MEM.
+</p>
