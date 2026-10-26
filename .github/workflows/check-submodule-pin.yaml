@@ -1,41 +1,29 @@
 name: "CHECK: Submodule Pin"
 
 # Fails a PR into `main` that moves the `pathogensportal-db` pin to something that
-# is not a clean release, or moves it BACKWARDS.
+# is not a clean release, or moves it backwards.
 #
-# WHY THIS EXISTS — two incidents, two different mechanisms
-# --------------------------------------------------------
-# 1. `main` has been pinned to `v0.1.0-dev` since 18 Jul 2026 — the retired
-#    temporary-fork tag — and every release since has left it there. The pin is
-#    bumped on `dev` when a -db release is cut, but nothing carries that to `main`
-#    and nothing checks that it arrived.
+# Why this exists
+# ---------------
+# 1. The pin is bumped on `dev` when a -db release is cut, but nothing carries
+#    that to `main` or checks that it arrived.
 #
-# 2. On 3 Sep 2026 PP-46 bumped the pin to v0.3.0 at 19:41. At 21:36 a commit
-#    titled "preview workflow for AI-authored content PRs" moved it back to v0.1.0
-#    — two releases backwards, as a side effect, surviving 1h55m.
+# 2. The gitlink is recorded from the submodule working tree's HEAD. A submodule
+#    checkout left on an old commit plus a `git add -A` at the repo root silently
+#    rewrites the pin to match the stale directory. There is no warning, and in
+#    the diff it is a single `-Subproject commit …` line inside an unrelated change.
 #
-# The second is not carelessness, it is git: the gitlink is recorded from the
-# submodule WORKING TREE's HEAD. A checkout left on an old commit plus a
-# `git add -A` at the repo root silently rewrites the pin to match the stale
-# directory. No warning, and in the diff it is one line reading
-# `-Subproject commit …` inside a change about something else entirely.
+# `-db`'s tags are annotated: `git rev-parse <tag>` returns the tag object, not
+# the commit, so comparing it against a gitlink shows a false mismatch. This check
+# therefore goes commit -> tag with `git describe --tags --exact-match`, never
+# tag -> commit.
 #
-# So the pinning scheme is fine. What was missing is anything that notices.
+# It does not fail a PR that leaves the pin alone. Blocking unrelated work on a
+# pre-existing bad pin would make the check red on arrival. An untouched bad pin
+# is reported as a warning; only a change can fail the job.
 #
-# ⚠️ `-db`'s tags are ANNOTATED. `git rev-parse v0.2.0` returns the TAG OBJECT
-# (f209f94), not the commit (b0afc8a) — comparing that against a gitlink shows a
-# mismatch that does not exist, and a correct line in IMPLEMENTATION_TODO.md was
-# once "corrected" into a wrong one exactly that way. This check therefore goes
-# commit → tag with `git describe --tags --exact-match`, never tag → commit.
-#
-# WHAT IT DOES NOT DO: it does not fail a PR that leaves the pin alone. Blocking
-# unrelated work on `main`'s pre-existing bad pin would be a check that is red on
-# arrival, which teaches people to ignore it. An untouched bad pin is reported as
-# a warning; only a *change* can fail the job.
-#
-# ⚠️ Flat job name, no reusable workflow, so branch protection sees exactly
-# `submodule-pin` — `backend-tests` vs `backend-tests / pytest` blocked every PR
-# into `main` for 8 days in Aug 2026.
+# Flat job name, no reusable workflow, so branch protection sees exactly
+# `submodule-pin`.
 on:
   pull_request:
     branches: [main]
@@ -119,21 +107,18 @@ jobs:
           if ! printf '%s' "$tag" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
             echo ""
             echo "🚨 The new pin is '$tag', which is not a clean release tag."
-            echo "❗ Suffixed tags are not releases. '$tag' in particular is how the retired"
-            echo "   temporary-fork tag v0.1.0-dev keeps resurfacing — a naive version sort"
-            echo "   ranks it ABOVE v0.1.0."
+            echo "❗ Suffixed tags are not releases. Note that a naive version sort ranks"
+            echo "   a suffixed tag such as v0.1.0-dev above v0.1.0."
             exit 1
           fi
 
-          # Backwards? The new pin being an ancestor of the old one is a revert, and
-          # every instance so far has been accidental.
+          # Backwards? The new pin being an ancestor of the old one is a revert,
+          # which is usually accidental.
           if git -C db merge-base --is-ancestor "$head_pin" "$base_pin" 2>/dev/null; then
             echo ""
             echo "🚨 The pin moves BACKWARDS: $head_pin ($tag) is an ancestor of $base_pin."
-            echo "❗ This is what happened on 3 Sep 2026 — v0.3.0 reverted to v0.1.0 by a commit"
-            echo "   about a preview workflow. git records the gitlink from the submodule"
-            echo "   WORKING TREE, so a stale checkout plus 'git add -A' rewrites the pin"
-            echo "   silently."
+            echo "❗ git records the gitlink from the submodule working tree, so a stale"
+            echo "   checkout plus 'git add -A' rewrites the pin silently."
             echo ""
             echo "   Fix:                 git -C $SUB fetch --tags && git -C $SUB checkout <tag>"
             echo "                        git add $SUB"

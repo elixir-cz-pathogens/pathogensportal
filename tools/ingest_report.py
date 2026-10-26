@@ -40,7 +40,7 @@ The run is **idempotent**: the same input yields the same output, so `git diff`
 shows exactly what changed in the report that day.
 
 Usage:
-    python tools/ingest_report.py ebola --source /cesta/k/incoming/ebola
+    python tools/ingest_report.py ebola --source /path/to/incoming/ebola
     python tools/ingest_report.py ebola --check      # verify only, write nothing
 """
 
@@ -62,7 +62,7 @@ REPORTS_YAML = FRONTEND / "data" / "reports.yaml"
 CONTENT_DIR = FRONTEND / "content" / "cs" / "dashboards"
 CHARTS_DIR = FRONTEND / "static" / "data" / "charts"
 
-# --- Sanitizace ------------------------------------------------------------
+# --- Sanitization ---------------------------------------------------------
 # An allowlist, not a blocklist: whatever isn't here is discarded. A blocklist
 # would mean every new idea from the generator passes until somebody notices.
 ALLOWED_TAGS = {
@@ -308,8 +308,8 @@ def replace_charts(soup, main, source_name: str, write: bool, stats: dict) -> No
         return
     script_text = "\n".join(s.get_text() for s in soup.find_all("script"))
 
-    # The panels are collected up front: replacing them changes the tree, so searching
-    # by posouvalo indexy pod rukama.
+    # The panels are collected up front: replacing them changes the tree, so
+    # searching afterwards would shift the indices.
     panels: dict[str, list] = {}
     for spec in specs:
         if spec.panel and spec.panel not in panels:

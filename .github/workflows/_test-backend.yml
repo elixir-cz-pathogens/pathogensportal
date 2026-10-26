@@ -1,6 +1,6 @@
 name: "CI: Backend Tests (reusable)"
 
-# The backend unit tests, in ONE place. Called by:
+# The backend unit tests, in one place. Called by:
 #   - backend-tests.yml   → on PRs into `main`
 #   - deploy-staging.yml  → gates the deploy to the staging machine
 #   - deploy-production.yml → gates the deploy to production
@@ -39,15 +39,9 @@ jobs:
             echo "::endgroup::"
           done
 
-          # ⚠️ Finding NOTHING is a FAILURE, not a pass.
-          #
-          # This used to print "No BE services with tests were found." and exit 0.
-          # That is acceptable for an informational check and unacceptable for a
-          # deploy gate: rename `backend/`, move the services, break the glob, and
-          # the gate silently turns into a no-op that waves every deploy through.
-          # A gate that cannot tell "everything passed" from "I ran nothing" is
-          # not a gate. Three services have tests today; if that becomes zero,
-          # someone needs to look at it deliberately.
+          # Finding no tests is a failure, not a pass. This workflow is a deploy
+          # gate: if the backend layout changes and the glob matches nothing, the
+          # gate must not silently turn into a no-op that lets every deploy through.
           if [ "$found" -eq 0 ]; then
             echo "::error::No backend service with requirements.txt + tests/ was found."
             echo "If the backend layout changed on purpose, update this workflow deliberately."

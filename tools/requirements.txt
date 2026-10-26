@@ -1,5 +1,5 @@
-# Nástroje pro build, ne pro běh služeb (ty mají requirements ve svém adresáři).
-# Záměrně bez lxml — bs4 si vystačí se zabudovaným html.parser a odpadá
-# kompilace v CI.
+# Build tools, not service runtime (each service has requirements in its own directory).
+# Deliberately without lxml: bs4 uses the built-in html.parser, which avoids a
+# compile step in CI.
 beautifulsoup4
 PyYAML

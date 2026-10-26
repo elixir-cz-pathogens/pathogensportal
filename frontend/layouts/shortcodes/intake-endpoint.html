@@ -1,0 +1,8 @@
+{{/* The absolute URL of the upload endpoint, for examples on about/prispet.
+
+     Usage: {{< intake-endpoint >}}  — works inside a code block too.
+
+     Built from params.intake.api, so staging shows its own address and a script
+     copied from the page talks to the machine the page came from. */}}
+{{- $api := site.Params.intake.api | default "/api/intake" -}}
+{{- printf "%s/uploads" $api | absURL -}}

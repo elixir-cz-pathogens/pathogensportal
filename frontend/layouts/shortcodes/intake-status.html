@@ -1,0 +1,14 @@
+{{/* Red bar at the top of the intake pages (TODO D15, I34).
+
+     Usage: {{< intake-status >}}  — on about/prispet and en about/contribute.
+
+     Says plainly that data are not being accepted yet and the intake is a
+     pilot (wording decided 24 Oct 2026). */}}
+{{ $en := eq .Page.Language.Lang "en" }}
+<div class="pp-status-bar" role="alert">
+  {{ if $en }}
+  <p><strong>We are currently not accepting data.</strong> This feature is still in a pilot version.</p>
+  {{ else }}
+  <p><strong>V současné době nepřijímáme data.</strong> Tato funkcionalita je zatím v pilotní verzi.</p>
+  {{ end }}
+</div>

@@ -1,5 +1,5 @@
 ---
-title: "Infectious Diseases — Rare severe"
+title: "Infectious diseases — rare severe"
 origin: aggregated
 description: "Diphtheria, mpox, meningococcal disease, typhoid fever, Q fever, brucellosis, yellow fever, tularaemia — Czech Republic 2018–2025 (ÚZIS ISIN)."
 image: "/images/cards/id-rare.webp"
@@ -14,7 +14,7 @@ build:
 
 {{< nav-pills group="infekcni-nemoci" active="vzacne" >}}
 
-Diseases tracked individually regardless of case counts — a single notified case of diphtheria, mpox or yellow fever is epidemiologically significant even though the numbers are orders of magnitude below the common diseases in the other groups. The Y axis therefore uses a different scale.
+Diseases tracked individually regardless of case counts — a single notified case of diphtheria, mpox or yellow fever is epidemiologically significant, although the counts are orders of magnitude below the common diseases in the other groups. The Y axis therefore uses a different scale.
 
 {{< chart id="isinRare" src="/data/charts/isin_group_rare_severe.json" type="bar" title="Rare severe diseases — annual case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
 

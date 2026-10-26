@@ -1,0 +1,28 @@
+{{/* One person on the People page — photo on the left, name and text on the right.
+
+     Usage:
+       {{< person name="Name Surname" photo="/images/people/surname.jpg" >}}
+       Text about the person, **markdown** works.
+       {{< /person >}}
+
+     Without `photo` a circle with initials is shown instead — `initials="AB"`.
+     Initials are given by hand, not derived from the name: names carry titles
+     ("Bc.", "Ph.D.") that automatic derivation would pick up.
+
+     Photos: square, JPG, 400×400, WITHOUT EXIF (the repository is public and
+     EXIF carries the camera model and capture date). Originals are not committed.
+
+     `alt` is empty on purpose — the name is right next to it, a screen reader
+     would read it twice. */}}
+{{ $name := .Get "name" }}
+<section class="pp-person">
+  {{ with .Get "photo" }}
+  <img class="pp-person__photo" src="{{ . | relURL }}" alt="" width="400" height="400" loading="lazy">
+  {{ else }}
+  <span class="pp-person__photo pp-person__photo--initials" aria-hidden="true">{{ .Get "initials" }}</span>
+  {{ end }}
+  <div class="pp-person__body">
+    <h3>{{ $name }}</h3>
+    {{ .Inner | .Page.RenderString (dict "display" "block") }}
+  </div>
+</section>

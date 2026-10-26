@@ -4,8 +4,8 @@
 
     <title>{{ .Title }}</title>
     <meta name="description" content='{{ .Param "description" }}'>
-    {{/* `.Site.Language.Locale` zmizelo v Hugo 0.154 — hodnota z hugo.toml
-         (`[languages.cs] locale`) je dnes v .Params, s Lang jako pojistkou. */}}
+    {{/* `.Site.Language.Locale` was removed in Hugo 0.154 — the value from hugo.toml
+         (`[languages.cs] locale`) is now in .Params, with Lang as a fallback. */}}
     <meta http-equiv="content-language" content="{{ .Site.Language.Params.locale | default .Site.Language.Lang }}">
 
     <link rel="icon" href="{{ "favicon.ico" | relURL }}">
@@ -13,10 +13,23 @@
     {{ template "_internal/opengraph.html" . }}
     {{ template "_internal/twitter_cards.html" . }}
 
+    {{/* schema.org/Dataset for pages built on a dataset — see the partial.
+         A page not listed in data/sources.yaml emits nothing. */}}
+    {{ partial "dataset-jsonld.html" . }}
+
     {{- $manifest := resources.Get "manifest.json" | resources.ExecuteAsTemplate "manifest.json" . }}
     <link rel="manifest" href="{{ $manifest.RelPermalink }}">
     <link rel="icon" href="{{ .Site.Params.BookFavicon | default "favicon.ico" | relURL }}" >
     <link rel="canonical" href="{{ .Permalink }}">
+    {{/* Language versions of the same page, so search engines pair CZ and EN. */}}
+    {{- if .IsTranslated }}
+    {{- range .AllTranslations }}
+    <link rel="alternate" hreflang="{{ .Language.Lang }}" href="{{ .Permalink }}">
+    {{- if eq .Language.Lang hugo.Sites.Default.Language.Lang }}
+    <link rel="alternate" hreflang="x-default" href="{{ .Permalink }}">
+    {{- end }}
+    {{- end }}
+    {{- end }}
 
     <link href="{{ "vendor/bootstrap/css/bootstrap.min.css" | relURL }}" rel="stylesheet">
 
@@ -27,42 +40,48 @@
 
     <link rel="stylesheet" href="{{ "vendor/datatables/css/dataTables.bootstrap5.min.css" | relURL }}">
 
-    {{/* ⛔ Barevné tokeny (--pp-surface, --pp-border, --pp-grid, --pp-text…) žijí
-         v dashboards.css na .pp-viz. Načítal ho jen layout titulky a jednotlivého
-         dashboardu, takže na /dashboards/ a na stránkách tagů byly VŠECHNY
-         nedefinované: karty tam neměly pozadí ani okraj a přechod ve vzorku
-         legendy byl neplatný, tedy průhledný. Barvy původu to nepostihlo — ty
-         jsou na :root v custom.css — a chyba proto vypadala jako „málo
-         kontrastní“, ne jako chybějící stylopis.
-         Od chvíle, kdy je dlaždice na třech různých místech, patří tokeny sem. */}}
-    <link rel="stylesheet" href="{{ "css/dashboards.css" | relURL }}">
+    {{/* Colour tokens (--pp-surface, --pp-border, --pp-grid, --pp-text…) live in
+         dashboards.css on .pp-viz. The card is used on several page types, so
+         the stylesheet is loaded on every page; otherwise the tokens would be
+         undefined there and cards would lose their background and border. */}}
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/dashboards.css" }}">
 
     <!-- Custom site overrides -->
-    <link rel="stylesheet" href="{{ "css/custom.css" | relURL }}">
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/custom.css" }}">
+    <!-- Pathogens Portal network identity: site chrome, loaded last -->
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/pp-identity.css" }}">
+    {{/* Docs pages, and any page carrying the intake forms (about/prispet). */}}
+    {{ $intake := or (.HasShortcode "intake-request") (.HasShortcode "intake-upload") (.HasShortcode "intake-claim") }}
+    {{ if or (eq .Section "docs") $intake }}<link rel="stylesheet" href="{{ partial "asset-url.html" "css/pp-docs.css" }}">{{ end }}
+    {{/* The forms' script, ONCE per page however many forms it has — twice would
+         send every request twice. Decided here, not in the shortcodes: a
+         "loaded already" flag in .Page.Store survives `hugo server` rebuilds,
+         so after the first edit the script vanished from the page. */}}
+    {{ if $intake }}<script src="{{ partial "asset-url.html" "js/pp-intake.js" }}" defer></script>{{ end }}
 
     {{ if .Params.redirect_url }}
     <meta http-equiv="refresh" content="0;url={{ .Params.redirect_url }}">
     {{ end }}
 
     {{/* ── Visitor statistics (Umami, self-hosted) ─────────────────────────────
-         Each machine has its OWN Umami and its own id, so the id is looked up
+         Each machine has its own Umami and its own id, so the id is looked up
          by the host being built for — `baseURL` comes from STAGING_HOST /
          PRODUCTION_HOST at deploy time. A host with no entry emits nothing,
-         which is what excludes local builds and `hugo server`. A PR preview is
-         excluded by the path test: it builds on the staging HOST but under
-         /preview/pr-N/, and counting it would mix our own review traffic into
-         the readership figures.
+         which excludes local builds and `hugo server`. A PR preview is
+         excluded by the path test: it builds on the staging host but under
+         /preview/pr-N/, and counting it would mix review traffic into the
+         readership figures.
 
          Cookieless and first-party by design:
            · no cookie, nothing stored on the reader's device, so no consent
              banner is required for it;
-           · served from OUR domain via the Apache /stats/ proxy, because a
-             third-party analytics host is blocked by every ad blocker;
-           · the Umami dashboard itself is NOT public — it stays on 127.0.0.1 and
-             is reached by SSH tunnel.
+           · served from the portal's own domain via the Apache /stats/ proxy,
+             because a third-party analytics host is blocked by ad blockers;
+           · the Umami dashboard itself is not public — it listens on 127.0.0.1
+             and is reached by SSH tunnel.
 
-         ⛔ The `defer` and the exact attribute names are Umami's contract; the
-         script reads data-website-id off its own tag. Renaming them silently
+         The `defer` and the exact attribute names are Umami's contract; the
+         script reads data-website-id from its own tag. Renaming them silently
          collects nothing. */}}
     {{ with .Site.Params.analytics }}
     {{ $u := urls.Parse $.Site.BaseURL }}

@@ -14,8 +14,8 @@ update_read: "week"
 
 Souhrn laboratorních vyšetření respiračních virů po krajích za běžící sezónu
 (od 40. kalendářního týdne 2025). Praha a Střední Čechy sdílejí virologické
-laboratoře a vykazují se společně; Zlínský kraj vlastní virologickou laboratoř
-v hlášení nemá.
+laboratoře a vykazují se společně; Zlínský kraj nemá
+v hlášení samostatnou virologickou laboratoř.
 
 {{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Laboratorní vyšetření po krajích — sezóna 2025/26" height="420" note="Absolutní počty za sezónu: pozitivní záchyty a vyšetřené vzorky. Rozdíly mezi kraji odrážejí hlavně kapacitu laboratoří, ne jen výskyt nemoci." >}}
 
@@ -30,12 +30,12 @@ počtem. Data přibývají každý týden včetně léta.
 
 ---
 
-### Odkud data jsou
+### Metodika a omezení
 
-Každý týden vychází na webu SZÚ PDF s laboratorními výsledky po virologických
-pracovištích. Pipeline je stahuje, parsuje a skládá do souvislé časové řady —
-publikovaná PDF se zpětně nemění, takže jednou stažený týden je definitivní.
-Extrakce se validuje proti kumulativním součtům přímo v PDF.
+Každý týden vychází na webu SZÚ zpráva (PDF) s laboratorními výsledky po virologických
+pracovištích. Údaje se z těchto zpráv automaticky přebírají a skládají do časové řady.
+Zveřejněné zprávy se zpětně neopravují, převzaté hodnoty se proto dodatečně nemění.
+Převzaté hodnoty se kontrolují proti kumulativním součtům uvedeným ve zprávě.
 
 <p class="stat-source">
   Zdroj: <a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">SZÚ — týdenní hlášení ARI/chřipka</a> ·

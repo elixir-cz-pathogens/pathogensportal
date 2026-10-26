@@ -20,5 +20,5 @@ Virové hepatitidy hlášené v ČR: chronická virová hepatitida, akutní hepa
 
 <p class="stat-source">
   Zdroj: <a href="https://datanzis.uzis.gov.cz" target="_blank">ÚZIS ČR — Otevřená data ISIN</a> ·
-  Licence: <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  Licence: <a href="https://creativecommons.org/licenses/by/4.0/deed.cs" target="_blank">CC BY 4.0</a>
 </p>

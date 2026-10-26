@@ -1,11 +1,11 @@
-{{/* Mapa signálů pro použití v obsahu.
+{{/* Signals map for use in content.
 
      Usage: {{< signals-map src="/data/charts/anomaly_signals.json" title="Titulek" limit="10" >}}
 
-     `limit` vynechané nebo 0 = všechny diagnózy.
+     `limit` omitted or 0 = all diagnoses.
 
-     Vlastní značkování i sestavení seznamu je v partials/signals-map.html —
-     jedno místo pro obsah i pro šablony.
+     The markup and the list building live in partials/signals-map.html —
+     one place for both content and templates.
 */}}
 {{ partial "signals-map.html" (dict
    "ctx"   .Page

@@ -1,188 +1,107 @@
-<!-- MAIN CONTENT -->
+{{/* Site header: logo, one menu for all widths, language switcher.
 
-<!-- Top navigation bar with logo and menu beside the logo -->
-{{/* ⛔ Bez `navbar-expand-*`. Do 9. 9. 2026 ho tenhle navbar potřeboval kvůli
-     pruhu s „O portálu", který v něm seděl v `collapse` bez `id`. Ten pruh je
-     pryč — „O portálu" je teď v rozklikávacím menu — takže tady není co
-     rozbalovat, a hlavně: bez `navbar-expand-lg` Bootstrap přestane nad `lg`
-     skrývat `.navbar-toggler`, takže tlačítko drží samo a nemusí ho zachraňovat
-     výjimka v CSS. */}}
-<nav class="navbar navbar-light bg-white pb-0">
-    <div class="container">
-        {{/* ⛔ V hlavičce je JEN logo portálu. Loga partnerů odsud odešla 9. 9. 2026:
-             ELIXIR, ÚMG, VZÚ a Program švýcarsko-české spolupráce stály vedle
-             názvu na každé stránce a přebíjely to, na čem je čtenář.
+     Layout follows the Pathogens Portal network (pathogens.se): a horizontal
+     menu with dropdowns from `lg` up, the same items behind a hamburger below.
+     There is ONE menu, so desktop and mobile cannot drift apart.
 
-             ⚠️ Poděkování se tím NEZTRATILO a ztratit se nesmí. Všech devět
-             partnerů včetně švýcarského programu vykresluje partners.html
-             z patičky, tedy také na každé stránce — u dotačního loga je viditelné
-             uvedení podmínka, ne zdvořilost. Kdo by rušil i patičku, musí to
-             nejdřív ověřit u poskytovatele.
+     Items come from `menus.main` in hugo.toml, per language. An item opens a
+     dropdown when it has `params.submenu` (the name of another menu), and
+     `dashboards` builds its own: internal pages first, then the ones that
+     leave the portal (`redirect_url`), which carry an external-link icon.
 
-             ⚠️ `params.logo` v hugo.toml tím ztratilo v NAŠÍ šabloně odběratele.
-             Nechává se: šablona motivu ho pořád čte, a patička si logo ELIXIRu
-             bere vlastní cestou. */}}
-        <!-- Logo -->
-        <div class="d-flex navbar-brand">
-            <a href="{{ relURL .Site.BaseURL }}">
-                <img class="mt-1 me-lg-3 portal-logo" src="{{ "images/portal.png" | relURL }}" alt="Pathogens Portal">
-            </a>
-        </div>
+     Only the portal logo is here. Partner and funder logos are in the footer on
+     every page (partners.html) — for the grant logo a visible acknowledgement
+     is a condition, so do not drop them without checking with the funder.
 
-        {{/* ⛔ Přepínač jazyků MIMO všechny `collapse`, takže je vidět na každé
-             šířce obrazovky.
+     The language switcher sits OUTSIDE the collapse, so it is reachable at every
+     width. It links to the translation of the current page when one exists,
+     otherwise to the other language's home page. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $cur := . }}
+<nav class="navbar navbar-expand-lg pp-nav" aria-label="{{ cond $en "Main" "Hlavní" }}">
+  <div class="container">
+    <a class="navbar-brand" href="{{ site.Home.RelPermalink }}">
+      <img class="portal-logo" src="{{ "images/portal.png" | relURL }}" alt="Pathogens Portal CZ">
+    </a>
 
-             Předtím byl jako ikona zeměkoule uvnitř horního
-             `<div class="collapse navbar-collapse">`, který NEMÁ id a hamburger
-             cílí na `#navbarCollapseBottom` — na mobilu ho tedy nešlo otevřít
-             vůbec. Na desktopu byl schovaný v dropdownu, který se musí rozkliknout.
-
-             Odkazuje na PŘEKLAD AKTUÁLNÍ STRÁNKY, když existuje; jinak na domovskou
-             stránku druhého jazyka. Motiv odkazoval vždycky na domovskou. */}}
-        {{/* Přepínač jazyků a tlačítko menu jsou jedna skupina vpravo v hlavičce,
-             na místě, kde do 9. 9. 2026 stálo „O portálu". */}}
-        <div class="d-flex align-items-center ms-auto gap-2">
-
-        {{ if hugo.IsMultilingual }}
-        <div class="pp-langswitch" role="group" aria-label="{{ if eq .Site.Language.Lang "en" }}Language{{ else }}Jazyk{{ end }}">
-          {{ $cur := . }}
-          {{ range .Site.Languages }}
-          {{ $lang := .Lang }}
-          {{ $target := "" }}
-          {{ range $cur.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}
-          {{ if not $target }}{{ range $cur.Site.Home.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}{{ end }}
-          {{ if eq $lang $cur.Site.Language.Lang }}
-          <span class="pp-langswitch__item is-active" aria-current="true">{{ upper $lang }}</span>
-          {{ else if $target }}
-          <a class="pp-langswitch__item" href="{{ $target }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
-          {{ end }}
-          {{ end }}
-        </div>
+    <div class="d-flex align-items-center gap-2 order-lg-last ms-auto ms-lg-3">
+      {{ if hugo.IsMultilingual }}
+      <div class="pp-langswitch" role="group" aria-label="{{ cond $en "Language" "Jazyk" }}">
+        {{ range .Site.Languages }}
+        {{ $lang := .Lang }}
+        {{ $target := "" }}
+        {{ range $cur.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}
+        {{ if not $target }}{{ range $cur.Site.Home.AllTranslations }}{{ if eq .Language.Lang $lang }}{{ $target = .RelPermalink }}{{ end }}{{ end }}{{ end }}
+        {{ if eq $lang $cur.Site.Language.Lang }}
+        <span class="pp-langswitch__item is-active" aria-current="true">{{ upper $lang }}</span>
+        {{ else if $target }}
+        <a class="pp-langswitch__item" href="{{ $target }}" hreflang="{{ $lang }}">{{ upper $lang }}</a>
         {{ end }}
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapseBottom"
-                aria-controls="navbarCollapseBottom" aria-expanded="false"
-                aria-label="{{ if eq .Site.Language.Lang "en" }}Menu{{ else }}Nabídka{{ end }}">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        </div>
-
+        {{ end }}
+      </div>
+      {{ end }}
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#pp-nav-menu"
+              aria-controls="pp-nav-menu" aria-expanded="false" aria-label="{{ cond $en "Menu" "Nabídka" }}">
+        <span class="navbar-toggler-icon"></span>
+      </button>
     </div>
-</nav>
-<!-- ENDS HERE - Top navigation bar with logo and menu beside the logo -->
 
-{{/* Menu pro VŠECHNY šířky, otevírá se hamburgerem výše.
-     ⛔ Bez `navbar-expand-*` schválně: s `navbar-expand-lg` se na desktopu
-     rozbalí samo a sedí roztažené pod hlavičkou, což je přesně to, co odsud
-     mělo zmizet. */}}
-<nav class="navbar navbar-light pt-0 pb-1">
-    <div class="container">
-        <div class="collapse navbar-collapse" id="navbarCollapseBottom">
+    <div class="collapse navbar-collapse" id="pp-nav-menu">
+      <ul class="navbar-nav ms-lg-auto">
+        {{ range .Site.Menus.main }}
+        {{ $active := or ($cur.IsMenuCurrent "main" .) ($cur.HasMenuCurrent "main" .) }}
+        {{ if and (not $active) .Page }}{{ $active = or (eq $cur .Page) ($cur.IsDescendant .Page) }}{{ end }}
+        {{ $sub := "" }}{{ with .Params.submenu }}{{ $sub = index $.Site.Menus . }}{{ end }}
 
-            {{/* ⛔ navbar_top (O portálu, GitHub) se vykresluje i tady, protože
-                 nahoře sedí v `<div class="collapse navbar-collapse">` BEZ id —
-                 a hamburger cílí na #navbarCollapseBottom. Pod šířkou lg se na
-                 „O portálu" nedalo dostat vůbec. Stejná past jako u přepínače
-                 jazyků, který proto sedí mimo všechny collapse.
-
-                 ⛔ `d-lg-none` odsud zmizelo 9. 9. 2026 spolu s pruhem vpravo
-                 v hlavičce, kde „O portálu" stávalo. Ta třída tu byla proto, aby
-                 položka nebyla na desktopu dvakrát — druhý výskyt už neexistuje,
-                 takže s ní by „O portálu" nad `lg` zmizelo úplně. */}}
-            <div>
-                {{ range .Site.Menus.navbar_top }}
-                <div class="main_menu_item pb-1"><a href="{{ .URL }}">{{ .Name }}</a></div>
-                {{ end }}
+        {{ if eq .Identifier "dashboards" }}
+          {{ $section := .Page }}
+          {{/* Outbreak reports have their own menu; do not list them twice. */}}
+          {{ $outbreaks := slice }}{{ range $.Site.Menus.outbreaks }}{{ with .Page }}{{ $outbreaks = $outbreaks | append .RelPermalink }}{{ end }}{{ end }}
+          {{/* Ordered by FILE name, not by title: titles differ between the
+               languages, so a title sort listed the same dashboards in a
+               different order in Czech and English. The file name is shared. */}}
+          {{ $pages := sort $section.RegularPages "File.ContentBaseName" }}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>
+            <div class="dropdown-menu pp-nav__mega">
+              <a class="dropdown-item pp-nav__all" href="{{ .URL }}">{{ cond $en "All dashboards" "Všechny panely" }} <i class="bi bi-arrow-right-short"></i></a>
+              <div class="pp-nav__cols">
+                <div>
+                  <h6 class="dropdown-header">{{ cond $en "Our dashboards" "Naše panely" }}</h6>
+                  {{ range where $pages "Params.redirect_url" "==" nil }}
+                  {{ if not (in $outbreaks .RelPermalink) }}
+                  <a class="dropdown-item" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+                  {{ end }}
+                  {{ end }}
+                </div>
+                <div>
+                  <h6 class="dropdown-header">{{ cond $en "External dashboards" "Externí panely" }}</h6>
+                  {{ range where $pages "Params.redirect_url" "!=" nil }}
+                  <a class="dropdown-item" href="{{ .Params.redirect_url }}" target="_blank" rel="noopener">{{ .LinkTitle }}
+                    <i class="bi bi-box-arrow-up-right small" title="{{ cond $en "external link" "externí odkaz" }}"></i></a>
+                  {{ end }}
+                </div>
+              </div>
             </div>
-
-            <!-- Top nav list i.e. About, Contact, Language, etc -->
-            <hr>
-
-            {{/* ⛔ Tenhle blok NESMÍ mít `d-lg-none`. Měl ho, dokud existovala
-                 vodorovná lišta pro desktop — po jejím odstranění 9. 9. 2026 by
-                 hamburger nad `lg` otevíral PRÁZDNÉ menu. Chyceno vykreslením
-                 otevřeného stavu, ne čtením kódu: zavřené menu vypadá správně
-                 v obou případech. */}}
-            <div>
-                {{ $events := .Site.GetPage "section" "dashboards" }}
-                {{ if $events }}
-                <div class="main_menu_item pb-1">
-                    <a href="#dashboards" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="dashboards">
-                        {{ i18n "dataDashboards" }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="dashboards">
-                        <a class="d-block" href="{{ $events.RelPermalink }}">{{ i18n "allDashboards" }}</a>
-                        {{ range $events.RegularPages }}
-                        {{- /* Položky vedoucí ven z portálu nesou ikonu externího odkazu. */ -}}
-                        <a class="d-block" href="{{ if .Params.redirect_url }}{{ .Params.redirect_url }}{{ else }}{{ .RelPermalink }}{{ end }}">{{ .Name }}{{ if .Params.redirect_url }} <i class="bi bi-box-arrow-up-right small" title="{{ if eq $.Site.Language.Lang "en" }}external link{{ else }}externí odkaz{{ end }}"></i>{{ end }}</a>
-                        {{ end }}
-                    </div>
-                </div>
-                {{ end }}
-
-                {{ range where .Site.Menus.main "Identifier" "ne" "dashboards" }}
-                <!-- Data Dashboards -->
-                <div class="main_menu_item pb-1">
-                    {{ $menuName := .Identifier }}
-                    {{ $menu := index $.Site.Menus $menuName }}
-                    {{ if $menu }}
-                    <a href="#{{ .Identifier }}" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="{{ .Identifier }}">
-                        {{ .Name }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="{{ .Identifier }}">
-                        {{ range $menu }}
-                        <a class="d-block" href="{{ .Page.RelPermalink }}">{{ .Name }}</a>
-                        {{ end }}
-                    </div>
-                    {{ else }}
-                    <a href="{{ .URL }}">
-                        {{ .Name }}
-                    </a>
-                    {{ end }}
-                </div>
-                {{ end }}
-
-                {{ if .Site.Taxonomies.tags }}
-                <div class="main_menu_item pb-1">
-                    <a href="#topics" data-bs-toggle="collapse"  role="button" aria-expanded="false" aria-controls="topics">
-                        {{ i18n "topics" }} <i class="bi bi-caret-down-fill small"></i>
-                    </a>
-                    <div class="collapse main_menu_item_sub ps-4" id="topics">
-                        {{/* Jen tagy s obsahem — tagy skrytých podstránek (build:
-                             list: never) by vedly na prázdné stránky. */}}
-                        {{- /* Jen tagy přiřazené viditelné stránce: site.RegularPages respektuje
-     build: list: never, mapa .Site.Taxonomies nikoli — tagy skrytých
-     podstránek by vedly na prázdné stránky tagů. */ -}}
-{{- $visible := slice -}}
-{{- range site.RegularPages -}}{{- range .Params.tags -}}{{- $visible = $visible | append (. | urlize) -}}{{- end -}}{{- end -}}
-{{ range $name, $taxonomy := .Site.Taxonomies.tags }}
-                        {{ if in $visible ($name | urlize) }}
-                        <a class="d-block" href="{{ (printf "tags/%s/" (urlize $name)) | relLangURL }}">{{ $name }}</a>
-                        {{ end }}
-                        {{ end }}
-                    </div>
-                </div>
-                {{ end }}
-            </div>
-
-        </div>
+          </li>
+        {{ else if $sub }}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>
+            <ul class="dropdown-menu">
+              {{ range $sub }}
+              <li><a class="dropdown-item" href="{{ .URL }}">{{ .Name }}</a></li>
+              {{ end }}
+            </ul>
+          </li>
+        {{ else }}
+          <li class="nav-item">
+            <a class="nav-link{{ if $active }} active{{ end }}" href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
+          </li>
+        {{ end }}
+        {{ end }}
+      </ul>
     </div>
+  </div>
 </nav>
-<!-- ENDS HERE - Expandable top navigation menu, controlled by above defined hamburger button -->
-
-{{/* ⛔ Tady stávala vodorovná lišta menu — `d-none d-lg-block`, tedy druhé
-     vykreslení TÝCHŽ položek jen pro desktop. Odstraněna 9. 9. 2026: menu se
-     má rozkliknout, ne sedět roztažené pod hlavičkou.
-
-     Od té doby má web JEDNO menu pro všechny šířky — `#navbarCollapseBottom`
-     výše. Proto z jeho `<nav>` zmizelo `navbar-expand-lg`: s ním se na
-     desktopu rozbalilo samo a schování by nic neřešilo.
-
-     ⚠️ Hamburger je v horním `<nav>`, které si `navbar-expand-lg` PONECHALO —
-     bez něj by se sbalil i pruh s „O portálu", který nemá `id` a nešlo by ho
-     ničím otevřít. Bootstrap ale v takovém navbaru tlačítko nad `lg` skrývá,
-     takže ho custom.css musí zobrazit zpátky (`.navbar-toggler`). Ty dva kusy
-     drží pohromadě: kdo vrátí `navbar-expand-lg` dolů nebo to pravidlo v CSS
-     smaže, zůstane bez menu.
-
-     Vrátit vodorovnou lištu = tenhle soubor v git historii před 9. 9. 2026. */}}

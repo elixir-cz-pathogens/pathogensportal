@@ -1,0 +1,176 @@
+# Datasets the portal itself PRODUCES — input for the DCAT-AP-CZ catalogue.
+#
+# Nothing that is only republished belongs here. ISIN, the Ministry of Health
+# COVID data, CZSO and WHO are already published in the National Open Data
+# Catalogue by their originators; registering them again under the portal would
+# claim an origin the portal does not have. Republished sources are described in
+# sources.yaml and linked from the human-readable catalogue.
+#
+# Inclusion criterion: would this exist without the portal? If not, it belongs
+# here. Nobody else computes MEM thresholds for the Czech Republic; weekly virus
+# detections exist only as PDFs until they are extracted; incidence per 100,000
+# exists only once ISIN is joined with CZSO population data.
+#
+# The format follows the OFN "Open data catalogue interface" (DCAT-AP-CZ), see
+# layouts/partials/dcat-publish.html. Code-list values are IRIs, not text:
+#   theme           publications.europa.eu/…/data-theme/  (HEAL = health)
+#   frequency       publications.europa.eu/…/frequency/
+#   eurovoc         eurovoc.europa.eu/…  (1759 = disease, 5894 = public health)
+#
+# `soubory` are paths to published JSON files; each becomes one distribution.
+# A file that is not on the site is left out of the catalogue — offering a
+# download that does not exist is worse than not offering the dataset at all.
+
+- id: chripka-prahy-intenzity
+  nazev:
+    cs: "Prahy intenzity chřipkové sezóny v ČR (MEM)"
+    en: "Influenza season intensity thresholds for Czechia (MEM)"
+  popis:
+    cs: >-
+      Epidemický práh a tři prahy intenzity (střední, vysoká, velmi vysoká)
+      spočtené metodou Moving Epidemic Method (Vega et al. 2013, 2015 — standard
+      ECDC a WHO PISA) nad týdenní mírou ILI a ARI na 100 000 obyvatel. Vstupem
+      je hlášení ČR do WHO FluID doplněné o čerstvější týdny z ECDC ERVISS.
+      Do odhadu jde posledních deset platných sezón; vyřazené sezóny jsou ve
+      výstupu i s důvodem. Sada obsahuje také směr vývoje posledních tří týdnů
+      a údaj `intensity_reliable`, který říká, zda jsou pásma intenzity pro daný
+      ukazatel spolehlivá — u ARI není, protože chřipková vlna se v něm ztrácí
+      v celoročním pozadí jiných respiračních virů.
+    en: >-
+      The epidemic threshold and three intensity thresholds (medium, high, very
+      high) computed with the Moving Epidemic Method (Vega et al. 2013, 2015 —
+      the ECDC and WHO PISA standard) over the weekly ILI and ARI rate per
+      100,000 population. The input is the Czech reporting to WHO FluID,
+      supplemented with fresher weeks from ECDC ERVISS. The last ten valid seasons feed
+      the estimate; excluded seasons are listed with the reason. The dataset
+      also carries the trend over the last three weeks and an
+      `intensity_reliable` flag stating whether the intensity bands are
+      dependable for a given indicator — they are not for ARI, where an
+      influenza wave is lost in the year-round background of other viruses.
+  klicova_slova:
+    cs: ["chřipka", "ILI", "ARI", "MEM", "epidemický práh", "surveillance", "veřejné zdraví"]
+    en: ["influenza", "ILI", "ARI", "MEM", "epidemic threshold", "surveillance", "public health"]
+  periodicita: WEEKLY
+  cas_od: "2009-01-01"
+  soubory: ["/data/charts/flu_mem.json"]
+  stranky: ["/dashboards/influenza-intensity"]
+
+- id: signaly-detekce-anomalii
+  nazev:
+    cs: "Signály detekce anomálií v hlášení infekčních nemocí"
+    en: "Anomaly detection signals in infectious disease notifications"
+  popis:
+    cs: >-
+      Výstup systému včasného varování nad měsíčními počty hlášených infekčních
+      nemocí (ISIN). Pro každou kombinaci diagnózy a kraje se z historie
+      odhadne očekávaný počet metodou Farrington–Noufaily (kvazi-Poissonův GLM,
+      99. percentil), porovná se se skutečností a hromadné testování se koriguje
+      bayesovskou mírou nepravdivých objevů. Sada obsahuje i signály označené
+      jako nerozhodnutelné: od července 2025 přichází část hlášení novým kanálem
+      (EWS) a řada tím vzroste, aniž by nemocných přibylo — kde nelze odlišit
+      změnu vykazování od skutečného nárůstu, je to u signálu uvedeno.
+      ⚠️ Signál není potvrzené ohnisko; je to podnět k ověření.
+    en: >-
+      Output of the early warning system over monthly counts of notified
+      infectious diseases (ISIN). For each diagnosis and region, the expected
+      count is estimated from history with the Farrington–Noufaily method
+      (quasi-Poisson GLM, 99th percentile), compared against the observed count,
+      and multiple testing is corrected with a Bayesian false discovery rate.
+      The dataset also contains signals marked undecidable: since July 2025 some
+      notifications arrive through a new channel (EWS) and a series rises
+      without more people falling ill — where a reporting change cannot be told
+      apart from a real increase, the signal says so.
+      ⚠️ A signal is not a confirmed outbreak; it is a prompt to verify.
+  klicova_slova:
+    cs: ["detekce ohnisek", "včasné varování", "infekční nemoci", "ISIN", "Farrington", "surveillance"]
+    en: ["outbreak detection", "early warning", "infectious diseases", "ISIN", "Farrington", "surveillance"]
+  periodicita: MONTHLY
+  cas_od: "2018-01-01"
+  soubory: ["/data/charts/anomaly_signals.json"]
+  stranky: ["/signals"]
+
+- id: respiracni-viry-tydenni
+  nazev:
+    cs: "Týdenní laboratorní záchyty respiračních virů v ČR"
+    en: "Weekly laboratory detections of respiratory viruses in Czechia"
+  popis:
+    cs: >-
+      Strojově čitelná podoba týdenních zpráv Národní referenční laboratoře pro
+      chřipku (SZÚ): počty laboratorních záchytů podle viru a týdne a hlášení
+      podle krajů. Zdroj vydává tato čísla pouze jako PDF; sada vzniká jejich
+      vytěžením a sjednocením napříč sezónami, včetně tří sezón (2022/23 až
+      2024/25), jejichž zprávy SZÚ přesunul pod Témata › A–Z infekce › Chřipka.
+      ⚠️ Počty záchytů rostou s objemem testování — mezi sezónami nejsou přímo
+      srovnatelné a nevyjadřují počet nemocných.
+    en: >-
+      A machine-readable form of the weekly reports of the National Reference
+      Laboratory for Influenza (SZÚ): laboratory detection counts by virus and
+      week, and reports by region. The source publishes these figures as PDF
+      only; the dataset is produced by extracting and unifying them across
+      seasons, including three seasons (2022/23 to 2024/25) whose reports SZÚ
+      moved to Topics › A–Z infections › Influenza.
+      ⚠️ Detection counts grow with testing volume — they are not directly
+      comparable between seasons and do not express how many people are ill.
+  klicova_slova:
+    cs: ["respirační viry", "chřipka", "RSV", "laboratorní surveillance", "SZÚ", "kraje"]
+    en: ["respiratory viruses", "influenza", "RSV", "laboratory surveillance", "regions"]
+  periodicita: WEEKLY
+  cas_od: "2012-10-01"
+  soubory:
+    - "/data/charts/flu_weekly.json"
+    - "/data/charts/flu_season_overview.json"
+    - "/data/charts/flu_respiratory_all.json"
+    - "/data/charts/flu_regional_weekly.json"
+    - "/data/charts/flu_regional_overview.json"
+  stranky: ["/dashboards/influenza-surveillance", "/dashboards/influenza-regional"]
+
+- id: infekcni-nemoci-incidence
+  nazev:
+    cs: "Infekční nemoci v ČR — incidence na 100 000 obyvatel a tematické skupiny"
+    en: "Infectious diseases in Czechia — incidence per 100,000 and thematic groups"
+  popis:
+    cs: >-
+      Odvozené řady nad otevřenými daty ISIN (ÚZIS): počty hlášených případů
+      přepočtené na 100 000 obyvatel pomocí populace krajů od ČSÚ, rozpad podle
+      věkových skupin a roztřídění 114 diagnóz do osmi tematických skupin
+      (střevní, dětské vzdušnou cestou, hepatitidy, kožní a kontaktní, pohlavní,
+      přenášené vektory a zvířaty, vzácné závažné, ostatní).
+      Přepočet na obyvatele je podstatný: mapa absolutních počtů z velké části
+      kopíruje počet obyvatel kraje, incidence ukazuje něco jiného.
+      Jde o odvozené údaje portálu, ne o oficiální statistiku ČSÚ ani ÚZIS.
+      ⚠️ Nejde o věkově standardizované míry. Zdrojová data neobsahují COVID-19,
+      tuberkulózu ani pohlavní nemoci — ty mají vlastní registry.
+    en: >-
+      Series derived from the ISIN open data (ÚZIS): notified case counts
+      converted to a rate per 100,000 population using regional population from
+      the Czech Statistical Office, a breakdown by age group, and 114 diagnoses
+      sorted into eight thematic groups (gastrointestinal, childhood airborne,
+      hepatitis, skin and contact, sexually transmitted, vector and animal
+      borne, rare severe, other).
+      The population adjustment matters: a map of absolute counts largely
+      reproduces regional population size, while incidence shows something else.
+      These are data derived by the portal, not official statistics of ČSÚ or
+      ÚZIS.
+      ⚠️ These are not age-standardised rates. The source data exclude COVID-19,
+      tuberculosis and sexually transmitted diseases, which have their own
+      registers.
+  klicova_slova:
+    cs: ["infekční nemoci", "incidence", "ISIN", "kraje", "věkové skupiny", "veřejné zdraví"]
+    en: ["infectious diseases", "incidence", "ISIN", "regions", "age groups", "public health"]
+  periodicita: ANNUAL
+  cas_od: "2018-01-01"
+  soubory:
+    - "/data/charts/isin_regional_incidence.json"
+    - "/data/charts/isin_regional_map.json"
+    - "/data/charts/isin_monthly_trend.json"
+    - "/data/charts/isin_age_groups.json"
+    - "/data/charts/isin_top_diseases.json"
+    - "/data/charts/isin_group_gastrointestinal.json"
+    - "/data/charts/isin_group_childhood_airborne.json"
+    - "/data/charts/isin_group_hepatitis.json"
+    - "/data/charts/isin_group_skin_contact.json"
+    - "/data/charts/isin_group_sti.json"
+    - "/data/charts/isin_group_vector_animal.json"
+    - "/data/charts/isin_group_rare_severe.json"
+    - "/data/charts/isin_group_other.json"
+  stranky: ["/dashboards/infectious-diseases"]

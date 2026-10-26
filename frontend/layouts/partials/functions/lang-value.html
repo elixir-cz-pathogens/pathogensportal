@@ -1,0 +1,10 @@
+{{/* Value in the current language.
+
+     Usage: {{ partial "functions/lang-value.html" (dict "v" .publisher "lang" $lang) }}
+
+     Fields in data/*.yaml are either plain text (same in both languages) or a
+     { cs, en } map. `cond` cannot pick between them — it evaluates both branches,
+     and `index` fails on a string. */}}
+{{- $v := .v -}}
+{{- if reflect.IsMap $v }}{{ $v = index $v .lang | default $v.cs }}{{ end -}}
+{{- return $v -}}

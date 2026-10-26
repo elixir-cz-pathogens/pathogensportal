@@ -7,6 +7,7 @@ from fastapi.responses import JSONResponse
 
 from . import charts, db
 from .config import settings
+from .intake.api import router as intake_router
 
 app = FastAPI(title=settings.service_name)
 
@@ -14,10 +15,13 @@ if settings.cors_origins:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
-        allow_methods=["GET"],
+        # POST only for the intake endpoints (the request form and uploads).
+        allow_methods=["GET", "POST"],
         allow_headers=["*"],
         expose_headers=["X-Recorded-At"],
     )
+
+app.include_router(intake_router)
 
 # The chart key = the file name without its extension; nothing else reaches the query.
 _KEY_RE = re.compile(r"^[a-z0-9_]{1,255}$")
@@ -29,7 +33,7 @@ _DB_UNAVAILABLE = "The database is unavailable."
 def health() -> dict:
     """Service health, with the database reported separately (PP-8).
 
-    ⛔ Always HTTP 200, even when the database is down — and that is deliberate.
+    Always HTTP 200, even when the database is down, by design.
     This service is designed to survive a dead database: `/api/charts` answers 503
     and the frontend falls back to the static JSON, so the site keeps working. A
     health check that returned 503 would make an orchestrator restart a process

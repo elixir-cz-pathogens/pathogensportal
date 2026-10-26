@@ -14,8 +14,8 @@ update_read: "week"
 
 Summary of laboratory tests for respiratory viruses by region for the running
 season (since calendar week 40/2025). Prague and Central Bohemia share
-virological laboratories and report jointly; the Zlín region has no virological
-laboratory of its own in the reports.
+virological laboratories and report jointly; the Zlín region has no separate virological
+laboratory in the reports.
 
 {{< chart id="fluRegionalOverview" src="/data/charts/flu_regional_overview.json" type="bar" title="Laboratory tests by region — season 2025/26" height="420" note="Absolute counts per season: positive detections and samples tested. Regional differences mainly reflect laboratory capacity, not just disease occurrence." >}}
 
@@ -30,12 +30,12 @@ Data accrue every week, including over the summer.
 
 ---
 
-### Where the data comes from
+### Methodology and limitations
 
-Every week the SZÚ website publishes a PDF with laboratory results by virological
-site. The pipeline downloads and parses them into a continuous time series —
-published PDFs never change retroactively, so a downloaded week is final.
-The extraction is validated against cumulative totals inside the PDFs.
+Every week the SZÚ website publishes a report (PDF) with laboratory results by virological
+site. The figures are taken over from these reports automatically and assembled into a time
+series. Published reports are not corrected retrospectively, so the values taken over do not
+change afterwards. They are checked against the cumulative totals given in the report.
 
 <p class="stat-source">
   Source: <a href="https://szu.gov.cz/publikace-szu/data/akutni-respiracni-infekce-chripka/" target="_blank">SZÚ — weekly ARI/influenza reports</a> ·

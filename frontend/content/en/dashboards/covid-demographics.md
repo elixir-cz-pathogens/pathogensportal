@@ -1,7 +1,7 @@
 ---
 title: "COVID-19 — Age and vaccination"
 origin: aggregated
-description: "4.9 million confirmed COVID-19 cases in the Czech Republic by age and vaccination status — deaths, case fatality, hospitalisations. Czech MoH open data, updated continuously."
+description: "Confirmed COVID-19 cases in the Czech Republic by age and vaccination status: deaths, case fatality and hospitalisations. Czech Ministry of Health open data."
 image: "/images/cards/covid-demographics.svg"
 tags: ["SARS-CoV-2", "deaths", "vaccination", "epidemiology", "Czech MoH"]
 data_source: '<a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH — COVID-19 Open Data</a>'
@@ -18,7 +18,7 @@ build:
 
 Distribution of confirmed cases and deaths by patient age over the whole pandemic
 period (since March 2020). Cases concentrate in working-age groups; deaths
-overwhelmingly in the oldest.
+mostly in the oldest.
 
 {{< callout >}}
 **22,780 cases (0.5%) have no age recorded in the source data** — they are not in
@@ -53,26 +53,24 @@ January 2021** (the categories did not exist before vaccination started).
 The share of hospitalised among those testing positive in each group. **Interpret
 with care:** the booster group is much older than average (vaccination was
 prioritised by age), so its higher hospitalisation rate mainly reflects age
-structure, not vaccine failure. These aggregate data do not allow age adjustment.
+structure, not lower vaccine effectiveness. These aggregate data do not allow age adjustment.
 
 {{< chart id="covidHospVax" src="/data/charts/covid_hosp_rate_by_vax.json" type="bar" title="Hospitalisation rate (%) — vaccination status" height="300" note="Percentage share: hospitalised / positive in the given group, since January 2021. Not age-adjusted — the groups have different age structures." >}}
 
 ---
 
-### Methodological note
+### Methodology and limitations
 
 - Sources: Czech MoH open datasets
   [`osoby`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19) (4.9 million cases
   with age and region), [`umrti`](https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19)
   (44 thousand deaths with age) and `ockovani-pozitivni` / `ockovani-hospitalizace`
   (daily counts by vaccination status).
-- All charts are generated automatically by the data pipeline and update with it —
-  no manual step in between.
 - Case fatality (CFR) = deaths / confirmed cases; the true infection fatality rate
   (IFR) is lower, because not every infection was captured by a test.
 - The open data do not include hospitalisations by age; they do by vaccination status.
 
 <p class="stat-source">
   Source: <a href="https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19" target="_blank">Czech MoH open data</a> ·
-  period 3/2020–present (vaccination since 1/2021)
+  terms of use: <a href="https://data.gov.cz/zdroj/datov%C3%A9-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1" target="_blank">no copyrighted works, database not protected (NKOD)</a> · period 3/2020–present (vaccination since 1/2021)
 </p>
