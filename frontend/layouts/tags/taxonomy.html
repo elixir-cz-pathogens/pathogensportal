@@ -1,0 +1,28 @@
+{{/* Topics: the list of all tags (the /tags/ page the "Topics" menu item opens).
+
+     Only tags assigned to a VISIBLE page are listed. site.RegularPages respects
+     `build: list: never`, the .Data.Terms map does not — the tags of hidden
+     sub-pages (e.g. the Ebola sub-pages) would lead to empty tag pages.
+
+     A stopgap until topics get their own pages in the pathogens.se style. */}}
+{{ define "main" }}
+{{ $en := eq .Site.Language.Lang "en" }}
+{{ $visible := slice }}
+{{ range site.RegularPages }}{{ range .Params.tags }}{{ $visible = $visible | append (. | urlize) }}{{ end }}{{ end }}
+{{ with .Description }}<p class="pp-topics__lead">{{ . }}</p>{{ end }}
+{{/* Counted and sorted by VISIBLE pages; .Data.Terms.ByCount counts the
+     hidden ones too, so its order would disagree with the numbers shown. */}}
+{{ $items := slice }}
+{{ range .Data.Terms }}
+  {{ if in $visible (.Page.Data.Term | urlize) }}
+  {{ $n := 0 }}{{ range .Pages }}{{ if in site.RegularPages . }}{{ $n = add $n 1 }}{{ end }}{{ end }}
+  {{ $items = $items | append (dict "n" $n "name" .Page.Data.Term "url" .Page.RelPermalink) }}
+  {{ end }}
+{{ end }}
+<ul class="pp-topics">
+  {{ range sort (sort $items "name") "n" "desc" }}
+  <li><a href="{{ .url }}"><span>{{ .name }}</span>
+    <span class="pp-topics__count" aria-label="{{ cond $en "pages" "stránek" }}">{{ .n }}</span></a></li>
+  {{ end }}
+</ul>
+{{ end }}

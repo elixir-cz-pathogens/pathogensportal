@@ -1,5 +1,5 @@
-{{/* Override theme šablony: relLangURL prefixuje statické obrázky jazykem
-     (/en/images/…), který neexistuje — statika je společná. */}}
+{{/* Theme template override: relLangURL prefixes static images with the language
+     (/en/images/…), which does not exist — static files are shared. */}}
 {{ define "main" }}
 
 <div style="border-radius: 5px;" class="bg-light p-5">
@@ -9,7 +9,7 @@
     <small>{{ i18n "author" }}: {{ .Params.author }}</small>
 </div>
 <div id="published_date" class="text-muted">
-    <small>{{ i18n "publishedDate" }}: {{ .Date.Format "02 January 2006" }}</small>
+    <small>{{ i18n "publishedDate" }}: {{ .Date | time.Format ":date_long" }}</small>
 </div>
 <section id="content" class="mt-3">
 {{ .Content }}
@@ -25,12 +25,13 @@
         {{ end }}
     </div>
     <div class="col-md text-md-end mt-2 mt-md-0">
-        <span><b>Share this: </b></span>
-        <a target="_blank" class="share-button" aria-label="share highlight on X"
+        {{- $en := eq .Site.Language.Lang "en" }}
+        <span><b>{{ cond $en "Share this:" "Sdílet:" }} </b></span>
+        <a target="_blank" class="share-button" aria-label="{{ cond $en "share on X" "sdílet na X" }}"
            href="https://twitter.com/intent/tweet?text={{ .Title }}, {{ .Permalink }}"><i class="bi bi-twitter-x me-1"></i></a>
-        <a target="_blank" class="share-button" aria-label="share highlight on linkedin"
+        <a target="_blank" class="share-button" aria-label="{{ cond $en "share on LinkedIn" "sdílet na LinkedIn" }}"
            href="https://www.linkedin.com/sharing/share-offsite/?url={{ .Permalink }}"><i class="bi bi-linkedin me-1"></i></a>
-        <a target="_blank" class="share-button" aria-label="share highlight on facebook"
+        <a target="_blank" class="share-button" aria-label="{{ cond $en "share on Facebook" "sdílet na Facebooku" }}"
            href="https://www.facebook.com/sharer/sharer.php?u={{ .Permalink }}"><i class="bi bi-facebook me-1"></i></a>
     </div>
 </div>

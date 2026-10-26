@@ -1,0 +1,58 @@
+name: "AUTOMATION: Release closes issues"
+
+# Writes a `Closes #N` line for every open `on-staging` issue into the body of a
+# PR into `main`, so GitHub closes those issues when the release merges — i.e.
+# when their work reaches production (TODO I39). The label is set by
+# auto-pr-merged-notify.yaml on merges into `dev`.
+#
+# The lines live between two HTML comments and are rewritten on every run;
+# everything else in the body is left alone. Content PRs (`content/…`) go to
+# `main` without `dev` and carry none of that work, so they are skipped.
+#
+# ⚠️ For a pull_request event the workflow file comes from the PR's merge
+# commit, so a release PR from `dev` runs this as soon as it is on `dev`.
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, ready_for_review]
+
+permissions:
+  issues: read
+  pull-requests: write
+
+jobs:
+  closes:
+    if: ${{ !startsWith(github.head_ref, 'content/') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Write Closes lines for on-staging issues
+        uses: actions/github-script@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const START = "<!-- pp-release-closes:start -->";
+            const END = "<!-- pp-release-closes:end -->";
+            const pr = context.payload.pull_request;
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: "open", labels: "on-staging", per_page: 100,
+            });
+            // listForRepo also returns PRs; only real issues are closed.
+            const numbers = issues.filter(i => !i.pull_request).map(i => i.number).sort((a, b) => a - b);
+            const block = numbers.length
+              ? `${START}\n**Released with this PR** (issues merged into \`dev\`):\n` +
+                numbers.map(n => `Closes #${n}`).join("\n") + `\n${END}`
+              : `${START}\n${END}`;
+            const body = pr.body || "";
+            const re = new RegExp(`${START}[\\s\\S]*?${END}`);
+            const next = re.test(body) ? body.replace(re, block) : `${body}\n\n${block}`;
+            if (next === body) {
+              console.log("Closes block up to date.");
+              return;
+            }
+            await github.rest.pulls.update({
+              owner: context.repo.owner, repo: context.repo.repo,
+              pull_number: pr.number, body: next,
+            });
+            console.log(`Closes block: ${numbers.length ? numbers.map(n => "#" + n).join(", ") : "none"}`);

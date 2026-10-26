@@ -1,0 +1,7 @@
+# Staging only (`hugo --environment staging`, deploy-staging.yml). Merged over
+# ../../hugo.toml. Staging runs website-be, so the data intake is switched on
+# here: the page is built and its forms send to the backend on the same host.
+ignoreFiles = []
+
+[params.intake]
+api = "/api/intake"

@@ -1,30 +1,29 @@
-/* Vykreslování grafů na dashboardech Pathogen Portalu.
+/* Chart rendering for Pathogen Portal dashboards.
  *
- * ZDROJ DAT — statika první, API jako bonus:
- * Na začátku stránky se **jednou** zeptáme `/api/charts`, jestli backend žije.
- * Když ano, grafy berou čerstvá data z databáze; když ne (nebo API vůbec
- * neexistuje, což je dnešní stav produkce), sáhnou po commitnutém JSON
- * v /data/charts/. Payload je v obou případech bajt po bajtu stejný, takže
- * fallback mění jen URL, ne kód. Web tím zůstává statický ve smyslu modelu A —
- * bez běžícího BE se nic nerozbije.
+ * Data source: static first, API as an enhancement.
+ * On page load `/api/charts` is queried **once** to check whether the backend is up.
+ * If it is, charts take fresh data from the database; if not (or the API does not
+ * exist, as currently in production), they fall back to the committed JSON in
+ * /data/charts/. The payload is byte-identical in both cases, so the fallback
+ * changes only the URL, not the code. The site stays static and nothing breaks
+ * without a running backend.
  *
- * BARVY: všechny jdou z CSS proměnných v dashboards.css (--pp-*). Barvy, které
- * si nese samotný JSON z generate_json.py, se ignorují — jinak by vzhled
- * portálu určoval generátor v cizím repu a každý graf by vypadal jinak.
+ * Colours: all come from CSS variables in dashboards.css (--pp-*). Colours carried
+ * in the JSON from generate_json.py are ignored; otherwise a generator in another
+ * repository would determine the portal's look and every chart would differ.
  */
 (function (window, document) {
   "use strict";
 
   var API_BASE = (window.PP_API_BASE || "").replace(/\/$/, "");
   var STATIC_DIR = "/data/charts/";
-  var MAX_SERIES = 8; // počet slotů palety; devátá řada se skládá do „Ostatní"
+  var MAX_SERIES = 8; // number of palette slots = most series shown at once
   var LOCALE = (document.documentElement.lang || "").indexOf("en") === 0 ? "en-GB" : "cs-CZ";
 
-  /* ---------------- Lokalizace ----------------
-   * Datové JSONy nesou české popisky (generuje je pipeline). Anglická verze
-   * webu je překládá tímhle slovníkem — je záměrně konečný: popisky, které
-   * v něm nejsou (např. 114 názvů ISIN diagnóz), zůstávají česky a stránky
-   * to přiznávají poznámkou. Trvalé řešení řeší pathogensportal-db#47.
+  /* ---------------- Localisation ----------------
+   * Data JSON files carry Czech labels and, since pathogensportal-db PPDB-77, English
+   * ones in `*_en` fields (PPDB-77), which localizePayload prefers. This dictionary
+   * covers the UI strings of this script and data files without `*_en` fields.
    */
   var EN = (document.documentElement.lang || "").indexOf("en") === 0;
   var CS_EN = {
@@ -38,6 +37,15 @@
     "UPV (plicní ventilace)": "Mechanical ventilation",
     "ECMO": "ECMO",
     "PCR pozitivita (%)": "PCR positivity (%)",
+    "PCR testy": "PCR tests",
+    "Antigenní testy": "Antigen tests",
+    "Chřipka": "Influenza",
+    "Kalendářní týden": "Calendar week",
+    "% pozitivních vzorků": "% positive specimens",
+    "% pozitivních testů": "% positive tests",
+    " z ": " of ",
+    " vzorků": " specimens",
+    " testů": " tests",
     "7denní incidence / 100 000": "7-day incidence / 100,000",
     "Hospitalizační míra (%)": "Hospitalisation rate (%)",
     "Smrtnost (CFR %)": "Case fatality (CFR %)",
@@ -58,7 +66,11 @@
     "Den od prvního hlášeného případu": "Day since first reported case",
     "den": "day",
     "Období": "Period",
-    "Ostatní": "Other",
+    "Řady v grafu": "Series in the chart",
+    "Zobrazit vše": "Show all",
+    "Výchozí výběr": "Default selection",
+    "Najednou lze zobrazit nejvýš": "At most",
+    "řad.": "series can be shown at once.",
     "Tabulka": "Table",
     "Skrýt tabulku": "Hide table",
     "Data grafu v tabulce": "Chart data as a table",
@@ -70,11 +82,12 @@
     "Celkem testů": "Total tests",
     "Smrtnost (CFR)": "Case fatality (CFR)",
     "Diagnóza": "Diagnosis", "Kraj": "Region",
-    /* ⛔ Názvy sloupců jsou schválně lidské, ne statistické. „Očekáváno" a „Práh"
-       jsou správné termíny, ale čtenář z nich nepozná, co znamenají — a stránku
-       čte epidemiolog i novinář. Definice zůstávají v title a na stránce Signály. */
+    /* Column names are deliberately plain language, not statistical. "Expected" and
+       "Threshold" are correct terms, but readers would not know what they mean, and
+       the page is read by epidemiologists and journalists alike. Definitions stay in
+       the title attribute and on the Signals page. */
     "Nahlášeno": "Reported", "Obvykle bývá": "Usually", "Ještě v normě do": "Still normal up to",
-    "Překročeno": "Exceeded by", "překročeno": "exceeded by",
+    "Skóre překročení": "Exceedance score", "skóre překročení": "exceedance score",
     "nahlášeno": "reported", "obvykle bývá": "usually", "ještě v normě do": "still normal up to",
     "vzácná nemoc": "rare disease",
     "mimo dosavadní výskyt": "outside prior occurrence",
@@ -88,27 +101,84 @@
     "Zobrazit všech ": "Show all ",
     "Zobrazit jen prvních ": "Show only the first ",
     "Kolik případů bylo za daný měsíc skutečně nahlášeno": "How many cases were actually notified in the given month",
-    "Endemická hladina z modelu — běžný počet pro tuhle nemoc, kraj a roční dobu": "The model's endemic level — the usual count for this disease, region and time of year",
-    "Horní mez běžného kolísání (99. percentil); signál začíná nad ní": "Upper limit of ordinary fluctuation (99th percentile); a signal starts above it",
-    "Kolikrát pozorování překročilo vzdálenost od očekávání k prahu; 1× = přesně na prahu": "How many times the observation exceeded the expectation-to-threshold distance; 1× = exactly at the threshold",
+    "Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce": "How many cases this disease usually has in this region and time of year in an ordinary year",
+    "Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál": "Up to this value the count can still be explained by ordinary fluctuation; a signal starts above it",
+    "(nahlášeno − obvykle) / (mez normy − obvykle); 1 = právě na mezi normy": "(reported − usual) / (limit of normal − usual); 1 = exactly at the limit",
+    "Celostátně": "Nationwide",
+    "V žádném kraji tato diagnóza signál nemá.": "This diagnosis has no signal in any region.",
+    "Data signálů se nepodařilo načíst.": "Signal data could not be loaded.",
     "k ": "as of ",
     "Data grafu se nepodařilo načíst": "Chart data could not be loaded",
     "Souhrnná data nejsou k dispozici.": "Summary data is not available.",
     "Souhrnná data se nepodařilo načíst.": "Summary data could not be loaded.",
     "Data mapy se nepodařilo načíst.": "Map data could not be loaded.",
-    "Signály se nepodařilo načíst": "Signals could not be loaded"
+    "Syfilis": "Syphilis",
+    "Kapavka": "Gonorrhoea",
+    "Venerický lymfogranulom": "Lymphogranuloma venereum",
+    "Muži": "Men",
+    "Ženy": "Women",
+    "Tuberkulóza (A15–A19)": "Tuberculosis (A15–A19)",
+    "Narození v ČR": "Born in Czechia",
+    "Narození v zahraničí": "Born abroad",
+    "Rok hlášení": "Year of notification",
+    "Rok incidence": "Year of incidence",
+    "na 100 000 obyvatel": "per 100,000 population",
+    "na 100 000 mužů / žen": "per 100,000 men / women",
+    "Signály se nepodařilo načíst": "Signals could not be loaded",
+    "nelze rozhodnout": "cannot be decided",
+    ", z toho ": ", of which ",
+    " nelze rozhodnout kvůli novému kanálu hlášení": " cannot be decided because of the new reporting channel",
+    "Nárůst může být jen nový kanál hlášení — nelze rozhodnout": "The rise may be just the new reporting channel — cannot be decided",
+    "Z toho novým kanálem": "Of which via the new channel",
+    "z toho novým kanálem": "of which via the new channel",
+    "Kolik z nahlášených případů přišlo novým kanálem hlášení (EWS), který funguje od července 2025 a v historii chybí": "How many of the reported cases arrived through the new reporting channel (EWS), which has operated since July 2025 and is absent from the history",
+    "nelze rozhodnout — nový kanál hlášení": "cannot be decided — new reporting channel"
   };
   function tr(text) {
     if (!EN || text === null || text === undefined) return text;
     return CS_EN[text] !== undefined ? CS_EN[text] : text;
   }
-  /** Přeloží popisky v payloadu (na místě) — volá se hned po načtení dat. */
+  /** English text of a field: `<key>_en` from the data when present, else the dictionary. */
+  function pickEn(obj, key) {
+    var en = obj[key + "_en"];
+    return en !== undefined && en !== null ? en : tr(obj[key]);
+  }
+  /**
+   * Translates labels in the payload in place; called right after the data loads.
+   * pathogensportal-db (PPDB-77) writes English next to the Czech fields (labels_en,
+   * datasets[].label_en, x_title_en, unit_en, x_unit_en; diagnoza_nazev_en and
+   * kraj_nazev_en in signals). Older data files lack them, so every field falls
+   * back to the dictionary above.
+   */
   function localizePayload(payload) {
     if (!EN || !payload) return payload;
-    (payload.datasets || []).forEach(function (d) { d.label = tr(d.label); });
-    if (payload.x_title) payload.x_title = tr(payload.x_title);
-    if (payload.x_unit) payload.x_unit = tr(payload.x_unit);
-    if (payload.unit) payload.unit = tr(payload.unit);
+    var renamed = {};
+    (payload.datasets || []).forEach(function (d) {
+      var en = pickEn(d, "label");
+      renamed[d.label] = en;
+      d.label = en;
+    });
+    // Counts behind positivity are keyed by series name, so they are translated with it.
+    ["tests", "detections"].forEach(function (key) {
+      var byLabel = payload[key];
+      if (!byLabel || typeof byLabel !== "object") return;
+      payload[key] = Object.keys(byLabel).reduce(function (out, label) {
+        out[renamed[label] !== undefined ? renamed[label] : tr(label)] = byLabel[label];
+        return out;
+      }, {});
+    });
+    // Axis categories (age groups, regions, weeks) and map region names
+    if (payload.labels_en) payload.labels = payload.labels_en;
+    else if (Array.isArray(payload.labels)) payload.labels = payload.labels.map(tr);
+    ["x_title", "x_unit", "unit", "method"].forEach(function (key) {
+      if (payload[key]) payload[key] = pickEn(payload, key);
+    });
+    [payload.signals, payload.prebaselining].forEach(function (list) {
+      (list || []).forEach(function (s) {
+        if (s.diagnoza_nazev_en) s.diagnoza_nazev = s.diagnoza_nazev_en;
+        if (s.kraj_nazev_en) s.kraj_nazev = s.kraj_nazev_en;
+      });
+    });
     return payload;
   }
 
@@ -121,19 +191,19 @@
     return Number.isInteger(value) ? nf.format(value) : nf1.format(value);
   }
 
-  /* Očekávaná hladina a práh se uvádějí v CELÝCH číslech — jsou to počty případů,
-     a desetinné místo u nich předstírá přesnost, kterou model nemá.
-     ⚠️ 20 ze 71 signálů má očekáváno pod 1 a část přesně 0. „Očekáváno 0" je
-     u nich SPRÁVNĚ: model nečeká prakticky nic a pozorovalo se sedm. Práh pod 1
-     neklesá nikdy, takže se nezaokrouhlí na nulu.
-     ⛔ Neplatí pro sílu (score) — tam je 18,9× vs 19× rozdíl, který nese význam. */
+  /* Expected level and threshold are shown as whole numbers: they are case counts,
+     and a decimal place would suggest precision the model does not have.
+     Some signals have an expected value below 1, some exactly 0. "Expected 0" is
+     correct there: the model expects practically nothing, yet cases were observed.
+     The threshold never drops below 1, so it is never rounded to zero.
+     This does not apply to strength (score), where 18.9× vs 19× is a meaningful difference. */
   function fmtInt(value) {
     if (value === null || value === undefined || value === "") return "—";
     if (typeof value !== "number") return String(value);
     return nf.format(Math.round(value));
   }
 
-  /* ---------------- Design tokeny ---------------- */
+  /* ---------------- Design tokens ---------------- */
 
   function tokens() {
     var probe = document.querySelector(".pp-viz") || document.body;
@@ -168,11 +238,11 @@
     );
   }
 
-  /* ---------------- Zdroj dat ---------------- */
+  /* ---------------- Data source ---------------- */
 
   var apiIndexPromise = null;
 
-  /** Jediný dotaz na dostupnost API za stránku; výsledkem je Set klíčů (nebo prázdný). */
+  /** A single API availability query per page; the result is a Set of keys (or empty). */
   function apiIndex() {
     if (apiIndexPromise) return apiIndexPromise;
     // PR previews must render their own reviewed snapshot, not the shared staging DB.
@@ -191,7 +261,7 @@
         return keys;
       })
       .catch(function () {
-        return new Set(); // BE neběží nebo endpoint neexistuje -> jedeme ze statiky
+        return new Set(); // backend not running or endpoint missing -> use the static files
       });
     return apiIndexPromise;
   }
@@ -200,7 +270,7 @@
     return src.split("/").pop().replace(/\.json$/, "");
   }
 
-  /** Vrátí { payload, origin: "api" | "static" }. */
+  /** Returns { payload, origin: "api" | "static" }. */
   function loadChartData(src) {
     var key = keyFromSrc(src);
     return apiIndex().then(function (keys) {
@@ -224,12 +294,12 @@
       .then(function (payload) { return { payload: localizePayload(payload), origin: "static" }; });
   }
 
-  /* ---------------- Úprava dat pro vykreslení ---------------- */
+  /* ---------------- Preparing data for rendering ---------------- */
 
   /**
-   * Hodnota bodu bez ohledu na tvar dat. Řady na kategorické ose jsou pole čísel
-   * (a `null` tam, kde hodnota chybí), řady na číselné ose jsou {x, y} objekty.
-   * Zbytek kódu ten rozdíl nemá řešit.
+   * Point value regardless of data shape. Series on a category axis are arrays of
+   * numbers (with `null` for missing values); series on a numeric axis are {x, y}
+   * objects. The rest of the code should not have to handle the difference.
    */
   function yOf(value) {
     if (typeof value === "number") return value;
@@ -245,50 +315,52 @@
   }
 
   /**
-   * Nad MAX_SERIES řad se ty nejmenší sečtou do jedné šedé „Ostatní".
-   * Devátá barva se nevymýšlí — paleta má osm validovaných slotů a devátý hue
-   * by rozbil odlišitelnost při barvosleposti.
+   * Palette slot of each series at first render (-1 = switched off). Up to
+   * MAX_SERIES every series is on; above that only the largest MAX_SERIES are.
+   * No ninth colour is invented: the palette has eight validated slots and a ninth
+   * hue would break distinguishability for colour-vision deficiencies. The reader
+   * switches the others on in the series picker (PP-85).
    *
-   * Které řady zůstanou, rozhoduje velikost; **pořadí** ale zůstává původní,
-   * takže slot (a tedy barva) patří konkrétní řadě, ne jejímu pořadí v žebříčku.
+   * Size decides which series start on, but slots follow the original **order**,
+   * so a colour belongs to a specific series, not to its rank.
    */
-  function foldExtraSeries(datasets) {
-    if (datasets.length <= MAX_SERIES) return datasets.slice();
-
-    var ranked = datasets.slice().sort(function (a, b) { return magnitude(b) - magnitude(a); });
-    var keep = new Set(ranked.slice(0, MAX_SERIES - 1));
-
-    var kept = [];
-    var folded = [];
-    datasets.forEach(function (dataset) {
-      (keep.has(dataset) ? kept : folded).push(dataset);
-    });
-
-    var length = Math.max.apply(null, folded.map(function (d) { return (d.data || []).length; }));
-    var summed = [];
-    for (var i = 0; i < length; i++) {
-      var total = 0;
-      var seen = false;
-      folded.forEach(function (d) {
-        var value = (d.data || [])[i];
-        if (typeof value === "number") { total += value; seen = true; }
-      });
-      summed.push(seen ? total : null);
+  function defaultSlots(datasets) {
+    var on = datasets.map(function (_d, i) { return i; });
+    if (datasets.length > MAX_SERIES) {
+      on = on.slice().sort(function (a, b) { return magnitude(datasets[b]) - magnitude(datasets[a]); })
+        .slice(0, MAX_SERIES);
     }
-
-    kept.push({
-      label: tr("Ostatní") + " (" + folded.length + ")",
-      data: summed,
-      type: folded[0] && folded[0].type,
-      ppRest: true
+    var slots = datasets.map(function () { return -1; });
+    var next = 0;
+    datasets.forEach(function (_d, i) {
+      if (on.indexOf(i) !== -1) slots[i] = next++;
     });
-    return kept;
+    return slots;
   }
 
-  /** Nastaví barvy a tloušťky podle mark specs; barvy z payloadu ignoruje. */
+  /**
+   * First and last label index where any switched-on series has a value. Line
+   * charts are trimmed to this range, so switching off the longest season or
+   * outbreak does not leave the rest squeezed against an empty stretch of axis.
+   */
+  function dataExtent(datasets) {
+    var first = Infinity;
+    var last = -1;
+    datasets.forEach(function (d) {
+      (d.data || []).forEach(function (value, i) {
+        if (yOf(value) === null) return;
+        if (i < first) first = i;
+        if (i > last) last = i;
+      });
+    });
+    return last < 0 ? null : { first: first, last: last };
+  }
+
+  /** Sets colours and widths per the mark specs; ignores colours from the payload. */
   function styleDatasets(datasets, t, chartType) {
     return datasets.map(function (dataset, index) {
-      var color = dataset.ppRest ? t.rest : t.series[index % t.series.length];
+      var slot = typeof dataset.ppSlot === "number" ? dataset.ppSlot : index;
+      var color = t.series[slot % t.series.length];
       var isBar = (dataset.type || chartType) === "bar";
       var styled = Object.assign({}, dataset, {
         borderColor: color,
@@ -300,20 +372,20 @@
         styled.borderRadius = { topLeft: 4, topRight: 4, bottomLeft: 0, bottomRight: 0 };
         styled.borderSkipped = "bottom";
         styled.maxBarThickness = 24;
-        // 2px mezera v barvě povrchu mezi sousedními sloupci místo obrysu
+        // 2px gap in the surface colour between adjacent bars instead of an outline
         styled.barPercentage = 0.86;
         styled.categoryPercentage = 0.86;
       } else {
         styled.borderWidth = 2;
         styled.tension = 0.3;
-        // Řídké řady: Chart.js kreslí úsečku jen mezi *sousedními* nenulovými
-        // body, takže série jako [28, null, null, 64] nenakreslila nic a s
-        // nulovým poloměrem bodu zmizela z grafu úplně — data byla dohledatelná
-        // jen v tooltipu. spanGaps mezeru přemostí; u kumulativních řad je to
-        // i věcně správně, mezi dvěma hlášeními křivka opravdu spojitě roste.
+        // Sparse series: Chart.js draws a segment only between *adjacent* non-null
+        // points, so a series like [28, null, null, 64] drew nothing and, with a zero
+        // point radius, disappeared from the chart (visible only in the tooltip).
+        // spanGaps bridges the gap; for cumulative series this is also correct, as
+        // the curve does grow continuously between two reports.
         styled.spanGaps = true;
-        // Osamocený bod (bez souseda, se kterým by šla vést čára) se musí
-        // vykreslit sám za sebe, jinak by taková řada nebyla vidět vůbec.
+        // An isolated point (no neighbour to draw a line to) must be drawn on its
+        // own, otherwise such a series would not be visible at all.
         styled.pointRadius = function (ctx) {
           var data = (ctx.dataset && ctx.dataset.data) || [];
           if (yOf(data[ctx.dataIndex]) === null) return 0;
@@ -323,7 +395,7 @@
         };
         styled.pointHoverRadius = 4;
         styled.pointHoverBorderWidth = 2;
-        styled.pointHoverBorderColor = t.surface; // prstenec v barvě povrchu
+        styled.pointHoverBorderColor = t.surface; // ring in the surface colour
         styled.pointBackgroundColor = color;
         styled.borderJoinStyle = "round";
         styled.borderCapStyle = "round";
@@ -333,9 +405,9 @@
     });
   }
 
-  /* ---------------- Chart.js pluginy ---------------- */
+  /* ---------------- Chart.js plugins ---------------- */
 
-  /** Svislý zaměřovač pod kurzorem — čtení víc řad v jednom okamžiku. */
+  /** Vertical crosshair under the cursor, for reading several series at one point. */
   var crosshair = {
     id: "ppCrosshair",
     afterDatasetsDraw: function (chart, _args, opts) {
@@ -356,8 +428,8 @@
   };
 
   /**
-   * Hodnota u konce čáry. Popisky se **nerozestrkávají** — když by se překryly,
-   * radši nejsou žádné a identitu nese legenda s tooltipem.
+   * Value at the end of a line. Labels are **not** pushed apart: if they would
+   * overlap, none are shown and identity is carried by the legend and tooltip.
    */
   var endLabels = {
     id: "ppEndLabels",
@@ -378,7 +450,7 @@
       if (placed.length < 1) return;
       var sorted = placed.slice().sort(function (a, b) { return a.y - b.y; });
       for (var k = 1; k < sorted.length; k++) {
-        if (Math.abs(sorted[k].y - sorted[k - 1].y) < 14) return; // kolize -> žádné popisky
+        if (Math.abs(sorted[k].y - sorted[k - 1].y) < 14) return; // collision -> no labels
       }
       var ctx = chart.ctx;
       ctx.save();
@@ -393,7 +465,7 @@
     }
   };
 
-  /* ---------------- Graf ---------------- */
+  /* ---------------- Chart ---------------- */
 
   /** Thin date ticks after fitting the plot, keeping both endpoints and all data. */
   function fitDateTicks(scale) {
@@ -424,11 +496,25 @@
     }
   }
 
+  /**
+   * Positivity in the tooltip: "12.3 % (123 of 1,000 samples)". A percentage from 10
+   * and from 10,000 samples looks the same on the axis; the counts show how much to trust it.
+   * JSON without `tests`/`detections` (all other charts) leaves the tooltip unchanged.
+   */
+  function positivityDetail(payload, item) {
+    if (!payload || !payload.tests || !payload.detections) return "";
+    var tests = (payload.tests[item.dataset.label] || [])[item.dataIndex];
+    var found = (payload.detections[item.dataset.label] || [])[item.dataIndex];
+    if (typeof tests !== "number" || typeof found !== "number") return "";
+    var noun = /test/.test(payload.unit || "") ? tr(" testů") : tr(" vzorků");
+    return " % (" + fmt(found) + tr(" z ") + fmt(tests) + noun + ")";
+  }
+
   function baseOptions(t, datasets, chartType, payload) {
-    var multi = datasets.length > 1;
-    // Číselná osa X: vzdálenost na ose odpovídá hodnotě, ne pořadí popisku.
-    // Bez ní se u srovnání trajektorií kreslí den 0→4 stejně široce jako 59→85
-    // a sklony křivek — tedy to jediné, co má graf ukázat — nic neznamenají.
+    var multi = ((payload && payload.datasets) || []).length > 1;
+    // Numeric X axis: distance on the axis matches the value, not the label order.
+    // Without it, a trajectory comparison draws day 0→4 as wide as 59→85
+    // and the curve slopes, the one thing the chart is meant to show, mean nothing.
     var linearX = payload && payload.x_scale === "linear";
     var dateX = !linearX && payload && Array.isArray(payload.labels) && payload.labels.length > 0 &&
       payload.labels.every(function (label) { return /^\d{4}-\d{2}-\d{2}$/.test(label); });
@@ -437,33 +523,26 @@
     var lineCount = datasets.filter(function (d) {
       return (d.type || chartType) !== "bar";
     }).length;
+    // Only line charts are trimmed: bar categories (age bands, regions) are not a
+    // time axis, and an empty category there is information, not padding.
+    var extent = chartType === "line" && !linearX && Array.isArray(payload.labels)
+      ? dataExtent(datasets)
+      : null;
     return {
       responsive: true,
       maintainAspectRatio: false,
       layout: { padding: { right: lineCount ? 52 : 4, top: 4 } },
-      // "index" páruje body podle pořadí v poli, což na kategorické ose sedí —
-      // všechny řady tam sdílejí popisky. Na číselné ose má ale každá řada své
-      // vlastní body, takže by se do jednoho tooltipu dostal den 5 jedné epidemie
-      // a den 88 druhé. Tam se proto hledá nejbližší bod podle osy X.
+      // "index" pairs points by array position, which works on a category axis
+      // where all series share labels. On a numeric axis each series has its own
+      // points, so one tooltip would mix day 5 of one epidemic with day 88 of
+      // another. There the nearest point along the X axis is used instead.
       interaction: linearX
         ? { mode: "nearest", axis: "x", intersect: false }
         : { mode: "index", intersect: false },
       plugins: {
-        // Jedna řada legendu nepotřebuje — titulek karty ji pojmenovává.
-        legend: multi
-          ? {
-              position: "top",
-              align: "start",
-              labels: {
-                usePointStyle: true,
-                pointStyle: "rectRounded",
-                boxWidth: 8,
-                boxHeight: 8,
-                padding: 14,
-                color: t.textSecondary
-              }
-            }
-          : { display: false },
+        // The series picker above the plot is the legend; a single series needs
+        // none, the card title names it.
+        legend: { display: false },
         tooltip: {
           backgroundColor: t.text,
           titleColor: t.surface,
@@ -479,7 +558,7 @@
                 }
               : undefined,
             label: function (item) {
-              return " " + item.dataset.label + ": " + fmt(item.parsed.y);
+              return " " + item.dataset.label + ": " + fmt(item.parsed.y) + positivityDetail(payload, item);
             }
           }
         },
@@ -496,6 +575,9 @@
           // undefined type can leave Chart.js with numeric index tick labels.
           type: linearX ? "linear" : "category",
           bounds: linearX ? "data" : undefined,
+          // Category min/max are label indices.
+          min: extent ? extent.first : undefined,
+          max: extent ? extent.last : undefined,
           title: payload && payload.x_title
             ? { display: true, text: payload.x_title, color: t.textMuted, padding: { top: 6 } }
             : undefined,
@@ -513,11 +595,11 @@
           }
         },
         y: {
-          // Logaritmická osa se hodí tam, kde řady spolu srovnávané leží o řády
-          // od sebe — na lineární ose by se ty menší slisovaly na nulu. Sklon
-          // křivky pak navíc odpovídá *rychlosti* růstu, ne absolutnímu počtu.
+          // A logarithmic axis suits series compared across orders of magnitude;
+          // on a linear axis the smaller ones would be flattened to zero. The curve
+          // slope then also reflects the *rate* of growth, not the absolute count.
           type: logY ? "logarithmic" : undefined,
-          beginAtZero: !logY, // log(0) neexistuje; osa začíná na nejmenší hodnotě
+          beginAtZero: !logY, // log(0) is undefined; the axis starts at the smallest value
           grid: { color: t.grid, drawTicks: false },
           border: { display: false },
           ticks: {
@@ -535,26 +617,25 @@
   }
 
   /**
-   * Tabulka se staví z **původních** řad, ne z těch složených do „Ostatní" —
-   * co graf kvůli osmi slotům palety sloučí, tady zůstává rozepsané.
+   * The table shows the same series as the chart: only those switched on in the
+   * series picker, each with its chart colour.
    */
-  function buildTable(payload, colorByLabel, t) {
-    var datasets = payload.datasets || [];
+  function buildTable(payload, datasets) {
     var head = ['<tr><th scope="col">' + escapeHtml(payload.x_title || tr("Období")) + "</th>"];
     datasets.forEach(function (d, i) {
       var label = d.label || "Řada " + (i + 1);
       head.push(
         '<th scope="col"><span class="pp-swatch" style="background:' +
-        (colorByLabel[label] || t.rest) + '"></span>' + escapeHtml(label) + "</th>"
+        d.ppColor + '"></span>' + escapeHtml(label) + "</th>"
       );
     });
     head.push("</tr>");
 
     var rows;
     if (payload.x_scale === "linear") {
-      // Bez společných popisků se řádky staví ze sjednocení x hodnot všech řad
-      // a hodnota se dohledává podle x — řady tu nejsou zarovnané na společnou
-      // osu, každá nese jen své vlastní body.
+      // Without shared labels, rows are built from the union of x values of all
+      // series and each value is looked up by x: the series are not aligned on a
+      // common axis, each carries only its own points.
       var xs = [];
       datasets.forEach(function (d) {
         (d.data || []).forEach(function (point) {
@@ -573,6 +654,9 @@
       });
     } else {
       rows = (payload.labels || []).map(function (label, row) {
+        // A period where none of the shown series has a value is left out.
+        var empty = datasets.every(function (d) { return yOf((d.data || [])[row]) === null; });
+        if (empty) return "";
         var cells = ['<tr><th scope="row">' + escapeHtml(String(label)) + "</th>"];
         datasets.forEach(function (d) {
           cells.push("<td>" + fmt((d.data || [])[row]) + "</td>");
@@ -610,38 +694,128 @@
     }
   }
 
+  /* ---------------- Series picker (PP-85) ----------------
+   * One toggle button per series above the plot; it replaces the Chart.js legend,
+   * which could hide a series too, but nobody found out it was clickable. Hidden
+   * series are left out of the chart data altogether, so both axes rescale to
+   * what is left. The selection lives only as long as the page.
+   */
+
+  /** Builds the picker into the card (before the plot) and returns its element. */
+  function seriesPicker(root, payload) {
+    var picker = document.createElement("div");
+    picker.className = "pp-series";
+    picker.setAttribute("role", "group");
+    picker.setAttribute("aria-label", tr("Řady v grafu"));
+    var html = (payload.datasets || []).map(function (d, i) {
+      return '<button type="button" class="pp-series__item" data-pp-series="' + i + '" aria-pressed="true">' +
+        '<span class="pp-series__swatch" aria-hidden="true"></span>' +
+        escapeHtml(String(d.label || "Řada " + (i + 1))) + "</button>";
+    });
+    if (payload.datasets.length > 2) {
+      html.push('<button type="button" class="pp-btn pp-series__reset" data-pp-series-reset>' +
+        tr(payload.datasets.length > MAX_SERIES ? "Výchozí výběr" : "Zobrazit vše") + "</button>");
+    }
+    if (payload.datasets.length > MAX_SERIES) {
+      html.push('<span class="pp-series__hint">' + tr("Najednou lze zobrazit nejvýš") + " " + MAX_SERIES +
+        " " + tr("řad.") + "</span>");
+    }
+    picker.innerHTML = html.join("");
+    var plot = root.querySelector(".pp-card__plot");
+    plot.parentNode.insertBefore(picker, plot);
+    return picker;
+  }
+
   function renderChart(root) {
     var canvas = root.querySelector("canvas");
     var src = root.dataset.src;
     var instance = null;
+    var slots = null;     // palette slot per series, -1 = switched off
+    var initial = null;
+    var picker = null;
 
-    function draw(payload) {
-      var t = tokens();
-      var chartType = root.dataset.type || "line";
-      var datasets = styleDatasets(foldExtraSeries(payload.datasets || []), t, chartType);
-      if (instance) instance.destroy();
-      instance = new Chart(canvas, {
-        type: chartType,
-        data: { labels: payload.labels, datasets: datasets },
-        options: baseOptions(t, datasets, chartType, payload),
-        plugins: [crosshair, endLabels]
-      });
-
-      var tableWrap = root.querySelector(".pp-table-wrap");
-      if (tableWrap) {
-        var colorByLabel = {};
-        datasets.forEach(function (d) { colorByLabel[d.label] = d.ppColor; });
-        tableWrap.innerHTML = buildTable(payload, colorByLabel, t);
-      }
+    function shown(payload, t, chartType) {
+      var on = (payload.datasets || []).map(function (d, i) {
+        return slots[i] < 0 ? null : Object.assign({}, d, { ppSlot: slots[i] });
+      }).filter(Boolean);
+      return styleDatasets(on, t, chartType);
     }
 
-    loadChartData(src)
+    /** `rebuild` recreates the chart (theme change); otherwise it is updated in place. */
+    function draw(payload, rebuild) {
+      var t = tokens();
+      var chartType = root.dataset.type || "line";
+      var datasets = shown(payload, t, chartType);
+      var options = baseOptions(t, datasets, chartType, payload);
+      if (instance && !rebuild) {
+        instance.data.datasets = datasets;
+        instance.options = options;
+        instance.update();
+      } else {
+        if (instance) instance.destroy();
+        instance = new Chart(canvas, {
+          type: chartType,
+          data: { labels: payload.labels, datasets: datasets },
+          options: options,
+          plugins: [crosshair, endLabels]
+        });
+      }
+
+      var tableWrap = root.querySelector(".pp-table-wrap");
+      if (tableWrap) tableWrap.innerHTML = buildTable(payload, datasets);
+      if (picker) syncPicker(t);
+    }
+
+    function syncPicker(t) {
+      var count = slots.filter(function (s) { return s >= 0; }).length;
+      picker.querySelectorAll("[data-pp-series]").forEach(function (btn) {
+        var slot = slots[+btn.getAttribute("data-pp-series")];
+        var on = slot >= 0;
+        btn.setAttribute("aria-pressed", on ? "true" : "false");
+        btn.style.setProperty("--pp-series-color", on ? t.series[slot % t.series.length] : "transparent");
+        // A ninth series has no colour left in the palette.
+        btn.disabled = !on && count >= MAX_SERIES;
+      });
+      var reset = picker.querySelector("[data-pp-series-reset]");
+      if (reset) reset.disabled = slots.join() === initial.join();
+    }
+
+    function toggleSeries(payload, index) {
+      if (slots[index] >= 0) {
+        // The last series stays on: an empty chart says nothing.
+        if (slots.filter(function (s) { return s >= 0; }).length === 1) return;
+        slots[index] = -1;
+      } else {
+        var used = slots.filter(function (s) { return s >= 0; });
+        for (var free = 0; used.indexOf(free) !== -1; free++);
+        slots[index] = free;
+      }
+      draw(payload);
+    }
+
+    var done = loadChartData(src)
       .then(function (result) {
+        var payload = result.payload;
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
         setOrigin(root, result.origin);
-        draw(result.payload);
-        onThemeChange(function () { draw(result.payload); });
+        initial = defaultSlots(payload.datasets || []);
+        slots = initial.slice();
+        if ((payload.datasets || []).length > 1) {
+          picker = seriesPicker(root, payload);
+          picker.addEventListener("click", function (event) {
+            var btn = event.target.closest("button");
+            if (!btn || btn.disabled) return;
+            if (btn.hasAttribute("data-pp-series-reset")) {
+              slots = initial.slice();
+              draw(payload);
+            } else {
+              toggleSeries(payload, +btn.getAttribute("data-pp-series"));
+            }
+          });
+        }
+        draw(payload, true);
+        onThemeChange(function () { draw(payload, true); });
       })
       .catch(function (err) {
         var skeleton = root.querySelector(".pp-skeleton");
@@ -659,9 +833,10 @@
         toggle.textContent = open ? tr("Tabulka") : tr("Skrýt tabulku");
       });
     }
+    return done;
   }
 
-  /* ---------------- Statistické dlaždice ---------------- */
+  /* ---------------- Stat tiles ---------------- */
 
   var STAT_FIELDS = [
     { key: "celkem_nakazenych", label: "Celkem nakažených", slot: 1 },
@@ -671,7 +846,7 @@
   ];
 
   function renderStats(root) {
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var data = result.payload;
         var t = tokens();
@@ -695,7 +870,7 @@
       });
   }
 
-  /* ---------------- Mapa krajů ---------------- */
+  /* ---------------- Region map ---------------- */
 
   function mixHex(from, to, ratio) {
     function parse(hex) {
@@ -713,13 +888,13 @@
     var svg = root.querySelector("svg");
     var tooltip = root.querySelector(".pp-tooltip");
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var data = result.payload;
         var regions = data.regions || {};
         var labels = data.labels || {};
-        // Co se vlastně počítá. Mapy incidence nesou "unit" v JSONu; bez něj
-        // zůstává původní znění, aby se starší datové soubory chovaly stejně.
+        // What is being counted. Incidence maps carry "unit" in the JSON; without it
+        // the original wording is kept so older data files behave the same.
         var unit = data.unit || tr("případů");
         var values = Object.keys(regions).map(function (code) { return regions[code]; })
           .filter(function (v) { return v > 0; });
@@ -734,8 +909,8 @@
           var ratio = max === min ? 0.5 : (value - min) / (max - min);
           path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
 
-          // Popisek leží uvnitř výplně — barvu textu volíme podle jejího jasu,
-          // jinak tmavé kraje končí tmavým písmem na tmavém podkladu.
+          // The label sits inside the fill, so the text colour is chosen by its luminance;
+          // otherwise dark regions would get dark text on a dark background.
           var label = svg.querySelector('[data-region-label="' + code + '"]');
           if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
           path.setAttribute("tabindex", "0");
@@ -772,20 +947,22 @@
       });
   }
 
-  /* ---------------- Signály detekce anomálií ---------------- */
+  /* ---------------- Anomaly detection signals ---------------- */
 
-  var SIGNALS_PREVIEW = 20;   // řádků viditelných bez rozbalení
-  var NOMINAL_ALPHA = 0.01;   // 99. percentil — tolik překročení čekáme náhodou
+  var SIGNALS_PREVIEW = 20;   // rows visible without expanding
+  var NOMINAL_ALPHA = 0.01;   // 99th percentile: the number of exceedances expected by chance
 
   /**
-   * Tabulka aktuálních překročení očekávané hladiny. Poctivost je tu součást
-   * návrhu: hlavička vždy říká, kolik překročení bychom při daném prahu čekali
-   * čistou náhodou — bez té věty by seznam vypadal jako seznam epidemií.
+   * Table of current exceedances of the expected level. Honesty is part of the
+   * design: the header always states how many exceedances would be expected at
+   * the given threshold by pure chance; without that sentence the list would
+   * read as a list of epidemics.
    */
   function renderSignals(root) {
     var body = root.querySelector("[data-pp-signals-body]");
 
     function typeBadge(s) {
+      if (isUndecided(s)) return '<span class="badge text-bg-secondary">' + tr("nelze rozhodnout") + '</span>';
       if (s.type === "rare") return '<span class="badge text-bg-warning">' + tr("vzácná nemoc") + '</span>';
       if (s.type === "sporadic") return '<span class="badge text-bg-warning">' + tr("mimo dosavadní výskyt") + '</span>';
       return s.score !== null && s.score !== undefined ? fmt(s.score) + "×" : "—";
@@ -798,6 +975,7 @@
         '<p class="pp-card__subtitle">' + tr("Období ") + '<strong>' + escapeHtml(String(data.target_period || "—")) +
         "</strong>" + tr(" · hodnoceno ") + fmt(data.n_series_scored) + tr(" řad (diagnóza × kraj) · ") +
         "<strong>" + fmt(signals.length) + tr(" překročení") + "</strong>" +
+        (data.n_signals_undecided ? tr(", z toho ") + fmt(data.n_signals_undecided) + tr(" nelze rozhodnout kvůli novému kanálu hlášení") : "") +
         (expectedByChance ? " · ~" + fmt(expectedByChance) + tr(" z nich čekáme čistou náhodou") : "") +
         "</p>";
 
@@ -807,12 +985,24 @@
         return;
       }
 
+      /* The detector sorts undecidable signals last; a heading goes before the first
+         of them to make clear that the rows below are not confirmed exceedances. */
+      var firstUndecided = -1;
+      signals.forEach(function (s, i) { if (firstUndecided < 0 && isUndecided(s)) firstUndecided = i; });
+
       var rows = signals.map(function (s, i) {
-        return "<tr" + (i >= SIGNALS_PREVIEW ? ' hidden data-pp-signals-extra' : "") + ">" +
+        var hidden = i >= SIGNALS_PREVIEW ? ' hidden data-pp-signals-extra' : "";
+        var divider = i === firstUndecided
+          ? "<tr" + hidden + ' class="pp-signals-divider"><th colspan="8" scope="colgroup">' +
+            tr("Nárůst může být jen nový kanál hlášení — nelze rozhodnout") + "</th></tr>"
+          : "";
+        var viaChannel = s.reporting_channel ? fmt(s.reporting_channel.ews) : "—";
+        return divider + "<tr" + hidden + (isUndecided(s) ? ' class="pp-signals-undecided"' : "") + ">" +
           '<td class="text-end">' + (i + 1) + "</td>" +
           "<td>" + escapeHtml(s.diagnoza_nazev || s.diagnoza || "?") + "</td>" +
           "<td>" + escapeHtml(s.kraj_nazev || s.kraj_kod || "?") + "</td>" +
           '<td class="text-end"><strong>' + fmt(s.observed) + "</strong></td>" +
+          '<td class="text-end">' + viaChannel + "</td>" +
           '<td class="text-end">' + fmtInt(s.expected) + "</td>" +
           '<td class="text-end">' + fmtInt(s.threshold) + "</td>" +
           '<td class="text-end">' + typeBadge(s) + "</td>" +
@@ -823,9 +1013,10 @@
         '<caption class="visually-hidden">' + tr("Řady nad očekávanou hladinou") + '</caption>' +
         '<thead><tr><th scope="col">#</th><th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Kraj") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolik případů bylo za daný měsíc skutečně nahlášeno") + '">' + tr("Nahlášeno") + '</th>' +
+        '<th scope="col" class="text-end" title="' + tr("Kolik z nahlášených případů přišlo novým kanálem hlášení (EWS), který funguje od července 2025 a v historii chybí") + '">' + tr("Z toho novým kanálem") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Kolik případů tahle nemoc v tomhle kraji a ročním období mívá v běžném roce") + '">' + tr("Obvykle bývá") + '</th>' +
         '<th scope="col" class="text-end" title="' + tr("Do téhle hodnoty se počet ještě dá vysvětlit běžným kolísáním; nad ní začíná signál") + '">' + tr("Ještě v normě do") + '</th>' +
-        '<th scope="col" class="text-end" title="' + tr("Kolikrát dál za hranicí normy, než jak daleko je hranice od běžného stavu; 1× = přesně na hranici") + '">' + tr("Překročeno") + '</th></tr></thead>' +
+        '<th scope="col" class="text-end" title="' + tr("(nahlášeno − obvykle) / (mez normy − obvykle); 1 = právě na mezi normy") + '">' + tr("Skóre překročení") + '</th></tr></thead>' +
         "<tbody>" + rows.join("") + "</tbody></table></div>";
 
       if (signals.length > SIGNALS_PREVIEW) {
@@ -849,7 +1040,7 @@
       }
     }
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         setOrigin(root, result.origin);
         draw(result.payload);
@@ -860,7 +1051,19 @@
       });
   }
 
-  /* ---------------- Přebarvení při přepnutí motivu ---------------- */
+  /* ---------------- New reporting channel (EWS) ----------------
+   * Since 7/2025 ÚZIS also accepts cases through EWS reporting, so series jump
+   * without any rise in illness. The detector (pathogensportal-db, channel_verdict)
+   * states for each affected signal whether it still holds after subtracting
+   * those cases. "Undecidable" = the increase may be entirely due to the new
+   * channel; the portal shows it, but separately and without strength, otherwise
+   * false epidemics would dominate the table and the map.
+   */
+  function isUndecided(sig) {
+    return !!(sig && sig.reporting_channel && !sig.reporting_channel.robust);
+  }
+
+  /* ---------------- Recolouring on theme switch ---------------- */
 
   var themeListeners = [];
 
@@ -872,18 +1075,19 @@
     themeListeners.forEach(function (callback) { callback(); });
   }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
 
-  /* ---------------- Signály: tabulka + mapa jedné diagnózy ---------------- */
+  /* ---------------- Signals: table + map of one diagnosis ---------------- */
 
-  /* Mapa neukazuje POČET signálů, ale JEDNU vybranou diagnózu: kraje se obarví
-     podle síly jejího signálu, kraje bez signálu zůstanou bílé. Tabulka vlevo je
-     výpis i přepínač; ve výchozím stavu je vybraný nejsilnější signál.
+  /* The map shows one selected diagnosis, not the number of signals: regions are
+     coloured by the strength of its signal, regions without a signal stay white.
+     The table on the left is both a listing and a selector; by default the
+     strongest signal is selected.
 
-     Čte tentýž anomaly_signals.json jako všechno ostatní kolem signálů — žádný
-     nový datový soubor, tedy ani změna v -db.
+     Reads the same anomaly_signals.json as everything else around signals, so no
+     new data file is needed.
 
-     ⚠️ Řádky s kraj_kod === "CZ" NEJSOU součtem krajů; detect_anomalies.py je
-     počítá zvlášť nad celostátní řadou. Do mapy proto nejdou vůbec a zobrazují se
-     jako samostatná věta pod ní. */
+     Rows with kraj_kod === "CZ" are not a sum of regions; detect_anomalies.py
+     computes them separately over the national series. They are therefore left
+     out of the map and shown as a separate sentence below it. */
   function renderSignalMap(root) {
     var svg     = root.querySelector("svg");
     var tbody   = root.querySelector("[data-pp-signalmap-rows]");
@@ -895,12 +1099,12 @@
     var mapBox  = root.querySelector(".pp-map");
     if (!svg || !tbody || !mapBox) return;
 
-    loadChartData(root.dataset.src)
+    return loadChartData(root.dataset.src)
       .then(function (result) {
         var all = (result.payload || {}).signals || [];
 
-        /* Seskupení podle diagnózy. Klíčem je KÓD MKN-10, ne český název —
-           název je volný text a je to jediná věc, která se dá přejmenovat. */
+        /* Grouped by diagnosis. The key is the ICD-10 code, not the Czech name:
+           the name is free text and may be renamed. */
         var groups = {};
         all.forEach(function (sig) {
           var key = sig.diagnoza;
@@ -909,7 +1113,8 @@
           }
           if (sig.kraj_kod === "CZ") { groups[key].national = sig; return; }
           groups[key].regions[sig.kraj_kod] = sig;
-          if (sig.score > groups[key].max) groups[key].max = sig.score;
+          /* Diagnosis order is determined only by decidable signals. */
+          if (!isUndecided(sig) && sig.score > groups[key].max) groups[key].max = sig.score;
         });
 
         var order = Object.keys(groups).sort(function (a, b) {
@@ -926,9 +1131,9 @@
         function clearMap() {
           Object.keys(regionPaths).forEach(function (code) {
             var path = regionPaths[code];
-            /* ⛔ Bílá, ne „nejsvětlejší odstín škály". Kraj bez signálu není kraj
-               s nejnižší hodnotou — je to kraj, o kterém model nic netvrdí, a to
-               se nesmí splést s „skoro nic". */
+            /* White, not "the lightest shade of the scale". A region without a signal is
+               not the region with the lowest value; the model makes no claim about it,
+               which must not be confused with "almost nothing". */
             path.style.fill = "#ffffff";
             path.classList.remove("is-clickable");
             path.removeAttribute("tabindex");
@@ -942,8 +1147,8 @@
           var g = groups[code];
           if (!g) return;
           current = g;
-          /* Přepnutí pod otevřeným tooltipem by nechalo viset čísla staré
-             diagnózy, dokud myš neopustí kraj. */
+          /* Switching under an open tooltip would leave the previous diagnosis's
+             numbers showing until the pointer leaves the region. */
           tooltip.style.display = "none";
 
           tbody.querySelectorAll("[data-dg]").forEach(function (row) {
@@ -951,8 +1156,8 @@
             row.classList.toggle("is-selected", on);
             row.setAttribute("aria-selected", on ? "true" : "false");
             if (on && animate) {
-              /* Restart animace: bez odebrání a vynuceného reflow se při druhém
-                 kliknutí na týž řádek nespustí znovu. */
+              /* Restart the animation: without removing the class and forcing a reflow,
+                 it does not run again on a second click on the same row. */
               row.classList.remove("is-flash");
               void row.offsetWidth;
               row.classList.add("is-flash");
@@ -968,18 +1173,19 @@
           clearMap();
 
           var codes = Object.keys(g.regions);
-          /* ⚠️ `score` je null u signálů typu "rare" — u vzácných nemocí model sílu
-             nepočítá a stránka Signály to popisuje jako samostatný štítek. Bez
-             filtru by Math.min/max vrátily NaN a mixHex by dostal NaN poměr, takže
-             by se diagnóza složená jen z takových signálů vykreslila bez barev. */
-          var scores = codes.map(function (c) { return g.regions[c].score; })
+          /* `score` is null for "rare" signals: for rare diseases the model does not
+             compute strength, and the Signals page describes them with a separate label.
+             Without the filter Math.min/max would return NaN and mixHex would get a NaN
+             ratio, so a diagnosis with only such signals would render without colours. */
+          var scores = codes.filter(function (c) { return !isUndecided(g.regions[c]); })
+            .map(function (c) { return g.regions[c].score; })
             .filter(function (v) { return typeof v === "number"; });
           var min = scores.length ? Math.min.apply(null, scores) : 0;
           var max = scores.length ? Math.max.apply(null, scores) : 0;
 
           if (!codes.length) {
-            /* Diagnóza má jen celostátní signál, v žádném kraji ne. Mapa zůstane
-               bílá a řekne proč — prázdná mapa bez vysvětlení vypadá jako chyba. */
+            /* The diagnosis has only a national signal, none in any region. The map stays
+               white and says why; an empty map without explanation looks like an error. */
             emptyEl.hidden = false;
             emptyEl.textContent = tr("V žádném kraji tato diagnóza signál nemá.");
             legend.hidden = true;
@@ -996,13 +1202,17 @@
             var sig = g.regions[rc];
             var sc = typeof sig.score === "number" ? sig.score : min;
             var ratio = max === min ? 1 : (sc - min) / (max - min);
-            path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
+            /* An undecidable signal gets no scale shade: the strength it would express may
+               be entirely due to the new reporting channel. Grey, not white: the region
+               has a signal, it just cannot be decided. */
+            path.style.fill = isUndecided(sig) ? withAlpha(t.rest, 0.35) : mixHex(t.seqLow, t.seqHigh, ratio);
             path.classList.add("is-clickable");
             path.setAttribute("tabindex", "0");
             path.setAttribute("aria-label",
               sig.kraj_nazev + ": " + tr("nahlášeno") + " " + fmt(sig.observed) +
               ", " + tr("obvykle bývá") + " " + fmtInt(sig.expected) +
-              ", " + tr("ještě v normě do") + " " + fmtInt(sig.threshold));
+              ", " + tr("ještě v normě do") + " " + fmtInt(sig.threshold) +
+              (isUndecided(sig) ? ", " + tr("nelze rozhodnout — nový kanál hlášení") : ""));
 
           });
 
@@ -1012,21 +1222,19 @@
               tr("nahlášeno") + " " + fmt(g.national.observed) + ", " +
               tr("obvykle bývá") + " " + fmtInt(g.national.expected) + ", " +
               tr("ještě v normě do") + " " + fmtInt(g.national.threshold) +
-              " — " + tr("překročeno") + " " + fmt(g.national.score) + "×";
+              " — " + tr("skóre překročení") + " " + fmt(g.national.score);
           } else {
             natEl.hidden = true;
           }
         }
 
-        /* ⛔ Posluchače tooltipu se věší JEDNOU na kraj, ne při každém výběru.
-           Původně je věšel select(). clearMap() sice odebral barvu, třídu
-           `is-clickable` i aria-label, ale posluchače ne — takže po přepnutí
-           diagnózy ukazoval BÍLÝ kraj čísla té PŘEDCHOZÍ, a s každým dalším
-           přepnutím na něm přibyl další. Nahlášeno z náhledu: klik na nevybarvený
-           kraj u hepatitidy A vrátil data, která tam neměla co dělat.
+        /* Tooltip listeners are attached once per region, not on every selection.
+           Attaching them in select() would leave stale listeners after clearMap(),
+           so a region without a signal would show the previous diagnosis's numbers
+           and gain an extra listener on every switch.
 
-           Handler si sáhne na `current` až při spuštění, takže vždycky odpovídá
-           tomu, co je zrovna vybrané. Kraj bez signálu nezobrazí nic. */
+           The handler reads `current` only when it fires, so it always matches the
+           current selection. A region without a signal shows nothing. */
         Object.keys(regionPaths).forEach(function (rc) {
           var path = regionPaths[rc];
 
@@ -1039,7 +1247,9 @@
               tr("nahlášeno") + ": " + fmt(sig.observed) + "<br>" +
               tr("obvykle bývá") + ": " + fmtInt(sig.expected) + "<br>" +
               tr("ještě v normě do") + ": " + fmtInt(sig.threshold) + "<br>" +
-              tr("překročeno") + " " + fmt(sig.score) + "×";
+              (sig.reporting_channel ? tr("z toho novým kanálem") + ": " + fmt(sig.reporting_channel.ews) + "<br>" : "") +
+              (isUndecided(sig) ? "<em>" + tr("nelze rozhodnout — nový kanál hlášení") + "</em>"
+                                : tr("skóre překročení") + " " + fmt(sig.score));
             var rect = mapBox.getBoundingClientRect();
             var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
             var y = event.clientY !== undefined ? event.clientY : rect.top;
@@ -1057,8 +1267,8 @@
           path.addEventListener("blur", hide);
         });
 
-        /* Jsou to <button>, takže tabindex, role ani obsluha Enter/mezerníku
-           nejsou potřeba — prohlížeč to umí sám a líp. */
+        /* These are <button> elements, so tabindex, role and Enter/Space handling are
+           not needed; the browser provides them. */
         tbody.querySelectorAll("[data-dg]").forEach(function (btn) {
           btn.addEventListener("click", function () { select(btn.getAttribute("data-dg"), true); });
         });
@@ -1073,17 +1283,50 @@
 
   /* ---------------- Start ---------------- */
 
+  /* Full-window loading overlay (partials/page-loader.html). It disappears once
+     all loads on the page have finished, including failed ones: each renderer has
+     its own .catch that renders the error into its card, so its promise always
+     settles. An error in one card therefore cannot block the overlay.
+
+     The overlay is shown in CSS only after a delay so it does not flash on a fast
+     load. If it is not visible yet it is removed at once; if it is, it fades out. */
+  function hidePageLoader() {
+    document.querySelectorAll("[data-pp-page-loader]").forEach(function (el) {
+      var opacity = parseFloat(getComputedStyle(el).opacity) || 0;
+      if (opacity < 0.05) { el.remove(); return; }
+      el.style.animation = "none";
+      el.style.opacity = String(opacity);
+      void el.offsetWidth;
+      el.style.transition = "opacity .2s ease-out";
+      el.style.opacity = "0";
+      setTimeout(function () { el.remove(); }, 220);
+    });
+    document.querySelectorAll("[data-pp-busy]").forEach(function (el) {
+      el.removeAttribute("aria-busy");
+    });
+  }
+
   function init() {
+    var pending = [];
+    function run(selector, render) {
+      document.querySelectorAll(selector).forEach(function (el) { pending.push(render(el)); });
+    }
     if (window.Chart) {
       Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
       Chart.defaults.font.size = 12;
       Chart.defaults.color = tokens().textSecondary;
-      document.querySelectorAll("[data-pp-chart]").forEach(renderChart);
+      run("[data-pp-chart]", renderChart);
     }
-    document.querySelectorAll("[data-pp-stats]").forEach(renderStats);
-    document.querySelectorAll("[data-pp-map]").forEach(renderMap);
-    document.querySelectorAll("[data-pp-signals]").forEach(renderSignals);
-    document.querySelectorAll("[data-pp-signalmap]").forEach(renderSignalMap);
+    run("[data-pp-stats]", renderStats);
+    run("[data-pp-map]", renderMap);
+    run("[data-pp-signals]", renderSignals);
+    run("[data-pp-signalmap]", renderSignalMap);
+
+    // Equivalent of Promise.allSettled without depending on it: the rejection is
+    // swallowed here because the renderer has already reported it in its card.
+    Promise.all(pending.map(function (p) {
+      return Promise.resolve(p).catch(function () {});
+    })).then(hidePageLoader);
   }
 
   if (document.readyState === "loading") {

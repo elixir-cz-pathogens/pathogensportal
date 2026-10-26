@@ -1,0 +1,22 @@
+{{/* /docs/ and each role's landing page: sidebar + the section's own text +
+     cards for what lies below it (roles on /docs/, pages on a role). */}}
+{{ define "main" }}
+<div class="pp-docs">
+  <aside class="pp-docs__side">{{ partial "docs/sidebar.html" . }}</aside>
+  <article class="pp-docs__main">
+    {{ if eq .Params.status "draft" }}<p><span class="pp-docs__pill">{{ cond (eq site.Language.Lang "en") "Coming soon" "Připravujeme" }}</span></p>{{ end }}
+    {{ with .Description }}<p class="pp-docs__lead">{{ . }}</p>{{ end }}
+    {{ .Content }}
+    {{ $children := cond (eq . (site.GetPage "/docs")) .Sections.ByWeight .RegularPages.ByWeight }}
+    <ul class="pp-docs__cards">
+      {{ range $children }}
+      <li><a href="{{ .RelPermalink }}">
+        {{ with .Params.icon }}<i class="bi {{ . }}" aria-hidden="true"></i>{{ end }}
+        <span class="pp-docs__card-t">{{ .Title }}{{ if eq .Params.status "draft" }} <span class="pp-docs__pill">{{ cond (eq site.Language.Lang "en") "Coming soon" "Připravujeme" }}</span>{{ end }}</span>
+        {{ with .Description }}<span class="pp-docs__card-d">{{ . }}</span>{{ end }}
+      </a></li>
+      {{ end }}
+    </ul>
+  </article>
+</div>
+{{ end }}

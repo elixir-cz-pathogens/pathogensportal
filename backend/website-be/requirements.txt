@@ -3,3 +3,5 @@ uvicorn[standard]
 httpx
 psycopg[binary]
 pytest
+# multipart/form-data for CSV uploads (app/intake)
+python-multipart

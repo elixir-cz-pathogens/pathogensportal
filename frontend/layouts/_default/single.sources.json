@@ -1,0 +1,69 @@
+{{- /* Machine-readable source catalogue — /about/data/sources.json
+
+       Why in addition to the JSON-LD on the same page: schema.org/DataCatalog
+       covers name, licence and download link, but has no place for `limits` —
+       "what this data CANNOT tell you". That is exactly what decides whether a
+       consumer (human or model) draws wrong conclusions. This output therefore
+       emits the catalogue as maintained, with all fields and in both languages.
+
+       Built from `data/sources.yaml`, so it cannot drift from the page people
+       read — both read the same file. */ -}}
+{{- $lang := .Site.Language.Lang -}}
+{{- /* The DCAT-AP-CZ catalogue (/dcat/…) is also generated from here, once per
+       build. The partial prints nothing; it only writes files.
+
+       Default language ONLY, detected via the home page: only the default
+       language has "/" (`defaultContentLanguageInSubdir = false`), the others
+       have "/en/". Without the check the partial would run in both languages,
+       both would write the same files and the second would win — the catalogue
+       would then reference "/en/" IRIs that resolve nowhere. There is one
+       catalogue for the portal; languages are carried inside the values. */ -}}
+{{- if eq .Site.Home.RelPermalink "/" -}}{{- partial "dcat-publish.html" . -}}{{- end -}}
+{{- $sources := slice -}}
+{{- range hugo.Data.sources -}}
+  {{- $src := . -}}
+  {{- /* Dashboard links only where the page exists — a source may be in the
+         catalogue before its dashboard. */ -}}
+  {{- $pages := slice -}}
+  {{- range .pages -}}
+    {{- with site.GetPage . -}}
+      {{- $pages = $pages | append (dict "title" .Title "url" .Permalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- /* `coverage` and `format` are sometimes plain text ("2000–2025") and
+         sometimes a cs/en pair. `cond` cannot be used here — it evaluates
+         both branches, so `index` would fail on a string. */ -}}
+  {{- $coverage := $src.coverage -}}
+  {{- if reflect.IsMap $src.coverage }}{{ $coverage = index $src.coverage $lang | default $src.coverage.cs }}{{ end -}}
+  {{- $format := $src.format -}}
+  {{- if reflect.IsMap $src.format }}{{ $format = index $src.format $lang | default $src.format.cs }}{{ end -}}
+  {{- /* `licence.name` and `licence.note` are cs/en pairs like the rest; the
+         record carries the current language only. */ -}}
+  {{- $licence := merge $src.licence (dict "name" (partial "functions/lang-value.html" (dict "v" $src.licence.name "lang" $lang))) -}}
+  {{- with $src.licence.note }}{{ $licence = merge $licence (dict "note" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end -}}
+  {{- $rec := dict
+      "id" $src.id
+      "name" (index $src.name $lang | default $src.name.cs)
+      "publisher" (partial "functions/lang-value.html" (dict "v" $src.publisher "lang" $lang))
+      "landing_page" $src.url
+      "licence" $licence
+      "coverage" $coverage
+      "granularity" (index $src.grain $lang | default $src.grain.cs)
+      "update_frequency" (index $src.frequency $lang | default $src.frequency.cs)
+      "format" $format
+      "limits" (index $src.limits $lang | default $src.limits.cs)
+      "used_on" $pages -}}
+  {{- with $src.download }}{{ $rec = merge $rec (dict "download_url" .) }}{{ end -}}
+  {{- with $src.citation }}{{ $rec = merge $rec (dict "citation" (partial "functions/lang-value.html" (dict "v" . "lang" $lang))) }}{{ end -}}
+  {{- with $src.archive }}{{ $rec = merge $rec (dict "archive_url" .url) }}{{ end -}}
+  {{- $sources = $sources | append $rec -}}
+{{- end -}}
+{{- dict
+    "portal" (dict "name" .Site.Title "url" (absURL "/") "catalogue" .Permalink)
+    "language" $lang
+    "generated_at" (now.Format "2006-01-02T15:04:05Z07:00")
+    "note" (cond (eq $lang "en")
+      "The portal collects no primary data; it republishes open data from public institutions. Read `limits` before drawing conclusions — it says what the data cannot tell you."
+      "Portál nesbírá žádná primární data, přebírá otevřená data veřejných institucí. Před vyvozováním závěrů si přečtěte `limits` — říká, co z dat vyčíst nejde.")
+    "sources" $sources
+  | jsonify (dict "indent" "  ") -}}

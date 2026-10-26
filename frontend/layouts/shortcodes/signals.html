@@ -1,4 +1,4 @@
-{{/* Karta se signály detekce anomálií.
+{{/* Anomaly-detection signals card.
 
      Usage: {{< signals src="/data/charts/anomaly_signals.json" title="…" >}}
 
@@ -17,10 +17,13 @@
   {{ end }}
 
   <div data-pp-signals-body>
-    <div class="pp-skeleton pp-skeleton--spinner" style="height:160px">{{ partial "spinner.html" .Page }}</div>
+    {{/* `--inflow`: this skeleton has no position:relative wrapper around it
+         (unlike .pp-card__plot for charts). As `absolute; inset:0` it would
+         escape the card and render as a band across the page header. */}}
+    <div class="pp-skeleton pp-skeleton--spinner pp-skeleton--inflow" style="height:160px">{{ partial "spinner.html" .Page }}</div>
   </div>
 
   <div class="pp-card__foot">
-    <span class="pp-origin" data-pp-origin>načítám data…</span>
+    <span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}Načítání dat…{{ end }}</span>
   </div>
 </section>

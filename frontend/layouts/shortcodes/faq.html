@@ -1,0 +1,12 @@
+{{/* One question of an FAQ, answer folded away (docs/ctenari/caste-otazky).
+
+     Usage: {{< faq q="Otázka?" >}}Odpověď v **Markdownu**.{{< /faq >}}
+
+     A native <details>: works without JavaScript, with the keyboard and with
+     screen readers, and the browser's find-in-page opens a folded answer that
+     contains the match. Only the questions show at first, so a long list stays
+     scannable. */}}
+<details class="pp-faq">
+  <summary>{{ .Get "q" }}</summary>
+  <div class="pp-faq__a">{{ .Inner | .Page.RenderString (dict "display" "block") }}</div>
+</details>

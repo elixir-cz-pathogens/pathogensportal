@@ -1,0 +1,62 @@
+{{/* Series the detector deliberately does NOT score (payload `prebaselining`).
+
+     Usage: {{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
+
+     A `break` in pathogensportal-db methodology_changes.yaml (a change in how a
+     disease is reported) drops the history before the change from the baseline;
+     until enough new history accumulates, the series is not scored at all. Without
+     this note such a series simply vanishes from the table and the map — a reader
+     looking for herpes zoster would read the silence as "no signal".
+
+     Built HERE, at build time, like the list in partials/signals-map.html, so it
+     needs no JS. Grouped by ICD-10 code + change id; rows with kraj_kod = "CZ"
+     are the national series, the rest are regions.
+
+     Nothing is rendered when nothing is excluded.
+*/}}
+{{ $src  := .Get "src" | default "/data/charts/anomaly_signals.json" }}
+{{ $en   := eq .Page.Language.Lang "en" }}
+{{ $path := printf "static%s" $src }}
+{{ if fileExists $path }}
+  {{ $all := (readFile $path | transform.Unmarshal).prebaselining | default slice }}
+  {{ $groups := dict }}
+  {{ range $all }}
+    {{ $k := printf "%s|%s" .diagnoza .zmena }}
+    {{ $name := .diagnoza_nazev }}
+    {{ if and $en .diagnoza_nazev_en }}{{ $name = .diagnoza_nazev_en }}{{ end }}
+    {{ $cur := index $groups $k | default (dict "name" $name "od" .od "national" false "regions" 0) }}
+    {{ $national := $cur.national }}
+    {{ $regions := $cur.regions }}
+    {{ if eq .kraj_kod "CZ" }}{{ $national = true }}{{ else }}{{ $regions = add $regions 1 }}{{ end }}
+    {{ $groups = merge $groups (dict $k (dict "name" $cur.name "od" $cur.od "national" $national "regions" $regions)) }}
+  {{ end }}
+
+  {{ if $groups }}
+  <div class="pp-callout pp-callout--info">
+    {{ if $en }}
+    <p><strong>Not scored for now.</strong> For these diseases the way cases are reported
+    has changed, so the history before the change is no longer comparable. Until enough
+    history has accumulated since the change, the series is left out of the table and
+    the map — its absence there is not a sign that nothing is happening.</p>
+    {{ else }}
+    <p><strong>Dočasně se nevyhodnocuje.</strong> U těchto nemocí se změnil způsob
+    vykazování, takže historie před změnou už není srovnatelná. Dokud se od změny
+    nenashromáždí dost dat, řada v tabulce ani na mapě není. Absence v tabulce a na mapě
+    neznamená, že se výskyt nemění.</p>
+    {{ end }}
+    <ul>
+    {{ range $groups }}
+      {{ $since := .od }}
+      {{ with split .od "-" }}{{ if eq (len .) 2 }}{{ $since = printf "%s/%s" (index . 1) (index . 0) }}{{ end }}{{ end }}
+      {{ $where := slice }}
+      {{ if .national }}{{ $where = $where | append (cond $en "nationally" "celostátně") }}{{ end }}
+      {{ if gt .regions 0 }}
+        {{ $where = $where | append (printf (cond $en "in %d regions" "v %d krajích") .regions) }}
+      {{ end }}
+      <li><strong>{{ .name }}</strong> — {{ cond $en "since" "od" }} {{ $since }},
+        {{ delimit $where (cond $en " and " " a ") }}</li>
+    {{ end }}
+    </ul>
+  </div>
+  {{ end }}
+{{ end }}

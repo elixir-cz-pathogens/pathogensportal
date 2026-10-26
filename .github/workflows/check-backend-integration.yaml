@@ -1,14 +1,13 @@
 name: "CHECK: Backend ↔ DB integration"
 
-# Integrační testy backendu proti SKUTEČNÉ PostgreSQL (PP-12).
+# Backend integration tests against a real PostgreSQL (PP-12).
 #
-# Proč zvlášť, a ne v _test-backend.yml: ten se volá i z obou deploy workflow, a
-# přidat do nasazení start databáze znamená prodloužit každý deploy o službu,
-# která s nasazením nemá co dělat. Tady běží jen na PR do `main`.
+# Kept separate from _test-backend.yml because that file also gates both deploy
+# workflows, and starting a database there would slow every deploy for no benefit.
+# This runs only on PRs into `main`.
 #
-# ⛔ Schéma se bere z `pathogensportal-db/db/init.sql`, tedy ze submodulu.
-# Testovat proti ručně opsané kopii by dokázalo jen to, že se naše kopie shoduje
-# sama se sebou — a právě rozejití těch dvou je věc, kterou to má chytit.
+# The schema is taken from `pathogensportal-db/db/init.sql` in the submodule.
+# Testing against a hand-copied schema would not detect drift between the two.
 on:
   pull_request:
     branches: [main]
@@ -30,8 +29,8 @@ jobs:
           POSTGRES_PASSWORD: ci_only_not_a_secret
         ports:
           - 5432:5432
-        # Bez health-check by testy startovaly dřív, než Postgres přijímá spojení,
-        # a padaly by nahodile — což je horší než nemít je vůbec.
+        # Without a health check the tests could start before Postgres accepts
+        # connections and fail intermittently.
         options: >-
           --health-cmd "pg_isready -U portal -d pathogens"
           --health-interval 5s
@@ -41,7 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          # Schéma je v submodulu; bez něj testy nemají co aplikovat.
+          # The schema lives in the submodule; the tests need it.
           submodules: true
 
       - name: Stop if the submodule schema is missing
@@ -72,11 +71,9 @@ jobs:
           set -o pipefail
           pytest -q -m integration --junitxml=/tmp/integration.xml | tee /tmp/out.txt
 
-      # ⛔ Kontrola, která nemůže selhat, není kontrola. Integrační testy jsou
-      # přeskočené, když PP_TEST_DB není nastavené — a přeskočená sada hlásí
-      # stejnou zelenou jako procházející. Kdyby se marker přejmenoval, databáze
-      # nenastartovala nebo se soubor přesunul, tenhle job by bez tohohle kroku
-      # tiše prošel a tvářil se, že backend proti DB testujeme.
+      # Integration tests are skipped when PP_TEST_DB is unset, and a skipped
+      # suite reports the same green as a passing one. This step fails the job
+      # if no integration test actually ran (renamed marker, DB not started, ...).
       - name: Refuse to pass when no integration test actually ran
         run: |
           python - <<'PY'

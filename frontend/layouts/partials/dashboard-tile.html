@@ -1,57 +1,84 @@
-{{/* Karta dashboardu — JEDINÁ podoba, kterou má portál.
+{{/* Dashboard card — the ONLY card design the portal has.
 
      Usage: {{ partial "dashboard-tile.html" (dict "page" $p "full" true) }}
 
-     `full` = s popisem a tagy (výpis /dashboards/, stránky tagů).
-     bez něj  = jen obrázek a název (titulka).
+     `full`    = with description and tags (/dashboards/ list, tag pages).
+     without it = image and title only (home page).
 
-     ⛔ Existuje proto, že titulka a /dashboards/ měly každá vlastní značkování
-     i vlastní styl: titulka moderní dlaždici z tokenů, výpis bootstrapovou
-     kartu s natvrdo modrým pruhem #295986 z motivu. Dva vzhledy pro tutéž věc
-     se rozejdou vždycky — tohle je jedno místo, kde se karta mění.
+     A single template so the home page and /dashboards/ cannot drift apart
+     into two looks for the same thing — this is the one place the card changes.
 
-     ⚠️ Rozdíl mezi oběma je JEN `full`. Nic jiného se lišit nesmí; kdyby ano,
-     patří to sem jako další přepínač, ne do druhé šablony.
+     The ONLY difference between the two is `full`. Anything else that needs to
+     differ belongs here as another switch, not in a second template.
 
-     `pp-tile--compact` je tentýž přepínač obrácený, aby na něj dosáhlo CSS:
-     bez popisu a tagů je název POSLEDNÍ prvek karty a musí dorůst na její dno.
-     Karta je totiž položka mřížky a roste do výšky nejvyšší karty v řádku —
-     u jednořádkového názvu zbyl pod barevným pruhem bílý pruh do dna.
+     `pp-tile--compact` is the same switch inverted so CSS can target it:
+     without description and tags the title is the LAST element of the card and
+     must stretch to its bottom. The card is a grid item and grows to the height
+     of the tallest card in the row, which would otherwise leave an empty band.
 
-     ⚠️ Původ dat nese barva rámečku, ne štítek. Barva sama je pro barvoslepé
-     čtenáře i pro odečítač nula informace, proto `title` na kartě a skrytý
-     text; vysvětlení barev je v legendě na /dashboards/.
+     Data origin is NOT shown on the card, except for AI-assisted content: a
+     robot icon in the top-right corner of the preview (the same icon as the
+     origin badge on the dashboard page, origin-meta.html). The other two
+     categories (public source / our data) are on the dashboard page itself.
+     Border colours used to carry all three; with dashboards split into ours
+     and external in the menu they said little, and nothing for colour-blind
+     readers.
 
-     ⚠️ Odkaz ven značí JEN ikonka v rohu náhledu (9. 9. 2026). Slovo „externí"
-     pod názvem bylo ve výpisu hlasitější než samotný název dashboardu. Ikonka
-     je běžný symbol pro „otevře se jinde", takže vedle názvu nic vysvětlovat
-     nemusí — ale sama o sobě je pro odečítač němá, proto `title` a skrytý text
-     UVNITŘ odkazu, ať se přečte jako jeho součást.
+     The robot icon is about the CONTENT. The "✦ AI" mark at the bottom right
+     (ai-image-mark.html) is about the ILLUSTRATION. Two different claims, so
+     two different marks in two corners; do not merge them.
 
-     ⛔ Není to totéž co barva rámečku. Ta říká, ODKUD JSOU DATA, ne kam vede
-     odkaz: `aggregated` má 15 z 18 dashboardů a externí jsou z nich tři. Kdyby
-     tahle ikonka zmizela s odůvodněním „barva to říká taky", nezůstane po ní
-     nic. */}}
+     An external link is marked by the arrow icon in the same top-right corner.
+     Both corner icons are silent for screen readers; their text is carried by
+     .visually-hidden inside the link, so it is read as part of it.
+
+     The date under the title is the SAME statement as in the dashboard detail
+     metadata, from the same update-stamp.html — card and page must not show
+     different dates. Never use .Lastmod here: that is the commit date of the
+     page, not data freshness (see the comment in index.html). It sits INSIDE
+     the title to share its background; on the home page the title stretches to
+     the bottom of the card and a separate line would fall outside the band. */}}
 {{ $p    := .page }}
 {{ $full := .full | default false }}
 {{ $en   := eq $p.Site.Language.Lang "en" }}
 {{ $m    := partial "origin-meta.html" $p }}
 {{ $img  := partial "card-image.html" $p }}
 {{ $href := cond (ne $p.Params.redirect_url nil) ($p.Params.redirect_url | default "") $p.RelPermalink }}
+{{/* Same order as in dashboards/single.html: date from the data, otherwise the
+     textual `update_freq` for pages that cannot have their own date. */}}
+{{ $stamp := "" }}
+{{ $icon  := "bi-arrow-repeat" }}
+{{ if eq $p.Section "news" }}
+  {{/* The card is also used for news. A news item has no data freshness but a
+       publication date — a different statement, hence a different icon. */}}
+  {{ $icon  = "bi-calendar3" }}
+  {{ $stamp = $p.Date | time.Format (cond $en "2 Jan 2006" "2. 1. 2006") }}
+{{ else }}
+  {{ with partial "update-stamp.html" $p }}{{ $stamp = .text }}
+  {{ else }}{{ with $p.Params.update_freq }}{{ $stamp = printf "%s: %s" (cond $en "Updated" "Aktualizace") . }}{{ end }}{{ end }}
+{{ end }}
+{{/* Card illustrations (/images/cards/) are drawn for the card crop. Anything
+     else — typically a logo on a news item — would be clipped by `cover`, so it
+     is shown in full. */}}
+{{ $contain := and (not (hasPrefix $img.src "/images/cards/")) (ne $img.src "/images/dashboard-placeholder.svg") }}
 
-<div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}{{ with $m }} pp-origin-edge pp-origin-edge--{{ .key }}{{ end }}"
-     {{ with $m }}title="{{ .label }} — {{ .title }}"{{ end }}>
-  {{ with $m }}<span class="visually-hidden">{{ .label }}</span>{{ end }}
+{{ $aiContent := and $m (eq $m.key "ai-assisted") }}
+<div class="pp-tile{{ if not $full }} pp-tile--compact{{ end }}">
   <a class="pp-tile__link" href="{{ $href }}">
     <span class="pp-tile__imgwrap">
-      <img class="pp-tile__img" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
-      {{/* Vpravo nahoře, ať se nepotká se značkou AI vpravo dole. */}}
-      {{ if $p.Params.redirect_url }}
-      <span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}" aria-hidden="true"><i class="bi bi-box-arrow-up-right"></i></span>
+      <img class="pp-tile__img{{ if $contain }} pp-tile__img--contain{{ end }}" src="{{ relURL $img.src }}" alt="" loading="lazy" width="400" height="220">
+      {{/* Top right; the illustration's AI mark is at the bottom right. */}}
+      {{ if or $aiContent $p.Params.redirect_url }}
+      <span class="pp-tile__corner" aria-hidden="true">
+        {{ if $aiContent }}<span class="pp-ai-content-mark" title="{{ $m.label }} — {{ $m.lead }}"><i class="bi {{ $m.icon }}"></i></span>{{ end }}
+        {{ if $p.Params.redirect_url }}<span class="pp-ext-mark" title="{{ cond $en "Opens an external site" "Otevře externí web" }}"><i class="bi bi-box-arrow-up-right"></i></span>{{ end }}
+      </span>
       {{ end }}
       {{ if $img.ai }}{{ partial "ai-image-mark.html" $p }}{{ end }}
     </span>
-    <span class="pp-tile__title">{{ $p.Title }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}</span>
+    <span class="pp-tile__title">{{ $p.Title }}{{ if $aiContent }}<span class="visually-hidden"> — {{ $m.label }}</span>{{ end }}{{ if $p.Params.redirect_url }}<span class="visually-hidden"> — {{ cond $en "opens an external site" "otevře externí web" }}</span>{{ end }}
+      {{- with $stamp }}<span class="pp-tile__stamp"><i class="bi {{ $icon }}" aria-hidden="true"></i> {{ . }}</span>{{ end -}}
+    </span>
   </a>
   {{ if $full }}
   {{ with $p.Description }}<p class="pp-tile__desc">{{ . }}</p>{{ end }}

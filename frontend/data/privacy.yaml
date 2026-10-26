@@ -1,36 +1,46 @@
-# Text upozornění o zpracování dat (PP-55).
+# Text of the data-processing notice (PP-55).
 #
-# Proč v datovém souboru a ne v šabloně: je to text, který bude někdo upravovat
-# bez toho, aby sahal na Hugo šablonu — a proto, aby se česká a anglická verze
-# daly porovnat vedle sebe, ne hledat mezi `cond` výrazy.
+# Kept in a data file rather than in the template so it can be edited without
+# touching Hugo templates, and so the Czech and English versions can be compared
+# side by side.
 #
-# ⛔ Když se tenhle text mění, musí se měnit i to, co portál doopravdy dělá.
-# Oznámení, které tvrdí něco jiného než realita, je horší než žádné.
+# When this text changes, what the portal actually does must match it. A notice
+# that describes something other than reality is worse than none.
 #
-# ⚠️ Zkráceno 7. 9. 2026 na DVĚ sekce: co sbíráme a jaká máte práva. Zmínka
-# o položce v localStorage zůstala uvnitř první sekce — proužek se po zavření
-# musí „pamatovat", že už byl viděn, a oznámení, které mlčí o jediné věci, kterou
-# do zařízení ukládáme, by bylo nepřesné právě v tom bodě, na který se lidé ptají.
+# Shown as the banner (partials/privacy-notice.html) and as the page
+# /ochrana-soukromi/ / en /en/privacy/ (shortcodes/privacy-text.html).
+#
+# The notice has three sections: what is collected from every visitor, what is
+# collected from data providers (the intake, backend/website-be/app/intake), and
+# what rights people have.
+# The localStorage entry is mentioned in the first section — the banner has to
+# remember that it was dismissed, and a notice silent about the only thing
+# stored on the device would be inaccurate on exactly the point people ask about.
 cs:
   banner: >-
     Portál si o návštěvě ukládá provozní záznam (IP adresa, čas, stránka)
-    a používá vlastní statistiku návštěvnosti. Bez cookies, bez sledování napříč weby.
+    a používá vlastní statistiku návštěvnosti. Portál nepoužívá cookies ani sledování napříč weby.
   more: Podrobnosti
   dismiss: Rozumím
   title: Zpracování osobních údajů
-  close: Zavřít
-  switch: English
   sections:
     - h: Co sbíráme
       p:
         - "**Provozní záznam webového serveru** — IP adresa, čas, adresa stránky, typ prohlížeče a odkud jste přišli. Maže se po **14 dnech**."
-        - "**Počty návštěv podle organizace** — IP adresa se přeloží na organizaci (například „Univerzita Karlova“) a **zahodí**. Uchovávají se jen počty. Nejsou to osobní údaje."
-        - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data neodcházejí třetím stranám."
-        - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Není to identifikátor a nikam neodchází."
+        - "**Počty návštěv podle organizace** — IP adresa se zpětným dotazem DNS přeloží na organizaci (například „Univerzita Karlova“) a **zahodí**. Uchovávají se jen počty. Nejsou to osobní údaje."
+        - "**Které stránky se čtou** — vlastní statistika běžící na našem serveru, bez cookies a bez identifikátoru zařízení. Data se nepředávají třetím stranám."
+        - "**Do vašeho zařízení** se ukládá jediná položka, a jen proto, aby se tohle upozornění nezobrazovalo při každé návštěvě. Nejde o identifikátor a nikam se neodesílá."
+    - h: Žadatelé a poskytovatelé dat
+      intake: true
+      p:
+        - "Pokud pošlete **žádost o zapojení** jako poskytovatel dat, zpracováváme jméno, e-mail, instituci a (nepovinně) pracovní zařazení, které ve formuláři uvedete, spolu s popisem nabízených dat. Používáme je jen k posouzení žádosti a ke komunikaci s vámi."
+        - "U **schváleného poskytovatele** navíc evidujeme přidělený klíč (ukládáme jen jeho otisk, ne klíč samotný) a u každého nahraného souboru čas nahrání a potvrzení prohlášení o zpracování dat. Slouží to k doložení, odkud zveřejněná data pocházejí a kdo souhlasil s jejich zveřejněním."
+        - "Údaje vidí jen autoři portálu, kteří žádosti posuzují. Nepředáváme je třetím stranám; jsou uložené na serveru portálu v datovém centru CESNET. Zpracování je založeno na našem oprávněném zájmu posoudit žádost a doložit původ zveřejněných dat (čl. 6 odst. 1 písm. f GDPR)."
+        - "Údaje ze **zamítnutých žádostí** mažeme do 12 měsíců od zamítnutí. Údaje schválených poskytovatelů uchováváme po dobu spolupráce a poté tak dlouho, dokud jsou jejich data na portálu zveřejněna."
     - h: Vaše práva
       p:
         - "Máte právo na přístup ke svým údajům, na jejich opravu nebo výmaz, na omezení zpracování, právo vznést námitku a podat stížnost u [Úřadu pro ochranu osobních údajů](https://uoou.gov.cz)."
-        - "⚠️ Prakticky: v provozním záznamu vás **nedokážeme dohledat**, pokud nesdělíte IP adresu a přibližný čas návštěvy — nic jiného, podle čeho hledat, neuchováváme."
+        - "Upozornění: v provozním záznamu vás **nedokážeme dohledat**, pokud nesdělíte IP adresu a přibližný čas návštěvy — nic jiného, podle čeho hledat, neuchováváme."
         - "Správcem je **Ústav molekulární genetiky AV ČR**. Kontakt: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"
 en:
   banner: >-
@@ -39,17 +49,22 @@ en:
   more: Details
   dismiss: Got it
   title: Processing of personal data
-  close: Close
-  switch: Čeština
   sections:
     - h: What we collect
       p:
         - "**Web server access log** — IP address, time, page address, browser type and referring page. Deleted after **14 days**."
-        - "**Visit counts by organisation** — the IP address is resolved to an organisation (for example “Charles University”) and **discarded**. Only counts are kept. They are not personal data."
+        - "**Visit counts by organisation** — the IP address is resolved to an organisation by a reverse DNS lookup (for example “Charles University”) and **discarded**. Only counts are kept. They are not personal data."
         - "**Which pages are read** — our own analytics running on our server, with no cookies and no device identifier. The data does not go to third parties."
         - "**On your device** we store a single item, and only so that this notice does not appear on every visit. It is not an identifier and it goes nowhere."
+    - h: Applicants and data providers
+      intake: true
+      p:
+        - "If you send a **request to contribute data**, we process the name, e-mail, institution and (optionally) position you enter in the form, together with the description of the data on offer. We use them only to assess the request and to communicate with you."
+        - "For an **approved provider** we also keep a record of the key issued (we store only its fingerprint, not the key itself) and, for every uploaded file, when it was uploaded and that the data-processing declaration was confirmed. This documents where published data come from and who agreed to their publication."
+        - "Only the portal's authors who assess requests can see these data. We do not pass them to third parties; they are stored on the portal's server in the CESNET data centre. The processing is based on our legitimate interest in assessing the request and documenting the origin of published data (Art. 6(1)(f) GDPR)."
+        - "Data from **rejected requests** are deleted within 12 months of the rejection. Data of approved providers are kept for the duration of the cooperation and afterwards for as long as their data remain published on the portal."
     - h: Your rights
       p:
         - "You have the right of access to your data, to rectification or erasure, to restriction of processing, to object, and to lodge a complaint with the [Czech Data Protection Authority](https://uoou.gov.cz)."
-        - "⚠️ In practice: we **cannot find you** in the access log unless you tell us the IP address and roughly when you visited — we keep nothing else to search on."
+        - "Note: we **cannot find you** in the access log unless you tell us the IP address and roughly when you visited — we keep nothing else to search on."
         - "The controller is the **Institute of Molecular Genetics of the Czech Academy of Sciences**. Contact: [hpaces@img.cas.cz](mailto:hpaces@img.cas.cz)"

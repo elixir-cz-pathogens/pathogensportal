@@ -1,0 +1,32 @@
+{{/* The month the Signals table evaluates, read from `target_period` at build time.
+
+     Usage: {{< signals-period src="/data/charts/anomaly_signals.json" >}}
+
+     The page's "Aktualizace" line is the date of the last run, which says
+     nothing about how old the data is: the open ISIN export lags by months, so a
+     run in October can still evaluate December of the previous year. Without
+     this line the page reads as current when it is not.
+*/}}
+{{ $src  := .Get "src" | default "/data/charts/anomaly_signals.json" }}
+{{ $en   := eq .Page.Language.Lang "en" }}
+{{ $path := printf "static%s" $src }}
+{{ if fileExists $path }}
+  {{ with (readFile $path | transform.Unmarshal).target_period }}
+    {{ $parts := split . "-" }}
+    {{ if eq (len $parts) 2 }}
+      {{ $m := int (strings.TrimLeft "0" (index $parts 1)) }}
+      {{ $cs := slice "leden" "únor" "březen" "duben" "květen" "červen" "červenec" "srpen" "září" "říjen" "listopad" "prosinec" }}
+      {{ $enm := slice "January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December" }}
+      {{ $name := printf "%s %s" (index (cond $en $enm $cs) (sub $m 1)) (index $parts 0) }}
+      <div class="pp-callout pp-callout--info">
+        {{ if $en }}
+        <p><strong>Month evaluated: {{ $name }}.</strong> The open ISIN data export currently
+        ends with this month; later months are not available yet.</p>
+        {{ else }}
+        <p><strong>Vyhodnocovaný měsíc: {{ $name }}.</strong> Otevřený export dat ISIN zatím
+        končí tímto měsícem; novější měsíce nejsou k dispozici.</p>
+        {{ end }}
+      </div>
+    {{ end }}
+  {{ end }}
+{{ end }}
