@@ -12,7 +12,8 @@ weight: 50
 | `content/…` | preview under `/preview/pr-<number>/` on staging | content PRs (situation reports) straight into `main` |
 
 Changes from `dev` reach production through a pull request into `main`. Required PR checks:
-`commit-message-check`, `hugo-build`, `backend-tests / pytest`, `content-sanitizer`.
+`commit-message-check`, `hugo-build`, `backend-tests / pytest`, `content-sanitizer`,
+`no-content-regression`.
 Deployment to both servers runs the backend tests first; a failing test stops the deployment.
 
 After every merge into `main`, `main` is automatically merged back into `dev`.

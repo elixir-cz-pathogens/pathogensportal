@@ -12,7 +12,8 @@ weight: 50
 | `content/…` | náhled pod `/preview/pr-<číslo>/` na stagingu | obsahové PR (situační reporty) přímo do `main` |
 
 Do produkce se změny z `dev` dostávají pull requestem do `main`. Povinné kontroly PR:
-`commit-message-check`, `hugo-build`, `backend-tests / pytest`, `content-sanitizer`.
+`commit-message-check`, `hugo-build`, `backend-tests / pytest`, `content-sanitizer`,
+`no-content-regression`.
 Nasazení na oba servery spouští nejdřív testy backendu; neprošlý test nasazení zastaví.
 
 Po každém sloučení do `main` se `main` automaticky sloučí zpět do `dev`.
