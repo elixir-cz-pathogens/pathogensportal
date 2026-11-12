@@ -31,6 +31,10 @@
     {{- end }}
     {{- end }}
 
+    {{/* Dark mode is opt-in and remembered per browser. Applied here, inline and
+         before the first stylesheet, so a dark-mode visitor never sees a white
+         flash. The toggle and its storage are in js/pp-theme.js. */}}
+    <script>try{if(localStorage.getItem("pp-theme")==="dark")document.documentElement.setAttribute("data-bs-theme","dark")}catch(e){}</script>
     <link href="{{ "vendor/bootstrap/css/bootstrap.min.css" | relURL }}" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ "vendor/bootstrap-icons/font/bootstrap-icons.css" | relURL }}">
@@ -50,6 +54,9 @@
     <link rel="stylesheet" href="{{ partial "asset-url.html" "css/custom.css" }}">
     <!-- Pathogens Portal network identity: site chrome, loaded last -->
     <link rel="stylesheet" href="{{ partial "asset-url.html" "css/pp-identity.css" }}">
+    <!-- Dark mode overrides, scoped to [data-bs-theme="dark"]; must come last -->
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/pp-dark.css" }}">
+    <script src="{{ partial "asset-url.html" "js/pp-theme.js" }}" defer></script>
     {{/* Docs pages, and any page carrying the intake forms (about/prispet). */}}
     {{ $intake := or (.HasShortcode "intake-request") (.HasShortcode "intake-upload") (.HasShortcode "intake-claim") }}
     {{ if or (eq .Section "docs") $intake }}<link rel="stylesheet" href="{{ partial "asset-url.html" "css/pp-docs.css" }}">{{ end }}
