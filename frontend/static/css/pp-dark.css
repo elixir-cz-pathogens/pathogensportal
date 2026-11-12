@@ -73,8 +73,10 @@
 [data-bs-theme="dark"] .pp-nav .dropdown-item:hover,
 [data-bs-theme="dark"] .pp-nav .dropdown-item:focus { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
 [data-bs-theme="dark"] .navbar-toggler-icon { filter: invert(1) brightness(1.6); }
-/* The logo is a dark wordmark on transparent: give it a light chip. */
-[data-bs-theme="dark"] .pp-nav .navbar-brand img { background: #fff; border-radius: 6px; padding: 2px 4px; }
+/* The logo's wordmark is black on transparent. images/portal-dark.png is the
+   same file with the lettering re-lit (black → #f2f1ee, grey → #bebdb8) and the
+   emblem untouched. Swapped with content:, so only dark-mode visitors fetch it. */
+[data-bs-theme="dark"] .navbar .navbar-brand .portal-logo { content: url("../images/portal-dark.png"); }
 
 [data-bs-theme="dark"] .pp-langswitch__item { color: var(--pp-text-secondary); }
 [data-bs-theme="dark"] .pp-langswitch__item:hover { background: var(--pp-surface-raised); color: var(--pp-text); }
@@ -114,7 +116,7 @@
    are WebP in /images/cards/ and are not touched. */
 [data-bs-theme="dark"] .pp-partners img,
 [data-bs-theme="dark"] .pp-org-logo img,
-[data-bs-theme="dark"] img[src*="images/"][src$=".png"]:not([src*="/cards/"]) { background: #fff; border-radius: 6px; padding: 4px 6px; }
+[data-bs-theme="dark"] img[src*="images/"][src$=".png"]:not([src*="/cards/"]):not(.portal-logo):not([src*="portal-mark"]) { background: #fff; border-radius: 6px; padding: 4px 6px; }
 [data-bs-theme="dark"] .pp-topics a { background: var(--pp-surface-raised); color: var(--pp-dk-text); }
 [data-bs-theme="dark"] .pp-topics__count { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
 
