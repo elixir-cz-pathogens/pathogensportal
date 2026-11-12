@@ -181,6 +181,15 @@ For PRs from `content/` branches: builds the site and publishes a preview on the
 reviewer. Content PRs are identified by branch name rather than by changed paths, because the
 `dev → main` release PR touches the same paths.
 
+It also builds `main` — what production serves — with the same `--baseURL` and runs
+`tools/preview_changes.py` on the two builds. Every page whose visible text changed gets a marked copy,
+`zmeny.html` next to its `index.html` (additions green, deletions struck through, a *Next change* button,
+keys `n`/`p`). The comment carries a table of the changed pages with links to both versions, and a list of
+chart-data changes: new points, **revised past values** and removed points. Only text is compared, not
+link targets or attributes. It is best effort: if the `main` build or the comparison fails, the preview
+and the plain comment still go out, with a note that the overview is missing. `lxml` is installed in this
+step only, pinned; `tools/requirements.txt` stays without it.
+
 ### `release-data-candidate.yml`
 Started manually (confirm by typing `cut release`). Triggers the release data build on the dev server,
 which regenerates the data from the newest `pathogensportal-db` release and publishes it to the branch
