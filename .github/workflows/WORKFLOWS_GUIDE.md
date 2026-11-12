@@ -59,6 +59,7 @@ into `dev`; CI checks the commit convention at the `dev → main` PR (every comm
 | `auto-release-closes-issues.yaml` | Automation | PR into `main` (not `content/…`) | — |
 | `check-external-links.yaml` | Check | Mondays 06:17 UTC, manual | — |
 | `release-data-candidate.yml` | Automation | manual (`workflow_dispatch`) | — |
+| `llm-smoke.yaml` | Check | manual (`workflow_dispatch`, `main` only) | — (environment `llm`) |
 | `deploy-staging.yml` | Deploy | push to `dev` | — (`DEPLOY_STAGING_ENABLED`) |
 | `deploy-production.yml` | Deploy | push to `main` | — (`DEPLOY_PRODUCTION_ENABLED`) |
 
@@ -186,6 +187,14 @@ Started manually (confirm by typing `cut release`). Triggers the release data bu
 which regenerates the data from the newest `pathogensportal-db` release and publishes it to the branch
 `no-issue/release-data` for a PR into `main`. Requires the `DEV_SSH_KEY` secret and the `DEV_HOST`
 variable (environment `release`).
+
+### `llm-smoke.yaml`
+Started manually from `main`. Lists the models offered by the LLM provider (CERIT-SC e-INFRA,
+OpenAI-compatible) and fails unless `LLM_MODEL` is among them — proof that the key works from CI. Sends
+no prompt. Uses environment **`llm`**: secret `LLM_API_KEY`, variables `LLM_BASE_URL` and `LLM_MODEL`.
+The environment releases them **only to runs from `main`**, and the key is deliberately **not** a repo
+secret — a repo secret is readable by any workflow pushed to `dev`. Any workflow that calls the LLM
+follows the same pattern: it lives on `main` and declares `environment: llm`.
 
 ## Deploy workflows
 
