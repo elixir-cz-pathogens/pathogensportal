@@ -111,12 +111,23 @@
 [data-bs-theme="dark"] .pp-home-filter input { color: var(--pp-text); }
 [data-bs-theme="dark"] .pp-partners { border-top-color: var(--pp-border); }
 [data-bs-theme="dark"] .pp-partners__label { color: var(--pp-text-muted); }
-/* Logos are drawn for white: keep them on white chips. Every PNG directly in
-   /images/ is a logo (partners, organizations, the portal mark); card photos
-   are WebP in /images/cards/ and are not touched. */
-[data-bs-theme="dark"] .pp-partners img,
-[data-bs-theme="dark"] .pp-org-logo img,
-[data-bs-theme="dark"] img[src*="images/"][src$=".png"]:not([src*="/cards/"]):not(.portal-logo):not([src*="portal-mark"]) { background: #fff; border-radius: 6px; padding: 4px 6px; }
+/* Partner logos are drawn for white. Each has a dark variant in images/dark/,
+   made by tools/make_dark_logos.py (white background removed, black and grey
+   lettering re-lit, brand colours kept unless too dark to read). Swapped with
+   content:, so only dark-mode visitors fetch them. A NEW logo needs a line
+   here and a run of the tool — without it, it shows as drawn for white. */
+[data-bs-theme="dark"] img[src$="/images/IMG.png"] { content: url("../images/dark/IMG.png"); }
+[data-bs-theme="dark"] img[src$="/images/elixir_logo.png"] { content: url("../images/dark/elixir_logo.png"); }
+[data-bs-theme="dark"] img[src$="/images/SIB.png"] { content: url("../images/dark/SIB.png"); }
+[data-bs-theme="dark"] img[src$="/images/VSCHT.png"] { content: url("../images/dark/VSCHT.png"); }
+[data-bs-theme="dark"] img[src$="/images/VZU.png"] { content: url("../images/dark/VZU.png"); }
+[data-bs-theme="dark"] img[src$="/images/swiss-contribution-cz.png"] { content: url("../images/dark/swiss-contribution-cz.png"); }
+[data-bs-theme="dark"] img[src$="/images/swiss-contribution-en.png"] { content: url("../images/dark/swiss-contribution-en.png"); }
+[data-bs-theme="dark"] img[src$="/images/CESNET.svg"] { content: url("../images/dark/CESNET.svg"); }
+[data-bs-theme="dark"] img[src$="/images/FIT_CVUT.svg"] { content: url("../images/dark/FIT_CVUT.svg"); }
+/* The footer strip shows logos greyscale at .75; on dark that dims the
+   re-lit lettering too much. */
+[data-bs-theme="dark"] .pp-partners__grid img { opacity: .9; }
 [data-bs-theme="dark"] .pp-topics a { background: var(--pp-surface-raised); color: var(--pp-dk-text); }
 [data-bs-theme="dark"] .pp-topics__count { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
 
