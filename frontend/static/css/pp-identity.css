@@ -123,7 +123,7 @@ a:hover { color: var(--pp-mid-blue); text-decoration: underline; text-underline-
    `.header` (teal photo). */
 .header.pp-band {
   background: var(--pp-gradient);
-  padding: .85rem 0;
+  padding: .55rem 0;  /* was .85rem — slimmer band (12 Nov 2026) */
 }
 .header.pp-band h1 {
   color: #fff;
