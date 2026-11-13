@@ -25,6 +25,11 @@
     </a>
 
     <div class="d-flex align-items-center gap-2 order-lg-last ms-auto ms-lg-3">
+      {{/* Dark mode toggle: pp-theme.js wires it, head.html applies the stored choice before paint. */}}
+      <button type="button" class="pp-theme-toggle" data-pp-theme-toggle aria-pressed="false"
+              aria-label="{{ cond $en "Dark mode" "Tmavý režim" }}" title="{{ cond $en "Dark mode" "Tmavý režim" }}">
+        <i class="bi bi-moon-stars" aria-hidden="true"></i><i class="bi bi-sun" aria-hidden="true"></i>
+      </button>
       {{ if hugo.IsMultilingual }}
       <div class="pp-langswitch" role="group" aria-label="{{ cond $en "Language" "Jazyk" }}">
         {{ range .Site.Languages }}
