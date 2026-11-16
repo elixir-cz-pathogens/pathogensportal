@@ -1,0 +1,124 @@
+{{/* Infectious diseases — overview blocks.
+
+     Usage: {{< isin part="weekly" note="…" note_age="…" >}}   11 diagnoses by week up to the previous week
+            {{< isin part="top" note="…" >}}                    the ten most frequent diagnoses, any year
+            {{< isin part="age" note="…" >}}                    age groups of the last year per 100,000
+
+     On the page of one thematic group (key from DISEASE_GROUPS in
+     pathogensportal-db, or "other"):
+            {{< isin part="weekly" group="gastrointestinal" … >}}   only the diagnoses of the group
+            {{< isin part="group" group="gastrointestinal" … >}}    one small yearly chart per diagnosis
+            {{< isin part="group-age" group="gastrointestinal" … >}} age groups of the group per 100,000
+            {{< isin part="other" note="…" >}}                      the ten largest diagnoses outside the groups
+
+     The template emits the skeleton only; /js/pp-isin.js fills it from the JSON
+     built by pathogensportal-db (compute_isin.py): isin_weekly.json for
+     "weekly", isin_overview.json for "top" and "age", isin_groups.json for the
+     group parts.
+
+     The JSON arrives from the data pipeline in its own commits. Wrap a part and
+     the text that introduces it in {{% if-data file="…" %}} so the page builds
+     and reads well before the file is there; a part whose JSON is missing at
+     run time removes itself.
+
+     `comment` is the text composed from the facts listed under it. Whether a
+     template or a language model wrote it is stated in the badge.
+*/}}
+{{ $part := .Get "part" }}
+{{ $en   := eq .Site.Language.Lang "en" }}
+{{ $file := dict "weekly" "isin_weekly" "top" "isin_overview" "age" "isin_overview"
+                 "group" "isin_groups" "group-age" "isin_groups" "other" "isin_groups" }}
+{{ if not (index $file $part) }}{{ errorf "isin: neznámá část %q (weekly, top, age, group, group-age, other)" $part }}{{ end }}
+{{ if and (in (slice "group" "group-age") $part) (not (.Get "group")) }}{{ errorf "isin part=%q potřebuje group=…" $part }}{{ end }}
+{{ $src  := .Get "src" | default (printf "/data/charts/%s.json" (index $file $part)) }}
+
+<section class="pp-isin pp-isin--{{ $part }}" data-pp-isin="{{ $part }}" data-src="{{ $src }}"{{ with .Get "group" }} data-group="{{ . }}"{{ end }}>
+
+  {{ if eq $part "weekly" }}
+  <div class="pp-isin-pills" role="group" aria-label="{{ if $en }}Diagnosis{{ else }}Diagnóza{{ end }}" data-f="pick"></div>
+  {{ end }}
+
+  <div class="pp-resp-comment" aria-live="polite">
+    <div class="pp-flu-eyebrow"><span data-f="eyebrow"></span> <span class="pp-tag" data-f="badge"></span></div>
+    <p class="pp-resp-comment__text" data-f="comment"></p>
+    <details class="pp-resp-src">
+      <summary>{{ if $en }}What this text is based on{{ else }}Z čeho text vychází{{ end }}</summary>
+      <ul data-f="sources"></ul>
+    </details>
+  </div>
+
+  {{ if eq $part "weekly" }}
+  <div class="pp-stats pp-isin-tiles" data-f="tiles"></div>
+
+  <figure class="pp-card">
+    <figcaption class="pp-card__head pp-flu-head">
+      <div>
+        <h2 class="pp-card__title" data-f="title"></h2>
+        <p class="pp-card__subtitle">{{ if $en }}reported cases per calendar week · Czechia{{ else }}hlášené případy za kalendářní týden · celá ČR{{ end }}</p>
+      </div>
+      <div class="pp-resp-seg" role="group" aria-label="{{ if $en }}Year{{ else }}Rok{{ end }}" data-f="years"></div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-card__plot" style="height:{{ .Get "height" | default "300" }}px">
+      <canvas role="img"></canvas>
+    </div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  <figure class="pp-card" data-f="ageCard">
+    <figcaption class="pp-card__head">
+      <h2 class="pp-card__title" data-f="ageTitle"></h2>
+    </figcaption>
+    <p class="pp-card__subtitle" data-f="ageSub"></p>
+    <div class="pp-gen-bars pp-isin-age" data-f="age"></div>
+    {{ with .Get "note_age" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+  </figure>
+
+  {{ else if eq $part "group" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <h2 class="pp-card__title" data-f="title"></h2>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-isin-minis" data-f="minis"></div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  {{ else if in (slice "top" "other") $part }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head pp-flu-head">
+      <h2 class="pp-card__title" data-f="title"></h2>
+      <div class="pp-isin-pills" role="group" aria-label="{{ if $en }}Year{{ else }}Rok{{ end }}" data-f="years"></div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-isin-rows" role="list" data-f="bars"></div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+    </div>
+  </figure>
+
+  {{ else if in (slice "age" "group-age") $part }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <h2 class="pp-card__title" data-f="title"></h2>
+    </figcaption>
+    <p class="pp-card__subtitle" data-f="subtitle"></p>
+    <div class="pp-gen-bars pp-isin-age" data-f="bars"></div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+    </div>
+  </figure>
+  {{ end }}
+</section>

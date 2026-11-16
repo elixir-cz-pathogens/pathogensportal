@@ -72,6 +72,7 @@
     "Najednou lze zobrazit nejvýš": "At most",
     "řad.": "series can be shown at once.",
     "Posledních 12 měsíců": "Last 12 months",
+    "změna hlášení": "change in reporting",
     "Celé období": "Whole period",
     "V tomto období graf nemá data.": "The chart has no data in this period.",
     "text sestavený automaticky z dat": "text composed automatically from the data",
@@ -384,7 +385,7 @@
    * A chart is cut to the period rather than zoomed, so the Y axis, the end
    * labels and the table all describe what is shown.
    */
-  var ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  var ISO_DATE = /^\d{4}-\d{2}(-\d{2})?$/;   // a day (weekly series) or a month (monthly series)
   var period = { value: "12m", charts: [] };
 
   /** First and last label index of the period, or null when no label falls in it. */
@@ -448,6 +449,8 @@
 
   function initPeriodSwitch() {
     document.querySelectorAll("[data-pp-period]").forEach(function (root) {
+      // A page whose series are worth seeing whole starts on "all" (period-switch default="all").
+      if (root.getAttribute("data-pp-period")) period.value = root.getAttribute("data-pp-period");
       root.addEventListener("click", function (event) {
         var btn = event.target.closest("[data-pp-period-value]");
         if (!btn || btn.getAttribute("data-pp-period-value") === period.value) return;
@@ -510,6 +513,49 @@
   }
 
   /* ---------------- Chart.js plugins ---------------- */
+
+  /**
+   * Marks a change in reporting on the time axis: a dashed line where a record
+   * of `meta.caveats` with action "break" takes effect. Opt-in per card
+   * (breaks="true"), because the caveats describe a whole source and not every
+   * chart of that source shows the affected series. Without the mark a step
+   * caused by a new reporting channel reads as an outbreak.
+   */
+  var breaks = {
+    id: "ppBreaks",
+    afterDatasetsDraw: function (chart, _args, opts) {
+      if (!opts || !opts.since || !opts.since.length) return;
+      var labels = chart.data.labels || [];
+      var area = chart.chartArea;
+      var ctx = chart.ctx;
+      opts.since.forEach(function (since) {
+        // First label at or after the date; ISO dates and months compare as text.
+        var index = -1;
+        for (var i = 0; i < labels.length; i++) {
+          if (String(labels[i]) >= since) { index = i; break; }
+        }
+        if (index < 1) return; // outside the period shown, or at its very start
+        var x = chart.scales.x.getPixelForValue(index);
+        if (x < area.left || x > area.right) return;
+        ctx.save();
+        ctx.beginPath();
+        ctx.setLineDash([4, 4]);
+        ctx.moveTo(x, area.top);
+        ctx.lineTo(x, area.bottom);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = opts.color;
+        ctx.stroke();
+        ctx.font = "11px " + opts.font;
+        ctx.fillStyle = opts.color;
+        ctx.textBaseline = "top";
+        // The label goes to the side with more room.
+        var right = x - area.left < 110;
+        ctx.textAlign = right ? "left" : "right";
+        ctx.fillText(opts.label, x + (right ? 6 : -6), area.top + 2);
+        ctx.restore();
+      });
+    }
+  };
 
   /** Vertical crosshair under the cursor, for reading several series at one point. */
   var crosshair = {
@@ -667,6 +713,12 @@
           }
         },
         ppCrosshair: { color: t.grid },
+        ppBreaks: {
+          since: payload && payload.ppBreaks,
+          label: tr("změna hlášení"),
+          color: t.textSecondary,
+          font: getComputedStyle(document.body).fontFamily
+        },
         ppEndLabels: {
           enabled: lineCount > 0 && lineCount <= 4,
           color: t.textMuted,
@@ -872,7 +924,7 @@
           type: chartType,
           data: { labels: payload.labels, datasets: datasets },
           options: options,
-          plugins: [crosshair, endLabels]
+          plugins: [crosshair, endLabels, breaks]
         });
       }
 
@@ -922,6 +974,13 @@
     var done = loadChartData(src)
       .then(function (result) {
         var payload = pickSeries(result.payload, root.dataset.series, root.dataset.type || "line");
+        if (root.dataset.breaks === "true") {
+          payload = Object.assign({}, payload, {
+            ppBreaks: ((payload.meta || {}).caveats || [])
+              .filter(function (c) { return c.action === "break" && c.since; })
+              .map(function (c) { return String(c.since); })
+          });
+        }
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
         setOrigin(root, result.origin);
@@ -1058,64 +1117,91 @@
   function renderMap(root) {
     var svg = root.querySelector("svg");
     var tooltip = root.querySelector(".pp-tooltip");
+    var card = root.parentNode;
+    var current = null;   // what the regions show now: { regions, labels, unit, year }
+    var wired = false;
 
-    return loadChartData(root.dataset.src)
-      .then(function (result) {
-        var data = result.payload;
-        var regions = data.regions || {};
-        var labels = data.labels || {};
-        // What is being counted. Incidence maps carry "unit" in the JSON; without it
-        // the original wording is kept so older data files behave the same.
-        var unit = data.unit || tr("případů");
-        var values = Object.keys(regions).map(function (code) { return regions[code]; })
-          .filter(function (v) { return v > 0; });
-        var min = Math.min.apply(null, values);
-        var max = Math.max.apply(null, values);
-        var t = tokens();
+    function paint(result) {
+      var data = result.payload;
+      var regions = data.regions || {};
+      // What is being counted. Incidence maps carry "unit" in the JSON; without it
+      // the original wording is kept so older data files behave the same.
+      current = { regions: regions, labels: data.labels || {}, unit: data.unit || tr("případů"), year: data.year };
+      var values = Object.keys(regions).map(function (code) { return regions[code]; })
+        .filter(function (v) { return v > 0; });
+      var min = Math.min.apply(null, values);
+      var max = Math.max.apply(null, values);
+      var t = tokens();
 
-        Object.keys(regions).forEach(function (code) {
-          var path = svg.querySelector('[data-region="' + code + '"]');
-          if (!path) return;
-          var value = regions[code] || 0;
-          var ratio = max === min ? 0.5 : (value - min) / (max - min);
-          path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
+      Object.keys(regions).forEach(function (code) {
+        var path = svg.querySelector('[data-region="' + code + '"]');
+        if (!path) return;
+        var value = regions[code] || 0;
+        var ratio = max === min ? 0.5 : (value - min) / (max - min);
+        path.style.fill = mixHex(t.seqLow, t.seqHigh, ratio);
 
-          // The label sits inside the fill, so the text colour is chosen by its luminance;
-          // otherwise dark regions would get dark text on a dark background.
-          var label = svg.querySelector('[data-region-label="' + code + '"]');
-          if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
-          path.setAttribute("tabindex", "0");
-          path.setAttribute("role", "img");
-          path.setAttribute("aria-label", (labels[code] || code) + ": " + fmt(value) + " " + unit);
+        // The label sits inside the fill, so the text colour is chosen by its luminance;
+        // otherwise dark regions would get dark text on a dark background.
+        var label = svg.querySelector('[data-region-label="' + code + '"]');
+        if (label) label.style.fill = ratio > 0.5 ? t.surface : t.textSecondary;
+        path.setAttribute("tabindex", "0");
+        path.setAttribute("role", "img");
+        path.setAttribute("aria-label", (current.labels[code] || code) + ": " + fmt(value) + " " + current.unit);
+        if (wired) return;
 
-          function show(event) {
-            tooltip.style.display = "block";
-            tooltip.textContent = (labels[code] || code) + ": " + fmt(value) +
-              " " + unit + " (" + data.year + ")";
-            var rect = root.getBoundingClientRect();
-            var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
-            var y = event.clientY !== undefined ? event.clientY : rect.top;
-            tooltip.style.left = (x - rect.left + 12) + "px";
-            tooltip.style.top = (y - rect.top - 32) + "px";
-          }
-          path.addEventListener("mouseenter", show);
-          path.addEventListener("mousemove", show);
-          path.addEventListener("focus", show);
-          path.addEventListener("mouseleave", function () { tooltip.style.display = "none"; });
-          path.addEventListener("blur", function () { tooltip.style.display = "none"; });
-        });
-
-        var legend = root.parentNode.querySelector(".pp-map__legend");
-        if (legend) {
-          legend.querySelector("[data-pp-min]").textContent = fmt(min);
-          legend.querySelector("[data-pp-max]").textContent = fmt(max);
+        // Listeners are attached once and read `current`, so switching the
+        // measure repaints the map without stacking handlers.
+        function show(event) {
+          tooltip.style.display = "block";
+          tooltip.textContent = (current.labels[code] || code) + ": " + fmt(current.regions[code] || 0) +
+            " " + current.unit + " (" + current.year + ")";
+          var rect = root.getBoundingClientRect();
+          var x = event.clientX !== undefined ? event.clientX : rect.left + rect.width / 2;
+          var y = event.clientY !== undefined ? event.clientY : rect.top;
+          tooltip.style.left = (x - rect.left + 12) + "px";
+          tooltip.style.top = (y - rect.top - 32) + "px";
         }
-        setOrigin(root.parentNode, result.origin);
-      })
-      .catch(function () {
-        root.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
-          "<span>" + tr("Data mapy se nepodařilo načíst.") + "</span></div>";
+        path.addEventListener("mouseenter", show);
+        path.addEventListener("mousemove", show);
+        path.addEventListener("focus", show);
+        path.addEventListener("mouseleave", function () { tooltip.style.display = "none"; });
+        path.addEventListener("blur", function () { tooltip.style.display = "none"; });
       });
+      wired = true;
+
+      var legend = card.querySelector(".pp-map__legend");
+      if (legend) {
+        legend.querySelector("[data-pp-min]").textContent = fmt(min);
+        legend.querySelector("[data-pp-max]").textContent = fmt(max);
+      }
+      setOrigin(card, result.origin);
+    }
+
+    function fail() {
+      root.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span>' +
+        "<span>" + tr("Data mapy se nepodařilo načíst.") + "</span></div>";
+    }
+
+    // Two measures of one map (per 100,000 / counts): the switch in the card head
+    // swaps the data file, the legend unit and the note under the map.
+    card.querySelectorAll("[data-pp-map-measure]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (btn.getAttribute("aria-pressed") === "true") return;
+        card.querySelectorAll("[data-pp-map-measure]").forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b === btn));
+        });
+        card.querySelectorAll("[data-pp-map-unit]").forEach(function (el) {
+          el.textContent = btn.getAttribute("data-unit");
+        });
+        var which = btn.getAttribute("data-pp-map-measure");
+        card.querySelectorAll("[data-pp-map-note]").forEach(function (el) {
+          el.hidden = el.getAttribute("data-pp-map-note") !== which;
+        });
+        loadChartData(btn.getAttribute("data-src")).then(paint).catch(fail);
+      });
+    });
+
+    return loadChartData(root.dataset.src).then(paint).catch(fail);
   }
 
   /* ---------------- Anomaly detection signals ---------------- */

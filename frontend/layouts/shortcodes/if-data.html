@@ -1,0 +1,15 @@
+{{/* Content shown only when a chart data file is in the repository.
+
+     Usage: {{% if-data file="isin_weekly.json" %}} …markdown, shortcodes… {{% /if-data %}}
+            {{% if-data file="isin_overview.json" not="true" %}} …what to show until then… {{% /if-data %}}
+
+     Chart JSON arrives from the data pipeline (pathogensportal-db) in its own
+     commits, after the page that uses it may already be merged. A heading and a
+     paragraph that introduce a block must not stand over nothing, and a chart
+     that a new block replaces must stay until the block has data. With
+     not="true" the content is shown while the file is missing.
+
+     Decided at build time, so nothing is fetched or hidden in the browser. Use
+     the % delimiters so the inner Markdown, headings included, is rendered. */}}
+{{- $exists := fileExists (printf "static/data/charts/%s" (.Get "file")) -}}
+{{- if ne $exists (eq (.Get "not") "true") }}{{ .Inner }}{{ end -}}

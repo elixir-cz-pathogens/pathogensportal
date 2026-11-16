@@ -2,6 +2,18 @@
 
      Usage: {{< region-map id="myMap" src="/data/charts/isin_regional_map.json" title="Titulek" >}}
 
+     Two measures in one card — a switch in the card head swaps the data file,
+     the legend unit and the note:
+
+       {{< region-map id="isinMap" title="…"
+             src="/data/charts/isin_regional_incidence.json" label="na 100 tis. obyvatel"
+             unit="případů na 100 tis." note="…"
+             alt_src="/data/charts/isin_regional_map.json" alt_label="počet případů"
+             alt_unit="případů" alt_note="…" >}}
+
+     `src` is what the map shows first. Put the measure that can be compared
+     between regions there: a map of counts is mostly a map of where people live.
+
      Colours and data are filled in by /js/pp-charts.js — the sequential ramp
      (one hue, light -> dark) comes from --pp-seq-* in dashboards.css.
 */}}
@@ -13,18 +25,26 @@
      pass e.g. unit="případů na 100 tis." so the legend does not claim raw counts. */}}
 {{ $en    := eq .Page.Language.Lang "en" }}
 {{ $unit  := .Get "unit" | default (cond $en "cases" "případů") }}
+{{ $altSrc  := .Get "alt_src" }}
+{{ $altUnit := .Get "alt_unit" | default (cond $en "cases" "případů") }}
 
 <figure class="pp-card">
-  {{ with $title }}
-  <figcaption class="pp-card__head">
-    <h2 class="pp-card__title">{{ . }}</h2>
+  {{ if or $title $altSrc }}
+  <figcaption class="pp-card__head pp-flu-head">
+    <h2 class="pp-card__title">{{ $title }}</h2>
+    {{ with $altSrc }}
+    <div class="pp-resp-seg" role="group" aria-label="{{ if $en }}Measure{{ else }}Ukazatel{{ end }}">
+      <button type="button" data-pp-map-measure="main" data-src="{{ $src }}" data-unit="{{ $unit }}" aria-pressed="true">{{ $.Get "label" }}</button>
+      <button type="button" data-pp-map-measure="alt" data-src="{{ . }}" data-unit="{{ $altUnit }}" aria-pressed="false">{{ $.Get "alt_label" }}</button>
+    </div>
+    {{ end }}
   </figcaption>
   {{ end }}
 
   <div class="pp-map__legend">
-    <span>{{ if $en }}fewer{{ else }}méně{{ end }} {{ $unit }} (<span data-pp-min>—</span>)</span>
+    <span>{{ if $en }}fewer{{ else }}méně{{ end }} <span data-pp-map-unit>{{ $unit }}</span> (<span data-pp-min>—</span>)</span>
     <div class="pp-map__ramp" role="presentation"></div>
-    <span>{{ if $en }}more{{ else }}více{{ end }} {{ $unit }} (<span data-pp-max>—</span>)</span>
+    <span>{{ if $en }}more{{ else }}více{{ end }} <span data-pp-map-unit>{{ $unit }}</span> (<span data-pp-max>—</span>)</span>
   </div>
 
   <div class="pp-map" id="{{ $id }}" data-pp-map data-src="{{ $src }}">
@@ -32,7 +52,8 @@
     <div class="pp-tooltip" role="status"></div>
   </div>
 
-  {{ with $note }}<p class="pp-note">{{ . }}</p>{{ end }}
+  {{ with $note }}<p class="pp-note" data-pp-map-note="main">{{ . }}</p>{{ end }}
+  {{ with .Get "alt_note" }}<p class="pp-note" data-pp-map-note="alt" hidden>{{ . }}</p>{{ end }}
   <div class="pp-card__foot">
     <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
   </div>
