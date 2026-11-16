@@ -1,0 +1,21 @@
+{{/* Period switch for the time-series charts of a page.
+
+     Usage: {{< period-switch >}}   once per page, above the first chart
+
+     Every chart with period="page" shows the chosen period: the last 12 months
+     (default), one calendar year, or everything. One switch for the whole page,
+     so all charts show the same stretch of time and can be read together. It
+     stays at the top of the window while the charts scroll by.
+
+     Why it exists: a series whose early values dwarf the recent ones (COVID-19
+     waves of 2020–2022 against today) leaves the recent part flat on a shared
+     axis. Cutting the period rescales the Y axis to what is shown.
+
+     The template only emits the frame; /js/pp-charts.js builds the buttons from
+     the years present in the data, so a new year appears by itself.
+*/}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-period" data-pp-period hidden>
+  <span class="pp-period__label" id="pp-period-label">{{ if $en }}Period shown in the charts{{ else }}Období v grafech{{ end }}</span>
+  <div class="pp-period__options" role="group" aria-labelledby="pp-period-label" data-pp-period-options></div>
+</div>

@@ -3,6 +3,15 @@
      Usage: {{< chart id="myChart" src="/data/charts/file.json" type="line"
                      title="Title" subtitle="Subtitle" height="380" >}}
 
+     Optional:
+       series="1"      draw only these series of the JSON (zero-based, comma
+                       separated). One JSON can then feed several cards, each
+                       with its own Y axis. `type` decides the mark of the picked
+                       series — the per-series types in the JSON were chosen for
+                       the combined chart.
+       period="page"   follow the page's period switch ({{< period-switch >}}).
+                       Needs ISO dates (YYYY-MM-DD) as labels.
+
      The template only emits the structure; data and colours are handled by
      /js/pp-charts.js, which tries the API and falls back to the static JSON in
      `src` when it is unavailable.
@@ -15,7 +24,9 @@
 {{ $height   := .Get "height"   | default "380" }}
 {{ $note     := .Get "note"     | default "" }}
 
-<figure class="pp-card" data-pp-chart data-src="{{ $src }}" data-type="{{ $type }}">
+<figure class="pp-card" data-pp-chart data-src="{{ $src }}" data-type="{{ $type }}"
+        {{- with .Get "series" }} data-series="{{ . }}"{{ end }}
+        {{- with .Get "period" }} data-period="{{ . }}"{{ end }}>
   {{ with $title }}
   <figcaption class="pp-card__head">
     <h2 class="pp-card__title">{{ . }}</h2>

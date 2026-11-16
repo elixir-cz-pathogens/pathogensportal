@@ -71,6 +71,11 @@
     "Výchozí výběr": "Default selection",
     "Najednou lze zobrazit nejvýš": "At most",
     "řad.": "series can be shown at once.",
+    "Posledních 12 měsíců": "Last 12 months",
+    "Celé období": "Whole period",
+    "V tomto období graf nemá data.": "The chart has no data in this period.",
+    "text sestavený automaticky z dat": "text composed automatically from the data",
+    "text napsal jazykový model z údajů níže": "text written by a language model from the data below",
     "Tabulka": "Table",
     "Skrýt tabulku": "Hide table",
     "Data grafu v tabulce": "Chart data as a table",
@@ -354,6 +359,105 @@
       });
     });
     return last < 0 ? null : { first: first, last: last };
+  }
+
+  /**
+   * Payload reduced to the series named in the card's `series` attribute ("1",
+   * "0,2"). Each keeps the palette slot of its position in the JSON, so a series
+   * has the same colour whether it shares a card or has one to itself. The mark
+   * comes from the card: the per-series types in the JSON suit the combined chart.
+   */
+  function pickSeries(payload, spec, chartType) {
+    if (!spec) return payload;
+    var wanted = spec.split(",").map(function (s) { return parseInt(s, 10); });
+    var datasets = [];
+    (payload.datasets || []).forEach(function (d, i) {
+      if (wanted.indexOf(i) !== -1) datasets.push(Object.assign({}, d, { type: chartType, ppFixedSlot: i }));
+    });
+    // A wrong index must not leave the card empty.
+    return datasets.length ? Object.assign({}, payload, { datasets: datasets }) : payload;
+  }
+
+  /* ---------------- Period switch ----------------
+   * One switch per page ({{< period-switch >}}) for every chart with
+   * period="page": the last 12 months (default), a calendar year, or everything.
+   * A chart is cut to the period rather than zoomed, so the Y axis, the end
+   * labels and the table all describe what is shown.
+   */
+  var ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+  var period = { value: "12m", charts: [] };
+
+  /** First and last label index of the period, or null when no label falls in it. */
+  function periodRange(labels, value) {
+    var first = -1;
+    var last = -1;
+    var end = labels[labels.length - 1];
+    // Twelve months back from the chart's own last date; ISO dates compare as text.
+    var after = value === "12m" ? (parseInt(end.slice(0, 4), 10) - 1) + end.slice(4) : null;
+    labels.forEach(function (label, i) {
+      var inside = value === "all" ? true
+        : after ? label > after
+        : label.slice(0, 4) === value;
+      if (!inside) return;
+      if (first < 0) first = i;
+      last = i;
+    });
+    return first < 0 ? null : { first: first, last: last };
+  }
+
+  /** Copy of the payload cut to the period; arrays keyed by series (test counts) too. */
+  function inPeriod(payload, value) {
+    var range = periodRange(payload.labels, value);
+    function cut(list) {
+      return range && Array.isArray(list) ? list.slice(range.first, range.last + 1) : [];
+    }
+    var out = Object.assign({}, payload, {
+      labels: cut(payload.labels),
+      datasets: (payload.datasets || []).map(function (d) {
+        return Object.assign({}, d, { data: cut(d.data) });
+      })
+    });
+    ["tests", "detections"].forEach(function (key) {
+      var byLabel = payload[key];
+      if (!byLabel || typeof byLabel !== "object") return;
+      out[key] = Object.keys(byLabel).reduce(function (acc, label) {
+        acc[label] = cut(byLabel[label]);
+        return acc;
+      }, {});
+    });
+    return out;
+  }
+
+  /** Buttons of the switch: built from the years the registered charts cover. */
+  function buildPeriodSwitch() {
+    var years = {};
+    period.charts.forEach(function (chart) {
+      chart.labels.forEach(function (label) { years[label.slice(0, 4)] = true; });
+    });
+    var options = [["12m", tr("Posledních 12 měsíců")]]
+      .concat(Object.keys(years).sort().reverse().map(function (y) { return [y, y]; }))
+      .concat([["all", tr("Celé období")]]);
+    document.querySelectorAll("[data-pp-period]").forEach(function (root) {
+      root.querySelector("[data-pp-period-options]").innerHTML = options.map(function (o) {
+        return '<button type="button" class="pp-period__item" data-pp-period-value="' + o[0] +
+          '" aria-pressed="' + (o[0] === period.value) + '">' + escapeHtml(o[1]) + "</button>";
+      }).join("");
+      root.hidden = false;
+    });
+  }
+
+  function initPeriodSwitch() {
+    document.querySelectorAll("[data-pp-period]").forEach(function (root) {
+      root.addEventListener("click", function (event) {
+        var btn = event.target.closest("[data-pp-period-value]");
+        if (!btn || btn.getAttribute("data-pp-period-value") === period.value) return;
+        period.value = btn.getAttribute("data-pp-period-value");
+        document.querySelectorAll("[data-pp-period-value]").forEach(function (b) {
+          b.setAttribute("aria-pressed", String(b.getAttribute("data-pp-period-value") === period.value));
+        });
+        period.charts.forEach(function (chart) { chart.redraw(); });
+      });
+    });
   }
 
   /** Sets colours and widths per the mark specs; ignores colours from the payload. */
@@ -734,20 +838,31 @@
     var initial = null;
     var picker = null;
 
+    var followsPeriod = false; // set once the data is known to have ISO date labels
+    var emptyNote = null;
+
+    /** Palette slot of a switched-on series; a series picked by `series` keeps its own. */
+    function colourSlot(payload, i) {
+      var fixed = payload.datasets[i].ppFixedSlot;
+      return typeof fixed === "number" ? fixed : slots[i];
+    }
+
     function shown(payload, t, chartType) {
       var on = (payload.datasets || []).map(function (d, i) {
-        return slots[i] < 0 ? null : Object.assign({}, d, { ppSlot: slots[i] });
+        return slots[i] < 0 ? null : Object.assign({}, d, { ppSlot: colourSlot(payload, i) });
       }).filter(Boolean);
       return styleDatasets(on, t, chartType);
     }
 
     /** `rebuild` recreates the chart (theme change); otherwise it is updated in place. */
-    function draw(payload, rebuild) {
+    function draw(full, rebuild) {
       var t = tokens();
       var chartType = root.dataset.type || "line";
+      var payload = followsPeriod ? inPeriod(full, period.value) : full;
       var datasets = shown(payload, t, chartType);
       var options = baseOptions(t, datasets, chartType, payload);
       if (instance && !rebuild) {
+        instance.data.labels = payload.labels;
         instance.data.datasets = datasets;
         instance.options = options;
         instance.update();
@@ -761,16 +876,27 @@
         });
       }
 
+      // A year the series does not reach: say so instead of showing bare axes.
+      var empty = followsPeriod && !payload.labels.length;
+      if (empty && !emptyNote) {
+        emptyNote = document.createElement("p");
+        emptyNote.className = "pp-card__empty";
+        emptyNote.textContent = tr("V tomto období graf nemá data.");
+        root.querySelector(".pp-card__plot").appendChild(emptyNote);
+      }
+      if (emptyNote) emptyNote.hidden = !empty;
+
       var tableWrap = root.querySelector(".pp-table-wrap");
       if (tableWrap) tableWrap.innerHTML = buildTable(payload, datasets);
-      if (picker) syncPicker(t);
+      if (picker) syncPicker(full, t);
     }
 
-    function syncPicker(t) {
+    function syncPicker(payload, t) {
       var count = slots.filter(function (s) { return s >= 0; }).length;
       picker.querySelectorAll("[data-pp-series]").forEach(function (btn) {
-        var slot = slots[+btn.getAttribute("data-pp-series")];
-        var on = slot >= 0;
+        var index = +btn.getAttribute("data-pp-series");
+        var on = slots[index] >= 0;
+        var slot = colourSlot(payload, index);
         btn.setAttribute("aria-pressed", on ? "true" : "false");
         btn.style.setProperty("--pp-series-color", on ? t.series[slot % t.series.length] : "transparent");
         // A ninth series has no colour left in the palette.
@@ -795,12 +921,20 @@
 
     var done = loadChartData(src)
       .then(function (result) {
-        var payload = result.payload;
+        var payload = pickSeries(result.payload, root.dataset.series, root.dataset.type || "line");
         var skeleton = root.querySelector(".pp-skeleton");
         if (skeleton) skeleton.remove();
         setOrigin(root, result.origin);
         initial = defaultSlots(payload.datasets || []);
         slots = initial.slice();
+        // Without a switch on the page the chart would be stuck on the default period.
+        followsPeriod = root.dataset.period === "page" && !!document.querySelector("[data-pp-period]") &&
+          Array.isArray(payload.labels) && payload.labels.length > 0 &&
+          payload.labels.every(function (label) { return ISO_DATE.test(label); });
+        if (followsPeriod) {
+          period.charts.push({ labels: payload.labels, redraw: function () { draw(payload); } });
+          buildPeriodSwitch();
+        }
         if ((payload.datasets || []).length > 1) {
           picker = seriesPicker(root, payload);
           picker.addEventListener("click", function (event) {
@@ -834,6 +968,43 @@
       });
     }
     return done;
+  }
+
+  /* ---------------- Comment above a chart ----------------
+   * {{< comment >}}: a short text on the latest data, shown as it arrives from
+   * pathogensportal-db — nothing is worded or computed here. `comment.origin`
+   * says whether a template or a language model wrote it; the list under the
+   * text gives the facts behind each sentence. Same data shape and markup as the
+   * comments of the respiratory blocks (pp-resp.js), which draw theirs from the
+   * block's own JSON.
+   */
+  function renderComment(root) {
+    var lang = EN ? "en" : "cs";
+    function field(name) { return root.querySelector('[data-f="' + name + '"]'); }
+    return loadChartData(root.dataset.src)
+      .then(function (result) {
+        var block = ((result.payload || {}).blocks || {})[root.getAttribute("data-pp-comment")];
+        // An older data release without this block: the page looks as it did before.
+        if (!block || !block.comment || !block.facts) { root.remove(); return; }
+        var comment = block.comment;
+        var values = block.facts.values || {};
+        var byId = {};
+        (block.facts.facts || []).forEach(function (f) { byId[f.id] = f; });
+        function filled(text) {
+          return text.replace(/\{(\w+)\}/g, function (_match, key) { return values[key] ? values[key][lang] : ""; });
+        }
+        field("eyebrow").textContent = block.period ? block.period[lang] : "";
+        field("badge").textContent = tr(comment.origin === "template"
+          ? "text sestavený automaticky z dat" : "text napsal jazykový model z údajů níže");
+        field("comment").textContent = comment[lang];
+        field("sources").innerHTML = (comment.sentences || []).map(function (s) {
+          return "<li><span>" + escapeHtml(s[lang]) + "</span><ul>" + (s.facts || []).map(function (id) {
+            return byId[id] ? "<li>" + escapeHtml(filled(byId[id][lang])) + "</li>" : "";
+          }).join("") + "</ul></li>";
+        }).join("");
+        root.hidden = false;
+      })
+      .catch(function () { root.remove(); });
   }
 
   /* ---------------- Stat tiles ---------------- */
@@ -1315,8 +1486,10 @@
       Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
       Chart.defaults.font.size = 12;
       Chart.defaults.color = tokens().textSecondary;
+      initPeriodSwitch();
       run("[data-pp-chart]", renderChart);
     }
+    run("[data-pp-comment]", renderComment);
     run("[data-pp-stats]", renderStats);
     run("[data-pp-map]", renderMap);
     run("[data-pp-signals]", renderSignals);

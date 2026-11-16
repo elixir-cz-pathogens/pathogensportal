@@ -312,6 +312,93 @@
   color: var(--pp-text-muted);
 }
 
+/* ---------- Period switch for the time series of a page ----------
+   Stays at the top of the window while the charts scroll by, so the period can
+   be changed from any chart. The pressed option is filled: it is a choice of
+   one, unlike the series picker where any number can be on. */
+
+.pp-period {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.9rem;
+  background: var(--bs-body-bg);
+  border-bottom: 1px solid var(--pp-border);
+  padding: 0.55rem 0;
+  margin: 0 0 1.25rem;
+}
+
+.pp-period[hidden],
+.pp-card__empty[hidden] {
+  display: none;
+}
+
+.pp-period__label {
+  font-size: 0.8rem;
+  color: var(--pp-text-muted);
+}
+
+.pp-period__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pp-period__item {
+  flex: none;
+  background: transparent;
+  border: 1px solid var(--pp-border-strong);
+  border-radius: 999px;
+  color: var(--pp-text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.3;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+}
+
+.pp-period__item:hover {
+  border-color: var(--pp-text-muted);
+  color: var(--pp-text);
+}
+
+.pp-period__item[aria-pressed="true"] {
+  background: var(--pp-text);
+  border-color: var(--pp-text);
+  color: var(--pp-surface-raised);
+}
+
+.pp-period__item:focus-visible {
+  outline: 2px solid var(--pp-series-1);
+  outline-offset: 2px;
+}
+
+/* On a phone the options stay on one line and scroll sideways: a bar that
+   wrapped to three lines would cover a third of the screen while pinned. */
+@media (max-width: 575.98px) {
+  .pp-period__options {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 2px;
+  }
+}
+
+/* A chart cut to a period the series does not reach */
+.pp-card__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--pp-text-muted);
+}
+
 /* ---------- Table alternative to the chart ---------- */
 
 .pp-table-wrap {
