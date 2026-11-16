@@ -47,8 +47,13 @@ včetně pole `limits` s popisem omezení dat. Stránky panelů obsahují metada
 ### Katalog podle DCAT-AP-CZ
 
 Data, která **vznikla zpracováním na portálu**, popisuje i katalog podle otevřené formální normy
-[Rozhraní katalogů otevřených dat](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/):
+[DCAT-AP-CZ: Rozhraní katalogů otevřených dat](https://ofn.gov.cz/dcat-ap-cz-rozhraní-katalogů-otevřených-dat/2024-05-28/):
 [`/dcat/katalog.jsonld`](/dcat/katalog.jsonld).
+
+V katalogu jsou jen sady, jejichž všechny zdroje dovolují volné další užití. Sady postavené
+na zdrojích s omezujícími nebo nevyjasněnými podmínkami (týdenní záchyty respiračních virů ze zpráv
+SZÚ, prahy intenzity chřipkové sezóny z dat WHO a ECDC) v něm do vyjasnění podmínek nejsou; na
+portálu zůstávají dostupné a platí pro ně podmínky zdroje.
 
 Přebíraná data v tomto katalogu **nejsou**. Publikovali je jejich původci (ÚZIS, SZÚ, MZČR, ČSÚ,
 WHO, ECDC) a najdete je v [Národním katalogu otevřených dat](https://data.gov.cz); portál na ně

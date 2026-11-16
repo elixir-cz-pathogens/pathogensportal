@@ -97,7 +97,8 @@ not recognize them as upstream and the check fails on them.
 
 ### `hugo-build.yml`
 Clones the repo with its submodules (the theme), installs Hugo extended and runs `hugo --minify` in
-`frontend/`. Verifies that the site builds.
+`frontend/`. Verifies that the site builds, then runs `tools/check_dcat_catalogue.py` on the result:
+the DCAT-AP-CZ catalogue is written by a template, and a broken record would otherwise still build.
 
 ### `backend-tests.yml`
 For each service under `backend/*/`, installs `requirements.txt` and runs `pytest`. The steps live in the

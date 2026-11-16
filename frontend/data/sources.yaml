@@ -11,6 +11,15 @@
 #     to mark modifications, what is forbidden); `licence.verified` = the day
 #     the terms were read on the linked page. The technical twin of this record
 #     is pathogensportal-db/sources.yaml — keep the licence the same on both.
+#   - `licence.open: true` = OUR reading that the terms let anyone reuse and
+#     modify the data for any purpose with at most an attribution. It decides
+#     what the portal may publish as its own open data: a dataset goes into
+#     the DCAT-AP-CZ catalogue (data/dcat.yaml) only when every source it is
+#     built on carries the flag. A source without it counts as restricted, so
+#     a forgotten flag errs on the safe side. Set it when the terms at
+#     `licence.url` say so, never to make a catalogue record validate. The
+#     same flag is in pathogensportal-db/sources.yaml, where it decides
+#     `meta.licence` of each chart — keep the two the same.
 #   - `citation` = the citation / attribution sentence the source asks for,
 #     verbatim (plain text when the source gives it in one language only).
 #   - Text shown on the page (`publisher`, `licence.name`, `format`, …) is a
@@ -28,6 +37,7 @@
   download: "https://datanzis.uzis.gov.cz/data/NR-27-ISIN/NR-27-01/Otevrena-data-NR-27-01-infekcni-nemoci.csv"
   licence:
     name: "CC BY 4.0"
+    open: true
     url: "https://creativecommons.org/licenses/by/4.0/"
     note:
       cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
@@ -59,6 +69,7 @@
   download: "https://datanzis.uzis.gov.cz/data/NR-29-RPN/NR-29-01/Otevrena-data-NR-29-01-pohlavni-nemoci.csv"
   licence:
     name: "CC BY 4.0"
+    open: true
     url: "https://creativecommons.org/licenses/by/4.0/"
     note:
       cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
@@ -81,6 +92,7 @@
   download: "https://datanzis.uzis.gov.cz/data/NR-30-RTBC/NR-30-01/Otevrena-data-NR-30-01-tuberkuloza-epidemiologie.csv"
   licence:
     name: "CC BY 4.0"
+    open: true
     url: "https://creativecommons.org/licenses/by/4.0/"
     note:
       cs: "Při dalším užití uveďte doporučenou citaci ÚZIS ČR."
@@ -102,6 +114,7 @@
   url: "https://onemocneni-aktualne.mzcr.cz/api/v2/covid-19"
   licence:
     name: { cs: "neobsahuje autorská díla, databáze není chráněná (podmínky užití v NKOD)", en: "no copyrighted works, database not protected (terms of use in the Czech open data catalogue NKOD)" }
+    open: true
     url: "https://data.gov.cz/zdroj/datové-sady/00024341/9c7c00c45a83021ea370be94fe1b4ca1"
     note:
       cs: "Stránka API licenci neuvádí; podmínky užití jsou shodně u všech sad COVID-19 v Národním katalogu otevřených dat."
@@ -206,6 +219,7 @@
   url: "https://data.csu.gov.cz/"
   licence:
     name: { cs: "CC BY 4.0 (podmínky ČSÚ)", en: "CC BY 4.0 (ČSÚ terms)" }
+    open: true
     url: "https://csu.gov.cz/podminky_pro_vyuzivani_a_dalsi_zverejnovani_statistickych_udaju_csu"
     note:
       cs: "Incidence na 100 000 obyvatel jsou odvozené údaje portálu, ne oficiální statistika ČSÚ."

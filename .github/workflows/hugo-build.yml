@@ -32,3 +32,11 @@ jobs:
       - name: Build site
         working-directory: frontend
         run: hugo --minify
+
+      # The catalogue is written by a template; a template that goes wrong still
+      # builds. This reads the built files: mandatory fields, links to sources,
+      # and that only datasets whose sources allow open reuse were published.
+      - name: Check the DCAT-AP-CZ catalogue
+        run: |
+          python3 -m pip install --quiet pyyaml
+          python3 tools/check_dcat_catalogue.py
