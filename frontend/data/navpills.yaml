@@ -45,3 +45,18 @@ infekcni-nemoci:
     - id: covid-demografie
       url: /dashboards/covid-demographics/
       label: { cs: COVID-19 — Věk a vakcinace, en: COVID-19 — Age & vaccination }
+
+genomika:
+  aria:
+    cs: Sekce genomických dat
+    en: Genomic data sections
+  items:
+    - id: prehled
+      url: /dashboards/genomics/
+      label: { cs: Přehled archivu, en: Archive overview }
+    - id: linie
+      url: /dashboards/genomics-lineages/
+      label: { cs: Linie ve stromech, en: Lineages in trees }
+    - id: rezistence
+      url: /dashboards/genomics-amr/
+      label: { cs: Geny rezistence, en: Resistance genes }

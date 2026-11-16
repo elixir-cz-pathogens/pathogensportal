@@ -66,6 +66,9 @@
                languages, so a title sort listed the same dashboards in a
                different order in Czech and English. The file name is shared. */}}
           {{ $pages := sort $section.RegularPages "File.ContentBaseName" }}
+          {{/* `nav_hidden: true` keeps a sub-page out of this dropdown: it is
+               reached through the nav-pills of its parent dashboard instead. */}}
+          {{ $pages = where $pages "Params.nav_hidden" "!=" true }}
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle{{ if $active }} active{{ end }}" href="{{ .URL }}" role="button"
                data-bs-toggle="dropdown" aria-expanded="false">{{ .Name }}</a>

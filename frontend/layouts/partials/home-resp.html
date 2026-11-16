@@ -1,0 +1,19 @@
+{{/* Home page: the latest respiratory week — the one block that changes weekly
+     and that most visitors come for in season.
+
+     Same data as the top of the influenza page (partials/resp-overview.html),
+     tiles only: the heading and the date say what it is, each tile opens the
+     dashboard behind its number.
+     The block hides itself when the data are older than three weeks (summer:
+     ILI and ARI are not reported) or when resp_overview.json is missing.
+*/}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<section class="pp-home-resp mb-5" data-pp-resp-wrap>
+  <div class="pp-home-sec-head">
+    <h2>{{ cond $en "Respiratory illness: the latest week" "Respirační onemocnění: poslední týden" }}</h2>
+    {{ with .Site.GetPage "/dashboards/influenza-surveillance" }}
+    <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "Details and charts" "Podrobnosti a grafy" }} <i class="bi bi-arrow-right-short"></i></a>
+    {{ end }}
+  </div>
+  {{ partial "resp-overview.html" (dict "src" "/data/charts/resp_overview.json" "en" $en "tiles" "ili,ari,flu_pos,covid" "maxAge" "21" "home" true "site" .Site) }}
+</section>

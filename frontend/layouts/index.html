@@ -1,6 +1,7 @@
 {{/* Home page (PP-57).
 
-     Blocks: what the portal is → where to go next → dashboards as cards (with
+     Blocks: what the portal is → the latest respiratory week (in season) →
+     where to go next → dashboards as cards (with
      topics) → news → events (calendar + list; a standalone /events/ page is not
      generated, see partials/home-events.html).
 
@@ -26,6 +27,9 @@
 
   {{/* No navigation tiles here: they repeated the menu in the header one to
        one (removed 24 Oct 2026). */}}
+
+  {{/* ── 1b. The latest respiratory week ───────────────────────────────── */}}
+  {{ partial "home-resp.html" . }}
 
   {{/* ── 2. Dashboards as cards ────────────────────────────────────────────
        Cards, not a text list: whether to open a dashboard depends on what it is
@@ -153,5 +157,6 @@
 </div>
 
 <script src="{{ "js/pp-events.js" | relURL }}" defer></script>
+<script src="{{ "js/pp-resp.js" | relURL }}" defer></script>
 
 {{ end }}

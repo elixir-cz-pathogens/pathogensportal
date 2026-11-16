@@ -75,6 +75,7 @@ Front matter used by the templates:
 | `data_as_of` | fixed date, **only** for closed reports whose figures never change; build fails if combined with `update_from` |
 | `highlight` | show on the home page |
 | `redirect_url` | tile and page redirect to an external dashboard (Nextstrain, wastewater) |
+| `nav_hidden` | `true` leaves the page out of the "Panely" dropdown; for sub-pages reached through the `nav-pills` of a parent dashboard |
 
 **Never type an update date into front matter.** `partials/update-stamp.html` reads it from the data.
 `update_read` is explicit on purpose — the last label of a series can be a week, an age band or a region:

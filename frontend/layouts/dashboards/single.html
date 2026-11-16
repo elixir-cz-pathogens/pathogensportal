@@ -81,4 +81,8 @@
 <script src="{{ "js/pp-charts.js" | relURL }}"></script>
 {{/* Pages with influenza intensity have their own script — it is not loaded elsewhere. */}}
 {{ if .HasShortcode "flu" }}<script src="{{ "js/pp-flu.js" | relURL }}"></script>{{ end }}
+{{/* Respiratory blocks (overview, age, influenza types) — same rule. */}}
+{{ if .HasShortcode "resp" }}<script src="{{ "js/pp-resp.js" | relURL }}"></script>{{ end }}
+{{/* Genomics blocks (archive, lineages, resistance) — same rule. */}}
+{{ if .HasShortcode "genomics" }}<script src="{{ "js/pp-genomics.js" | relURL }}"></script>{{ end }}
 {{ end }}

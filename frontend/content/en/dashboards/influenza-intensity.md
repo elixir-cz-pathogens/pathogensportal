@@ -158,6 +158,14 @@ Season-by-season back-test: for ARI the epidemic threshold caught only <span dat
 {{< /method >}}
 {{< /flu >}}
 
+### Rates by age
+
+The overall figure hides large differences between age groups. The four charts show the running season against
+the range of previous seasons in the same week. Each has its own vertical axis, because the rate in the youngest
+children is several times higher than in adults.
+
+{{< resp part="age" note="Rate per 100,000 population of the age group from reports by general practitioners and paediatricians, ECDC ERVISS data. The age series for Czechia starts in week 25/2022, so the range rests on only a few seasons; with fewer than three it is not drawn. There are no intensity thresholds for age groups. ERVISS values are about 15% lower than in the weekly NIPH reports; the shape of the curves agrees." >}}
+
 ### How past seasons turned out
 
 {{< flu part="seasons" />}}
@@ -170,5 +178,5 @@ Season-by-season back-test: for ARI the epidemic threshold caught only <span dat
 </p>
 <p class="stat-source">
   Data: WHO, FluID, 2026, data accessed at the latest dashboard refresh; underlying data provided by Czechia (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">WHO terms</a>) ·
-  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: the portal extended the WHO FluID series with fresher ERVISS weeks and computed the MEM thresholds from it.
+  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: the portal extended the WHO FluID series with fresher ERVISS weeks and computed the MEM thresholds from it; the range of previous seasons by age is computed by the portal.
 </p>

@@ -1,0 +1,31 @@
+{{/* Skeleton of the weekly respiratory overview (comment + tiles), filled by
+     /js/pp-resp.js from resp_overview.json. Shared by the `resp` shortcode and
+     the home page, so both always show the same text and numbers.
+
+     Params: src     chart JSON
+             en      bool, English site
+             tiles   optional comma-separated tile ids to show (default: all)
+             maxAge  optional number of days; older data hide the block — the
+                     home page must not lead with a week from last spring
+             home    bool, compact variant: tiles only, no comment text
+             site    .Site — each tile links to the dashboard behind its number
+*/}}
+{{ $links := dict }}
+{{ range $id, $path := dict "ili" "/dashboards/influenza-intensity" "ari" "/dashboards/influenza-intensity" "flu_pos" "/dashboards/influenza-surveillance" "rsv_pos" "/dashboards/influenza-surveillance" "covid" "/dashboards/covid19-surveillance" }}
+  {{ with $.site.GetPage $path }}{{ $links = merge $links (dict $id .RelPermalink) }}{{ end }}
+{{ end }}
+<section class="pp-resp{{ if .home }} pp-resp--home{{ end }}" data-pp-resp="overview" data-src="{{ .src }}"
+         {{- with .tiles }} data-tiles="{{ . }}"{{ end }}{{ with .maxAge }} data-max-age="{{ . }}"{{ end }} data-links="{{ $links | jsonify }}">
+  <div class="pp-resp-comment" aria-live="polite">
+    <div class="pp-flu-eyebrow"><span data-f="eyebrow"></span> <span class="pp-tag" data-f="badge"></span></div>
+    <p class="pp-resp-comment__text" data-f="comment"></p>
+    <details class="pp-resp-src">
+      <summary>{{ if .en }}What this text is based on{{ else }}Z čeho text vychází{{ end }}</summary>
+      <ul data-f="sources"></ul>
+    </details>
+  </div>
+  <div class="pp-stats pp-resp-tiles" data-f="tiles"></div>
+  <p class="pp-note pp-resp-asof" data-f="asof"></p>
+  {{/* The dashboard pages cite their sources in the footer; on the home page this line is the citation. */}}
+  {{ if .home }}<p class="pp-note pp-resp-source" data-f="source"></p>{{ end }}
+</section>
