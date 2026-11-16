@@ -1,0 +1,10 @@
+{{- /* robots.txt with the sitemap address.
+
+       Hugo's built-in template (enableRobotsTXT) writes only `User-agent: *`.
+       The sitemap exists, but a crawler that is not told where it is has to
+       guess; search engines and dataset indexes read the address from here.
+       `absURL` follows baseURL, so staging and production each name their own
+       sitemap (staging is additionally kept out of indexes by X-Robots-Tag). */ -}}
+User-agent: *
+
+Sitemap: {{ "sitemap.xml" | absURL }}

@@ -4,7 +4,8 @@
        Prints nothing; only writes files to public/.
 
        What it is: a machine-readable catalogue following the Czech open formal
-       standard "Open data catalogue interface" (ofn.gov.cz). The same kind of
+       standard "DCAT-AP-CZ: Open data catalogue interface", version 2024-05-28
+       (ofn.gov.cz, based on DCAT-AP 3.0.0). The same kind of
        description as the schema.org/Dataset in dashboard heads, but in the
        vocabulary understood by the National Open Data Catalogue (NKOD) and the
        European data.europa.eu.
@@ -25,6 +26,16 @@
        (data/dcat.yaml). Republished datasets are already in NKOD from their
        originators; duplicating them would claim an origin we do not have.
 
+       And of those, only datasets whose every source allows open reuse
+       (`licence.open` in data/sources.yaml). The standard makes terms of use
+       mandatory on each distribution, and the portal can state CC BY 4.0 for
+       its processing only where the numbers underneath may be reused freely.
+       A dataset built on a source with restrictive or unsettled terms is
+       skipped with a build warning: publishing it here would tell a harvester
+       "CC BY 4.0" about data whose owner says otherwise. The dataset stays on
+       the portal and in data/dcat.yaml and returns once the source is marked
+       open. tools/check_dcat_catalogue.py verifies the built result.
+
        Before registering in NKOD, `params.dcat.publisher` must be set — the
        body's IRI in the Register of Rights and Obligations. Without it the
        catalogue is still generated (as plain DCAT, usable outside NKOD), but
@@ -34,6 +45,10 @@
        There is one catalogue for the portal; multilinguality is carried inside
        the values (`{"cs": …, "en": …}`), not by duplicating documents. */ -}}
 {{- $cfg := .Site.Params.dcat | default dict -}}
+{{- /* The version of the standard is in this one address: the official JSON
+       schemas require exactly this `@context`, so moving to a newer version
+       starts here (and in tools/check_dcat_catalogue.py, which checks it). */ -}}
+{{- $context := "https://ofn.gov.cz/dcat-ap-cz-rozhraní-katalogů-otevřených-dat/2024-05-28/kontexty/rozhraní-katalogů-otevřených-dat.jsonld" -}}
 {{- $base := .Site.Home.Permalink | strings.TrimSuffix "/" -}}
 
 {{- /* ── Shared parts ──────────────────────────────────────────────────── */ -}}
@@ -52,25 +67,64 @@
       "databáze_chráněná_zvláštními_právy" "https://data.gov.cz/podmínky-užití/není-chráněna-zvláštním-právem-pořizovatele-databáze/"
       "osobní_údaje" "https://data.gov.cz/podmínky-užití/neobsahuje-osobní-údaje/" -}}
 
+{{- /* Sources by id — provenance links and the open-reuse rule both need them. */ -}}
+{{- $sourceById := dict -}}
+{{- range hugo.Data.sources -}}{{- $sourceById = merge $sourceById (dict .id .) -}}{{- end -}}
+
 {{- $datasetIRIs := slice -}}
 
 {{- range hugo.Data.dcat -}}
   {{- $ds := . -}}
   {{- $iri := printf "%s/dcat/datova-sada/%s.jsonld" $base $ds.id -}}
+
+  {{- /* Where the dataset comes from, and whether all of it may be reused
+         openly. An id that is not in sources.yaml is a typo, and a typo here
+         would silently drop the provenance link — so it stops the build. A
+         dataset without `zdroje` has no stated origin and is treated the same
+         way: we do not publish what we cannot trace. */ -}}
+  {{- if not $ds.zdroje -}}
+    {{- errorf "dcat.yaml: dataset %q has no `zdroje` (ids from sources.yaml)" $ds.id -}}
+  {{- end -}}
+  {{- $provenance := slice -}}
+  {{- $restricted := slice -}}
+  {{- range $ds.zdroje -}}
+    {{- $src := index $sourceById . -}}
+    {{- if not $src -}}
+      {{- errorf "dcat.yaml: dataset %q names source %q, which is not in sources.yaml" $ds.id . -}}
+    {{- else -}}
+      {{- $provenance = $provenance | append (dict "iri" $src.url) -}}
+      {{- if ne $src.licence.open true -}}{{- $restricted = $restricted | append . -}}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $restricted -}}
+    {{- warnf "DCAT: dataset %q is left out of the catalogue — no open-reuse terms for source(s) %s (licence.open in data/sources.yaml)" $ds.id (delimit $restricted ", ") -}}
+  {{- else -}}
   {{- $datasetIRIs = $datasetIRIs | append $iri -}}
 
   {{- /* Distributions only for files that actually exist on the site. */ -}}
   {{- $distribuce := slice -}}
   {{- range $ds.soubory -}}
-    {{- if os.FileExists (printf "static%s" .) -}}
+    {{- $file := . -}}
+    {{- if os.FileExists (printf "static%s" $file) -}}
+      {{- /* The title comes from the file itself (`meta.title`, written by the
+             pipeline from its chart_titles.yaml), so the catalogue and the data
+             cannot name the same file differently. Files generated before the
+             pipeline carried titles fall back to the file name. */ -}}
+      {{- $name := path.BaseName $file -}}
+      {{- $title := dict "cs" $name "en" $name -}}
+      {{- $json := os.ReadFile (printf "static%s" $file) | transform.Unmarshal -}}
+      {{- with $json.meta -}}{{- with .title -}}
+        {{- if and .cs .en -}}{{- $title = dict "cs" .cs "en" .en -}}{{- end -}}
+      {{- end -}}{{- end -}}
       {{- $distribuce = $distribuce | append (dict
           "typ" (slice "Distribuce")
-          "iri" (printf "%s/dcat/datova-sada/%s.jsonld#distribuce-%s" $base $ds.id (path.BaseName .))
-          "název" (dict "cs" (path.BaseName .) "en" (path.BaseName .))
+          "iri" (printf "%s/dcat/datova-sada/%s.jsonld#distribuce-%s" $base $ds.id $name)
+          "název" $title
           "formát" "http://publications.europa.eu/resource/authority/file-type/JSON"
           "typ_média" "http://www.iana.org/assignments/media-types/application/json"
-          "přístupové_url" (printf "%s%s" $base .)
-          "soubor_ke_stažení" (printf "%s%s" $base .)
+          "přístupové_url" (printf "%s%s" $base $file)
+          "soubor_ke_stažení" (printf "%s%s" $base $file)
           "podmínky_užití" $podminky) -}}
     {{- end -}}
   {{- end -}}
@@ -81,8 +135,13 @@
     {{- with site.GetPage . -}}{{- $dokumentace = .Permalink -}}{{- end -}}
   {{- end -}}
 
+  {{- /* `dcterms:source` is not a term of the OFN context, but the context
+         defines the `dcterms` prefix, so the compact IRI is valid JSON-LD and
+         expands to http://purl.org/dc/terms/source. NKOD ignores what it does
+         not know; a generic DCAT reader gets the link from a derived dataset
+         to the data it was computed from. */ -}}
   {{- $rec := dict
-      "@context" "https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/kontexty/rozhraní-katalogů-otevřených-dat.jsonld"
+      "@context" $context
       "iri" $iri
       "typ" "Datová sada"
       "název" $ds.nazev
@@ -94,11 +153,13 @@
       "prvek_rúian" (slice "https://linked.cuzk.cz/resource/ruian/stat/1")
       "kontaktní_bod" $kontakt
       "dokumentace" $dokumentace
+      "dcterms:source" $provenance
       "distribuce" $distribuce -}}
 
   {{- with $ds.cas_od -}}
     {{- $rec = merge $rec (dict "časové_pokrytí" (dict "typ" "Časový interval" "začátek" .)) -}}
   {{- end -}}
+  {{- with $ds.rozliseni -}}{{- $rec = merge $rec (dict "časové_rozlišení" .) -}}{{- end -}}
   {{- with $cfg.publisher -}}{{- $rec = merge $rec (dict "poskytovatel" .) -}}{{- end -}}
 
   {{- /* Assigning to $_ is required. `.Publish` returns a value, and a call
@@ -106,17 +167,18 @@
          the JSON. */ -}}
   {{- $f := printf "dcat/datova-sada/%s.jsonld" $ds.id -}}
   {{- $_ := (resources.FromString $f ($rec | jsonify (dict "indent" "  "))).Publish -}}
+  {{- end -}}
 {{- end -}}
 
 {{- /* ── Catalogue index — the document registered in NKOD ─────────────── */ -}}
 {{- $katalog := dict
-    "@context" "https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/kontexty/rozhraní-katalogů-otevřených-dat.jsonld"
+    "@context" $context
     "iri" (printf "%s/dcat/katalog.jsonld" $base)
     "typ" "Katalog"
     "název" (dict "cs" "Pathogen Portal CZ — otevřená data" "en" "Pathogen Portal CZ — open data")
     "popis" (dict
-      "cs" "Datové sady, které vznikly zpracováním na Pathogen Portalu CZ: prahy intenzity chřipkové sezóny, signály detekce anomálií, strojově čitelné týdenní záchyty respiračních virů a odvozené incidence infekčních nemocí. Data přebíraná od ÚZIS, SZÚ, MZČR, ČSÚ, WHO a ECDC v tomto katalogu nejsou — publikují je jejich původci."
-      "en" "Datasets produced by processing on Pathogen Portal CZ: influenza season intensity thresholds, anomaly detection signals, machine-readable weekly respiratory virus detections and derived infectious disease incidence. Data taken over from ÚZIS, SZÚ, the Ministry of Health, the Czech Statistical Office, WHO and ECDC are not in this catalogue — their originators publish them.")
+      "cs" "Datové sady, které vznikly zpracováním na Pathogen Portalu CZ a jejichž všechny zdroje dovolují volné další užití. Data přebíraná od ÚZIS, SZÚ, MZČR, ČSÚ, WHO a ECDC v tomto katalogu nejsou — publikují je jejich původci."
+      "en" "Datasets produced by processing on Pathogen Portal CZ whose every source allows open reuse. Data taken over from ÚZIS, SZÚ, the Ministry of Health, the Czech Statistical Office, WHO and ECDC are not in this catalogue — their originators publish them.")
     "domovská_stránka" (printf "%s/about/data/" $base)
     "kontaktní_bod" $kontakt
     "datová_sada" $datasetIRIs -}}

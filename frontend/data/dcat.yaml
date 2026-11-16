@@ -11,11 +11,27 @@
 # detections exist only as PDFs until they are extracted; incidence per 100,000
 # exists only once ISIN is joined with CZSO population data.
 #
-# The format follows the OFN "Open data catalogue interface" (DCAT-AP-CZ), see
+# The format follows the OFN "DCAT-AP-CZ: Open data catalogue interface",
+# version 2024-05-28, see
 # layouts/partials/dcat-publish.html. Code-list values are IRIs, not text:
 #   theme           publications.europa.eu/…/data-theme/  (HEAL = health)
 #   frequency       publications.europa.eu/…/frequency/
 #   eurovoc         eurovoc.europa.eu/…  (1759 = disease, 5894 = public health)
+#
+# `zdroje` are ids from sources.yaml — what the dataset is computed FROM. They
+# do two things. They become `dcterms:source` links in the record, so a machine
+# can follow a dataset back to its origin. And they decide whether the dataset
+# is published at all: the catalogue describes open data, and the terms of use
+# it has to state per distribution are ours to grant only when every source
+# allows open reuse (`licence.open` in sources.yaml). A dataset with a source
+# that does not — SZÚ (CC BY-NC-ND in the website footer), WHO (public health
+# purposes only) — stays in this file but is left out of the built catalogue,
+# with a build warning, until the source's terms are settled. Nothing has to be
+# edited here when that happens; setting the flag on the source brings the
+# dataset back.
+#
+# `rozliseni` = the finest time step in the data as an ISO 8601 duration
+# (P1W, P1M, P1Y); optional.
 #
 # `soubory` are paths to published JSON files; each becomes one distribution.
 # A file that is not on the site is left out of the catalogue — offering a
@@ -52,6 +68,8 @@
     en: ["influenza", "ILI", "ARI", "MEM", "epidemic threshold", "surveillance", "public health"]
   periodicita: WEEKLY
   cas_od: "2009-01-01"
+  rozliseni: P1W
+  zdroje: [who-fluid-flunet, ecdc-erviss]
   soubory: ["/data/charts/flu_mem.json"]
   stranky: ["/dashboards/influenza-intensity"]
 
@@ -86,6 +104,8 @@
     en: ["outbreak detection", "early warning", "infectious diseases", "ISIN", "Farrington", "surveillance"]
   periodicita: MONTHLY
   cas_od: "2018-01-01"
+  rozliseni: P1M
+  zdroje: [uzis-isin]
   soubory: ["/data/charts/anomaly_signals.json"]
   stranky: ["/signals"]
 
@@ -116,6 +136,8 @@
     en: ["respiratory viruses", "influenza", "RSV", "laboratory surveillance", "regions"]
   periodicita: WEEKLY
   cas_od: "2012-10-01"
+  rozliseni: P1W
+  zdroje: [szu-respiratory]
   soubory:
     - "/data/charts/flu_weekly.json"
     - "/data/charts/flu_season_overview.json"
@@ -159,6 +181,8 @@
     en: ["infectious diseases", "incidence", "ISIN", "regions", "age groups", "public health"]
   periodicita: ANNUAL
   cas_od: "2018-01-01"
+  rozliseni: P1M
+  zdroje: [uzis-isin, csu-population]
   soubory:
     - "/data/charts/isin_regional_incidence.json"
     - "/data/charts/isin_regional_map.json"

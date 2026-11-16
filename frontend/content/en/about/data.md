@@ -51,8 +51,13 @@ including a `limits` field describing the limitations of the data. Dashboard pag
 
 Data **produced by processing on the portal** are also described by a catalogue following the Czech
 open formal standard
-[Open data catalogue interfaces](https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/) (in Czech):
+[DCAT-AP-CZ: Open data catalogue interface](https://ofn.gov.cz/dcat-ap-cz-rozhraní-katalogů-otevřených-dat/2024-05-28/) (in Czech):
 [`/dcat/katalog.jsonld`](/dcat/katalog.jsonld).
+
+The catalogue holds only datasets whose every source allows open reuse. Datasets built on sources
+with restrictive or unsettled terms (weekly respiratory virus detections from the SZÚ reports,
+influenza season intensity thresholds from WHO and ECDC data) are left out until the terms are
+settled; they stay available on the portal under the terms of the source.
 
 Data taken over from elsewhere are **not** in this catalogue. Their originators (ÚZIS, SZÚ, the
 Ministry of Health, the Czech Statistical Office, WHO, ECDC) publish them, and they can be found in

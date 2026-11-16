@@ -28,6 +28,7 @@ commit messages — is English.
 | `pathogensportal-db/` | **git submodule** pinned to a release tag: scrapers, DB schema, `scripts/generate_json.py` |
 | `incoming/` | situational report deliveries before ingest (see `incoming/README.md`) |
 | `tools/ingest_report.py` | turns an `incoming/<report>/` delivery into portal pages and chart JSON |
+| `tools/check_dcat_catalogue.py` | checks the built DCAT-AP-CZ catalogue (`frontend/public/dcat/`); run after `hugo`, runs in `hugo-build` |
 
 ## Commands
 
@@ -105,6 +106,10 @@ Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `s
 - `data/sources.yaml` is the single source catalogue; it feeds the human-readable data page,
   `/about/data/sources.json` (`layouts/_default/single.sources.json`) and the DCAT-AP-CZ catalogue
   (`partials/dcat-publish.html`, metadata in `data/dcat.yaml`, generated in the default language only).
+- A dataset in `data/dcat.yaml` names its sources (`zdroje`) and is published only when every one of
+  them has `licence.open: true` in `data/sources.yaml`; otherwise the build leaves it out with a
+  warning. The flag mirrors the one in `pathogensportal-db/sources.yaml` — never set it to make a
+  record validate.
 - `partials/dataset-jsonld.html` emits schema.org `Dataset` markup per dashboard.
 - Other data files: `navpills.yaml` (section navigation), `reports.yaml` (situational reports),
   `privacy.yaml` (privacy notice text).
