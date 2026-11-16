@@ -1,0 +1,37 @@
+{{/* Short comment on the latest data, placed above a chart.
+
+     Usage: {{< comment src="/data/charts/covid_comments.json" block="cases" >}}
+
+     The text is not written here. It arrives in the JSON from pathogensportal-db,
+     composed from a list of facts (scripts/facts.py) — by a template today, by a
+     language model once that is approved. The page does not change when the
+     author does: `comment.origin` says who wrote it and is shown as a badge, and
+     the expandable list gives the facts behind each sentence.
+
+     Expected JSON — `comment` and `facts` have the same shape as in the
+     respiratory blocks (resp_age.json):
+
+       { "blocks": { "<block>": {
+           "period":  { "cs": "Týden 9.–15. listopadu 2026", "en": "Week of 9–15 November 2026" },
+           "comment": { "origin": "template" | "model", "cs": "…", "en": "…",
+                        "sentences": [ { "cs": "…", "en": "…", "facts": ["id"] } ] },
+           "facts":   { "values": { "<name>": { "cs": "…", "en": "…" } },
+                        "facts":  [ { "id": "…", "cs": "… {name} …", "en": "…" } ] }
+       } } }
+
+     Nothing is emitted while the JSON is not in the repository, so a page can
+     carry the shortcode before the data pipeline produces the file. A block the
+     file does not contain removes itself in the browser.
+*/}}
+{{ $src := .Get "src" }}
+{{ $en  := eq .Site.Language.Lang "en" }}
+{{ if fileExists (printf "static%s" $src) }}
+<div class="pp-resp-comment" data-pp-comment="{{ .Get "block" }}" data-src="{{ $src }}" aria-live="polite" hidden>
+  <div class="pp-flu-eyebrow"><span data-f="eyebrow"></span> <span class="pp-tag" data-f="badge"></span></div>
+  <p class="pp-resp-comment__text" data-f="comment"></p>
+  <details class="pp-resp-src">
+    <summary>{{ if $en }}What this text is based on{{ else }}Z čeho text vychází{{ end }}</summary>
+    <ul data-f="sources"></ul>
+  </details>
+</div>
+{{ end }}

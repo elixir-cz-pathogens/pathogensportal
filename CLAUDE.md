@@ -88,6 +88,9 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
   The template emits markup only; `pp-charts.js` does everything else (rendering, data table toggle,
   origin label in the card footer).
 - Chart JSON shape: `{ labels: [...], datasets: [...], meta: {...} }` (Chart.js-like) plus optional fields.
+- Optional `chart` parameters: `series="1"` draws only the named series of the JSON (one file can feed
+  several cards, each with its own Y axis); `period="page"` makes the chart follow the page's
+  `period-switch` (last 12 months by default, a calendar year, or everything; needs ISO date labels).
 - **Data source order:** `pp-charts.js` queries `/api/charts` once per page. If the backend answers, charts
   load from `/api/charts/<key>`; otherwise from the static `src`. The payload is identical either way.
   `params.apibase` is empty in production (same origin); the dev compose sets `HUGO_PARAMS_APIBASE`.
@@ -100,7 +103,7 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
   dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
 
 Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`,
-`stat-card`, `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
+`stat-card`, `period-switch`, `comment` (data comment from a facts JSON), `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
 `organization`, `person`, `report-cards`. Each template starts with a usage comment.
 
 ### Structured data and catalogues

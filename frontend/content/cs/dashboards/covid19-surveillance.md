@@ -12,6 +12,15 @@ update_read: "stamp"
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="covid" >}}
+
+Tento panel sleduje vývoj covidu-19 v České republice od března 2020. Vychází z otevřených
+datových sad Ministerstva zdravotnictví ČR, které se obnovují denně; pozitivitu v laboratorní
+surveillance respiračních virů přebírá z evropského systému ECDC ERVISS.
+
+Grafy ukazují posledních 12 měsíců. Vlny z let 2020–2022 byly řádově vyšší než dnešní čísla
+a v jednom grafu by současný vývoj nebyl vidět — starší roky nebo celé období proto zvolíte
+přepínačem nad grafy.
+
 <a href="https://onemocneni-aktualne.mzcr.cz/covid-19" target="_blank" class="btn btn-primary mb-3 me-2">
   Oficiální COVID-19 portál MZČR →
 </a>
@@ -23,18 +32,62 @@ update_read: "stamp"
 
 {{< stat-card src="/data/charts/covid_summary.json" >}}
 
-{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" title="Nové případy a úmrtí — týdenní přehled" height="380"  note="Absolutní počty: nově potvrzené případy a úmrtí sečtené za kalendářní týden, celá ČR. Nepřepočteno na obyvatele." >}}
+{{< period-switch >}}
 
-{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalizace — stav pacientů (týdenní maximum)" height="380"  note="Absolutní počty současně hospitalizovaných pacientů (týdenní maximum denního stavu), celá ČR." >}}
+### Nové případy
 
-{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="Pozitivita testů na covid-19 (%)" height="300"  note="Podíl pozitivních mezi provedenými testy za kalendářní týden, zvlášť pro PCR a antigenní testy — každý typ testu má vlastní jmenovatel. Od poloviny srpna 2026 se hlásí jen desítky PCR testů týdně, pozitivita PCR je proto rozkolísaná; týden s méně než 30 testy se neuvádí." >}}
+Potvrzený případ je člověk s pozitivním testem. Kolik se testuje, se v čase výrazně měnilo,
+takže graf zachytí jen část nakažených a počty z různých let nejde přímo srovnávat. Dobře ale
+ukazuje, kdy vlna roste a kdy opadá.
+
+{{< comment src="/data/charts/covid_comments.json" block="cases" >}}
+
+{{< chart id="covidCases" src="/data/charts/covid_cases_weekly.json" series="0" type="bar" period="page" title="Nové případy za týden" height="340" note="Absolutní počty: nově potvrzené případy sečtené za kalendářní týden, celá ČR. Nepřepočteno na obyvatele." >}}
+
+Stejná čísla v přepočtu na obyvatele. Průběh odpovídá týdenním počtům, jednotka se hodí
+pro srovnání s jinými zeměmi.
+
+{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7denní incidence na 100 000 obyvatel" height="280"  note="Přepočet na populaci: nové případy za posledních 7 dní na 100 000 obyvatel." period="page" >}}
+
+---
+
+### Úmrtí
+
+Úmrtí přicházejí za vlnou případů s odstupem několika týdnů. Při nízkých počtech číslo mezi
+týdny kolísá; o vývoji vypovídá až delší období, ne rozdíl dvou sousedních týdnů.
+
+{{< comment src="/data/charts/covid_comments.json" block="deaths" >}}
+
+{{< chart id="covidDeaths" src="/data/charts/covid_cases_weekly.json" series="1" type="bar" period="page" title="Úmrtí za týden" height="300" note="Absolutní počty: úmrtí sečtená za kalendářní týden, celá ČR. Nepřepočteno na obyvatele." >}}
+
+---
+
+### Hospitalizace
+
+Graf ukazuje, kolik pacientů s covidem-19 leželo v nemocnici ve stejnou chvíli, ne kolik jich
+bylo nově přijato. Na tom, kolik se testuje mimo nemocnice, závisí méně než počet případů.
+Řady JIP, UPV a ECMO jsou části celkového počtu, nepřičítají se k němu.
+
+{{< comment src="/data/charts/covid_comments.json" block="hospitalization" >}}
+
+{{< chart id="covidHosp" src="/data/charts/covid_hospitalization.json" title="Hospitalizace — stav pacientů (týdenní maximum)" height="380"  note="Absolutní počty současně hospitalizovaných pacientů (týdenní maximum denního stavu), celá ČR." period="page" >}}
+
+---
+
+### Testování a pozitivita
+
+Pozitivita je podíl testů s pozitivním výsledkem. Na počtu provedených testů závisí méně než
+počet případů, proto lépe ukazuje, zda nákazy v posledních týdnech přibývá, nebo ubývá.
+Po najetí myší nebo klepnutí na bod se zobrazí, z kolika testů procento vzniklo.
+
+{{< comment src="/data/charts/covid_comments.json" block="positivity" >}}
+
+{{< chart id="covidTest" src="/data/charts/covid_testing.json" title="Pozitivita testů na covid-19 (%)" height="300"  note="Podíl pozitivních mezi provedenými testy za kalendářní týden, zvlášť pro PCR a antigenní testy — každý typ testu má vlastní jmenovatel. Od poloviny srpna 2026 se hlásí jen desítky PCR testů týdně, pozitivita PCR je proto rozkolísaná; týden s méně než 30 testy se neuvádí." period="page" >}}
 
 Pozitivita v laboratorní surveillance respiračních virů podle ECDC — SARS-CoV-2 vedle
 chřipky a RSV, každý virus s vlastním počtem vyšetřených vzorků.
 
 {{< chart id="covidPositivityErviss" src="/data/charts/flu_positivity_weekly.json" type="line" title="Týdenní pozitivita — SARS-CoV-2, chřipka, RSV" height="320" note="Podíl pozitivních mezi vyšetřenými vzorky v procentech, celá ČR, data ECDC ERVISS. SARS-CoV-2 končí týdnem 33/2026: od dalšího týdne ERVISS uvádí jiný počet vyšetřených vzorků (stejný jako u chřipky) a čísla na řadu nenavazují." >}}
-
-{{< chart id="covidInc" src="/data/charts/covid_incidence.json" title="7denní incidence na 100 000 obyvatel" height="280"  note="Přepočet na populaci: nové případy za posledních 7 dní na 100 000 obyvatel." >}}
 
 ---
 
