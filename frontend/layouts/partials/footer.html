@@ -108,7 +108,23 @@
     // The selector excludes tables marked data-no-datatable — tables driven by
     // their own script (e.g. the events calendar) must not be
     // paginated or re-sorted.
-    new DataTable('table:not([data-no-datatable])', {
+    //
+    // Only tables longer than the smallest page (10 rows) get DataTables: on a
+    // five-row table the paging/search controls are pure clutter, and on a phone
+    // they take more room than the table. Short tables are wrapped in a
+    // horizontally scrolling box instead, so a wide one cannot push the page
+    // sideways (DataTables tables get the same from .dt-layout-table in CSS).
+    var long = [];
+    document.querySelectorAll("table:not([data-no-datatable])").forEach(function (t) {
+      var rows = t.tBodies.length ? t.tBodies[0].rows.length : t.rows.length - 1;
+      if (rows > 10) { long.push(t); return; }
+      if (t.parentElement.classList.contains("pp-table-scroll")) return;
+      var box = document.createElement("div");
+      box.className = "pp-table-scroll";
+      t.parentNode.insertBefore(box, t);
+      box.appendChild(t);
+    });
+    if (long.length) new DataTable(long, {
       order: [],
       pageLength: 25,
       lengthMenu: [10, 25, 50, 100],

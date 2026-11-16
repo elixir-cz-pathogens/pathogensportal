@@ -1,0 +1,191 @@
+/* ── Dark mode for the site chrome ──────────────────────────────────────────
+   Opt-in: the toggle in the header sets data-bs-theme="dark" on <html> and
+   remembers it (static/js/pp-theme.js; head.html re-applies it before first
+   paint). Nothing follows prefers-color-scheme — the site stays light until a
+   visitor asks, and then it switches as a whole (see the note in custom.css).
+
+   Every rule here is scoped to [data-bs-theme="dark"], so the light site is
+   untouched. Loaded LAST in head.html, after pp-identity.css.
+
+   What is NOT here:
+   - chart, map, badge and status colours — dashboards.css and custom.css
+     already carry their own [data-bs-theme="dark"] tokens;
+   - Bootstrap components — Bootstrap 5.3 switches on the same attribute;
+   - brand bands (header band, hero, footer) — already dark blue with white
+     text, they read the same on a dark page.
+   Surfaces reuse the dark .pp-viz tokens from dashboards.css, so cards and
+   page chrome have one palette. */
+
+[data-bs-theme="dark"] {
+  color-scheme: dark;
+
+  /* the dark .pp-viz tokens, for pages without a .pp-viz wrapper (docs, about) */
+  --pp-surface: #1a1a19;
+  --pp-surface-raised: #232322;
+  --pp-border: #3a3a37;
+  --pp-border-strong: #4a4842;
+  --pp-text: #ffffff;
+  --pp-text-secondary: #c3c2b7;
+  --pp-text-muted: #9d9c93;
+
+  /* chrome-only tokens */
+  --pp-dk-bg: #141413;
+  --pp-dk-text: #ecebe6;
+  --pp-dk-link: #8fb3ec;      /* --pp-mid-blue lifted to 4.5:1+ on --pp-dk-bg */
+  --pp-dk-link-hover: #b5cdf3;
+  --pp-dk-tint: #1f2a38;      /* the light #eef3fa blue tint, re-stepped */
+
+  --bs-body-bg: var(--pp-dk-bg);
+  --bs-body-color: var(--pp-dk-text);
+  --bs-link-color: var(--pp-dk-link);
+  --bs-link-hover-color: var(--pp-dk-link-hover);
+  --bs-link-color-rgb: 143, 179, 236;
+  --bs-link-hover-color-rgb: 181, 205, 243;
+}
+
+[data-bs-theme="dark"] body { background: var(--pp-dk-bg); color: var(--pp-dk-text); }
+
+/* Links: the theme and pp-identity pin them to brand blues that vanish on dark.
+   :where() keeps this at the weight of one attribute, so every local rule that
+   sets its own link colour (footer band, card titles, buttons) still wins. */
+[data-bs-theme="dark"] :where(a:not(.btn)) { color: var(--pp-dk-link); }
+[data-bs-theme="dark"] :where(a:not(.btn)):hover { color: var(--pp-dk-link-hover); }
+[data-bs-theme="dark"] a.dark-blue,
+[data-bs-theme="dark"] .breadcrumbs .breadcrumb a,
+[data-bs-theme="dark"] .nav-list a.nav-link { color: var(--pp-dk-link); }
+[data-bs-theme="dark"] a.dark-blue:hover { color: var(--pp-dk-link-hover); }
+/* ...except where the hover rule above would out-weigh a white link on a band */
+[data-bs-theme="dark"] .pp-footer__band a:hover,
+[data-bs-theme="dark"] .pp-status-bar a:hover,
+[data-bs-theme="dark"] .bg-dashboard-title a:hover { color: #fff; }
+[data-bs-theme="dark"] blockquote { color: var(--pp-text-secondary); }
+
+/* ── Header and menu ── */
+[data-bs-theme="dark"] .pp-nav { background: var(--pp-dk-bg); border-color: var(--pp-border); }
+[data-bs-theme="dark"] .pp-nav .nav-link,
+[data-bs-theme="dark"] .pp-nav .dropdown-item { color: var(--pp-dk-text); }
+/* theme.css pins menu links to rgba(0,0,0,.75) with !important — only another
+   !important with more weight gets them back. */
+[data-bs-theme="dark"] .navbar-nav li.nav-item a.nav-link { color: var(--pp-dk-text) !important; }
+[data-bs-theme="dark"] .navbar-nav li.nav-item a.nav-link:hover,
+[data-bs-theme="dark"] .navbar-nav li.nav-item a.nav-link:focus-visible { color: #6cc9a1 !important; text-decoration-color: #6cc9a1; }
+[data-bs-theme="dark"] .pp-nav .dropdown-menu { background: var(--pp-surface-raised); border-color: var(--pp-border); }
+[data-bs-theme="dark"] .pp-nav .dropdown-item:hover,
+[data-bs-theme="dark"] .pp-nav .dropdown-item:focus { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
+[data-bs-theme="dark"] .navbar-toggler-icon { filter: invert(1) brightness(1.6); }
+/* The logo's wordmark is black on transparent. images/portal-dark.png is the
+   same file with the lettering re-lit (black → #f2f1ee, grey → #bebdb8) and the
+   emblem untouched. Swapped with content:, so only dark-mode visitors fetch it. */
+[data-bs-theme="dark"] .navbar .navbar-brand .portal-logo { content: url("../images/portal-dark.png"); }
+
+[data-bs-theme="dark"] .pp-langswitch__item { color: var(--pp-text-secondary); }
+[data-bs-theme="dark"] .pp-langswitch__item:hover { background: var(--pp-surface-raised); color: var(--pp-text); }
+[data-bs-theme="dark"] .pp-langswitch__item.is-active { background: #143024; color: #6cc9a1; border-color: #24533f; }
+
+/* ── Text set in brand dark blue / dark grey / near-black on white ──
+   (every such selector in pp-identity, pp-docs and custom.css, 12 Nov 2026) */
+[data-bs-theme="dark"] .pp-nav__all,
+[data-bs-theme="dark"] .pp-tile__title,
+[data-bs-theme="dark"] .pp-docs__home,
+[data-bs-theme="dark"] .pp-docs__group summary,
+[data-bs-theme="dark"] .pp-docs__card-t,
+[data-bs-theme="dark"] .pp-intake legend,
+[data-bs-theme="dark"] .pp-faq summary { color: var(--pp-dk-link); }
+[data-bs-theme="dark"] .pp-nav .dropdown-header,
+[data-bs-theme="dark"] .breadcrumbs .breadcrumb-item.active,
+[data-bs-theme="dark"] .breadcrumbs .breadcrumb-item:last-child a,
+[data-bs-theme="dark"] .pp-topics__lead,
+[data-bs-theme="dark"] .pp-docs__lead,
+[data-bs-theme="dark"] .pp-docs__card-d,
+[data-bs-theme="dark"] .pp-intake__opt,
+[data-bs-theme="dark"] .pp-home-lead { color: var(--pp-text-secondary); }
+
+/* The hero's white button keeps its dark-blue label. */
+[data-bs-theme="dark"] .pp-hero__cta--light,
+[data-bs-theme="dark"] .pp-hero__cta--light:hover { color: var(--pp-dark-blue); }
+[data-bs-theme="dark"] .pp-hero__cta:not(.pp-hero__cta--light),
+[data-bs-theme="dark"] .pp-hero__cta:not(.pp-hero__cta--light):hover { color: var(--pp-almost-black); }
+
+/* ── Home and lists ── */
+[data-bs-theme="dark"] .pp-home-filter { background: var(--pp-surface-raised); border-color: var(--pp-border); }
+[data-bs-theme="dark"] .pp-home-filter input { color: var(--pp-text); }
+[data-bs-theme="dark"] .pp-partners { border-top-color: var(--pp-border); }
+[data-bs-theme="dark"] .pp-partners__label { color: var(--pp-text-muted); }
+/* Partner logos are drawn for white. Each has a dark variant in images/dark/,
+   made by tools/make_dark_logos.py (white background removed, black and grey
+   lettering re-lit, brand colours kept unless too dark to read). Swapped with
+   content:, so only dark-mode visitors fetch them. A NEW logo needs a line
+   here and a run of the tool — without it, it shows as drawn for white. */
+[data-bs-theme="dark"] img[src$="/images/IMG.png"] { content: url("../images/dark/IMG.png"); }
+[data-bs-theme="dark"] img[src$="/images/elixir_logo.png"] { content: url("../images/dark/elixir_logo.png"); }
+[data-bs-theme="dark"] img[src$="/images/SIB.png"] { content: url("../images/dark/SIB.png"); }
+[data-bs-theme="dark"] img[src$="/images/VSCHT.png"] { content: url("../images/dark/VSCHT.png"); }
+[data-bs-theme="dark"] img[src$="/images/VZU.png"] { content: url("../images/dark/VZU.png"); }
+[data-bs-theme="dark"] img[src$="/images/swiss-contribution-cz.png"] { content: url("../images/dark/swiss-contribution-cz.png"); }
+[data-bs-theme="dark"] img[src$="/images/swiss-contribution-en.png"] { content: url("../images/dark/swiss-contribution-en.png"); }
+[data-bs-theme="dark"] img[src$="/images/CESNET.svg"] { content: url("../images/dark/CESNET.svg"); }
+[data-bs-theme="dark"] img[src$="/images/FIT_CVUT.svg"] { content: url("../images/dark/FIT_CVUT.svg"); }
+/* The footer strip shows logos greyscale at .75; on dark that dims the
+   re-lit lettering too much. */
+[data-bs-theme="dark"] .pp-partners__grid img { opacity: .9; }
+[data-bs-theme="dark"] .pp-topics a { background: var(--pp-surface-raised); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .pp-topics__count { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
+
+/* Theme cards, badges and paging (theme.css, submodule — overridden here). */
+[data-bs-theme="dark"] .bg-card,
+[data-bs-theme="dark"] .bg-bussiness-card,
+[data-bs-theme="dark"] .bg-dashboard,
+[data-bs-theme="dark"] .bg-datasets-btn { background-color: var(--pp-surface-raised); border-color: var(--pp-border); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .bg-highlight,
+[data-bs-theme="dark"] .bg-plp,
+[data-bs-theme="dark"] .bg-biobank,
+[data-bs-theme="dark"] .bg-see-all-link,
+[data-bs-theme="dark"] .bg-home-topics { background-color: var(--pp-surface); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] a.btn-white-black { background-color: var(--pp-surface-raised); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .nav-list li { border-color: var(--pp-border); }
+[data-bs-theme="dark"] .nav-list a.active { background-color: var(--pp-dk-tint); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .pagination > li > a,
+[data-bs-theme="dark"] .pagination > li > span { background-color: var(--pp-surface-raised); color: var(--pp-dk-link); border-color: var(--pp-border); }
+[data-bs-theme="dark"] .pagination > li > span:hover { background-color: var(--pp-border); color: var(--pp-text); }
+[data-bs-theme="dark"] hr.faded:before { border-top-color: var(--pp-border); }
+
+/* ── Callouts outside dashboards (dashboards have their own) ── */
+[data-bs-theme="dark"] .pp-callout:not(.pp-viz .pp-callout) { background: var(--pp-dk-tint); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .pp-callout--warning:not(.pp-viz .pp-callout) { background: #2e2414; }
+[data-bs-theme="dark"] .pp-callout--critical:not(.pp-viz .pp-callout) { background: #331a19; }
+
+/* ── Documentation and intake forms ── */
+[data-bs-theme="dark"] .pp-docs__group summary:hover,
+[data-bs-theme="dark"] .pp-docs__home:hover,
+[data-bs-theme="dark"] .pp-docs__group li a:hover,
+[data-bs-theme="dark"] .pp-docs__nav .is-active { background: var(--pp-dk-tint); color: var(--pp-dk-link-hover); }
+[data-bs-theme="dark"] .pp-docs__group li a { color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .pp-docs__pill { background: #2e2414; color: #e0a340; }
+[data-bs-theme="dark"] .pp-docs__cards a { background: var(--pp-surface-raised); color: var(--pp-dk-text); }
+[data-bs-theme="dark"] .pp-intake input:not([type=checkbox]),
+[data-bs-theme="dark"] .pp-intake textarea,
+[data-bs-theme="dark"] .pp-intake select { background: var(--pp-surface-raised); color: var(--pp-text); border-color: var(--pp-border); }
+[data-bs-theme="dark"] .pp-intake__preview { background: var(--pp-surface); }
+[data-bs-theme="dark"] .pp-intake__notice { background: #2e2414; }
+[data-bs-theme="dark"] .pp-intake__issues .is-error { color: #e87573; }
+[data-bs-theme="dark"] .pp-intake__issues .is-warning { color: #e0a340; }
+[data-bs-theme="dark"] .pp-intake__ok { color: #6cc9a1; }
+
+/* Code: Bootstrap's pink is fine on dark; pre blocks need a surface. */
+[data-bs-theme="dark"] pre { background: var(--pp-surface); color: var(--pp-text); }
+
+/* ── The toggle itself (both themes) ── */
+.pp-theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2rem; height: 2rem; padding: 0; border-radius: 6px;
+  border: 1px solid transparent; background: transparent;
+  color: #52514e; font-size: 1rem; line-height: 1;
+}
+.pp-theme-toggle:hover { background: #f2f1ee; color: #0b0b0b; }
+.pp-theme-toggle:focus-visible { outline: 2px solid var(--pp-origin-aggregated, #2a78d6); outline-offset: 2px; }
+[data-bs-theme="dark"] .pp-theme-toggle { color: var(--pp-text-secondary); }
+[data-bs-theme="dark"] .pp-theme-toggle:hover { background: var(--pp-surface-raised); color: var(--pp-text); }
+/* Show the icon of the mode you would switch TO. */
+.pp-theme-toggle .bi-sun { display: none; }
+[data-bs-theme="dark"] .pp-theme-toggle .bi-sun { display: inline; }
+[data-bs-theme="dark"] .pp-theme-toggle .bi-moon-stars { display: none; }
