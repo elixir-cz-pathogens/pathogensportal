@@ -336,6 +336,14 @@
   display: none;
 }
 
+/* The switch of a single chart: in the text flow, no bar across the page */
+.pp-period--inline {
+  position: static;
+  border-bottom: 0;
+  padding: 0;
+  margin: 0 0 0.75rem;
+}
+
 .pp-period__label {
   font-size: 0.8rem;
   color: var(--pp-text-muted);
@@ -348,7 +356,8 @@
   min-width: 0;
 }
 
-.pp-period__item {
+.pp-period__item,
+.pp-isin-pills button {
   flex: none;
   background: transparent;
   border: 1px solid var(--pp-border-strong);
@@ -360,18 +369,21 @@
   cursor: pointer;
 }
 
-.pp-period__item:hover {
+.pp-period__item:hover,
+.pp-isin-pills button:hover {
   border-color: var(--pp-text-muted);
   color: var(--pp-text);
 }
 
-.pp-period__item[aria-pressed="true"] {
+.pp-period__item[aria-pressed="true"],
+.pp-isin-pills button[aria-pressed="true"] {
   background: var(--pp-text);
   border-color: var(--pp-text);
   color: var(--pp-surface-raised);
 }
 
-.pp-period__item:focus-visible {
+.pp-period__item:focus-visible,
+.pp-isin-pills button:focus-visible {
   outline: 2px solid var(--pp-series-1);
   outline-offset: 2px;
 }
@@ -1757,3 +1769,87 @@
   .pp-gen-totals, .pp-gen-quality { grid-template-columns: minmax(0, 1fr); }
   .pp-gen-cell { grid-template-columns: 2.8rem minmax(28px, 1fr); }
 }
+
+/* ---------- Infectious diseases: overview blocks ({{< isin >}}, pp-isin.js) ----------
+   Two colours with one meaning across the page: slot 1 = records reported the
+   earlier way, slot 2 = records from EWS reports. The EWS part is always its
+   own segment, never folded into the total. */
+.pp-isin { margin: 0 0 1.75rem; }
+
+/* Choice of one diagnosis / one year: the pills of the period switch */
+.pp-isin-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+}
+.pp-card__head .pp-isin-pills { margin: 0; }
+
+.pp-isin-tiles { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 1rem; }
+/* Neutral edge: the tile colours of the page mean a reporting channel, not a tile. */
+.pp-isin-tiles .pp-stat { --pp-stat-accent: var(--pp-border-strong); }
+.pp-isin-tiles .pp-stat__label { margin: 0; }
+.pp-isin-tiles .pp-stat__value { font-size: 1.75rem; }
+.pp-isin-tiles .pp-stat__note { margin: 0; }
+
+.pp-isin-age { margin: 4px 0 8px; }
+
+/* Ranked rows: name, bar in two segments, value. The name column is wide
+   enough for the longest diagnosis name and wraps instead of pushing the bar. */
+.pp-isin-rows { display: grid; gap: 9px; margin: 6px 0 10px; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.pp-isin-row {
+  display: grid;
+  grid-template-columns: minmax(0, 17rem) minmax(0, 1fr) minmax(5.5rem, max-content);
+  gap: 4px 12px;
+  align-items: center;
+}
+.pp-isin-row__label { color: var(--pp-text); line-height: 1.3; }
+.pp-isin-row__label small,
+.pp-isin-row__value small { display: block; font-size: 0.72rem; color: var(--pp-text-muted); }
+.pp-isin-row__track { display: flex; gap: 2px; min-width: 0; }
+.pp-isin-row__track > i {
+  display: block;
+  height: 14px;
+  min-width: 2px;
+  background: var(--pp-series-1);
+}
+.pp-isin-row__track > i:last-child { border-radius: 0 4px 4px 0; }
+.pp-isin-row__track > .pp-isin-row__ews { background: var(--pp-series-2); }
+.pp-isin-row__value { text-align: right; color: var(--pp-text); }
+
+/* Small multiples of a thematic group: one diagnosis per tile, each with its
+   own Y scale (the highest year is named under the plot), columns = years. */
+.pp-isin-minis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 22px 24px;
+  margin: 10px 0 12px;
+}
+.pp-isin-mini { min-width: 0; }
+.pp-isin-mini__name { font-size: 0.85rem; font-weight: 600; line-height: 1.3; color: var(--pp-text); min-height: 2.6em; }
+.pp-isin-mini__name small { display: block; font-size: 0.72rem; font-weight: 400; color: var(--pp-text-muted); }
+.pp-isin-mini__value { margin-top: 6px; font-size: 1.3rem; font-weight: 600; line-height: 1.15; color: var(--pp-text); font-variant-numeric: tabular-nums; }
+.pp-isin-mini__value small { display: block; font-size: 0.72rem; font-weight: 400; color: var(--pp-text-muted); }
+.pp-isin-mini__plot {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 76px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--pp-border-strong);
+}
+.pp-isin-mini__col { flex: 1 1 0; min-width: 0; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; }
+.pp-isin-mini__col > i { display: block; flex: none; min-height: 1px; background: var(--pp-series-1); }
+.pp-isin-mini__col > i:first-child { border-radius: 3px 3px 0 0; }
+.pp-isin-mini__col > .pp-isin-mini__ews { background: var(--pp-series-2); }
+.pp-isin-mini__col:hover > i { filter: brightness(0.88); }
+.pp-isin-mini__axis { display: flex; justify-content: space-between; gap: 6px; margin-top: 3px; font-size: 0.7rem; color: var(--pp-text-muted); font-variant-numeric: tabular-nums; }
+
+@media (max-width: 575.98px) {
+  /* Name on its own line, bar and value under it */
+  .pp-isin-row { grid-template-columns: minmax(0, 1fr) max-content; }
+  .pp-isin-row__label { grid-column: 1 / -1; }
+  .pp-isin-row__label small { display: inline; }
+  .pp-isin-pills { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
+}
+.pp-isin-pills[hidden] { display: none; }

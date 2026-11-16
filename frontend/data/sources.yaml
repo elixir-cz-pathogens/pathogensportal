@@ -62,6 +62,33 @@
           "/dashboards/infectious-diseases-vector",
           "/dashboards/infectious-diseases-other"]
 
+- id: uzis-isin-weekly
+  name: { cs: "Infekční nemoci v ČR po týdnech (datový souhrn ÚZIS)", en: "Infectious diseases in Czechia by week (ÚZIS data summary)" }
+  publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
+  url: "https://www.nzip.cz/data/2620-infekcni-nemoci-mezirocni-srovnani-datovy-souhrn"
+  licence:
+    name: { cs: "neuvedena", en: "not stated" }
+    url: "https://www.nzip.cz/data/2620-infekcni-nemoci-mezirocni-srovnani-datovy-souhrn"
+    note:
+      cs: "Datový souhrn, ne otevřená datová sada: stránka souhrnu ani metodický popis licenci neuvádějí, uvádějí jen citaci. Portál data přebírá s touto citací; do katalogu otevřených dat portálu se nezařazují."
+      en: "A data summary, not an open dataset: neither its page nor the methodological description states a licence, only a citation. The portal uses the data with that citation; they are not part of the portal's open data catalogue."
+    verified: "2026-11-16"
+  citation: "Šanca O., Májek T., Davidová H., Rázková K., Klimeš D., Kubát J., Blaha M., Jarkovský J. Meziroční srovnání počtu infekčních nemocí po týdnech v ČR. Národní zdravotnický informační portál [online]. Praha: Ministerstvo zdravotnictví ČR a Ústav zdravotnických informací a statistiky ČR, 2026. Dostupné z: https://www.nzip.cz/data/2620-infekcni-nemoci-mezirocni-srovnani-datovy-souhrn. ISSN 2695-0340."
+  format: "XLSX"
+  coverage: { cs: "posledních pět let, do minulého týdne", en: "the last five years, up to the previous week" }
+  grain: { cs: "týden (ISO) × kraj × věková skupina, 11 diagnóz; zvlášť záznamy z hlášení EWS", en: "ISO week × region × age group, 11 diagnoses; records from EWS reports counted separately" }
+  frequency: { cs: "týdně (pondělí)", en: "weekly (Monday)" }
+  limits:
+    cs: "Jen jedenáct diagnóz. Od července 2025 vzniká část záznamů z hlášení EWS a jejich podíl dál roste, počty proto nejsou srovnatelné s předchozími roky. V běžícím roce nemá část záznamů přiřazený kraj; portál kreslí jen celostátní počty."
+    en: "Eleven diagnoses only. Since July 2025 part of the records is created from EWS reports and their share keeps growing, so counts are not comparable with earlier years. In the running year some records have no region yet; the portal draws national counts only."
+  pages:
+    - "/dashboards/infectious-diseases"
+    - "/dashboards/infectious-diseases-childhood"
+    - "/dashboards/infectious-diseases-gastro"
+    - "/dashboards/infectious-diseases-skin"
+    - "/dashboards/infectious-diseases-vector"
+    - "/dashboards/infectious-diseases-hepatitis"
+
 - id: uzis-rpn
   name: { cs: "Registr pohlavních nemocí", en: "Register of Sexually Transmitted Diseases" }
   publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }

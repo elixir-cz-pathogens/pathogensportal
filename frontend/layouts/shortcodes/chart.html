@@ -10,7 +10,10 @@
                        series — the per-series types in the JSON were chosen for
                        the combined chart.
        period="page"   follow the page's period switch ({{< period-switch >}}).
-                       Needs ISO dates (YYYY-MM-DD) as labels.
+                       Needs ISO dates (YYYY-MM-DD) or months (YYYY-MM) as labels.
+       breaks="true"   mark on the time axis where a change in reporting takes
+                       effect (records of `meta.caveats` with action "break").
+                       Say in `note` what the dashed line means.
 
      The template only emits the structure; data and colours are handled by
      /js/pp-charts.js, which tries the API and falls back to the static JSON in
@@ -26,7 +29,8 @@
 
 <figure class="pp-card" data-pp-chart data-src="{{ $src }}" data-type="{{ $type }}"
         {{- with .Get "series" }} data-series="{{ . }}"{{ end }}
-        {{- with .Get "period" }} data-period="{{ . }}"{{ end }}>
+        {{- with .Get "period" }} data-period="{{ . }}"{{ end }}
+        {{- with .Get "breaks" }} data-breaks="{{ . }}"{{ end }}>
   {{ with $title }}
   <figcaption class="pp-card__head">
     <h2 class="pp-card__title">{{ . }}</h2>

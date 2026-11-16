@@ -85,4 +85,6 @@
 {{ if .HasShortcode "resp" }}<script src="{{ "js/pp-resp.js" | relURL }}"></script>{{ end }}
 {{/* Genomics blocks (archive, lineages, resistance) — same rule. */}}
 {{ if .HasShortcode "genomics" }}<script src="{{ "js/pp-genomics.js" | relURL }}"></script>{{ end }}
+{{/* Infectious-disease overview blocks (this year by week, top diagnoses, age) — same rule. */}}
+{{ if .HasShortcode "isin" }}<script src="{{ "js/pp-isin.js" | relURL }}"></script>{{ end }}
 {{ end }}

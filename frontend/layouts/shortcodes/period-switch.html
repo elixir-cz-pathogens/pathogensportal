@@ -1,6 +1,14 @@
 {{/* Period switch for the time-series charts of a page.
 
      Usage: {{< period-switch >}}   once per page, above the first chart
+            {{< period-switch default="all" sticky="false" >}}
+
+     default   what the charts show first: "12m" (default), "all" or a year.
+               Use "all" where the whole series is the point (seasonal pattern
+               over years) and the switch only lets the reader zoom in.
+     sticky    "false" leaves the switch in the text flow — for a page where it
+               drives a single chart and would otherwise stay pinned over
+               sections it does not affect.
 
      Every chart with period="page" shows the chosen period: the last 12 months
      (default), one calendar year, or everything. One switch for the whole page,
@@ -15,7 +23,7 @@
      the years present in the data, so a new year appears by itself.
 */}}
 {{ $en := eq .Site.Language.Lang "en" }}
-<div class="pp-period" data-pp-period hidden>
+<div class="pp-period{{ if eq (.Get "sticky") "false" }} pp-period--inline{{ end }}" data-pp-period="{{ .Get "default" }}" hidden>
   <span class="pp-period__label" id="pp-period-label">{{ if $en }}Period shown in the charts{{ else }}Období v grafech{{ end }}</span>
   <div class="pp-period__options" role="group" aria-labelledby="pp-period-label" data-pp-period-options></div>
 </div>

@@ -1,7 +1,7 @@
 ---
 title: "Infectious diseases — sexually transmitted"
 origin: aggregated
-description: "Syphilis and gonorrhoea since 1994 (Register of Sexually Transmitted Diseases), chlamydial infections and trichomoniasis 2018–2025 (ISIN) — trends, sex, age and regions."
+description: "Syphilis and gonorrhoea since 1994 (Register of Sexually Transmitted Diseases), chlamydial infections and trichomoniasis (ISIN) — trends, sex, age and regions."
 image: "/images/cards/id-sti.webp"
 update_from: "isin_group_sti.json"
 update_read: "year"
@@ -22,7 +22,7 @@ because of their different notification rules they cannot be added together.
 
 ### Syphilis and gonorrhoea — Register of Sexually Transmitted Diseases
 
-{{< chart id="stiTrend" src="/data/charts/sti_registry_trend.json" type="line" title="Syphilis, gonorrhoea and lymphogranuloma venereum — notified cases 1994–2025" height="380" note="Absolute annual counts of notified cases, whole country. Syphilis is the sum of all stages (congenital, early, late, other and unspecified; ICD-10 A50–A53), gonorrhoea A54, lymphogranuloma venereum A55." >}}
+{{< chart id="stiTrend" src="/data/charts/sti_registry_trend.json" type="line" title="Syphilis, gonorrhoea and lymphogranuloma venereum — notified cases since 1994" height="380" note="Absolute annual counts of notified cases, whole country. Syphilis is the sum of all stages (congenital, early, late, other and unspecified; ICD-10 A50–A53), gonorrhoea A54, lymphogranuloma venereum A55." >}}
 
 {{< chart id="stiIncidence" src="/data/charts/sti_registry_incidence.json" type="line" title="Syphilis and gonorrhoea — notified cases per 100,000 population" height="340" note="Adjusted to the Czech population (Czech Statistical Office, as of 31 December). The series starts in 2000, from which denominators are available. Gonorrhoea has roughly tripled since 2010; a rise in notified cases need not mean only more infections — more frequent testing also finds more cases." >}}
 
@@ -34,7 +34,16 @@ because of their different notification rules they cannot be added together.
 
 ### Chlamydia, trichomoniasis and others — ISIN
 
-{{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Sexually transmitted infections notified through ISIN — annual case counts (2018–2025)" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
+Sexually transmitted infections notified through ISIN. Each has its own chart with its own axis, because the counts differ by up to two orders of magnitude.
+
+{{% if-data file="isin_groups.json" %}}
+{{< isin part="group" group="sti" note="Absolute annual counts of reported cases, whole country, open ISIN data. Not population-adjusted. The axes of the charts differ: bar heights can be compared only within one chart." >}}
+
+{{< isin part="group-age" group="sti" note="Diagnoses notified through ISIN in the last completed year, whole country; syphilis and gonorrhoea are not included. Rates per population are computed by the portal (denominators from the Czech Statistical Office), not an official CZSO statistic." >}}
+{{% /if-data %}}
+{{% if-data file="isin_groups.json" not="true" %}}
+{{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Sexually transmitted infections notified through ISIN — annual case counts" height="420"  note="Absolute annual counts of notified cases, whole country. Not population-adjusted." >}}
+{{% /if-data %}}
 
 ### Methodology and limitations
 

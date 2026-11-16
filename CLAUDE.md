@@ -21,7 +21,7 @@ commit messages — is English.
 | `frontend/` | Hugo site: `hugo.toml`, `content/`, `layouts/`, `static/`, `data/`, `i18n/` |
 | `frontend/themes/hugo-pathogens-portal/` | theme, **git submodule** (external repo, do not edit — override in `frontend/layouts/`) |
 | `frontend/static/data/charts/*.json` | generated chart data, committed |
-| `frontend/static/js/` | `pp-charts.js` (all charts), `pp-flu.js` (influenza intensity), `pp-events.js` (home-page events) |
+| `frontend/static/js/` | `pp-charts.js` (all charts), `pp-flu.js` (influenza intensity), `pp-resp.js`, `pp-genomics.js`, `pp-isin.js` (blocks of one dashboard family each), `pp-events.js` (home-page events) |
 | `frontend/static/vendor/` | Bootstrap, jQuery, DataTables, Chart.js — hosted locally, not from a CDN |
 | `backend/` | FastAPI services, one directory = one container: `website-be`, `llm-agent-be`, `mcp` |
 | `deploy/` | `docker-compose.yml`, `docker-compose.dev.yml` (dev override), `.env.example` |
@@ -90,7 +90,11 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
 - Chart JSON shape: `{ labels: [...], datasets: [...], meta: {...} }` (Chart.js-like) plus optional fields.
 - Optional `chart` parameters: `series="1"` draws only the named series of the JSON (one file can feed
   several cards, each with its own Y axis); `period="page"` makes the chart follow the page's
-  `period-switch` (last 12 months by default, a calendar year, or everything; needs ISO date labels).
+  `period-switch` (last 12 months by default, a calendar year, or everything; needs ISO date or month
+  labels); `breaks="true"` marks on the time axis where a change in reporting takes effect
+  (`meta.caveats` records with action `break`).
+- `region-map` can carry two measures in one card (`src` + `alt_src`, e.g. per 100,000 and counts);
+  put the one that is comparable between regions in `src`.
 - **Data source order:** `pp-charts.js` queries `/api/charts` once per page. If the backend answers, charts
   load from `/api/charts/<key>`; otherwise from the static `src`. The payload is identical either way.
   `params.apibase` is empty in production (same origin); the dev compose sets `HUGO_PARAMS_APIBASE`.
@@ -103,7 +107,8 @@ that ISO week), `month`, `year`. Month and year are not converted to a day.
   dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
 
 Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`,
-`stat-card`, `period-switch`, `comment` (data comment from a facts JSON), `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
+`stat-card`, `period-switch`, `comment` (data comment from a facts JSON), `isin` (infectious-disease
+overview blocks, drawn by `pp-isin.js`), `if-data` (content shown only when a chart JSON is in the repo), `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
 `organization`, `person`, `report-cards`. Each template starts with a usage comment.
 
 ### Structured data and catalogues
@@ -129,6 +134,11 @@ Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `s
   review. `incoming/` + `tools/ingest_report.py` is the documented path for raw HTML deliveries.
   Never put a delivery directly into `frontend/static/` — Hugo publishes it verbatim and unsanitized.
 - Everything else (dashboard text, layouts, styles) is edited here by hand.
+
+A page that needs a **new** chart JSON must build and read well before the file arrives: wrap the
+block and the text that introduces it in `{{% if-data file="…" %}}` (and keep the chart it replaces
+under `not="true"`). `update_from` must name a file that is already in the repository — the build
+fails on a missing one.
 
 Because automated commits land on `dev` continuously, run `git fetch && git status -sb` before editing;
 a local branch goes stale quickly.

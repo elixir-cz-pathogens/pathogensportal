@@ -1,7 +1,7 @@
 ---
 title: "Infekční nemoci — Pohlavně přenosné"
 origin: aggregated
-description: "Syfilis a kapavka od roku 1994 (Registr pohlavních nemocí), chlamydiové infekce a trichomoniáza 2018–2025 (ISIN) — trendy, pohlaví, věk a kraje."
+description: "Syfilis a kapavka od roku 1994 (Registr pohlavních nemocí), chlamydiové infekce a trichomoniáza (ISIN) — trendy, pohlaví, věk a kraje."
 image: "/images/cards/id-sti.webp"
 update_from: "isin_group_sti.json"
 update_read: "year"
@@ -21,7 +21,7 @@ jsou zobrazeny odděleně; kvůli odlišným pravidlům hlášení je nelze sč�
 
 ### Syfilis a kapavka — Registr pohlavních nemocí
 
-{{< chart id="stiTrend" src="/data/charts/sti_registry_trend.json" type="line" title="Syfilis, kapavka a venerický lymfogranulom — hlášené případy 1994–2025" height="380" note="Absolutní roční počty hlášených případů, celá ČR. Syfilis je součet všech stadií (vrozená, časná, pozdní, jiná a nespecifikovaná; MKN-10 A50–A53), kapavka A54, venerický lymfogranulom A55." >}}
+{{< chart id="stiTrend" src="/data/charts/sti_registry_trend.json" type="line" title="Syfilis, kapavka a venerický lymfogranulom — hlášené případy od roku 1994" height="380" note="Absolutní roční počty hlášených případů, celá ČR. Syfilis je součet všech stadií (vrozená, časná, pozdní, jiná a nespecifikovaná; MKN-10 A50–A53), kapavka A54, venerický lymfogranulom A55." >}}
 
 {{< chart id="stiIncidence" src="/data/charts/sti_registry_incidence.json" type="line" title="Syfilis a kapavka — hlášené případy na 100 000 obyvatel" height="340" note="Přepočet na populaci ČR (ČSÚ, stav k 31. 12.). Řada začíná rokem 2000, odkud máme jmenovatele. Kapavka se od roku 2010 zhruba ztrojnásobila. Růst hlášených případů ale nemusí znamenat jen víc nákaz — víc případů zachytí i častější testování." >}}
 
@@ -33,7 +33,16 @@ jsou zobrazeny odděleně; kvůli odlišným pravidlům hlášení je nelze sč�
 
 ### Chlamydie, trichomoniáza a další — ISIN
 
-{{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Pohlavně přenosné nemoci hlášené přes ISIN — roční počty případů (2018–2025)" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
+Pohlavně přenosné nemoci, které se hlásí přes ISIN. Každá má vlastní graf s vlastní osou, protože se počty liší až o dva řády.
+
+{{% if-data file="isin_groups.json" %}}
+{{< isin part="group" group="sti" note="Absolutní roční počty hlášených případů, celá ČR, otevřená data ISIN. Nepřepočteno na obyvatele. Osy jednotlivých grafů nejsou stejné: výšku sloupců lze srovnávat jen uvnitř jednoho grafu." >}}
+
+{{< isin part="group-age" group="sti" note="Diagnózy hlášené přes ISIN za poslední uzavřený rok, celá ČR; syfilis a kapavka tu nejsou. Přepočet na obyvatele je výpočet portálu (jmenovatele ČSÚ), ne oficiální statistika ČSÚ." >}}
+{{% /if-data %}}
+{{% if-data file="isin_groups.json" not="true" %}}
+{{< chart id="isinSti" src="/data/charts/isin_group_sti.json" type="bar" title="Pohlavně přenosné nemoci hlášené přes ISIN — roční počty případů" height="420"  note="Absolutní roční počty hlášených případů, celá ČR. Nepřepočteno na obyvatele." >}}
+{{% /if-data %}}
 
 ### Metodika a omezení
 
