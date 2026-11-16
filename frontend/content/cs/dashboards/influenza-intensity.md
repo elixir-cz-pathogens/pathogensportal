@@ -158,6 +158,14 @@ Zpětný test po sezónách: epidemický práh u ARI zachytil jen <span data-pp-
 {{< /method >}}
 {{< /flu >}}
 
+### Nemocnost podle věku
+
+Celkové číslo skrývá velké rozdíly mezi věkovými skupinami. Čtyři grafy ukazují běžící sezónu proti rozpětí
+předchozích sezón ve stejném týdnu. Každý má vlastní svislou osu, protože míra u nejmenších dětí je
+několikanásobně vyšší než u dospělých.
+
+{{< resp part="age" note="Míra na 100 tis. obyvatel dané věkové skupiny z hlášení praktických lékařů a pediatrů, data ECDC ERVISS. Věková řada pro ČR začíná týdnem 25/2022, rozpětí proto stojí jen na několika sezónách; při méně než třech se nekreslí. Prahy intenzity pro věkové skupiny neexistují. Hodnoty v ERVISS jsou zhruba o 15 % nižší než v týdenních zprávách SZÚ, průběh křivek se shoduje." >}}
+
 ### Jak dopadly minulé sezóny
 
 {{< flu part="seasons" />}}
@@ -170,5 +178,5 @@ Zpětný test po sezónách: epidemický práh u ARI zachytil jen <span data-pp-
 </p>
 <p class="stat-source">
   Data: WHO, FluID, 2026, data stažena při posledním obnovení panelu; podkladová data poskytla Česká republika (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">podmínky WHO</a>) ·
-  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: portál řadu WHO FluID doplnil čerstvějšími týdny z ERVISS a vypočítal z ní prahy MEM.
+  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: portál řadu WHO FluID doplnil čerstvějšími týdny z ERVISS a vypočítal z ní prahy MEM; rozpětí předchozích sezón podle věku vypočítal portál.
 </p>

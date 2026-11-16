@@ -1388,3 +1388,285 @@
   background: var(--pp-now-bg);
   border-radius: 6px;
 }
+
+/* ---------- Respiratory blocks (pp-resp.js): overview, age, influenza types ----------
+ * A comment composed from precomputed facts sits above every block; below it
+ * tiles or chart cards. Chips are neutral ink on purpose — the status colours
+ * are reserved for Signals. */
+.pp-resp { margin: 0 0 1.75rem; }
+
+.pp-resp-comment {
+  border-top: 1px solid var(--pp-border);
+  border-bottom: 1px solid var(--pp-border);
+  padding-block: 14px 12px;
+  margin: 0 0 1.1rem;
+}
+.pp-resp-comment .pp-flu-eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.pp-resp-comment .pp-tag { text-transform: none; letter-spacing: 0; }
+.pp-resp-comment__text {
+  font-size: 1.08rem;
+  line-height: 1.6;
+  color: var(--pp-text);
+  max-width: 72ch;
+  margin: 8px 0 6px;
+  min-height: 3.2em;
+}
+.pp-resp-src { font-size: 0.8rem; color: var(--pp-text-secondary); }
+.pp-resp-src summary { cursor: pointer; width: fit-content; color: var(--pp-text-muted); }
+.pp-resp-src summary:hover { color: var(--pp-text); }
+.pp-resp-src > ul { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 8px; max-width: 86ch; }
+.pp-resp-src > ul > li > span { color: var(--pp-text); }
+.pp-resp-src ul ul { margin: 2px 0 0; padding-left: 1.1rem; color: var(--pp-text-muted); }
+
+.pp-resp-tiles { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 0.4rem; }
+.pp-resp-tile { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.pp-resp-tile > span { display: block; }
+.pp-resp-tile > .pp-resp-chips { display: flex; }
+/* Linked tile: the whole card opens the dashboard behind its number. */
+.pp-resp-tile--link { text-decoration: none; color: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+.pp-resp-tile--link:hover { border-color: var(--pp-border-strong); box-shadow: 0 2px 8px rgba(11, 11, 11, 0.08); text-decoration: none; color: inherit; }
+.pp-resp-tile--link:focus-visible { outline: 2px solid var(--pp-series-1); outline-offset: 2px; }
+.pp-resp-tile--link .pp-stat__label::after { content: " →"; color: var(--pp-text-muted); }
+.pp-resp-tile--link:hover .pp-stat__label::after { color: var(--pp-series-1); }
+@media (prefers-reduced-motion: reduce) { .pp-resp-tile--link { transition: none; } }
+.pp-resp-tile .pp-stat__label { margin: 0; min-height: 2.5em; line-height: 1.25; }
+.pp-resp-tile .pp-stat__value { font-size: 1.75rem; }
+.pp-resp-tile .pp-stat__value small { font-size: 0.78rem; font-weight: 400; color: var(--pp-text-muted); }
+.pp-resp-tile .pp-stat__note { margin: 0; font-variant-numeric: tabular-nums; }
+.pp-resp-chips { display: flex; flex-wrap: wrap; gap: 4px; align-content: flex-start; min-height: 3.1em; }
+.pp-resp-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--pp-border);
+  border-radius: 999px;
+  color: var(--pp-text-secondary);
+  background: var(--pp-surface);
+}
+.pp-resp-chip__ring { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--pp-text-muted); flex: none; }
+.pp-resp-spark { display: block; width: 100%; height: auto; max-height: 56px; }
+.pp-resp-spark__base { stroke: var(--pp-grid); stroke-width: 1; }
+.pp-resp-spark__line { fill: none; stroke: var(--pp-series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.pp-resp-spark__end { fill: var(--pp-series-1); stroke: var(--pp-surface-raised); stroke-width: 2; }
+.pp-resp-spark__end--hollow { fill: var(--pp-surface-raised); stroke: var(--pp-series-1); }
+.pp-resp-asof { margin: 0 0 1.5rem; }
+
+/* Home page variant: the same block, without the facts list and the curve note. */
+.pp-resp--home { margin-bottom: 0; }
+.pp-resp--home .pp-resp-src,
+.pp-resp--home .pp-resp-asof,
+.pp-resp--home .pp-resp-comment__text,
+.pp-resp--home .pp-resp-comment .pp-tag { display: none; }
+.pp-resp--home .pp-resp-comment { border: 0; padding: 0; margin: 0 0 0.75rem; }
+.pp-resp-source { margin: 0; }
+
+/* Two-state switch (indicator, season) in a card head */
+.pp-resp-seg { display: inline-flex; border: 1px solid var(--pp-border-strong); border-radius: 8px; overflow: hidden; flex: none; }
+.pp-resp-seg button {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.82rem;
+  color: var(--pp-text-secondary);
+  cursor: pointer;
+}
+.pp-resp-seg button + button { border-left: 1px solid var(--pp-border-strong); }
+.pp-resp-seg button[aria-pressed="true"] { background: var(--pp-text); color: var(--pp-surface-raised); }
+.pp-resp-seg button:focus-visible { outline: 2px solid var(--pp-series-1); outline-offset: -2px; }
+
+.pp-resp-key { display: inline-block; width: 12px; height: 12px; border-radius: 3px; flex: none; }
+.pp-resp-key--line { border-top-color: var(--pp-series-1); }
+.pp-resp-key--band { background: var(--pp-band-2); }
+.pp-resp-key--holiday { width: 10px; height: 14px; border-radius: 2px; background: var(--pp-text); opacity: 0.1; }
+.pp-resp-key--prov { background: var(--pp-series-rest); opacity: 0.45; }
+
+/* Age: one card per group — a dot on the range of previous seasons — then one large chart. */
+.pp-resp-ages { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 6px 0 8px; }
+.pp-resp-age {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  padding: 12px 14px 10px;
+  text-align: left;
+  font: inherit;
+  color: var(--pp-text);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-border);
+  border-radius: var(--pp-radius);
+  cursor: pointer;
+}
+.pp-resp-age:hover { border-color: var(--pp-border-strong); }
+.pp-resp-age[aria-pressed="true"] { border-color: var(--pp-text); box-shadow: inset 0 0 0 1px var(--pp-text); background: var(--pp-surface-raised); }
+.pp-resp-age:focus-visible { outline: 2px solid var(--pp-series-1); outline-offset: 2px; }
+.pp-resp-age__label { font-size: 0.85rem; font-weight: 600; }
+.pp-resp-age__value { font-size: 1.5rem; font-weight: 600; line-height: 1.15; }
+.pp-resp-age__value small { font-size: 0.75rem; font-weight: 400; color: var(--pp-text-muted); }
+.pp-resp-age__verdict { font-size: 0.8rem; color: var(--pp-text-secondary); line-height: 1.3; min-height: 2.6em; }
+.pp-resp-age__range { font-size: 0.72rem; color: var(--pp-text-muted); line-height: 1.3; min-height: 2.6em; font-variant-numeric: tabular-nums; }
+.pp-resp-range { position: relative; height: 18px; margin: 2px 7px 2px; }
+.pp-resp-range::before { content: ""; position: absolute; left: -7px; right: -7px; top: 8px; border-top: 1px solid var(--pp-border-strong); }
+.pp-resp-range__band { position: absolute; top: 4px; height: 10px; border-radius: 3px; background: var(--pp-band-3); }
+.pp-resp-range__dot {
+  position: absolute;
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  background: var(--pp-series-1);
+  border: 2px solid var(--pp-surface-raised);
+}
+.pp-resp-key--dot { width: 12px; height: 12px; border-radius: 50%; background: var(--pp-series-1); }
+.pp-resp-key--range { width: 22px; height: 10px; background: var(--pp-band-3); }
+.pp-resp-subhead { font-size: 0.9rem; font-weight: 600; color: var(--pp-text); margin: 14px 0 6px; }
+
+.pp-resp-shares { display: grid; gap: 10px; }
+.pp-resp-share { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr) minmax(0, 17rem); gap: 12px; align-items: center; font-size: 0.82rem; }
+.pp-resp-share__season { font-weight: 600; color: var(--pp-text); font-variant-numeric: tabular-nums; }
+.pp-resp-share__bar { display: flex; gap: 2px; height: 28px; }
+.pp-resp-share__bar > div {
+  display: flex;
+  align-items: center;
+  padding-left: 7px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  min-width: 0;
+  white-space: nowrap;
+}
+/* Label ink inside a fill is fixed by the fill's luminance, the same in both themes. */
+.pp-resp-share__h1 { background: var(--pp-series-1); color: #ffffff; }
+.pp-resp-share__h3 { background: var(--pp-series-2); color: #1a1c1a; }
+.pp-resp-share__none {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px dashed var(--pp-border-strong);
+  border-radius: 4px;
+  color: var(--pp-text-muted);
+  font-size: 0.8rem;
+}
+.pp-resp-share__n { color: var(--pp-text-secondary); line-height: 1.35; font-variant-numeric: tabular-nums; }
+
+@media (max-width: 900px) {
+  .pp-resp-ages { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pp-resp-share { grid-template-columns: 4.6rem minmax(0, 1fr); }
+  .pp-resp-share__n { grid-column: 1 / -1; }
+}
+@media (max-width: 480px) {
+  .pp-resp-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---------- Genomics blocks (pp-genomics.js): archive, lineages, resistance ----------
+ * Counts, never percentages: the records are not a random sample of patients, so
+ * a share would read as prevalence. Bars are therefore scaled within their own
+ * column and always carry the number next to them. */
+.pp-gen { margin: 0 0 1.75rem; }
+.pp-gen .pp-resp-comment { margin-bottom: 1.1rem; }
+
+.pp-gen-totals { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin-bottom: 1.25rem; }
+.pp-gen-stamp { border-left-color: var(--pp-border-strong); display: flex; align-items: center; }
+.pp-gen-stamp .pp-stat__label { margin: 0; }
+.pp-gen-quality { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin: 14px 0 0; }
+
+/* One whole split into named parts — the tall segmented bar. */
+.pp-gen-seg__bar { display: flex; gap: 2px; height: 28px; }
+.pp-gen-seg__bar > i {
+  display: flex;
+  align-items: center;
+  padding-left: 7px;
+  min-width: 0;
+  border-radius: 4px;
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  /* Label ink inside a fill follows the fill's luminance and is the same in both
+     themes; the first two steps of the sequential ramp are dark, the rest light. */
+  color: var(--pp-text);
+}
+.pp-gen-seg__bar > i:nth-child(-n+2) { color: var(--pp-surface-raised); }
+
+/* Horizontal bar rows: label, track, value. */
+.pp-gen-bars {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr) max-content;
+  gap: 7px 12px;
+  align-items: center;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+.pp-gen-bars__head {
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-text-muted);
+}
+.pp-gen-bar__label { color: var(--pp-text); }
+.pp-gen-bar__label small { display: block; font-size: 0.72rem; color: var(--pp-text-muted); }
+.pp-gen-bar__track { min-width: 0; }
+.pp-gen-bar__track > i {
+  display: block;
+  height: 12px;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+  background: var(--pp-series-1);
+}
+.pp-gen-bar--zero {
+  height: 0 !important;
+  width: 14px;
+  min-width: 14px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  border-top: 1px solid var(--pp-border-strong);
+}
+.pp-gen-bar__value { text-align: right; color: var(--pp-text); }
+
+/* Pathogen table: a count plus a bar in one cell. */
+.pp-gen-taxa td { vertical-align: middle; }
+.pp-gen-name span { font-weight: 500; color: var(--pp-text); }
+.pp-gen-name small { display: block; font-size: 0.76rem; color: var(--pp-text-muted); }
+.pp-gen-taxa tr.pp-gen-group td {
+  padding-top: 1rem;
+  font-size: 0.74rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--pp-text-muted);
+  border-bottom: 1px solid var(--pp-border);
+  text-align: left;
+}
+.pp-gen-cell { display: grid; grid-template-columns: 3.2rem minmax(48px, 1fr); gap: 8px; align-items: center; }
+.pp-gen-cell b { font-weight: 500; text-align: right; }
+.pp-gen-cell i { display: block; height: 10px; min-width: 2px; border-radius: 3px; background: var(--pp-series-1); }
+.pp-gen-cell--seq { background: var(--pp-series-3) !important; }
+.pp-gen-muted { color: var(--pp-text-muted); }
+.pp-gen-taxa .pp-tag { white-space: nowrap; }
+
+/* Tree and organism cards */
+.pp-gen-trees, .pp-gen-orgs { display: grid; gap: 0; }
+.pp-gen-tree .pp-gen-bars, .pp-gen-org .pp-gen-bars { margin-top: 4px; }
+.pp-gen-flag {
+  margin: 0 0 10px;
+  padding: 7px 11px;
+  font-size: 0.82rem;
+  color: var(--pp-text);
+  background: var(--pp-surface);
+  border: 1px solid var(--pp-grid);
+  border-radius: 6px;
+}
+.pp-gen-group-block { margin-bottom: 14px; }
+.pp-gen-group-block h3 { font-size: 0.9rem; font-weight: 600; color: var(--pp-text); margin: 0; }
+.pp-gen-group-note { font-size: 0.8rem; color: var(--pp-text-secondary); margin: 2px 0 8px; }
+.pp-gen-tree .pp-card__foot a.pp-btn { text-decoration: none; }
+
+@media (max-width: 575.98px) {
+  .pp-gen-totals, .pp-gen-quality { grid-template-columns: minmax(0, 1fr); }
+  .pp-gen-cell { grid-template-columns: 2.8rem minmax(28px, 1fr); }
+}

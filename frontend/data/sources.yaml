@@ -268,3 +268,67 @@
     cs: "Provozuje je třetí strana; portál neodpovídá za jejich obsah ani dostupnost. Fylogenetické stromy nejsou specifické pro ČR. Odpadní vody SZÚ nemají strojově čitelný export."
     en: "Run by third parties; the portal is not responsible for their content or availability. The phylogenetic trees are not specific to Czechia. SZÚ wastewater data have no machine-readable export."
   pages: ["/dashboards/nextstrain-sarscov2", "/dashboards/nextstrain-influenza", "/dashboards/wastewater-monitoring"]
+
+- id: ena
+  name: { cs: "Evropský archiv nukleotidových sekvencí (ENA)", en: "European Nucleotide Archive (ENA)" }
+  publisher: "EMBL-EBI"
+  url: "https://www.ebi.ac.uk/ena/browser/home"
+  download: "https://www.ebi.ac.uk/ena/portal/api"
+  licence:
+    name: { cs: "INSDC — sekvenční záznamy bez omezení užití", en: "INSDC — no use restrictions on sequence records" }
+    url: "https://www.insdc.org/policy/"
+    note:
+      cs: "Politika INSDC: „no use restrictions or licensing requirements will be included in any sequence data records“. EMBL-EBI nad rámec původců dat další omezení neklade."
+      en: "INSDC policy: \"no use restrictions or licensing requirements will be included in any sequence data records\". EMBL-EBI places no restrictions beyond those of the data owners."
+    verified: "2026-11-13"
+  format: "API (TSV, JSON)"
+  coverage: { cs: "české záznamy od roku 1999", en: "Czech records since 1999" }
+  grain: { cs: "záznam (vzorek, sekvenační běh, sestavená sekvence)", en: "record (sample, sequencing run, assembled sequence)" }
+  frequency: { cs: "průběžně; portál počty obnovuje při každém běhu pipeline", en: "continuously; the portal refreshes the counts on every pipeline run" }
+  limits:
+    cs: "Počet záznamů není nemocnost — vzniká tím, že někdo vzorek sekvenoval a data zveřejnil. Zemi odběru vyplňuje vkladatel a je nepovinná, takže záznam z českého vzorku bez ní se nezapočítá a čísla jsou spodní odhad. Značka „patogen“ zahrnuje i viry rostlin a zvířat."
+    en: "The number of records is not an illness count — a record exists because someone sequenced a specimen and published the data. The country of collection is optional and filled in by the submitter, so a Czech record without it is not counted and the figures are a lower bound. The pathogen tag also covers viruses of plants and animals."
+  pages: ["/dashboards/genomics", "/dashboards/genomics-amr"]
+
+- id: nextstrain
+  name: { cs: "Nextstrain — veřejné stromy příbuznosti", en: "Nextstrain — public phylogenetic trees" }
+  publisher: "Nextstrain"
+  url: "https://nextstrain.org/"
+  download: "https://data.nextstrain.org/"
+  licence:
+    name: { cs: "kód AGPL, snímky CC BY 4.0; podkladová data podle jednotlivých stromů", en: "code AGPL, screenshots CC BY 4.0; underlying data per individual tree" }
+    url: "https://nextstrain.org/terms"
+    note:
+      cs: "Stromy chřipky, covidu a ptačí chřipky stojí na datech z GISAID, jehož podmínky zakazují data šířit a zpřístupňovat přes jiný portál. Portál proto přebírá jen souhrnné počty českých kmenů a odkaz; sekvence nestahuje."
+      en: "The influenza, COVID-19 and avian influenza trees rest on GISAID data, whose terms forbid distributing the data or making them available through a separate portal. The portal therefore takes only aggregate counts of Czech strains and a link; it downloads no sequences."
+    verified: "2026-11-13"
+  citation: "Hadfield et al., Nextstrain: real-time tracking of pathogen evolution, Bioinformatics (2018)."
+  format: "JSON (Auspice v2)"
+  coverage: { cs: "podle stromu; většina pokrývá poslední dva roky", en: "per tree; most cover the last two years" }
+  grain: { cs: "kmen (list stromu) × linie", en: "strain (tree tip) × lineage" }
+  frequency: { cs: "podle stromu — chřipkové denně až týdně, některé stojí", en: "per tree — influenza daily to weekly, some are not updated" }
+  limits:
+    cs: "Z několika desítek kmenů nelze usuzovat na zastoupení linií v populaci; počty ukazují, co se z Česka do stromu dostalo. Stáří stromu se u každého liší a je uvedené zvlášť. U ptačí chřipky nepochází žádný český vzorek od člověka."
+    en: "A few dozen strains cannot show how common lineages are in the population; the counts show what reached the tree from Czechia. Tree age differs and is stated for each one. In avian influenza no Czech specimen comes from a human."
+  pages: ["/dashboards/genomics-lineages"]
+
+- id: ncbi-pathogen-detection
+  name: { cs: "NCBI Pathogen Detection — geny rezistence", en: "NCBI Pathogen Detection — resistance genes" }
+  publisher: { cs: "NCBI (National Library of Medicine)", en: "NCBI (National Library of Medicine)" }
+  url: "https://www.ncbi.nlm.nih.gov/pathogens/"
+  download: "https://ftp.ncbi.nlm.nih.gov/pathogen/Results/"
+  licence:
+    name: { cs: "bez omezení užití ze strany NCBI", en: "no use restrictions from NCBI" }
+    url: "https://www.ncbi.nlm.nih.gov/home/about/policies/"
+    note:
+      cs: "Politika NCBI pro molekulární data: „NCBI itself places no restrictions on the use or distribution of the data contained therein.“ Původci jednotlivých záznamů si práva nárokovat mohou, NCBI je neposuzuje."
+      en: "NCBI policy for molecular data: \"NCBI itself places no restrictions on the use or distribution of the data contained therein.\" Submitters of individual records may claim rights, which NCBI does not assess."
+    verified: "2026-11-13"
+  format: "TSV"
+  coverage: { cs: "izoláty podle druhu; české odběry od roku 2000", en: "isolates per species; Czech collections since 2000" }
+  grain: { cs: "izolát × nalezené geny rezistence", en: "isolate × resistance genes found" }
+  frequency: { cs: "NCBI přepočítává průběžně (nové vydání každých pár dní)", en: "NCBI recomputes continuously (a new release every few days)" }
+  limits:
+    cs: "Sekvenované izoláty nejsou náhodný vzorek: sekvenují se přednostně kmeny vybrané kvůli rezistenci a část vzorků pochází z odpadních vod. Z počtů se proto nepočítají procenta. Nález genu není totéž co laboratorně změřená citlivost kmene."
+    en: "Sequenced isolates are not a random sample: strains selected because of resistance are sequenced preferentially and some specimens come from wastewater. Percentages are therefore not computed. Finding a gene is not the same as a laboratory measurement of susceptibility."
+  pages: ["/dashboards/genomics-amr"]

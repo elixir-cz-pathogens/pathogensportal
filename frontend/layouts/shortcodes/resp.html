@@ -1,0 +1,92 @@
+{{/* Respiratory blocks — the week at a glance, rates by age, influenza types.
+
+     Usage: {{< resp part="overview" >}}        (optional: tiles="ili,ari" max_age="21")
+            {{< resp part="age" note="…" >}}
+            {{< resp part="types" note="…" note_seasons="…" >}}
+
+     The template only emits the skeleton; /js/pp-resp.js fills it from one JSON
+     per part (pathogensportal-db, compute_resp.py): resp_overview.json,
+     resp_age.json, flu_types.json. Numbers, the comment above each block and the
+     facts it was composed from all arrive precomputed — nothing is calculated
+     in the browser.
+
+     If the JSON is missing (older data release), the block removes itself, so
+     the page looks as it did before.
+*/}}
+{{ $part := .Get "part" }}
+{{ $en   := eq .Site.Language.Lang "en" }}
+{{ $file := dict "overview" "resp_overview" "age" "resp_age" "types" "flu_types" }}
+{{ $src  := .Get "src" | default (printf "/data/charts/%s.json" (index $file $part)) }}
+
+{{ if eq $part "overview" }}
+{{ partial "resp-overview.html" (dict "src" $src "en" $en "tiles" (.Get "tiles") "maxAge" (.Get "max_age") "site" $.Site) }}
+{{ else }}
+<section class="pp-resp" data-pp-resp="{{ $part }}" data-src="{{ $src }}">
+  <div class="pp-resp-comment" aria-live="polite">
+    <div class="pp-flu-eyebrow"><span data-f="eyebrow"></span> <span class="pp-tag" data-f="badge"></span></div>
+    <p class="pp-resp-comment__text" data-f="comment"></p>
+    <details class="pp-resp-src">
+      <summary>{{ if $en }}What this text is based on{{ else }}Z čeho text vychází{{ end }}</summary>
+      <ul data-f="sources"></ul>
+    </details>
+  </div>
+
+  {{ if eq $part "age" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head pp-flu-head">
+      <div>
+        <h2 class="pp-card__title" data-f="title"></h2>
+        <p class="pp-card__subtitle" data-f="subtitle"></p>
+      </div>
+      <div class="pp-resp-seg" role="group" aria-label="{{ if $en }}Indicator{{ else }}Ukazatel{{ end }}" data-f="switch"></div>
+    </figcaption>
+    <div class="pp-resp-ages" data-f="cards"></div>
+    <div class="pp-flu-legend" data-f="cardLegend"></div>
+    <h3 class="pp-resp-subhead" data-f="chartTitle"></h3>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-card__plot" style="height:{{ .Get "height" | default "300" }}px">
+      <canvas role="img"></canvas>
+    </div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  {{ else if eq $part "types" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head pp-flu-head">
+      <div>
+        <h2 class="pp-card__title" data-f="title"></h2>
+        <p class="pp-card__subtitle">{{ if $en }}laboratory detections per calendar week · non-sentinel laboratories · Czechia{{ else }}počet laboratorních záchytů za kalendářní týden · nesentinelové laboratoře · celá ČR{{ end }}</p>
+      </div>
+      <div class="pp-resp-seg" role="group" aria-label="{{ if $en }}Season{{ else }}Sezóna{{ end }}" data-f="switch"></div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-card__plot" style="height:{{ .Get "height" | default "300" }}px">
+      <canvas role="img" aria-label="{{ if $en }}Weekly influenza detections by type and subtype{{ else }}Týdenní záchyty chřipky podle typu a subtypu{{ end }}"></canvas>
+    </div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin>{{ if $en }}loading data…{{ else }}načítám data…{{ end }}</span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <div>
+        <h2 class="pp-card__title">{{ if $en }}Influenza A subtypes by season{{ else }}Subtypy chřipky A po sezónách{{ end }}</h2>
+        <p class="pp-card__subtitle">{{ if $en }}share among detections with a determined subtype · on the right, how many specimens the share comes from{{ else }}podíl mezi záchyty, u kterých byl subtyp určen · vpravo z kolika vzorků podíl vznikl{{ end }}</p>
+      </div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="shareLegend"></div>
+    <div class="pp-resp-shares" data-f="shares"></div>
+    {{ with .Get "note_seasons" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+  </figure>
+  {{ end }}
+</section>
+{{ end }}

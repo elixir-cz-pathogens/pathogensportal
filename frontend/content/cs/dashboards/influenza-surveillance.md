@@ -10,6 +10,21 @@ update_from: "flu_weekly.json"
 update_read: "week"
 ---
 
+### Tento týden
+
+{{< resp part="overview" >}}
+
+---
+
+### Které typy chřipky kolují
+
+Laboratoře u části vzorků určují, zda jde o chřipku A, nebo B, a u chřipky A i její subtyp.
+Graf ukazuje týdenní záchyty v běžící a v minulé sezóně, pruhy pod ním podíl subtypů v jednotlivých sezónách.
+
+{{< resp part="types" note="Absolutní počty laboratorních záchytů za kalendářní týden, celá ČR, data ECDC ERVISS (nesentinelové laboratoře). „A bez určení subtypu“ jsou záchyty chřipky A, u kterých laboratoř subtyp neurčovala. Počty rostou s objemem testování, sezóny podle nich nelze srovnávat. Poslední dva týdny se ještě doplňují." note_seasons="Sezóna = týden 40 až týden 39 následujícího roku. Subtyp se určuje jen u části vzorků a jejich výběr není náhodný, podíl proto nemusí odpovídat všem nemocným. Při méně než 30 subtypovaných záchytech se podíl nekreslí." >}}
+
+---
+
 ### Sezónní přehled chřipky
 
 Počet laboratorně potvrzených případů chřipky A a B napříč sezónami 2012/13–2025/26.
@@ -83,5 +98,5 @@ Sledované patogeny:
 </p>
 <p class="stat-source">
   Pozitivita: WHO, FluNet, 2026, data stažena při posledním obnovení panelu; podkladová data poskytla Česká republika (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">podmínky WHO</a>) ·
-  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: pozitivitu z počtu vyšetřených vzorků a záchytů vypočítal portál.
+  ECDC ERVISS: „Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.“ · Úpravy: pozitivitu z počtu vyšetřených vzorků a záchytů a součty podle typu a subtypu vypočítal portál; práh a trend ILI v přehledu týdne jsou výpočet portálu (viz <a href="/dashboards/influenza-intensity/">Chřipka — intenzita sezóny</a>).
 </p>

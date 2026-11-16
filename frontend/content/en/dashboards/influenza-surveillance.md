@@ -10,6 +10,21 @@ update_from: "flu_weekly.json"
 update_read: "week"
 ---
 
+### This week
+
+{{< resp part="overview" >}}
+
+---
+
+### Which influenza types are circulating
+
+For some specimens laboratories determine whether the virus is influenza A or B and, for influenza A, its subtype.
+The chart shows weekly detections in the running and the previous season; the bars below it show the subtype shares by season.
+
+{{< resp part="types" note="Absolute counts of laboratory detections per calendar week, whole country, ECDC ERVISS data (non-sentinel laboratories). “A, subtype not determined” are influenza A detections for which the laboratory did not determine the subtype. Counts grow with testing volume, so seasons cannot be compared by them. The latest two weeks are still being completed." note_seasons="Season = week 40 to week 39 of the following year. The subtype is determined for only some specimens and they are not selected at random, so the share need not reflect all patients. With fewer than 30 subtyped detections the share is not drawn." >}}
+
+---
+
 ### Seasonal influenza overview
 
 Laboratory-confirmed influenza A and B cases across the seasons 2012/13–2025/26.
@@ -86,5 +101,5 @@ Monitored pathogens:
 </p>
 <p class="stat-source">
   Positivity: WHO, FluNet, 2026, data accessed at the latest dashboard refresh; underlying data provided by Czechia (<a href="https://www.who.int/about/policies/publishing/data-policy/terms-and-conditions" target="_blank">WHO terms</a>) ·
-  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: positivity computed by the portal from specimens tested and detections.
+  ECDC ERVISS: “Dataset provided by ECDC based on data provided by public health authorities, scientific institutes or health care providers in the relevant reporting countries and/or by WHO.” · Modifications: positivity from specimens tested and detections, and totals by type and subtype, computed by the portal; the ILI threshold and trend in the weekly overview are the portal's own calculation (see <a href="/en/dashboards/influenza-intensity/">Influenza — season intensity</a>).
 </p>

@@ -1,0 +1,118 @@
+{{/* Genomics blocks — what is publicly available from Czech specimens.
+
+     Usage: {{< genomics part="overview" >}}   totals + what the pathogen tag covers
+            {{< genomics part="growth" >}}     records added per year by technology
+            {{< genomics part="taxa" >}}       table of the pathogens the portal follows
+            {{< genomics part="quality" >}}    how well the records are described
+            {{< genomics part="lineages" >}}   Czech strains in public phylogenetic trees
+            {{< genomics part="amr" >}}        resistance genes in Czech isolates
+
+     The template emits the skeleton only; /js/pp-genomics.js fills it from the JSON
+     built by pathogensportal-db (compute_genomics.py). Parts on one page share a
+     file, which the script fetches once.
+
+     A part whose JSON is missing removes itself, so an older data release renders
+     the page without it instead of showing an error.
+
+     `comment` is the text composed from the facts listed under it. Whether a
+     template or a language model wrote it is stated in the badge.
+*/}}
+{{ $part := .Get "part" }}
+{{ $en   := eq .Site.Language.Lang "en" }}
+{{ $file := dict "overview" "genomics_overview" "growth" "genomics_overview"
+                 "taxa" "genomics_overview" "quality" "genomics_overview"
+                 "lineages" "genomics_lineages" "amr" "genomics_amr" }}
+{{ $src  := .Get "src" | default (printf "/data/charts/%s.json" (index $file $part)) }}
+{{ $withComment := slice "overview" "lineages" "amr" }}
+
+<section class="pp-gen pp-gen--{{ $part }}" data-pp-genomics="{{ $part }}" data-src="{{ $src }}">
+
+  {{ if in $withComment $part }}
+  <div class="pp-resp-comment" aria-live="polite">
+    <div class="pp-flu-eyebrow"><span data-f="eyebrow"></span> <span class="pp-tag" data-f="badge"></span></div>
+    <p class="pp-resp-comment__text" data-f="comment"></p>
+    <details class="pp-resp-src">
+      <summary>{{ if $en }}What this text is based on{{ else }}Z čeho text vychází{{ end }}</summary>
+      <ul data-f="sources"></ul>
+    </details>
+  </div>
+  {{ end }}
+
+  {{ if eq $part "overview" }}
+  <div class="pp-stats pp-gen-totals" data-f="totals"></div>
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <div>
+        <h2 class="pp-card__title">{{ if $en }}What the pathogen tag covers{{ else }}Co všechno značka „patogen“ zahrnuje{{ end }}</h2>
+        <p class="pp-card__subtitle" data-f="divSubtitle"></p>
+      </div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="divLegend"></div>
+    <div class="pp-gen-seg" data-f="divisions"></div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot"><span class="pp-origin" data-pp-origin></span></div>
+  </figure>
+
+  {{ else if eq $part "growth" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <div>
+        <h2 class="pp-card__title">{{ if $en }}How the data accumulate and what sequences them{{ else }}Jak data přibývají a čím se sekvenuje{{ end }}</h2>
+        <p class="pp-card__subtitle">{{ if $en }}sequencing runs newly published per year, by technology · by the date of publication in ENA{{ else }}počet nově zveřejněných sekvenačních běhů za rok podle technologie · podle data zveřejnění v ENA{{ end }}</p>
+      </div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-card__plot" style="height:{{ .Get "height" | default "300" }}px">
+      <canvas role="img" aria-label="{{ if $en }}Sequencing runs from Czech specimens newly published per year{{ else }}Nově zveřejněné sekvenační běhy z českých vzorků po letech{{ end }}"></canvas>
+    </div>
+    <p class="pp-note" data-f="note"></p>
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin></span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  {{ else if eq $part "taxa" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <div>
+        <h2 class="pp-card__title">{{ if $en }}Pathogens the portal follows{{ else }}Patogeny, které portál sleduje{{ end }}</h2>
+        <p class="pp-card__subtitle">{{ if $en }}records from Czech specimens · bar length is measured within its own column{{ else }}záznamy z českých vzorků · délka pruhu se měří v rámci svého sloupce{{ end }}</p>
+      </div>
+    </figcaption>
+    <div class="pp-flu-legend" data-f="legend"></div>
+    <div class="pp-table-scroll"><table class="pp-table pp-gen-taxa" data-f="table"></table></div>
+    <p class="pp-note" data-f="none"></p>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot"><span class="pp-origin" data-pp-origin></span></div>
+  </figure>
+
+  {{ else if eq $part "quality" }}
+  <figure class="pp-card">
+    <figcaption class="pp-card__head">
+      <div>
+        <h2 class="pp-card__title">{{ if $en }}How well the records are described{{ else }}Jak dobře jsou data popsaná{{ end }}</h2>
+        <p class="pp-card__subtitle" data-f="subtitle"></p>
+      </div>
+    </figcaption>
+    <div class="pp-gen-bars" data-f="fields"></div>
+    <div class="pp-stats pp-gen-quality" data-f="tiles"></div>
+    {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+    <div class="pp-card__foot">
+      <span class="pp-origin" data-pp-origin></span>
+      <button type="button" class="pp-btn" data-f="tableToggle" aria-expanded="false">{{ if $en }}Table{{ else }}Tabulka{{ end }}</button>
+    </div>
+    <div class="pp-table-wrap" data-open="false" data-f="table"></div>
+  </figure>
+
+  {{ else if eq $part "lineages" }}
+  <div class="pp-gen-trees" data-f="trees"></div>
+  <p class="pp-note" data-f="empty"></p>
+  {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+
+  {{ else if eq $part "amr" }}
+  <div class="pp-gen-orgs" data-f="organisms"></div>
+  {{ with .Get "note" }}<p class="pp-note">{{ . | markdownify }}</p>{{ end }}
+  {{ end }}
+</section>
