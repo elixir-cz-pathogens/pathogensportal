@@ -6,9 +6,10 @@ image: "/images/cards/infectious-hub.svg"
 highlight: true
 tags: ["infectious diseases", "surveillance", "ÚZIS", "regions", "Czech Republic"]
 data_source: '<a href="https://www.nzip.cz/data/2621-infekcni-nemoci-otevrena-data" target="_blank">ÚZIS CZ — ISIN open data (CC BY 4.0)</a> · <a href="https://www.nzip.cz/data/2620-infekcni-nemoci-mezirocni-srovnani-datovy-souhrn" target="_blank">ÚZIS CZ — weekly data summary</a>'
-# The yearly open export; the weekly block states its own date above its text.
-update_from: "isin_monthly_trend.json"
-update_read: "month"
+# The weekly summary is the freshest data on the page; `posledni_datum` is the last
+# day it covers. The yearly blocks state their own year in their headings.
+update_from: "isin_weekly.json"
+update_read: "stamp"
 ---
 
 {{< nav-pills group="infekcni-nemoci" active="prehled" >}}

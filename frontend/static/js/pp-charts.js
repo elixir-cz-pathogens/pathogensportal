@@ -132,6 +132,30 @@
     "na 100 000 mužů / žen": "per 100,000 men / women",
     "Signály se nepodařilo načíst": "Signals could not be loaded",
     "nelze rozhodnout": "cannot be decided",
+    "v normě": "within the usual range",
+    "nad obvyklou úrovní": "above the usual level",
+    "nehodnotí se": "not assessed",
+    "změna hlášení": "change in reporting",
+    "hlášeno dosavadním způsobem": "reported the earlier way",
+    "z hlášení EWS": "from EWS reports",
+    "obvyklé rozpětí (2022 – červen 2025)": "usual range (2022 – June 2025)",
+    " % z EWS": " % from EWS",
+    ": hlášené případy za posledních 12 měsíců, část z hlášení EWS zvlášť, šedě obvyklé rozpětí let před EWS": ": reported cases over the last 12 months, the part from EWS reports shown separately, the usual range of the years before EWS in grey",
+    "Víc než obvykle: mez normy je ": "More than usual: the usual range ends at ",
+    ", obvykle bývá ": ", the usual level is ",
+    "V krajích: ": "Regions: ",
+    ", mez ": ", limit ",
+    "V běžném rozpětí: mez normy je ": "Within the usual range, which ends at ",
+    "Nad mezí jen v krajích: ": "Above the limit only in regions: ",
+    "Nad mezí normy, ale jen díky hlášením EWS; nelze rozhodnout, jestli jde o skutečný nárůst.": "Above the usual range, but only thanks to EWS reports; whether it is a real rise cannot be decided.",
+    "Nehodnotí se. EWS zachytil případy, které se dřív nehlásily: hlášených je ": "Not assessed. EWS captures cases that used to go unreported: there are ",
+    "× víc než v minulých letech, převážně kvůli novému způsobu hlášení.": "× more reports than in previous years, mostly because of the new way of reporting.",
+    "Nehodnotí se: srovnatelné historie je zatím málo": "Not assessed: there is not enough comparable history yet",
+    " (minulé roky zkreslila epidemie)": " (an epidemic distorted the previous years)",
+    "Zobrazit čísla v tabulce": "Show the figures in a table",
+    "Měsíc ": "Month ",
+    " · data ÚZIS k ": " · ÚZIS data as of ",
+    "Stav": "State",
     ", z toho ": ", of which ",
     " nelze rozhodnout kvůli novému kanálu hlášení": " cannot be decided because of the new reporting channel",
     "Nárůst může být jen nový kanál hlášení — nelze rozhodnout": "The rise may be just the new reporting channel — cannot be decided",
@@ -1320,6 +1344,177 @@
     return !!(sig && sig.reporting_channel && !sig.reporting_channel.robust);
   }
 
+  /* ---------------- Signals from the weekly ÚZIS summary ---------------- */
+
+  var MONTHS_CS = ["leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen",
+                   "září", "říjen", "listopad", "prosinec"];
+  var MONTHS_EN = ["January", "February", "March", "April", "May", "June", "July", "August",
+                   "September", "October", "November", "December"];
+
+  function monthName(period) {
+    var m = /^(\d{4})-(\d{2})$/.exec(period || "");
+    if (!m) return period || "—";
+    return (EN ? MONTHS_EN : MONTHS_CS)[parseInt(m[2], 10) - 1] + " " + m[1];
+  }
+
+  function isoDay(stamp) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(stamp || "");
+    if (!m) return "—";
+    var d = parseInt(m[3], 10), mo = parseInt(m[2], 10);
+    return EN ? d + " " + MONTHS_EN[mo - 1].slice(0, 3) + " " + m[1] : d + ". " + mo + ". " + m[1];
+  }
+
+  /**
+   * Eleven diagnoses up to the last complete month, one tile each: state badge,
+   * the month's count, twelve months as bars against the usual range of the years
+   * before EWS, and one sentence. Diagnoses whose series EWS changed are shown
+   * but not scored — the chart says why better than a table row would.
+   * Colours as in pp-isin.js: slot 1 = reported the earlier way, slot 2 = EWS.
+   */
+  function renderSignalsWeekly(root) {
+    var body = root.querySelector("[data-pp-signals-body]");
+    var ORDER = { signal: 0, nelze_rozhodnout: 1, v_norme: 2, nehodnoceno: 3, zmena_hlaseni: 4 };
+    var BADGE = {
+      signal:           ["pp-sigw-badge--alert", "nad obvyklou úrovní"],
+      v_norme:          ["pp-sigw-badge--ok", "v normě"],
+      nelze_rozhodnout: ["pp-sigw-badge--muted", "nelze rozhodnout"],
+      nehodnoceno:      ["pp-sigw-badge--muted", "nehodnotí se"],
+      zmena_hlaseni:    ["pp-sigw-badge--muted", "změna hlášení"]
+    };
+
+    function name(r) {
+      return escapeHtml((EN && r.diagnoza_nazev_en) || r.diagnoza_nazev || r.diagnoza || "?");
+    }
+    function region(s) {
+      return escapeHtml((EN && s.kraj_nazev_en) || s.kraj_nazev || s.kraj_kod || "?");
+    }
+    function shortMonth(period) {
+      var m = /^(\d{4})-(\d{2})$/.exec(period || "");
+      return m ? parseInt(m[2], 10) + "/" + m[1].slice(2) : "";
+    }
+    /* A limit of 36.5 against 37 reported must not read as "37, limit 37". */
+    function limit(v) {
+      if (typeof v !== "number") return "—";
+      return v < 100 ? fmt(Math.round(v * 10) / 10) : fmtInt(v);
+    }
+    function cases(n) {
+      if (EN) return n === 1 ? "case" : "cases";
+      return n === 1 ? "případ" : (n >= 2 && n <= 4 && Number.isInteger(n) ? "případy" : "případů");
+    }
+
+    /* Bars: earlier way + EWS stacked; behind them a grey box per month = usual range. */
+    function chart(r) {
+      var months = r.months || [];
+      var W = 240, H = 70, pad = 2, n = months.length || 1, slot = W / n, bw = Math.max(4, slot * 0.6);
+      var max = 1;
+      months.forEach(function (m) { max = Math.max(max, m.n, m.hi || 0); });
+      function y(v) { return H - pad - (H - 2 * pad) * v / max; }
+      var parts = months.map(function (m, i) {
+        var x = i * slot + (slot - bw) / 2, out = "";
+        if (m.lo !== null && m.hi !== null) {
+          var top = y(m.hi), bot = y(m.lo);
+          out += '<rect class="pp-sigw-range" x="' + (i * slot + 1).toFixed(1) + '" y="' + top.toFixed(1) +
+            '" width="' + (slot - 2).toFixed(1) + '" height="' + Math.max(1.5, bot - top).toFixed(1) + '"></rect>';
+        }
+        var old = m.n - m.ews;
+        out += '<rect class="pp-sigw-old" x="' + x.toFixed(1) + '" y="' + y(old).toFixed(1) + '" width="' + bw.toFixed(1) +
+          '" height="' + (H - pad - y(old)).toFixed(1) + '"></rect>';
+        out += '<rect class="pp-sigw-ews" x="' + x.toFixed(1) + '" y="' + y(m.n).toFixed(1) + '" width="' + bw.toFixed(1) +
+          '" height="' + (y(old) - y(m.n)).toFixed(1) + '"></rect>';
+        return out;
+      }).join("");
+      var first = months[0] ? shortMonth(months[0].period) : "", last = months.length ? shortMonth(months[months.length - 1].period) : "";
+      return '<svg class="pp-sigw-chart" viewBox="0 0 ' + W + " " + H + '" preserveAspectRatio="none" role="img" aria-label="' +
+        escapeHtml(name(r) + tr(": hlášené případy za posledních 12 měsíců, část z hlášení EWS zvlášť, šedě obvyklé rozpětí let před EWS")) +
+        '">' + parts + "</svg>" +
+        '<div class="pp-sigw-axis"><span>' + first + "</span><span>" + last + "</span></div>";
+    }
+
+    function sentence(r, regional) {
+      switch (r.status) {
+        case "signal":
+          return tr("Víc než obvykle: mez normy je ") + limit(r.threshold) + tr(", obvykle bývá ") + limit(r.expected) + "." +
+            (regional.length ? " " + tr("V krajích: ") + regional.map(function (s) {
+              return region(s) + " (" + fmt(s.observed) + tr(", mez ") + limit(s.threshold) + ")";
+            }).join(", ") + "." : "");
+        case "v_norme":
+          return tr("V běžném rozpětí: mez normy je ") + limit(r.threshold) + "." +
+            (regional.length ? " " + tr("Nad mezí jen v krajích: ") + regional.map(function (s) {
+              return region(s) + " (" + fmt(s.observed) + ")";
+            }).join(", ") + "." : "");
+        case "nelze_rozhodnout":
+          return tr("Nad mezí normy, ale jen díky hlášením EWS; nelze rozhodnout, jestli jde o skutečný nárůst.");
+        case "zmena_hlaseni":
+          return tr("Nehodnotí se. EWS zachytil případy, které se dřív nehlásily: hlášených je ") +
+            fmt(r.level_ratio) + tr("× víc než v minulých letech, převážně kvůli novému způsobu hlášení.");
+        default:
+          return tr("Nehodnotí se: srovnatelné historie je zatím málo") +
+            (r.epidemic_months && r.epidemic_months.length ? tr(" (minulé roky zkreslila epidemie)") : "") + ".";
+      }
+    }
+
+    function draw(data) {
+      var national = (data.national || []).slice().sort(function (a, b) {
+        return (ORDER[a.status] - ORDER[b.status]) || (b.observed - a.observed);
+      });
+      var regionalBy = {};
+      (data.signals || []).forEach(function (s) {
+        if (s.kraj_kod === "CZ" || isUndecided(s)) return;
+        (regionalBy[s.diagnoza] = regionalBy[s.diagnoza] || []).push(s);
+      });
+      var input = data.input || {};
+
+      var html = '<p class="pp-card__subtitle">' + tr("Měsíc ") + "<strong>" + escapeHtml(monthName(data.target_period)) +
+        "</strong>" + tr(" · data ÚZIS k ") + isoDay(input.data_as_of) + "</p>" +
+        '<div class="pp-sigw-legend" aria-hidden="true">' +
+        '<span><i class="pp-sigw-sw pp-sigw-old"></i>' + tr("hlášeno dosavadním způsobem") + "</span>" +
+        '<span><i class="pp-sigw-sw pp-sigw-ews"></i>' + tr("z hlášení EWS") + "</span>" +
+        '<span><i class="pp-sigw-sw pp-sigw-range"></i>' + tr("obvyklé rozpětí (2022 – červen 2025)") + "</span></div>" +
+        '<div class="pp-sigw-grid">';
+
+      national.forEach(function (r) {
+        var b = BADGE[r.status] || BADGE.nehodnoceno;
+        var ews = r.ews_share !== null && r.ews_share !== undefined ? fmtInt(r.ews_share * 100) + tr(" % z EWS") : "";
+        html += '<article class="pp-sigw-tile pp-sigw-tile--' + r.status + '">' +
+          '<div class="pp-sigw-head"><h3 class="pp-sigw-name">' + name(r) + "</h3>" +
+          '<span class="pp-sigw-badge ' + b[0] + '">' + tr(b[1]) + "</span></div>" +
+          '<p class="pp-sigw-value"><strong>' + fmt(r.observed) + "</strong> " + cases(r.observed) +
+          (ews ? ' <span class="pp-sigw-ewsshare">' + ews + "</span>" : "") + "</p>" +
+          chart(r) +
+          '<p class="pp-sigw-text">' + sentence(r, regionalBy[r.diagnoza] || []) + "</p></article>";
+      });
+      html += "</div>";
+
+      /* Figures behind the tiles, for those who want them. */
+      html += '<details class="mt-3"><summary>' + tr("Zobrazit čísla v tabulce") + "</summary>" +
+        '<div style="overflow-x:auto"><table class="pp-table mt-2"><thead><tr>' +
+        '<th scope="col">' + tr("Diagnóza") + '</th><th scope="col">' + tr("Stav") + "</th>" +
+        '<th scope="col" class="text-end">' + tr("Nahlášeno") + "</th>" +
+        '<th scope="col" class="text-end">' + tr("Z toho novým kanálem") + "</th>" +
+        '<th scope="col" class="text-end">' + tr("Obvykle bývá") + "</th>" +
+        '<th scope="col" class="text-end">' + tr("Ještě v normě do") + "</th></tr></thead><tbody>" +
+        national.map(function (r) {
+          return "<tr><td>" + name(r) + "</td><td>" + tr((BADGE[r.status] || BADGE.nehodnoceno)[1]) + "</td>" +
+            '<td class="text-end">' + fmt(r.observed) + "</td>" +
+            '<td class="text-end">' + fmt(r.ews) + "</td>" +
+            '<td class="text-end">' + fmtInt(r.expected) + "</td>" +
+            '<td class="text-end">' + fmtInt(r.threshold) + "</td></tr>";
+        }).join("") + "</tbody></table></div></details>";
+
+      body.innerHTML = html;
+    }
+
+    return loadChartData(root.dataset.src)
+      .then(function (result) {
+        setOrigin(root, result.origin);
+        draw(result.payload);
+      })
+      .catch(function (err) {
+        body.innerHTML = '<div class="pp-error"><span aria-hidden="true">⚠</span><span>' +
+          tr("Signály se nepodařilo načíst") + " (" + escapeHtml(err.message) + ").</span></div>";
+      });
+  }
+
   /* ---------------- Recolouring on theme switch ---------------- */
 
   var themeListeners = [];
@@ -1563,7 +1758,43 @@
     });
   }
 
+  /* ---------------- Views: switch between whole sections of a page ---------------- */
+
+  /**
+   * One button per [data-pp-view]; the chosen view is shown, the others hidden.
+   * The URL hash names the view, so a link can open it and the back button is not
+   * polluted (replaceState). Runs before the renderers: a chart created inside a
+   * hidden view is sized by Chart.js's ResizeObserver once the view is shown.
+   */
+  function initViews() {
+    var bar = document.querySelector("[data-pp-views]");
+    var views = Array.prototype.slice.call(document.querySelectorAll("[data-pp-view]"));
+    if (!bar || views.length < 2) return;
+    var box = bar.querySelector("[data-pp-views-options]");
+    box.innerHTML = views.map(function (v) {
+      return '<button type="button" class="pp-period__item" data-pp-view-id="' + escapeHtml(v.id) + '" aria-controls="' +
+        escapeHtml(v.id) + '">' + escapeHtml(v.getAttribute("data-pp-view-title") || v.id) + "</button>";
+    }).join("");
+    function show(id, push) {
+      views.forEach(function (v) { v.hidden = v.id !== id; });
+      box.querySelectorAll("button").forEach(function (b) {
+        b.setAttribute("aria-pressed", String(b.getAttribute("data-pp-view-id") === id));
+      });
+      if (push && window.history && history.replaceState) history.replaceState(null, "", "#" + id);
+      // Maps and charts that measure their box need a nudge after leaving display:none.
+      window.dispatchEvent(new Event("resize"));
+    }
+    var fromHash = (location.hash || "").slice(1);
+    show(views.some(function (v) { return v.id === fromHash; }) ? fromHash : views[0].id, false);
+    box.addEventListener("click", function (e) {
+      var b = e.target.closest("button[data-pp-view-id]");
+      if (b) show(b.getAttribute("data-pp-view-id"), true);
+    });
+    bar.hidden = false;
+  }
+
   function init() {
+    initViews();
     var pending = [];
     function run(selector, render) {
       document.querySelectorAll(selector).forEach(function (el) { pending.push(render(el)); });
@@ -1579,6 +1810,7 @@
     run("[data-pp-stats]", renderStats);
     run("[data-pp-map]", renderMap);
     run("[data-pp-signals]", renderSignals);
+    run("[data-pp-signals-weekly]", renderSignalsWeekly);
     run("[data-pp-signalmap]", renderSignalMap);
 
     // Equivalent of Promise.allSettled without depending on it: the rejection is

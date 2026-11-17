@@ -19,10 +19,49 @@ update_from: "anomaly_signals.json"
 update_read: "stamp"
 ---
 
-Data o infekčních nemocech tvoří přes **1 200 časových řad** (114 diagnóz × 14 krajů
-plus celostátní součty). Tyto řady se vyhodnocují automaticky: pro každou řadu se spočítá
-**očekávaná endemická hladina** ze sezónnosti a historie a stránka zobrazí měsíce, kdy hlášený
-počet překročil prahovou mez.
+Stránka automaticky hledá, kde je hlášených případů infekčních nemocí víc, než bývá v danou
+roční dobu a v daném kraji obvyklé. Pro každou časovou řadu se ze sezónnosti a historie spočítá
+**očekávaná hladina** a stránka ukáže řady, které ji výrazně překročily.
+
+{{% if-data file="anomaly_signals_weekly.json" %}}
+Přepínačem níže zvolte, co chcete vidět:
+
+- **Letos** — 11 častých nemocí až do minulého měsíce, z týdenního souhrnu ÚZIS;
+- **Všechny nemoci** — 114 diagnóz po krajích z otevřených dat ISIN, která ale končí posledním
+  uzavřeným rokem.
+
+{{< views >}}
+
+{{% view id="letos" title="Letos: 11 častých nemocí" %}}
+Otevřená data ISIN se obnovují jednou ročně. Pro jedenáct častých diagnóz ale ÚZIS vydává týdenní
+souhrn až do minulého týdne, a v něm zvlášť počet záznamů z hlášení EWS. Detektor nad ním hodnotí
+poslední uzavřený měsíc stejnou metodou jako zbytek stránky, jen s kratší historií (od roku 2022).
+
+Nové hlášení EWS nepůsobí na všechny nemoci stejně, a podle toho se s nimi zachází:
+
+- **Hlášení se jen přesunula.** Lékaři a laboratoře hlásí stejné případy novou cestou a celkový
+  počet zůstal na úrovni minulých let (salmonelóza, kampylobakterióza, plané neštovice). Tyto
+  nemoci se hodnotí jako dřív.
+- **EWS zachytil případy, které se dřív nehlásily.** Hlášených případů je dvakrát až pětkrát víc
+  než v minulých letech, aniž by přibylo nemocných (pásový opar, borelióza, mononukleóza, svrab).
+  S minulými roky je srovnávat nelze, proto se nehodnotí; dlaždice ukazuje jen vývoj.
+- **Úroveň vzrostla a EWS tvoří menšinu.** Nárůst může být epidemie i nový kanál; signál platí,
+  jen když je nad mezí normy i bez případů z EWS.
+
+Do kterého případu nemoc patří, se počítá z dat každý měsíc znovu. Měsíce s epidemií (třeba černý
+kašel v roce 2024) se do obvyklé úrovně nepočítají.
+
+{{< signals-weekly src="/data/charts/anomaly_signals_weekly.json" title="Letos — 11 diagnóz z týdenního souhrnu ÚZIS" >}}
+
+Měsíční počty tu vznikají sečtením týdnů; týden na přelomu měsíce se dělí podle pracovních dnů.
+Od oficiálních měsíčních počtů se tak liší obvykle o 1–2 %. Za rok 2026 navíc u 1–10 % záznamů
+chybí kraj, takže krajské řady jsou o něco nižší než skutečnost; celostátní jsou úplné.
+{{% view-end %}}
+{{% /if-data %}}
+
+{{% view id="vsechny" title="Všechny nemoci: otevřená data ISIN" %}}
+Otevřená data ISIN tvoří přes **1 200 časových řad** (114 diagnóz × 14 krajů plus celostátní
+součty). Obnovují se jednou ročně, proto se tu hodnotí poslední měsíc, který v nich je.
 
 {{< signals-period src="/data/charts/anomaly_signals.json" >}}
 
@@ -76,6 +115,7 @@ Prioritně posuzujte řady s **vysokým skóre překročení a zároveň vysoký
 řadách lze čistě náhodou čekat řádově desítku překročení měsíčně.
 
 {{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
+{{% view-end %}}
 
 ---
 

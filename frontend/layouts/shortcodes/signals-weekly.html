@@ -1,0 +1,31 @@
+{{/* Signals for the 11 diagnoses of the weekly ÚZIS summary, up to the last complete month.
+
+     Usage: {{< signals-weekly src="/data/charts/anomaly_signals_weekly.json" title="…" >}}
+
+     The file comes from `detect_anomalies.py --zdroj tydenni` (pathogensportal-db). Besides
+     `signals` it carries `national` — the state of the national series of every diagnosis,
+     signal or not — so the card can say "within the usual range" as well as "signal".
+
+     Most signals of this source cannot be decided (the diagnosis now arrives mostly through
+     EWS), so the card lists only the decided ones as rows and folds the undecided ones into
+     one line per diagnosis; a table of fifty grey rows would hide the two that matter.
+
+     Structure only; /js/pp-charts.js (renderSignalsWeekly) fills it in. */}}
+{{ $src   := .Get "src" | default "/data/charts/anomaly_signals_weekly.json" }}
+{{ $title := .Get "title" | default "" }}
+
+<section class="pp-card" data-pp-signals-weekly data-src="{{ $src }}">
+  {{ with $title }}
+  <div class="pp-card__head">
+    <h2 class="pp-card__title">{{ . }}</h2>
+  </div>
+  {{ end }}
+
+  <div data-pp-signals-body>
+    <div class="pp-skeleton pp-skeleton--spinner pp-skeleton--inflow" style="height:160px">{{ partial "spinner.html" .Page }}</div>
+  </div>
+
+  <div class="pp-card__foot">
+    <span class="pp-origin" data-pp-origin>{{ if eq .Page.Language.Lang "en" }}loading data…{{ else }}Načítání dat…{{ end }}</span>
+  </div>
+</section>
