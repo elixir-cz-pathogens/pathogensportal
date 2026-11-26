@@ -16,6 +16,20 @@ update_read: "week"
 
 ---
 
+{{% if-data file="esurv_hosp_current.json" %}}
+### In hospital
+
+How many patients with influenza and with RSV were in hospital on the same day, from the daily
+ÚZIS report with the state as of yesterday. These are automated reports of the connected
+hospitals, and every hospital stay during which the infection was recorded is counted. Cases
+reported by physicians, intensive-care admissions and vaccination are on the dashboard
+[Respiratory infections — daily overview and hospitals](/en/dashboards/respiratory-daily/).
+
+{{< chart id="fluHospDaily" src="/data/charts/esurv_hosp_current.json" series="0,2" type="line" title="In hospital with influenza and RSV — daily count" height="300" note="Absolute counts of patients in hospital at the same time, all of Czechia, daily ÚZIS e-surveillance report. The influenza series starts on 18 October 2025." >}}
+
+---
+{{% /if-data %}}
+
 ### Which influenza types are circulating
 
 For some specimens laboratories determine whether the virus is influenza A or B and, for influenza A, its subtype.

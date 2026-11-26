@@ -4,6 +4,8 @@
      Same data as the top of the influenza page (partials/resp-overview.html),
      tiles only: the heading and the date say what it is, each tile opens the
      dashboard behind its number.
+     The `hosp` tile (new hospital admissions, daily ÚZIS e-surveillance) is
+     shown only once resp_overview.json carries it.
      The block hides itself when the data are older than three weeks (summer:
      ILI and ARI are not reported) or when resp_overview.json is missing.
 */}}
@@ -15,5 +17,5 @@
     <a class="pp-home-more" href="{{ .RelPermalink }}">{{ cond $en "Details and charts" "Podrobnosti a grafy" }} <i class="bi bi-arrow-right-short"></i></a>
     {{ end }}
   </div>
-  {{ partial "resp-overview.html" (dict "src" "/data/charts/resp_overview.json" "en" $en "tiles" "ili,ari,flu_pos,covid" "maxAge" "21" "home" true "site" .Site) }}
+  {{ partial "resp-overview.html" (dict "src" "/data/charts/resp_overview.json" "en" $en "tiles" "ili,ari,flu_pos,covid,hosp" "maxAge" "21" "home" true "site" .Site) }}
 </section>

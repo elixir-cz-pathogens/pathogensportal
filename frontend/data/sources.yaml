@@ -89,6 +89,29 @@
     - "/dashboards/infectious-diseases-vector"
     - "/dashboards/infectious-diseases-hepatitis"
 
+- id: uzis-esurveillance
+  name: { cs: "Respirační infekce – denní reporting e-surveillance (datový souhrn ÚZIS)", en: "Respiratory infections – daily e-surveillance reporting (ÚZIS data summary)" }
+  publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
+  url: "https://www.nzip.cz/data/2860-respiracni-infekce-denni-reporting-esurveillance-datovy-souhrn"
+  licence:
+    name: { cs: "neuvedena", en: "not stated" }
+    url: "https://www.nzip.cz/data/2860-respiracni-infekce-denni-reporting-esurveillance-datovy-souhrn"
+    note:
+      cs: "Datový souhrn, ne otevřená datová sada: stránka souhrnu ani soubory licenci neuvádějí, uvádějí jen citaci. Portál data přebírá s touto citací; do katalogu otevřených dat portálu se nezařazují. Reporty vznikají v projektu SCOPE IS, spolufinancovaném z programu EU4Health."
+      en: "A data summary, not an open dataset: neither its page nor the files state a licence, only a citation. The portal uses the data with that citation; they are not part of the portal's open data catalogue. The reports are produced within the SCOPE IS project, co-funded by the EU4Health programme."
+    verified: "2026-11-26"
+  citation: "Šanca O., Blaha M., Zelinková H., Jarkovský J., Klimeš D., Kundrát M., Krejčí J., Klika P., Mužík J., Komenda M., Dušek L. Respirační infekce – denní reporting e-surveillance. Národní zdravotnický informační portál [online]. Praha: Ministerstvo zdravotnictví ČR a Ústav zdravotnických informací a statistiky ČR, 2026. Dostupné z: https://www.nzip.cz/data/2860-respiracni-infekce-denni-reporting-esurveillance-datovy-souhrn. ISSN 2695-0340."
+  format: "XLSX"
+  coverage: { cs: "hlášené případy od 26. 5. 2025, očkování a laboratoře od 1. 9. 2026; do včerejška", en: "reported cases since 26 May 2025, vaccination and laboratories since 1 September 2026; up to the previous day" }
+  grain: { cs: "den × kraj × věková skupina; chřipka, COVID-19, RSV a ARI/ILI: hlášené případy, hospitalizace, JIP, úmrtí za hospitalizace, podané dávky očkování, laboratorně potvrzené infekce", en: "day × region × age group; influenza, COVID-19, RSV and ARI/ILI: reported cases, hospitalisations, intensive care, deaths during a hospital stay, vaccine doses given, laboratory-confirmed infections" }
+  frequency: { cs: "denně (ráno, stav k předchozímu dni)", en: "daily (in the morning, state as of the previous day)" }
+  limits:
+    cs: "Automatizovaná hlášení lékařů a nemocnic, ne sentinelová nemocnost: s prahy intenzity chřipky ani s řadami ECDC se nesrovnávají. Silný týdenní rytmus a svátky, poslední dny se doplňují. Hospitalizace s infekcí neznamená hospitalizaci kvůli ní. Počet zapojených nemocnic a laboratoří se v čase mění. Laboratoře hlásí jen pozitivní výsledky. Očkování jsou dávky, ne osoby."
+    en: "Automated reports of physicians and hospitals, not sentinel rates: not comparable with the influenza intensity thresholds or with the ECDC series. Strong weekly rhythm and holiday effects; the last days are still being completed. In hospital with the infection does not mean because of it. The number of connected hospitals and laboratories changes over time. Laboratories report positive results only. Vaccination counts doses, not people."
+  pages:
+    - "/dashboards/respiratory-daily"
+    - "/dashboards/influenza-surveillance"
+
 - id: uzis-rpn
   name: { cs: "Registr pohlavních nemocí", en: "Register of Sexually Transmitted Diseases" }
   publisher: { cs: "ÚZIS ČR", en: "ÚZIS CZ" }
