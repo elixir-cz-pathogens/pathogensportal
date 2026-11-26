@@ -11,7 +11,7 @@
              site    .Site — each tile links to the dashboard behind its number
 */}}
 {{ $links := dict }}
-{{ range $id, $path := dict "ili" "/dashboards/influenza-intensity" "ari" "/dashboards/influenza-intensity" "flu_pos" "/dashboards/influenza-surveillance" "rsv_pos" "/dashboards/influenza-surveillance" "covid" "/dashboards/covid19-surveillance" }}
+{{ range $id, $path := dict "ili" "/dashboards/influenza-intensity" "ari" "/dashboards/influenza-intensity" "flu_pos" "/dashboards/influenza-surveillance" "rsv_pos" "/dashboards/influenza-surveillance" "covid" "/dashboards/covid19-surveillance" "hosp" "/dashboards/respiratory-daily" }}
   {{ with $.site.GetPage $path }}{{ $links = merge $links (dict $id .RelPermalink) }}{{ end }}
 {{ end }}
 <section class="pp-resp{{ if .home }} pp-resp--home{{ end }}" data-pp-resp="overview" data-src="{{ .src }}"

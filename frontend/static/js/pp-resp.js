@@ -29,6 +29,7 @@
     holiday: "holiday week", provisional: "provisional",
     unitCases: "new cases per week", unitPositive: "of specimens positive",
     testing: "depends on how much is tested",
+    unitAdmissions: "new admissions per week", withInfection: "with the infection, not necessarily because of it",
     dir: { higher: "higher than the week before", lower: "lower than the week before", same: "unchanged from the week before" },
     asof: "Curves: the last {n} weeks, {a} to {b}, the same time axis in every tile. ILI and ARI are not reported over the summer, so their curve starts with the first autumn reports. Hollow end point = provisional or holiday week.",
     byAge: " by age", ageSub: "week of {w} · per 100,000 population of the age group · Czechia",
@@ -55,6 +56,7 @@
     holiday: "sváteční týden", provisional: "předběžné",
     unitCases: "nových případů za týden", unitPositive: "vzorků pozitivních",
     testing: "závisí na tom, kolik se testuje",
+    unitAdmissions: "nově přijatých za týden", withInfection: "s infekcí, ne nutně kvůli ní",
     dir: { higher: "vyšší než minulý týden", lower: "nižší než minulý týden", same: "beze změny proti minulému týdnu" },
     asof: "Křivky: posledních {n} týdnů, od {a} do {b}, ve všech dlaždicích stejná časová osa. V létě se ILI a ARI nehlásí, jejich křivka proto začíná až prvním podzimním hlášením. Prázdný koncový bod = předběžný nebo sváteční týden.",
     byAge: " podle věku", ageSub: "týden {w} · na 100 tis. obyvatel dané věkové skupiny · celá ČR",
@@ -218,6 +220,14 @@
       if (t.unit === "count") {
         value = fmt(t.value, 0); unit = L.unitCases;
         chips += chip(L.testing);
+        if (t.change_pct !== null && t.prev_week) {
+          foot += " · " + fill(L.vsPrev, { c: (t.change_pct >= 0 ? "+" : "−") + pct(Math.abs(t.change_pct)) });
+        }
+      } else if (t.unit === "admissions") {
+        // Hospital admissions (daily ÚZIS e-surveillance): a count like the cases
+        // tile, but with its own unit and caveat — "depends on testing" is not true here.
+        value = fmt(t.value, 0); unit = L.unitAdmissions;
+        chips += chip(L.withInfection);
         if (t.change_pct !== null && t.prev_week) {
           foot += " · " + fill(L.vsPrev, { c: (t.change_pct >= 0 ? "+" : "−") + pct(Math.abs(t.change_pct)) });
         }
