@@ -1,0 +1,16 @@
+{{- /* Start of one section of a page switched by `views` — see layouts/shortcodes/views.html.
+
+     Usage: {{% view id="letos" title="Letos: 11 častých nemocí" %}}
+            …markdown, shortcodes…
+            {{% view-end %}}
+
+     id     goes to the URL hash when the view is chosen (#letos); keep it short and stable
+     title  the button label
+
+     Deliberately NOT a paired shortcode. A paired {{% view %}} sends its inner
+     content through Markdown again, and the indented HTML of nested shortcodes
+     (signals-map, chart cards) then renders as code blocks. Separate start and end
+     tags leave the content to be processed like the rest of the page.
+     Call both with % delimiters: the tag then enters the Markdown as an HTML block;
+     with < > Hugo wraps the section in a paragraph. */ -}}
+<section class="pp-view" id="{{ .Get "id" }}" data-pp-view data-pp-view-title="{{ .Get "title" }}">

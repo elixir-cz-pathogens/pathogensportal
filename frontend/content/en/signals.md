@@ -19,10 +19,51 @@ update_from: "anomaly_signals.json"
 update_read: "stamp"
 ---
 
-Infectious disease data form more than **1,200 time series** (114 diagnoses × 14 regions plus
-national totals). These series are evaluated automatically: for every series the **expected
-endemic level** is computed from seasonality and history, and the page shows the months in which
-the reported count exceeded the threshold.
+The page automatically looks for places where more infectious disease cases are reported than
+is usual for the time of year and the region. For every time series an **expected level** is
+computed from seasonality and history, and the page shows the series that clearly exceeded it.
+
+{{% if-data file="anomaly_signals_weekly.json" %}}
+Use the switch below to choose what to see:
+
+- **This year** — 11 frequent diseases up to last month, from the weekly ÚZIS summary;
+- **All diseases** — 114 diagnoses by region from the open ISIN data, which end with the last
+  completed year.
+
+{{< views >}}
+
+{{% view id="letos" title="This year: 11 frequent diseases" %}}
+The open ISIN data are refreshed once a year. For eleven frequent diagnoses, however, ÚZIS publishes
+a weekly summary up to the previous week, with the records from EWS reports counted separately. The
+detector evaluates the last complete month on it with the same method as the rest of this page, only
+with a shorter history (from 2022).
+
+The new EWS reporting does not affect all diseases the same way, and they are treated accordingly:
+
+- **Reports only moved.** Doctors and laboratories report the same cases through the new route and
+  the total stayed at the level of previous years (salmonellosis, campylobacteriosis, chickenpox).
+  These diseases are evaluated as before.
+- **EWS captured cases that used to go unreported.** There are two to five times more reported
+  cases than in previous years without more people being ill (shingles, Lyme disease,
+  mononucleosis, scabies). They cannot be compared with previous years and are not evaluated; the
+  tile shows only the trend.
+- **The level rose and EWS is a minority.** The rise may be an epidemic or the new channel; a signal
+  holds only when the count is above the usual range even without the EWS cases.
+
+Which case a disease belongs to is computed from the data again every month. Months with an epidemic
+(such as whooping cough in 2024) do not count towards the usual level.
+
+{{< signals-weekly src="/data/charts/anomaly_signals_weekly.json" title="This year — 11 diagnoses from the weekly ÚZIS summary" >}}
+
+Monthly counts here are sums of weeks; a week across two months is split by working days. They
+usually differ from the official monthly counts by 1–2 %. In 2026, 1–10 % of the records also lack a
+region, so the regional series are slightly lower than reality; the national ones are complete.
+{{% view-end %}}
+{{% /if-data %}}
+
+{{% view id="vsechny" title="All diseases: open ISIN data" %}}
+The open ISIN data form more than **1,200 time series** (114 diagnoses × 14 regions plus national
+totals). They are refreshed once a year, so the month evaluated here is the last one they contain.
 
 {{< signals-period src="/data/charts/anomaly_signals.json" >}}
 
@@ -78,6 +119,7 @@ A row with small counts and a score just above 1 may be chance: with a 99% limit
 evaluated, around ten exceedances a month can be expected by chance alone.
 
 {{< signals-excluded src="/data/charts/anomaly_signals.json" >}}
+{{% view-end %}}
 
 ---
 

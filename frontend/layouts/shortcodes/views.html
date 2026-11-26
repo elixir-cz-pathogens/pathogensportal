@@ -1,0 +1,21 @@
+{{/* Switch between whole sections of a page ("views"), e.g. this year / all diagnoses.
+
+     Usage:
+       {{< views label="Zobrazit" >}}
+       {{% view id="letos" title="Letos: 11 častých nemocí" %}} …markdown, shortcodes… {{% view-end %}}
+       {{% view id="vsechny" title="Všechny nemoci" %}} … {{% view-end %}}
+
+     `views` emits only the bar; /js/pp-charts.js (initViews) builds one button per
+     `view` on the page, shows the first one (or the one named in the URL hash, so a
+     link can open a view) and hides the rest. With fewer than two views on the page
+     — e.g. one is wrapped in `if-data` and its file has not arrived — the bar stays
+     hidden and the single view is shown as plain content. Without JavaScript every
+     view is shown, one below the other.
+
+     Unlike `period-switch`, which narrows charts to a time range, this switches
+     what the page is about; content shared by the views goes outside them. */}}
+{{ $en := eq .Site.Language.Lang "en" }}
+<div class="pp-period pp-period--inline pp-views" data-pp-views hidden>
+  <span class="pp-period__label" id="pp-views-label">{{ .Get "label" | default (cond $en "Show" "Zobrazit") }}</span>
+  <div class="pp-period__options" role="group" aria-labelledby="pp-views-label" data-pp-views-options></div>
+</div>

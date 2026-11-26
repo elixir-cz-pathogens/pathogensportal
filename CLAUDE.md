@@ -115,8 +115,8 @@ them follow the check.
   `pp-charts.js`, `pp-flu.js` and `partials/signals-map.html` prefer on the English site. The
   dictionary in `pp-charts.js` is the fallback for older data and holds the script's own UI strings.
 
-Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`,
-`stat-card`, `period-switch`, `comment` (data comment from a facts JSON), `isin` (infectious-disease
+Other shortcodes: `nav-pills`, `method` / `method-part`, `region-map`, `flu`, `signals`, `signals-map`, `signals-excluded`, `signals-weekly` (11 diagnoses up to last month, from `anomaly_signals_weekly.json`),
+`stat-card`, `period-switch`, `views` / `view` / `view-end` (switch between whole sections of a page), `comment` (data comment from a facts JSON), `isin` (infectious-disease
 overview blocks, drawn by `pp-isin.js`), `if-data` (content shown only when a chart JSON is in the repo), `key-facts` / `key-fact`, `callout`, `data-files`, `data-catalogue`, `data-reuse`,
 `organization`, `person`, `report-cards`. Each template starts with a usage comment.
 
