@@ -17,7 +17,13 @@ update_read: "week"
 ---
 
 {{% if-data file="esurv_hosp_current.json" %}}
-### V nemocnicích
+### Hlášené případy a nemocnice
+
+Denní report ÚZIS je o týden až dva čerstvější než týdenní data výše. Nejde o nemocnost
+z vybraných ordinací, ale o automatizovaná hlášení všech zapojených lékařů, proto se nesrovnává
+s epidemickým prahem.
+
+{{< chart id="fluCasesDaily" src="/data/charts/esurv_cases.json" series="0" type="line" title="Chřipka hlášená lékaři — součet za 7 dní" height="280" note="Absolutní počty případů chřipky hlášených lékaři, součet za 7 dní končících daným dnem, celá ČR, denní report e-surveillance ÚZIS. Státní svátek součet sníží." >}}
 
 Kolik pacientů s chřipkou a s RSV leželo v nemocnici ve stejný den, podle denního reportu
 ÚZIS se stavem ke včerejšku. Jde o automatizovaná hlášení zapojených nemocnic a počítá se každá
