@@ -84,6 +84,10 @@
     "statický snímek dat": "static data snapshot",
     "případů": "cases",
     "Celkem nakažených": "Total cases",
+    "V nemocnici s chřipkou": "In hospital with influenza",
+    "V nemocnici s covidem-19": "In hospital with COVID-19",
+    "V nemocnici s RSV": "In hospital with RSV",
+    "V nemocnici s ARI/ILI celkem": "In hospital with ARI/ILI, total",
     "Celkem úmrtí": "Total deaths",
     "Celkem testů": "Total tests",
     "Smrtnost (CFR)": "Case fatality (CFR)",
@@ -1096,7 +1100,12 @@
     { key: "celkem_nakazenych", label: "Celkem nakažených", slot: 1 },
     { key: "celkem_umrti", label: "Celkem úmrtí", slot: 8 },
     { key: "celkem_testu", label: "Celkem testů", slot: 3 },
-    { key: "cfr_pct", label: "Smrtnost (CFR)", slot: 2, suffix: " %" }
+    { key: "cfr_pct", label: "Smrtnost (CFR)", slot: 2, suffix: " %" },
+    // esurv_summary.json — daily ÚZIS e-surveillance: patients in hospital on the day
+    { key: "hosp_aktualne_chripka", label: "V nemocnici s chřipkou", slot: 1 },
+    { key: "hosp_aktualne_covid19", label: "V nemocnici s covidem-19", slot: 2 },
+    { key: "hosp_aktualne_rsv", label: "V nemocnici s RSV", slot: 3 },
+    { key: "hosp_aktualne_ari_ili", label: "V nemocnici s ARI/ILI celkem", slot: 8 }
   ];
 
   function renderStats(root) {

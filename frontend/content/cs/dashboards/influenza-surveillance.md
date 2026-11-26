@@ -16,6 +16,19 @@ update_read: "week"
 
 ---
 
+{{% if-data file="esurv_hosp_current.json" %}}
+### V nemocnicích
+
+Kolik pacientů s chřipkou a s RSV leželo v nemocnici ve stejný den, podle denního reportu
+ÚZIS se stavem ke včerejšku. Jde o automatizovaná hlášení zapojených nemocnic a počítá se každá
+hospitalizace, při které byla infekce zaznamenána. Případy hlášené lékaři, příjmy na JIP
+a očkování ukazuje panel [Respirační infekce — denní přehled a nemocnice](/dashboards/respiratory-daily/).
+
+{{< chart id="fluHospDaily" src="/data/charts/esurv_hosp_current.json" series="0,2" type="line" title="Hospitalizovaní s chřipkou a RSV — stav po dnech" height="300" note="Absolutní počty současně hospitalizovaných, celá ČR, denní report e-surveillance ÚZIS. Řada chřipky začíná 18. října 2025." >}}
+
+---
+{{% /if-data %}}
+
 ### Které typy chřipky kolují
 
 Laboratoře u části vzorků určují, zda jde o chřipku A, nebo B, a u chřipky A i její subtyp.
