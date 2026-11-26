@@ -220,7 +220,8 @@
       if (t.unit === "count") {
         value = fmt(t.value, 0); unit = L.unitCases;
         chips += chip(L.testing);
-        if (t.change_pct !== null && t.prev_week) {
+        if (t.holiday) chips += chip(L.holiday, true);
+        if (comparable && t.change_pct !== null && t.prev_week) {
           foot += " · " + fill(L.vsPrev, { c: (t.change_pct >= 0 ? "+" : "−") + pct(Math.abs(t.change_pct)) });
         }
       } else if (t.unit === "admissions") {
@@ -228,7 +229,8 @@
         // tile, but with its own unit and caveat — "depends on testing" is not true here.
         value = fmt(t.value, 0); unit = L.unitAdmissions;
         chips += chip(L.withInfection);
-        if (t.change_pct !== null && t.prev_week) {
+        if (t.holiday) chips += chip(L.holiday, true);
+        if (comparable && t.change_pct !== null && t.prev_week) {
           foot += " · " + fill(L.vsPrev, { c: (t.change_pct >= 0 ? "+" : "−") + pct(Math.abs(t.change_pct)) });
         }
       } else if (t.unit === "percent") {

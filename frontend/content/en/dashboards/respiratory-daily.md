@@ -41,8 +41,9 @@ data pipeline that downloads the daily ÚZIS report.
 
 The chart shows the sum over the last seven days, not single days. Reporting has a strong weekly
 rhythm, with only a fraction arriving at weekends, so daily figures would mostly show surgery
-hours. A public holiday lowers the sum just as a weekend does. The most recent days are still
-being completed at the source.
+hours. A public holiday noticeably lowers the sum of the seven days it falls in; the comment
+therefore compares whole calendar weeks and does not compare a week with a holiday. The most
+recent days are still being completed at the source.
 
 {{< comment src="/data/charts/esurv_summary.json" block="cases" >}}
 

@@ -17,7 +17,13 @@ update_read: "week"
 ---
 
 {{% if-data file="esurv_hosp_current.json" %}}
-### In hospital
+### Reported cases and hospitals
+
+The daily ÚZIS report is one to two weeks fresher than the weekly data above. It is not the rate
+from selected practices but the automated reports of all connected physicians, so it is not
+compared with the epidemic threshold.
+
+{{< chart id="fluCasesDaily" src="/data/charts/esurv_cases.json" series="0" type="line" title="Influenza reported by physicians — 7-day sum" height="280" note="Absolute counts of influenza cases reported by physicians, sum over the 7 days ending on the given day, all of Czechia, daily ÚZIS e-surveillance report. A public holiday lowers the sum." >}}
 
 How many patients with influenza and with RSV were in hospital on the same day, from the daily
 ÚZIS report with the state as of yesterday. These are automated reports of the connected

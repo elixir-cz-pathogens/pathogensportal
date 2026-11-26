@@ -40,8 +40,9 @@ report ÚZIS stahuje.
 ### Hlášené případy
 
 Graf ukazuje součet za posledních sedm dní, ne jednotlivé dny. Hlášení mají silný týdenní rytmus,
-o víkendu jich přijde zlomek, a denní čísla by ukazovala hlavně ordinační hodiny. Svátek součet
-sníží stejně jako víkend. Poslední dny se u zdroje ještě doplňují.
+o víkendu jich přijde zlomek, a denní čísla by ukazovala hlavně ordinační hodiny. Státní svátek
+součet sedmi dní, ve kterých leží, znatelně sníží; komentář proto srovnává celé kalendářní týdny
+a týden se svátkem nesrovnává. Poslední dny se u zdroje ještě doplňují.
 
 {{< comment src="/data/charts/esurv_summary.json" block="cases" >}}
 
