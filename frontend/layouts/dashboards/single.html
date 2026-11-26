@@ -40,6 +40,12 @@
       {{ $u := partial "update-stamp.html" . }}
       {{ if $u }}
       <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ $u.text }}</span>
+      {{/* A separate item on purpose: when the data changed and when the source
+           was last asked are two statements (see update-stamp.html). Absent
+           until the pipeline delivers last_checked.json. */}}
+      {{ with $u.checked }}
+      <span class="pp-meta__item" title="{{ cond $en "The day the portal last asked the data source and found nothing newer than this dashboard shows." "Den, kdy se portál naposledy dotázal zdroje dat a nenašel nic novějšího, než co panel ukazuje." }}"><i class="bi bi-check2-circle" aria-hidden="true"></i> {{ .label }}: <time datetime="{{ .iso }}">{{ .date }}</time></span>
+      {{ end }}
       {{ else }}{{ with .Params.update_freq }}
       <span class="pp-meta__item"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> {{ cond $en "Updated" "Aktualizace" }}: {{ . }}</span>
       {{ end }}{{ end }}

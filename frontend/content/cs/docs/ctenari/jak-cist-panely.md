@@ -19,6 +19,13 @@ z těchto údajů:
 
 Datum se vždy čte přímo z datového souboru, ne z data úpravy stránky.
 
+{{% if-data file="last_checked.json" %}}
+Vedle něj může být uveden údaj **Poslední kontrola zdroje: 26. 11. 2026**. Říká, kdy se portál
+naposledy dotázal zdroje dat a nenašel nic novějšího, než co panel ukazuje. Datum dat se tím
+nemění: roční soubor zůstává celý rok stejný, i když se na něj portál ptá každý den. Když se dotaz
+na zdroj nepodaří, datum kontroly se neposune.
+{{% /if-data %}}
+
 Zpracování může proběhnout dnes a přesto obsahovat data za starší období. Například otevřený
 export dat ISIN zatím končí prosincem 2025, takže [Signály](/signals/) vyhodnocují prosinec 2025,
 i když je údaj „Aktualizace“ novější. Jak často se mění jednotlivé zdroje, shrnuje stránka

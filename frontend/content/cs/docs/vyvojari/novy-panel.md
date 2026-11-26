@@ -25,6 +25,11 @@ Panel je stránka v `frontend/content/<jazyk>/dashboards/`. Musí existovat v č
 ⛔ **Datum aktualizace nikdy nepište do front matter ručně.** Čte se z dat (`update_from`), jinak
 zastará.
 
+Vedle data z dat stránka sama zobrazí údaj „Poslední kontrola zdroje“ — den, kdy se datová
+pipeline naposledy úspěšně dotázala všech zdrojů souboru z `update_from`. Čte se ze souboru
+`last_checked.json`, který pipeline zapisuje mezi ostatní datové soubory; do front matter se kvůli
+němu nic nepřidává. Dokud soubor nebo záznam o grafu chybí, údaj se nezobrazí.
+
 ## Shortcody
 
 Nejčastější: `chart` (graf), `region-map` (mapa krajů), `stat-card`, `callout`, `method` /

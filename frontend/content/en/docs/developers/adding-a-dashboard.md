@@ -25,6 +25,11 @@ A dashboard is a page in `frontend/content/<language>/dashboards/`. It must exis
 ⛔ **Never type an update date into front matter by hand.** It is read from the data
 (`update_from`); otherwise it goes stale.
 
+Next to the data date the page shows "Source last checked" on its own — the day the data pipeline
+last asked every source of the `update_from` file successfully. It is read from
+`last_checked.json`, which the pipeline writes among the other data files; nothing is added to
+front matter for it. Until the file or the chart's entry is there, the label is not shown.
+
 ## Shortcodes
 
 The most common: `chart` (a chart), `region-map` (a map of regions), `stat-card`, `callout`,

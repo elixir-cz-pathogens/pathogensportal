@@ -83,6 +83,15 @@ Front matter used by the templates:
 `stamp` (default: `generated_at`, else `posledni_datum`), `period-end`, `week` (`KT WW/YY` → Sunday of
 that ISO week), `month`, `year`. Month and year are not converted to a day.
 
+**When the data changed and when the source was last checked are two statements.** The date above
+moves only with the data. Next to it the page shows "Poslední kontrola zdroje / Source last
+checked" from `static/data/charts/last_checked.json` (written by `pathogensportal-db`,
+`scripts/last_checked.py`: per chart file, the UTC day on which all of its sources were last asked
+successfully). The partial returns it as `.checked` (`label`, `date`, `iso`); it is optional — no
+file or no entry, no label — and it is left out when the label already names the same day as the
+pipeline run. `.iso`, JSON-LD `dateModified` and the tile order stay on the data date: never make
+them follow the check.
+
 ### Charts
 - Shortcode: `{{< chart id="…" src="/data/charts/<file>.json" type="line|bar|…" title="…" height="380" note="…" >}}`.
   The template emits markup only; `pp-charts.js` does everything else (rendering, data table toggle,
