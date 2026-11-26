@@ -5,12 +5,9 @@ description: "Influenza, COVID-19, RSV and acute respiratory infections in Czech
 image: "/images/cards/flu-regional.svg"
 tags: ["influenza", "COVID-19", "RSV", "hospitalisations", "vaccination", "ÚZIS", "Czechia"]
 data_source: '<a href="https://www.nzip.cz/data/2860-respiracni-infekce-denni-reporting-esurveillance-datovy-souhrn" target="_blank">ÚZIS CZ — Respiratory infections, daily e-surveillance reporting</a>'
-# Until esurv_summary.json arrives from the data pipeline the page states only the
-# frequency. Then replace this line with
-#   update_from: "esurv_summary.json"
-#   update_read: "stamp"
-# so that the date is read from the data (posledni_datum) — see update-stamp.html.
-update_freq: "Daily"
+# The date comes from posledni_datum in this JSON (state as of the previous day), not from here.
+update_from: "esurv_summary.json"
+update_read: "stamp"
 ---
 
 This dashboard follows respiratory infections in Czechia day by day: how many cases of influenza,
