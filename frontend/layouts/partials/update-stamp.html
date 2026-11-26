@@ -3,6 +3,8 @@
      Usage: {{ $u := partial "update-stamp.html" $page }}
             {{ with $u }}{{ .text }}{{ end }}   — for readers
             {{ with $u }}{{ .iso }}{{ end }}    — for machines (dateModified in JSON-LD)
+            {{ with $u }}{{ with .checked }}{{ .label }}: {{ .date }} ({{ .iso }}){{ end }}{{ end }}
+                                                — when the source was last checked, see below
 
      `.iso` is the same date in machine form, so the structured data does not
      compute the date separately — one logic, two outputs. For `month` and
@@ -48,11 +50,37 @@
      because nothing that would move it will arrive.
      It must not be combined with `update_from` — a manual date would override
      the data date, which is exactly how dates go stale. The combination fails
-     the build. */}}
+     the build.
+
+     ── `.checked` — when the source was last checked ────────────────────────
+     A THIRD statement, again not merged with the other two. The date above
+     moves only when the data move, and it has to: but the pipeline asks the
+     sources every hour, while an annual file changes once a year. A reader
+     looking at "Updated: 22 Nov" on the 26th could not tell "the source has
+     nothing new" from "the portal stopped running".
+
+     The pipeline therefore writes `last_checked.json` (pathogensportal-db,
+     scripts/last_checked.py): for every chart file, the day (UTC) on which
+     all of its sources were last asked successfully and the chart was rebuilt
+     from that download — or found unchanged. A source whose download failed
+     does not advance it. The page shows it NEXT TO the data date.
+
+     `.iso` stays the data date. `dateModified` in JSON-LD and the order of
+     the tiles on the home page therefore do not move when nothing but the
+     check date did — "modified" must not mean "looked at".
+
+     It is left out when
+       - the file has not arrived yet, or does not list this chart (the page
+         must build and read well without it);
+       - the label already says when the pipeline ran (`generated_at`) and the
+         check is not from a later day — the same day twice says nothing;
+       - the page has `data_as_of`: a closed report has no source to check. */}}
 {{ $en   := eq .Site.Language.Lang "en" }}
 {{ $file := .Params.update_from }}
 {{ $read := .Params.update_read | default "stamp" }}
 {{ $out  := "" }}
+{{/* Day the pipeline ran, when that is what the label states (generated_at). */}}
+{{ $ranOn := "" }}
 
 {{ if and $file .Params.data_as_of }}
   {{ errorf "stránka %q má update_from i data_as_of — datum z dat a ruční datum se vylučují" .Title }}
@@ -79,6 +107,7 @@
         {{ $out = dict "text" (printf "%s: %s"
             (cond $en "Updated" "Aktualizace")
             ($t.Format (cond $en "2 Jan 2006, 15:04 MST" "2. 1. 2006, 15:04 MST"))) "iso" ($t.Format "2006-01-02") }}
+        {{ $ranOn = $t.UTC.Format "2006-01-02" }}
       {{ else if $j.posledni_datum }}
         {{ $t := time.AsTime $j.posledni_datum }}
         {{ $out = dict "text" (printf "%s %s"
@@ -138,6 +167,43 @@
 
     {{ else }}
       {{ errorf "update_read: neznámá hodnota %q (stránka %q)" $read $.Title }}
+    {{ end }}
+
+    {{/* ── when the source was last checked (optional file) ─────────────── */}}
+    {{ $checksPath := "static/data/charts/last_checked.json" }}
+    {{ if and $out (os.FileExists $checksPath) }}
+      {{/* The file comes from the automat and is optional: a broken file or
+           entry must not take the site down, the page only loses this label.
+           (A broken `update_from` file does fail the build — the page cannot
+           state its date without it.) */}}
+      {{ $charts := dict }}
+      {{ with try (os.ReadFile $checksPath | transform.Unmarshal) }}
+        {{ with .Err }}
+          {{ warnf "last_checked.json cannot be read — check dates are left out: %s" . }}
+        {{ else }}
+          {{ if reflect.IsMap .Value }}{{ $charts = .Value.charts }}{{ end }}
+        {{ end }}
+      {{ end }}
+      {{ $day := "" }}
+      {{ if reflect.IsMap $charts }}
+        {{ with index $charts (strings.TrimSuffix ".json" $file) }}{{ if reflect.IsMap . }}{{ $day = .checked | default "" }}{{ end }}{{ end }}
+      {{ end }}
+      {{/* The shape is checked first and the calendar second ("2026-13-45"
+           has the shape); dates then compare as text, as ISO dates do. */}}
+      {{ $c := "" }}
+      {{ if findRE `^\d{4}-\d{2}-\d{2}$` (printf "%v" $day) }}
+        {{ with try (time.AsTime $day) }}{{ if not .Err }}{{ $c = .Value }}{{ end }}{{ end }}
+      {{ end }}
+      {{ if $c }}
+        {{ if or (not $ranOn) (gt $day $ranOn) }}
+          {{ $out = merge $out (dict "checked" (dict
+              "label" (cond $en "Source last checked" "Poslední kontrola zdroje")
+              "date"  ($c.Format (cond $en "2 Jan 2006" "2. 1. 2006"))
+              "iso"   $day)) }}
+        {{ end }}
+      {{ else if $day }}
+        {{ warnf "last_checked.json: %v is not a date (chart %q) — the check date is left out" $day $file }}
+      {{ end }}
     {{ end }}
   {{ end }}
 {{ end }}

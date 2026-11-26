@@ -18,6 +18,13 @@ Every dashboard states how current its data are. Depending on the data, it shows
 
 The date is always read from the data file itself, not from when the page was last edited.
 
+{{% if-data file="last_checked.json" %}}
+Next to it there may be **Source last checked: 26 Nov 2026**. It says when the portal last asked
+the data source and found nothing newer than the dashboard shows. It does not change the date of
+the data: an annual file stays the same all year, even though the portal asks for it every day.
+When the source cannot be reached, the check date does not move.
+{{% /if-data %}}
+
 Processing can run today and still contain data for an older period. For example, the open ISIN
 data export currently ends in December 2025, so [Signals](/en/signals/) evaluate December 2025 even
 though the "Updated" date is more recent. How often each source changes is summarised on the page
