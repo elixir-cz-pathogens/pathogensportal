@@ -1,0 +1,67 @@
+name: "CHECK: LLM key smoke test"
+
+# Proves that the LLM key works from CI (TODO I42): lists the models the
+# provider offers and confirms that `LLM_MODEL` is one of them. Sends no prompt,
+# so it costs nothing.
+#
+# The key is an ENVIRONMENT secret (`llm`), not a repo secret: a repo secret is
+# readable by any workflow pushed to `dev`, which needs no review. The `llm`
+# environment releases it only to runs from `main` — a dispatch from any other
+# branch is refused before the job starts.
+#
+# Provider: CERIT-SC e-INFRA AI-as-a-service, OpenAI-compatible, Bearer token.
+#   environment secret  LLM_API_KEY
+#   environment vars    LLM_BASE_URL (https://llm.ai.e-infra.cz/v1), LLM_MODEL
+# Model names are aliases that can move to a different model under you; anything
+# that publishes LLM output should record the model the API reports back.
+#
+# Run it: Actions → "CHECK: LLM key smoke test" → Run workflow (branch `main`).
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    environment: llm
+    timeout-minutes: 5
+    steps:
+      - name: List models
+        env:
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+          LLM_MODEL: ${{ vars.LLM_MODEL }}
+        run: |
+          set -euo pipefail
+          for v in LLM_API_KEY LLM_BASE_URL LLM_MODEL; do
+            if [ -z "${!v:-}" ]; then
+              echo "::error::$v is empty — is it set in environment 'llm'?"
+              exit 1
+            fi
+          done
+
+          status=$(curl -sS --max-time 60 -o models.json -w '%{http_code}' \
+            -H "Authorization: Bearer $LLM_API_KEY" "$LLM_BASE_URL/models")
+          if [ "$status" != "200" ]; then
+            echo "::error::GET $LLM_BASE_URL/models returned HTTP $status"
+            head -c 500 models.json || true
+            exit 1
+          fi
+
+          echo "Models offered by $LLM_BASE_URL:"
+          jq -r '.data[].id' models.json | sort | sed 's/^/  /'
+
+          if jq -e --arg m "$LLM_MODEL" 'any(.data[]; .id == $m)' models.json >/dev/null; then
+            echo "LLM_MODEL=$LLM_MODEL is available."
+          else
+            echo "::error::LLM_MODEL=$LLM_MODEL is not in the provider's model list."
+            exit 1
+          fi
+
+          {
+            echo "### LLM key works"
+            echo "Provider \`$LLM_BASE_URL\` answered 200; \`$LLM_MODEL\` is available."
+            echo
+            jq -r '.data[].id' models.json | sort | sed 's/^/- `/; s/$/`/'
+          } >> "$GITHUB_STEP_SUMMARY"
