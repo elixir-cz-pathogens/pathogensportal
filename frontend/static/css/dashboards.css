@@ -125,6 +125,7 @@
 
 .pp-meta__item {
   display: inline-flex;
+  flex-wrap: wrap;  /* a long tag list must wrap, not run off a phone screen */
   align-items: center;
   gap: 0.35rem;
 }
@@ -1068,6 +1069,12 @@
   font-size: 0.78rem;
   color: var(--pp-text-muted);
   line-height: 1.35;
+}
+
+/* Three columns are ~100px each on a phone: "pravděpodobně klesá" at 1.2rem
+   overflows into its neighbour. Stack the facts instead. */
+@media (max-width: 575.98px) {
+  .pp-flu-facts { grid-template-columns: 1fr; gap: 10px; }
 }
 
 .pp-flu-meter {

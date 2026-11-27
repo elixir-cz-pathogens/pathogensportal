@@ -502,3 +502,14 @@ button.pp-cal__day:hover, button.pp-cal__day:focus-visible { outline: 2px solid 
 .pp-datafiles { max-height: 22rem; overflow: auto; border: 1px solid var(--bs-border-color); border-radius: 10px; }
 .pp-datafiles table { margin: 0; font-size: 0.85rem; }
 .pp-datafiles thead th { position: sticky; top: 0; background: var(--bs-body-bg); }
+
+/* Wide tables scroll inside their own box on a phone instead of pushing the
+   whole page sideways. Short tables get .pp-table-scroll from footer.html;
+   DataTables (long tables) wraps its own in .dt-layout-table. */
+.pp-table-scroll,
+.dt-layout-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.pp-table-scroll { margin-bottom: 1rem; }
+.pp-table-scroll > table { margin-bottom: 0; }
